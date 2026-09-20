@@ -14,7 +14,7 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - 本地 TXT/Markdown、文本型 PDF、DOCX 解析；旧 DOC 通过 LibreOffice 转换。
 - 可配置 token 切片、确定性 chunk ID、千问批量 Embedding、Milvus COSINE 检索。
 - PostgreSQL 元数据和消息持久化，文档状态机、重试与删除补偿。
-- 最近消息上下文、追问改写、服务端引用、DeepSeek/Ollama 非流式回答。
+- 最近消息上下文、追问改写、服务端引用、DeepSeek/Ollama 回答与 V2 SSE 运行事件。
 - DeepSeek 可重试错误发生时，可显式开启一次 Ollama 降级；鉴权错误不降级。
 - LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
 - V2 `knowledge / web / auto` 三种模式、请求内证据登记、混合引用和有限工具循环。
@@ -22,7 +22,7 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - PDF、Word、PowerPoint、Excel 显式启用后统一经 MinerU 云解析；TXT/Markdown 保持本地解析。
 - V1/V2 会话版本隔离、V2 运行元数据和显式可重复数据库迁移。
 
-**仍未实现：** SSE、自动滚动摘要、正式认证、持久任务队列、多 worker、重排序和网页自动入库。
+**仍未实现：** 未校验答案的逐 token 输出、自动滚动摘要、正式认证、持久任务队列、多 worker、重排序和网页自动入库。
 
 ## 2. 项目结构
 
@@ -175,6 +175,7 @@ V2 会话使用独立路径；文档上传仍复用 `/api/v1/documents`：
 | POST/GET | `/api/v2/sessions` | 创建或列出 V2 会话 |
 | GET/DELETE | `/api/v2/sessions/{id}` | 读取或删除 V2 会话 |
 | POST | `/api/v2/sessions/{id}/messages` | Agent 非流式问答 |
+| POST | `/api/v2/sessions/{id}/messages/stream` | SSE 输出运行状态、用量与已校验的最终回答 |
 | GET | `/api/v2/documents/{id}/processing` | 查看解析阶段，不暴露上游任务 ID |
 
 V2 请求示例：
@@ -230,7 +231,7 @@ $env:RUN_STORAGE_INTEGRATION='1'
 
 ## 9. 后续范围
 
-后续按需增加 SSE、事务式滚动摘要、正式认证、可靠任务队列、多 worker 协调、重排和网页自动入库；这些能力不在 V2.0 中伪预留实现。
+后续按需增加逐 token 暂定回答与断线恢复、事务式滚动摘要、正式认证、可靠任务队列、多 worker 协调、重排和网页自动入库。
 
 ## 10. 检索召回率评估
 

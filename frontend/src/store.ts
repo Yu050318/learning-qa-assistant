@@ -7,7 +7,7 @@ export const useAppStore=defineStore('app',()=>{
   const userId=ref(localStorage.getItem('zhizhan-user')||'demo-user'),generation=ref(0)
   const sessions=ref<Session[]>([]),documents=ref<DocumentItem[]>([]),messages=ref<Message[]>([])
   const currentSession=ref<Session|null>(null),capabilities=ref<Capabilities|null>(null),documentTotal=ref(0)
-  const busy=ref(false),error=ref(''),selectedDocuments=ref<string[]>([])
+  const busy=ref(false),error=ref(''),streamStatus=ref(''),selectedDocuments=ref<string[]>([])
   let errorTimer:number|undefined
   function notify(message:string){error.value=message;window.clearTimeout(errorTimer);errorTimer=window.setTimeout(()=>{if(error.value===message)error.value=''},8000)}
   const uploads=createUploadQueue(()=>userId.value,()=>loadDocuments(),notify,()=>({allowed:capabilities.value?.upload.allowed_extensions||['.txt','.md'],max:capabilities.value?.upload.max_file_bytes||20*1024*1024,warning:capabilities.value?.upload.long_running_warning_seconds||900}))
@@ -17,11 +17,11 @@ export const useAppStore=defineStore('app',()=>{
   async function loadSessions(q=''){const value=await api.sessions(userId.value,q);sessions.value=value;return value}
   async function loadSession(id:string){const value=await guard(()=>api.session(userId.value,id));if(value){currentSession.value=value;messages.value=value.messages}return value}
   async function createSession(title='新对话'){const value=await guard(()=>api.createSession(userId.value,title));if(value){sessions.value.unshift(value);currentSession.value=value;messages.value=[]}return value}
-  async function send(id:string,body:any){busy.value=true;try{const value=await guard(()=>api.chat(userId.value,id,body));if(value)await loadSession(id);await loadSessions();return value}finally{busy.value=false}}
+  async function send(id:string,body:any){busy.value=true;streamStatus.value='正在连接';const g=generation.value;try{const value=await guard(()=>api.chatStream(userId.value,id,body,(event)=>{if(generation.value!==g)return;streamStatus.value=event==='run_started'?'正在检索并生成回答':event==='context_usage'?'正在汇总上下文':event==='usage'?'正在保存回答':streamStatus.value}));if(value)await loadSession(id);await loadSessions();return value}catch(caught:any){const message=caught?.message||'请求失败';if(generation.value===g){await loadSession(id).catch(()=>{});error.value=message}throw caught}finally{busy.value=false;streamStatus.value=''}}
   async function loadDocuments(q='',status=''){const value=await api.documents(userId.value,q,status);documents.value=value.items;documentTotal.value=value.total;selectedDocuments.value=selectedDocuments.value.filter(id=>value.items.some(d=>d.id===id&&d.can_query));uploads.recover(value.items)}
   async function removeDocuments(ids:string[]){await Promise.allSettled(ids.map(id=>api.deleteDocument(userId.value,id)));await loadDocuments()}
   async function retryDocument(id:string){await api.retry(userId.value,id);await loadDocuments()}
   async function renameSession(id:string,title:string){const value=await api.renameSession(userId.value,id,title);sessions.value=sessions.value.map(x=>x.id===id?value:x);if(currentSession.value?.id===id)currentSession.value=value}
   const readyDocuments=computed(()=>documents.value.filter(x=>x.can_query))
-  return {userId,sessions,documents,messages,currentSession,capabilities,documentTotal,busy,error,selectedDocuments,uploads,readyDocuments,initialize,switchUser,loadSessions,loadSession,createSession,send,loadDocuments,removeDocuments,retryDocument,renameSession}
+  return {userId,sessions,documents,messages,currentSession,capabilities,documentTotal,busy,error,streamStatus,selectedDocuments,uploads,readyDocuments,initialize,switchUser,loadSessions,loadSession,createSession,send,loadDocuments,removeDocuments,retryDocument,renameSession}
 })

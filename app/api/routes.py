@@ -1,8 +1,10 @@
+import json
+import logging
 from typing import Annotated
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, File, Query, Request, Response, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from app.api.dependencies import ServiceDependency, UserDependency
 from app.api.schemas import (
@@ -19,6 +21,11 @@ health_router = APIRouter(tags=["health"])
 Offset = Annotated[int, Query(ge=0)]
 Limit = Annotated[int, Query(ge=1, le=100)]
 Search = Annotated[str, Query(max_length=200)]
+logger = logging.getLogger("rag")
+
+
+def sse_event(event: str, data: dict) -> str:
+    return f"event: {event}\nid: {data['run_id']}:{data['sequence']}\ndata: {json.dumps(data, ensure_ascii=False, default=str)}\n\n"
 
 
 def document_response(document, embedding_model: str) -> dict:
@@ -128,6 +135,64 @@ def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services
     )
 
 
+@v2_router.post("/sessions/{session_id}/messages/stream", tags=["v2 chat"])
+def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency):
+    data = AgentChatInput(
+        question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
+        document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
+        web_query=payload.web_query,
+    )
+    run_id = str(uuid4())
+    request_id = request.state.request_id
+
+    def events():
+        sequence = 1
+        yield sse_event("run_started", {
+            "run_id": run_id, "sequence": sequence, "request_id": request_id,
+            "search_mode": payload.search_mode,
+        })
+        try:
+            message = services.chat.answer_v2(user_id, session_id, data, request_id)
+            metadata = message.run_metadata or {}
+            metrics = metadata.get("metrics", {})
+            context = metrics.get("context")
+            if context:
+                sequence += 1
+                yield sse_event("context_usage", {"run_id": run_id, "sequence": sequence, "context": context})
+            sequence += 1
+            yield sse_event("usage", {
+                "run_id": run_id, "sequence": sequence, "token_usage": message.token_usage,
+                "cache": metrics.get("cache"),
+            })
+            sequence += 1
+            yield sse_event("done", {
+                "run_id": run_id, "sequence": sequence, "message_id": message.id,
+                "answer": message.content, "model_provider": message.model_provider,
+                "model_name": message.model_name,
+                "search_mode": metadata.get("search_mode", payload.search_mode),
+                "citations": message.citations, "token_usage": message.token_usage,
+                "run_metadata": metadata,
+            })
+        except AppError as error:
+            sequence += 1
+            yield sse_event("error", {
+                "run_id": run_id, "sequence": sequence, "code": error.code,
+                "message": error.message, "status": error.status_code, "request_id": request_id,
+            })
+        except Exception:
+            logger.exception("stream_chat_failed", extra={"request_id": request_id, "resource_id": str(session_id)})
+            sequence += 1
+            yield sse_event("error", {
+                "run_id": run_id, "sequence": sequence, "code": "INTERNAL_ERROR",
+                "message": "服务内部错误，请根据 request_id 检查日志", "request_id": request_id,
+            })
+
+    return StreamingResponse(
+        events(), media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no"},
+    )
+
+
 @v2_router.get("/documents/{document_id}/processing", tags=["v2 documents"])
 def processing_v2(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
     document = services.ingestion.get(user_id, document_id)
@@ -155,7 +220,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "ollama", "model_name": settings.ollama_model, "available": True, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "upload": {"allowed_extensions": office + [".txt", ".md"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": False}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "upload": {"allowed_extensions": office + [".txt", ".md"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])
