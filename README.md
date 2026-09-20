@@ -14,7 +14,7 @@
 
 - **双版本 RAG 架构：** 保留 V1 固定检索链路，并实现 V2 单 Agent；可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库与 Tavily 公网搜索。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
-- **SSE 流式事件已落地：** `POST /api/v2/sessions/{id}/messages/stream` 持续推送运行状态、上下文用量、token/cache 用量、最终答案及错误；事件包含 `run_id` 和递增 `sequence`，前端使用 `fetch + ReadableStream` 消费 POST 响应流。
+- **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
 - **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、Excel 通过 MinerU 解析，TXT/Markdown 本地处理。
 - **模型与外部服务容错：** DeepSeek 遇到连接、超时、429 或 5xx 时可有限降级至 Ollama；已完成的检索不会重复执行，鉴权错误不会被错误地重试或降级。
 - **工程化交付：** FastAPI + Vue 3/TypeScript 前后端分离，采用应用服务、领域协议、仓储和基础设施适配器分层；提供显式迁移、结构化日志、request ID、能力发现与离线自动化测试。
@@ -56,7 +56,7 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - 本地 TXT/Markdown、文本型 PDF、DOCX 解析；旧 DOC 通过 LibreOffice 转换。
 - 可配置 token 切片、确定性 chunk ID、千问批量 Embedding、Milvus COSINE 检索。
 - PostgreSQL 元数据和消息持久化，文档状态机、重试与删除补偿。
-- 最近消息上下文、追问改写、服务端引用、DeepSeek/Ollama 回答与 V2 SSE 运行事件。
+- 最近消息上下文、追问改写、服务端引用、DeepSeek/Ollama 回答与 V2 SSE 增量答案。
 - DeepSeek 可重试错误发生时，可显式开启一次 Ollama 降级；鉴权错误不降级。
 - LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
 - V2 `knowledge / web / auto` 三种模式、请求内证据登记、混合引用和有限工具循环。
@@ -64,7 +64,7 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - PDF、Word、PowerPoint、Excel 显式启用后统一经 MinerU 云解析；TXT/Markdown 保持本地解析。
 - V1/V2 会话版本隔离、V2 运行元数据和显式可重复数据库迁移。
 
-**仍未实现：** 未校验答案的逐 token 输出、自动滚动摘要、正式认证、持久任务队列、多 worker、重排序和网页自动入库。
+**仍未实现：** SSE 断线续传、自动滚动摘要、正式认证、持久任务队列、多 worker、重排序和网页自动入库。
 
 ## 2. 项目结构
 
@@ -217,7 +217,7 @@ V2 会话使用独立路径；文档上传仍复用 `/api/v1/documents`：
 | POST/GET | `/api/v2/sessions` | 创建或列出 V2 会话 |
 | GET/DELETE | `/api/v2/sessions/{id}` | 读取或删除 V2 会话 |
 | POST | `/api/v2/sessions/{id}/messages` | Agent 非流式问答 |
-| POST | `/api/v2/sessions/{id}/messages/stream` | SSE 输出运行状态、用量与已校验的最终回答 |
+| POST | `/api/v2/sessions/{id}/messages/stream` | SSE 增量输出回答、运行状态、用量与已校验的最终结果 |
 | GET | `/api/v2/documents/{id}/processing` | 查看解析阶段，不暴露上游任务 ID |
 
 ### SSE 事件流（已实现）
@@ -227,6 +227,8 @@ V2 会话使用独立路径；文档上传仍复用 `/api/v1/documents`：
 | 事件 | 说明 |
 | --- | --- |
 | `run_started` | 返回 `run_id`、请求 ID、搜索模式，确认服务端已开始处理 |
+| `answer_start` | 开始一版临时回答；补检索、修复或模型降级产生新版本时，前端清空旧临时内容 |
+| `answer_delta` | 从模型结构化输出中安全提取的回答增量；前端实时追加到临时 assistant 消息 |
 | `context_usage` | 可选；返回本轮模型上下文占用信息 |
 | `usage` | 返回 token 用量和上游报告的 cache 指标 |
 | `done` | 引用校验及数据库提交成功后，返回权威 `message_id`、完整答案、引用和运行元数据 |
@@ -240,7 +242,7 @@ curl.exe -N -X POST "http://127.0.0.1:8000/api/v2/sessions/<session-id>/messages
   -d '{"question":"总结当前资料","search_mode":"auto","model_provider":"deepseek"}'
 ```
 
-Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。为保证引用可信，当前不会把未校验的原始 token 直接展示给用户；最终答案在校验和持久化完成后通过 `done` 事件返回。前端会在生成期间实时展示 SSE 状态，并在异常时重新读取会话，避免“服务端已落库但浏览器未显示”的假失败。
+Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。服务端增量解析其中的 `answer` 字段，只发送回答正文，不泄露工具调用、JSON 包装或内部推理。流式正文属于临时显示：补检索、修复或模型降级会用新的 `answer_start` 重置它；引用校验和持久化成功后，前端再用 `done` 中的权威答案覆盖。异常时重新读取会话，避免“服务端已落库但浏览器未显示”的假失败。
 
 V2 请求示例：
 
@@ -295,7 +297,7 @@ $env:RUN_STORAGE_INTEGRATION='1'
 
 ## 9. 后续范围
 
-后续按需增加逐 token 暂定回答与断线恢复、事务式滚动摘要、正式认证、可靠任务队列、多 worker 协调、重排和网页自动入库。
+后续按需增加 SSE 断线恢复、事务式滚动摘要、正式认证、可靠任务队列、多 worker 协调、重排和网页自动入库。
 
 ## 10. 检索召回率评估
 

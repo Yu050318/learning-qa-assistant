@@ -80,7 +80,7 @@ class ChatService:
                 logger.info("chat_completed", extra={"resource_id": str(session_id), "model_provider": answer.provider, "retrieved_count": retrieved_count, "elapsed_ms": round((perf_counter() - started) * 1000, 2)})
                 return message
 
-    def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str):
+    def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None):
         if self.agent_workflow is None:
             raise AppError("NOT_IMPLEMENTED", "V2 Agent 尚未配置", 503)
         public_query, web_enabled, warnings = prepare_public_query(payload, self.settings.web_search_enabled)
@@ -107,7 +107,7 @@ class ChatService:
                 public_query=public_query, web_enabled=web_enabled, warnings=warnings,
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
             )
-            result = self.agent_workflow.run(context, history, summary)
+            result = self.agent_workflow.run(context, history, summary, on_answer_event=on_answer_event)
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True, api_version="v2")

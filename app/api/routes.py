@@ -1,5 +1,7 @@
 import json
 import logging
+from queue import Empty, Queue
+from threading import Thread
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -151,8 +153,36 @@ def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, s
             "run_id": run_id, "sequence": sequence, "request_id": request_id,
             "search_mode": payload.search_mode,
         })
+        pending = Queue()
+
+        def answer():
+            try:
+                message = services.chat.answer_v2(
+                    user_id, session_id, data, request_id,
+                    on_answer_event=lambda event, value: pending.put((event, value)),
+                )
+                pending.put(("result", message))
+            except Exception as error:
+                pending.put(("failure", error))
+
+        Thread(target=answer, daemon=True).start()
         try:
-            message = services.chat.answer_v2(user_id, session_id, data, request_id)
+            while True:
+                try:
+                    event, value = pending.get(timeout=15)
+                except Empty:
+                    yield ": keep-alive\n\n"
+                    continue
+                if event == "failure":
+                    raise value
+                if event == "result":
+                    message = value
+                    break
+                sequence += 1
+                event_data = {"run_id": run_id, "sequence": sequence}
+                if event == "answer_delta":
+                    event_data["delta"] = value
+                yield sse_event(event, event_data)
             metadata = message.run_metadata or {}
             metrics = metadata.get("metrics", {})
             context = metrics.get("context")

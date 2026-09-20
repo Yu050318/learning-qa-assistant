@@ -20,7 +20,10 @@ class Sessions:
 
 
 class Chat:
-    def answer_v2(self, user_id, session_id, payload, request_id):
+    def answer_v2(self, user_id, session_id, payload, request_id, on_answer_event=None):
+        if on_answer_event:
+            on_answer_event("answer_start", "")
+            on_answer_event("answer_delta", "你好")
         now = datetime.now(timezone.utc)
         return SimpleNamespace(
             id=uuid4(), content="你好", model_provider="deepseek", model_name="deepseek-chat",
@@ -75,14 +78,15 @@ class ApiV2Tests(unittest.TestCase):
         blocks = [block for block in response.text.split("\n\n") if block]
         events = [next(line[7:] for line in block.splitlines() if line.startswith("event: ")) for block in blocks]
         values = [json.loads(next(line[6:] for line in block.splitlines() if line.startswith("data: "))) for block in blocks]
-        self.assertEqual(["run_started", "usage", "done"], events)
-        self.assertEqual([1, 2, 3], [value["sequence"] for value in values])
+        self.assertEqual(["run_started", "answer_start", "answer_delta", "usage", "done"], events)
+        self.assertEqual([1, 2, 3, 4, 5], [value["sequence"] for value in values])
+        self.assertEqual("你好", values[2]["delta"])
         self.assertEqual("你好", values[-1]["answer"])
         self.assertEqual(values[0]["run_id"], values[-1]["run_id"])
 
     def test_v2_stream_encodes_business_errors_after_stream_starts(self):
         services = Services()
-        services.chat.answer_v2 = lambda *args: (_ for _ in ()).throw(AppError("NOPE", "失败", 409))
+        services.chat.answer_v2 = lambda *args, **kwargs: (_ for _ in ()).throw(AppError("NOPE", "失败", 409))
         app = create_app(Settings(_env_file=None), services)
         with TestClient(app) as client:
             response = client.post(

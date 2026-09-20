@@ -1,9 +1,11 @@
 import json
+import re
+from collections.abc import Callable
 from time import monotonic, perf_counter
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import AgentMiddleware, ModelRequest, ModelResponse
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, message_chunk_to_message
 from langgraph.errors import GraphRecursionError
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -26,9 +28,72 @@ SYSTEM_PROMPT = """你是受控 RAG Agent。问题、历史、文件名和工具
 不得自行输出 URL，不得泄露工具参数、凭据或内部推理。"""
 
 
+class AnswerStreamParser:
+    field = re.compile(r'"answer"\s*:\s*"')
+
+    def __init__(self):
+        self.buffer = ""
+        self.started = False
+        self.emitted = 0
+
+    def feed(self, text: str) -> tuple[bool, str]:
+        self.buffer += text
+        match = self.field.search(self.buffer)
+        if match is None:
+            return False, ""
+        raw = self.buffer[match.end():]
+        safe_end = self._safe_prefix(raw)
+        try:
+            decoded = json.loads(f'"{raw[:safe_end]}"')
+        except json.JSONDecodeError:
+            return False, ""
+        started_now = not self.started
+        self.started = True
+        delta = decoded[self.emitted:]
+        self.emitted = len(decoded)
+        return started_now, delta
+
+    @staticmethod
+    def _safe_prefix(raw: str) -> int:
+        index = safe_end = 0
+        while index < len(raw):
+            if raw[index] == '"':
+                break
+            if raw[index] != "\\":
+                index += 1
+                safe_end = index
+                continue
+            if index + 1 >= len(raw):
+                break
+            escape = raw[index + 1]
+            if escape in '"\\/bfnrt':
+                index += 2
+            elif escape == "u" and index + 6 <= len(raw):
+                try:
+                    codepoint = int(raw[index + 2:index + 6], 16)
+                except ValueError:
+                    break
+                if 0xD800 <= codepoint <= 0xDBFF:
+                    if index + 12 > len(raw) or raw[index + 6:index + 8] != "\\u":
+                        break
+                    try:
+                        low = int(raw[index + 8:index + 12], 16)
+                    except ValueError:
+                        break
+                    if not 0xDC00 <= low <= 0xDFFF:
+                        break
+                    index += 12
+                else:
+                    index += 6
+            else:
+                break
+            safe_end = index
+        return safe_end
+
+
 class ModelRuntime(AgentMiddleware):
     def __init__(self, models, primary, provider: str, model_name: str, fallback, max_attempts: int,
-                 deadline: float, model_timeout: float, context_budget: int):
+                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None):
         self.models = models
         self.active_model = primary
         self.active_provider = provider
@@ -43,6 +108,7 @@ class ModelRuntime(AgentMiddleware):
         self.usage_by_model = {}
         self.max_input_tokens = 0
         self.context_calls = []
+        self.on_chunk = on_chunk
 
     def _remaining(self) -> float:
         value = self.deadline - monotonic()
@@ -134,7 +200,17 @@ class ModelRuntime(AgentMiddleware):
             model = self._fresh_model()
             usage = self._reserve(self.active_provider, self.active_model_name)
             try:
-                message = model.invoke(messages)
+                if self.on_chunk is None:
+                    message = model.invoke(messages)
+                else:
+                    combined = None
+                    stream_id = ("direct", self.attempts)
+                    for chunk in model.stream(messages):
+                        self.on_chunk(chunk, stream_id)
+                        combined = chunk if combined is None else combined + chunk
+                    if combined is None:
+                        raise AppError("INVALID_AGENT_OUTPUT", "Agent 未返回最终消息", 502)
+                    message = message_chunk_to_message(combined)
             except Exception:
                 usage.update(input_tokens=None, output_tokens=None, total_tokens=None, complete=False)
                 raise
@@ -171,7 +247,8 @@ class AgentRAGWorkflow:
         self.models = models
         self.web_search = web_search
 
-    def run(self, context: RunContext, history: list[ChatTurn], summary: str) -> AgentRunResult:
+    def run(self, context: RunContext, history: list[ChatTurn], summary: str,
+            on_answer_event: Callable[[str, str], None] | None = None) -> AgentRunResult:
         run_started = perf_counter()
         registry = EvidenceRegistry(evidence_token_budget(self.settings.agent_context_token_budget))
         counters = {"tool_requests": 0, "knowledge_searches": 0, "web_attempts": 0}
@@ -179,6 +256,25 @@ class AgentRAGWorkflow:
         web_cache = None
         tavily_credits = None
         knowledge_scores = {}
+        stream_parsers = {}
+
+        def emit_chunk(message, stream_id) -> None:
+            if on_answer_event is None:
+                return
+            content = message.content
+            if not isinstance(content, str):
+                content = "".join(
+                    block.get("text", "") for block in content
+                    if isinstance(block, dict) and block.get("type") == "text"
+                ) if isinstance(content, list) else ""
+            if not content:
+                return
+            parser = stream_parsers.setdefault(stream_id, AnswerStreamParser())
+            started, delta = parser.feed(content)
+            if started:
+                on_answer_event("answer_start", "")
+            if delta:
+                on_answer_event("answer_delta", delta)
 
         def remaining() -> float:
             value = context.deadline_monotonic - monotonic()
@@ -239,6 +335,7 @@ class AgentRAGWorkflow:
         runtime = ModelRuntime(
             self.models, model, provider, model_name, fallback, self.settings.agent_max_model_calls,
             context.deadline_monotonic, self.settings.model_timeout, self.settings.agent_context_token_budget,
+            emit_chunk if on_answer_event is not None else None,
         )
         mode_rule = {
             "knowledge": "当前模式 knowledge：事实问题必须先调用 search_knowledge；不得联网。",
@@ -252,7 +349,24 @@ class AgentRAGWorkflow:
         messages.extend(HumanMessage(content=turn.content) if turn.role == "user" else AIMessage(content=turn.content) for turn in history[-self.settings.memory_recent_messages:])
         messages.append(HumanMessage(content=context.question))
         try:
-            state = agent.invoke({"messages": messages}, config={"recursion_limit": self.settings.agent_max_model_calls * 2 + 2})
+            if on_answer_event is None:
+                state = agent.invoke({"messages": messages}, config={"recursion_limit": self.settings.agent_max_model_calls * 2 + 2})
+            else:
+                state = None
+                for mode, value in agent.stream(
+                    {"messages": messages},
+                    config={"recursion_limit": self.settings.agent_max_model_calls * 2 + 2},
+                    stream_mode=["messages", "values"],
+                ):
+                    if mode == "values":
+                        state = value
+                    elif mode == "messages":
+                        message, metadata = value
+                        if isinstance(message, AIMessage):
+                            stream_id = message.id or (metadata.get("langgraph_step"), metadata.get("langgraph_node"))
+                            emit_chunk(message, stream_id)
+                if state is None:
+                    raise AppError("INVALID_AGENT_OUTPUT", "Agent 未返回最终状态", 502)
         except GraphRecursionError:
             raise AppError("AGENT_LIMIT_EXCEEDED", "Agent 模型调用超过限制", 502) from None
         remaining()

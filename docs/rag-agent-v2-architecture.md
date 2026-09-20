@@ -842,11 +842,11 @@ uv pip check --python .venv/Scripts/python.exe
 
 集成测试默认跳过，只有显式配置测试环境和启用标志才运行；真实模型、Tavily 和 MinerU 冒烟须明确执行，不混入默认离线测试。MinerU 测试独立于 30 题问答集，覆盖 PDF/PPT/PPTX/DOC/DOCX/XLS/XLSX 七种扩展名，增加公开扫描件、复杂版式、多 sheet 与表格样本，并核验解析准确性。
 
-## 16. 后续扩展的接口预留
+## 16. V2.1 与后续扩展
 
-### V2.1 SSE
+### V2.1 SSE（已实现）
 
-复用同一 EvidenceRegistry 与最终结果校验，增加独立事件序列：status、tool_start、tool_end、delta、done、error。delta 是临时显示，done 必须携带已提交 message_id、最终 answer 和 citations。断开、生成取消、commit 后响应丢失分别定义，不把它们都称为“取消成功”。不在已经输出 delta 的流中无提示改用另一模型。
+复用同一 EvidenceRegistry 与最终结果校验，事件序列包括 run_started、answer_start、answer_delta、context_usage、usage、done、error。answer_delta 是从模型结构化输出的 answer 字段增量提取的临时内容；补检索、修复或降级会先发送新的 answer_start，前端据此重置。done 携带已提交 message_id、最终 answer 和 citations，并覆盖临时内容。断线恢复和幂等重放仍未实现。
 
 ### V2.1 滚动摘要
 

@@ -10,8 +10,8 @@ import httpx
 os.environ["LANGSMITH_TRACING"] = "false"
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import AIMessage
-from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.messages import AIMessage, AIMessageChunk
+from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 
 from app.core.config import Settings
 from app.core.errors import AppError
@@ -40,6 +40,16 @@ class ScriptedModel(BaseChatModel):
         if isinstance(response, Exception):
             raise response
         return ChatResult(generations=[ChatGeneration(message=response)])
+
+
+class StreamingScriptedModel(ScriptedModel):
+    def _stream(self, messages, stop=None, run_manager=None, **kwargs):
+        self.seen_messages = list(messages)
+        self.seen_calls.append(list(messages))
+        response = self.responses[self.position]
+        self.position += 1
+        for part in response:
+            yield ChatGenerationChunk(message=AIMessageChunk(content=part))
 
 
 class Models:
@@ -98,6 +108,24 @@ class Web:
 
 
 class AgentV2Tests(unittest.TestCase):
+    def test_stream_emits_answer_deltas_from_model_chunks(self):
+        model = StreamingScriptedModel(responses=[[
+            '{"kind":"smalltalk","ans', 'wer":"你\\u', '597d\\n世', '界！"}',
+        ]])
+        workflow = AgentRAGWorkflow(Settings(_env_file=None), ForbiddenRetriever(), Models(model), Web())
+        context = RunContext(
+            request_id="request", user_id=uuid4(), session_id=uuid4(), question="你好",
+            search_mode="auto", allowed_document_ids=(), selected_provider="deepseek",
+            public_query=None, web_enabled=False,
+        )
+        events = []
+
+        result = workflow.run(context, [], "", on_answer_event=lambda event, value: events.append((event, value)))
+
+        self.assertEqual("你好\n世界！", result.answer.content)
+        self.assertEqual("answer_start", events[0][0])
+        self.assertEqual("你好\n世界！", "".join(value for event, value in events if event == "answer_delta"))
+
     def test_auto_falls_back_to_web_when_knowledge_score_is_low_even_if_model_skips_tools(self):
         model = ScriptedModel(responses=[
             AIMessage(content='{"kind":"insufficient","answer":"资料不足"}'),

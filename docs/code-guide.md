@@ -593,7 +593,7 @@ API 异常处理器会统一组织为：
 
 请求中间件生成 request_id，响应头也返回 `X-Request-ID`。这里的 request_id 是追踪一次 HTTP 请求用的，不是用户 ID 或会话 ID。
 
-其他主要规则：不存在和越权都返回 404；参数错误返回 422；资源竞争返回 409；上游服务不可用通常返回 503；尚未实现的流式接口返回 501。
+其他主要规则：不存在和越权都返回 404；参数错误返回 422；资源竞争返回 409；上游服务不可用通常返回 503；V1 旧流式接口返回 501，V2 使用独立 SSE 接口。
 
 `BodyLimitMiddleware` 还会在读取请求体时累计大小。文件自身大小限制由上传服务再检查，两层限制针对的对象不同：一个是整个 HTTP body，一个是上传文件。
 
@@ -660,7 +660,7 @@ API 异常处理器会统一组织为：
 | 新增聊天模型 | `app/infrastructure/llms/providers.py`、`container.py` | 同步更新请求 provider 限制和配置 |
 | 调整 MinerU | `app/infrastructure/loaders/mineru.py` 与 `app/application/ingestion.py` | 保留签名 URL 校验、批次续接、缓存签名和短事务 |
 | 实现滚动摘要 | 聊天保存流程和会话字段更新 | 原始消息保留；摘要和进度应一致提交 |
-| 实现 SSE | 流式路由、模型 stream 和聊天编排 | 不能只加一个路由；还要处理取消、部分答案与持久化 |
+| 扩展 V2 SSE | `AgentRAGWorkflow.run()`、V2 流式路由和前端 store | 保持 answer_start 重置、done 权威覆盖与持久化语义 |
 | 添加真实认证 | `app/api/dependencies.py` 的 current_user | 保留各层用户过滤，不把鉴权当作过滤的替代品 |
 | 升级为按需检索 Agent | 替换/扩展工作流，复用 RetrieverService | 仍需保证检索工具强制用户作用域 |
 
@@ -671,7 +671,7 @@ API 异常处理器会统一组织为：
 | “API 有用户 ID，所以已经安全登录了” | 只是开发期逻辑隔离，请求头可伪造 |
 | “保存了聊天记录，所以模型能记住所有历史” | 运行时只取最近消息，自动摘要未实现 |
 | “上传返回 202，就能立即提问” | 需要等待状态 ready |
-| “有 stream 接口就能流式输出” | 路由和适配器 stream 都明确尚未实现 |
+| “V1 和 V2 都能流式输出” | 只有 V2 Agent 接口会发送 answer_delta；V1 旧接口仍返回 501 |
 | “有 MinerU Token 就会使用 MinerU” | 还必须设置 `MINERU_ENABLED=true`；PDF/Office 才会进入云解析 |
 | “健康接口返回成功就表示全部服务正常” | live 只说明进程存活；ready 才检查存储和必要配置 |
 | “ready 正常说明模型 Key 和答案质量都验证过了” | 模型配置检查只看必要项是否存在，不进行真实生成 |
