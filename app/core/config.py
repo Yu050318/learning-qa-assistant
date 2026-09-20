@@ -72,6 +72,7 @@ class Settings(BaseSettings):
     chunk_size: int = Field(default=700, ge=100, le=2000)
     chunk_overlap: int = Field(default=100, ge=0)
     retrieval_top_k: int = Field(default=6, ge=1, le=30)
+    auto_web_score_threshold: float = Field(default=0.72, ge=-1, le=1)
     memory_recent_messages: int = Field(default=12, ge=2, le=40)
     libreoffice_path: str = "soffice"
     conversion_timeout: int = Field(default=60, ge=1, le=300)

@@ -15,7 +15,7 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.domain.contracts import ChatTurn, RunContext, WebSearchBatch, WebSearchResult
+from app.domain.contracts import Chunk, ChatTurn, RunContext, SearchHit, WebSearchBatch, WebSearchResult
 from app.workflows.agent import AgentRAGWorkflow
 
 
@@ -72,6 +72,19 @@ class ForbiddenRetriever:
         raise AssertionError("web mode touched knowledge retrieval")
 
 
+class Retriever:
+    def __init__(self, score: float):
+        self.score = score
+        self.calls = 0
+
+    def retrieve(self, user_id, query, document_ids):
+        self.calls += 1
+        return [SearchHit(Chunk(
+            chunk_id="chunk-1", user_id=str(user_id), document_id=str(document_ids[0]),
+            chunk_index=0, content="知识库内容", source_name="资料.pdf",
+        ), self.score)]
+
+
 class Web:
     calls = 0
 
@@ -85,6 +98,53 @@ class Web:
 
 
 class AgentV2Tests(unittest.TestCase):
+    def test_auto_falls_back_to_web_when_knowledge_score_is_low_even_if_model_skips_tools(self):
+        model = ScriptedModel(responses=[
+            AIMessage(content='{"kind":"insufficient","answer":"资料不足"}'),
+            AIMessage(content='{"kind":"grounded","answer":"综合结论[1][2]"}'),
+        ])
+        retriever = Retriever(0.67)
+        web = Web()
+        workflow = AgentRAGWorkflow(
+            Settings(_env_file=None, web_search_enabled=True), retriever, Models(model), web
+        )
+        context = RunContext(
+            request_id="request", user_id=uuid4(), session_id=uuid4(), question="介绍 DeepSeek",
+            search_mode="auto", allowed_document_ids=(uuid4(),), selected_provider="deepseek",
+            public_query="介绍 DeepSeek", web_enabled=True,
+        )
+
+        result = workflow.run(context, [], "")
+
+        self.assertEqual(1, retriever.calls)
+        self.assertEqual(1, web.calls)
+        self.assertEqual(1, result.run_metadata["knowledge_searches"])
+        self.assertEqual(1, result.run_metadata["web_attempts"])
+        self.assertEqual({"knowledge", "web"}, {item["type"] for item in result.citations})
+
+    def test_auto_does_not_search_web_when_knowledge_score_is_high(self):
+        model = ScriptedModel(responses=[
+            AIMessage(content='{"kind":"insufficient","answer":"资料不足"}'),
+            AIMessage(content='{"kind":"grounded","answer":"知识库结论[1]"}'),
+        ])
+        retriever = Retriever(0.8)
+        web = Web()
+        workflow = AgentRAGWorkflow(
+            Settings(_env_file=None, web_search_enabled=True), retriever, Models(model), web
+        )
+        context = RunContext(
+            request_id="request", user_id=uuid4(), session_id=uuid4(), question="资料中的事实",
+            search_mode="auto", allowed_document_ids=(uuid4(),), selected_provider="deepseek",
+            public_query="资料中的事实", web_enabled=True,
+        )
+
+        result = workflow.run(context, [], "")
+
+        self.assertEqual(1, retriever.calls)
+        self.assertEqual(0, web.calls)
+        self.assertEqual(0, result.run_metadata["web_attempts"])
+        self.assertEqual("knowledge", result.citations[0]["type"])
+
     def test_context_budget_rejects_oversized_model_input(self):
         model = ScriptedModel(responses=[AIMessage(content='{"kind":"smalltalk","answer":"不应调用"}')])
         workflow = AgentRAGWorkflow(Settings(_env_file=None, agent_context_token_budget=4000), ForbiddenRetriever(), Models(model), Web())

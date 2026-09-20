@@ -12,6 +12,6 @@ onMounted(()=>store.initialize())
     <RouterLink to="/chat"><MessageSquareText/><span>对话</span></RouterLink>
     <RouterLink to="/documents"><Library/><span>资料</span></RouterLink>
   </nav><div class="identity"><UserRound :size="17"/><input v-model="identity" aria-label="开发用户标识" @change="store.switchUser(identity)"/></div></aside>
-  <main><div v-if="store.error" class="global-error">{{store.error}}</div><RouterView/></main>
+  <main><div v-if="store.error" class="global-error" role="alert">{{store.error}}</div><RouterView/></main>
   <UploadDrawer/>
 </div></template>

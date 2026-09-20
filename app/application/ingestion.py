@@ -27,7 +27,8 @@ def prepare_retry_metadata(metadata: dict) -> dict:
     result = dict(metadata)
     restart_codes = {
         "MINERU_SUBMISSION_UNKNOWN", "MINERU_SUBMISSION_FAILED", "MINERU_UPLOAD_FAILED",
-        "MINERU_PARSE_FAILED", "MINERU_OUTPUT_UNSUPPORTED",
+        "MINERU_UPLOAD_AUTH_FAILED", "MINERU_UPLOAD_TIMEOUT", "MINERU_RATE_LIMITED",
+        "MINERU_UPSTREAM_UNAVAILABLE", "MINERU_PARSE_FAILED", "MINERU_OUTPUT_UNSUPPORTED",
     }
     if result.get("provider") == "mineru" and (
         result.get("error_code") in restart_codes or result.get("phase") == "uploading"

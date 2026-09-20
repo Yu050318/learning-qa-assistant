@@ -178,6 +178,7 @@ class AgentRAGWorkflow:
         tool_events = []
         web_cache = None
         tavily_credits = None
+        knowledge_scores = {}
 
         def remaining() -> float:
             value = context.deadline_monotonic - monotonic()
@@ -207,6 +208,7 @@ class AgentRAGWorkflow:
                 hits = self.retriever.retrieve(context.user_id, query, list(context.allowed_document_ids))
                 remaining()
                 result = registry.add_knowledge(hits)
+                knowledge_scores[query] = max((hit.score for hit in hits), default=None)
             tool_events.append({"name": "search_knowledge", "status": result["status"], "source_numbers": [item["number"] for item in result["sources"]], "elapsed_ms": round((perf_counter() - started) * 1000, 2), "error_code": None})
             return result
 
@@ -230,7 +232,7 @@ class AgentRAGWorkflow:
         tools = []
         if context.search_mode in {"knowledge", "auto"}:
             tools.append(search_knowledge)
-        if context.search_mode in {"web", "auto"} and context.web_enabled:
+        if context.search_mode == "web" and context.web_enabled:
             tools.append(search_web)
         model, provider, model_name = self.models.agent_model(context.selected_provider, min(remaining(), self.settings.model_timeout))
         fallback = self.models.agent_fallback(provider, min(remaining(), self.settings.model_timeout))
@@ -241,7 +243,7 @@ class AgentRAGWorkflow:
         mode_rule = {
             "knowledge": "当前模式 knowledge：事实问题必须先调用 search_knowledge；不得联网。",
             "web": "当前模式 web：事实问题必须先调用 search_web；不得访问知识库。",
-            "auto": "当前模式 auto：按需要选择知识库、网络、两者或零工具；事实回答必须有本轮证据。",
+            "auto": "当前模式 auto：事实问题先调用 search_knowledge；系统会在知识库相关度不足时自动补充联网证据。事实回答必须有本轮证据。",
         }[context.search_mode]
         agent = create_agent(model, tools, system_prompt=f"{SYSTEM_PROMPT}\n{mode_rule}", middleware=[runtime])
         messages = []
@@ -260,6 +262,61 @@ class AgentRAGWorkflow:
             raise AppError("INVALID_AGENT_OUTPUT", "Agent 未返回最终消息", 502)
         if len(ai_messages) > self.settings.agent_max_model_calls:
             raise AppError("AGENT_LIMIT_EXCEEDED", "Agent 模型调用超过限制", 502)
+
+        def decoded(message):
+            try:
+                return FinalAnswer.model_validate(json.loads(message.content))
+            except (TypeError, json.JSONDecodeError, ValidationError):
+                return None
+
+        def evidence_prompt(previous: AIMessage, reason: str) -> str:
+            valid_numbers = "、".join(f"[{entry['number']}]" for entry in registry.entries) or "无"
+            evidence = [
+                {
+                    "number": entry["number"], "type": entry["type"],
+                    "title": entry.get("source_name") or entry.get("title"),
+                    "content": entry["excerpt"],
+                }
+                for entry in registry.entries
+            ]
+            return (
+                f"问题：{context.question}\n有效来源编号：{valid_numbers}\n"
+                f"证据：{json.dumps(evidence, ensure_ascii=False)}\n"
+                f"上次输出：{getattr(previous, 'content', '')}\n原因：{reason}。"
+                "请重新生成最终 JSON。存在非空证据时 kind 必须为 grounded，答案必须引用至少一个有效编号。"
+            )
+
+        candidate = decoded(ai_messages[-1])
+        needs_evidence = candidate is None or candidate.kind != "smalltalk"
+        web_called = any(event["name"] == "search_web" for event in tool_events)
+        policy_retrieval_used = False
+        policy_query = context.question.strip()
+        if (
+            needs_evidence and context.search_mode in {"knowledge", "auto"}
+            and context.allowed_document_ids and policy_query not in knowledge_scores
+        ):
+            search_knowledge(policy_query)
+            policy_retrieval_used = True
+        if needs_evidence and context.search_mode == "web" and context.web_enabled and not web_called:
+            search_web()
+            policy_retrieval_used = True
+        if (
+            needs_evidence and context.search_mode == "auto" and context.web_enabled
+            and context.public_query and not web_called
+            and (knowledge_scores.get(policy_query) is None
+                 or knowledge_scores[policy_query] < self.settings.auto_web_score_threshold)
+        ):
+            search_web()
+            policy_retrieval_used = True
+        if policy_retrieval_used:
+            refreshed = runtime.invoke([
+                SystemMessage(content=f"{SYSTEM_PROMPT}\n{mode_rule}"),
+                HumanMessage(content=evidence_prompt(ai_messages[-1], "检索策略已补充本轮证据")),
+            ])
+            if not isinstance(refreshed, AIMessage) or refreshed.tool_calls:
+                raise AppError("INVALID_AGENT_OUTPUT", "Agent 补充检索后的输出格式无效", 502)
+            ai_messages.append(refreshed)
+
         def parse(message):
             try:
                 value = FinalAnswer.model_validate(json.loads(message.content))
@@ -277,25 +334,9 @@ class AgentRAGWorkflow:
             if error.code not in {"INVALID_AGENT_OUTPUT", "INVALID_CITATION"} or len(ai_messages) >= self.settings.agent_max_model_calls:
                 raise
             repair_used = True
-            valid_numbers = "、".join(f"[{entry['number']}]" for entry in registry.entries) or "无"
-            evidence = [
-                {
-                    "number": entry["number"],
-                    "type": entry["type"],
-                    "title": entry.get("source_name") or entry.get("title"),
-                    "content": entry["excerpt"],
-                }
-                for entry in registry.entries
-            ]
-            repair_prompt = (
-                f"问题：{context.question}\n有效来源编号：{valid_numbers}\n"
-                f"证据：{json.dumps(evidence, ensure_ascii=False)}\n"
-                f"上次输出：{getattr(ai_messages[-1], 'content', '')}\n错误码：{error.code}。"
-                "请重新生成最终 JSON。存在非空证据时 kind 必须为 grounded，答案必须引用至少一个有效编号。"
-            )
             final_message = runtime.invoke([
                 SystemMessage(content=f"{SYSTEM_PROMPT}\n{mode_rule}"),
-                HumanMessage(content=repair_prompt),
+                HumanMessage(content=evidence_prompt(ai_messages[-1], f"错误码 {error.code}")),
             ])
             if not isinstance(final_message, AIMessage) or final_message.tool_calls:
                 raise AppError("INVALID_AGENT_OUTPUT", "Agent 修复输出格式无效", 502)
@@ -320,6 +361,7 @@ class AgentRAGWorkflow:
         metadata = {
             "schema_version": 2, "search_mode": context.search_mode, "kind": final.kind,
             **counters, "model_attempts": runtime.attempts, "fallback_used": runtime.fallback_used, "repair_used": repair_used,
+            "policy_retrieval_used": policy_retrieval_used,
             "registered_sources": {
                 "knowledge": sum(item["type"] == "knowledge" for item in registry.entries),
                 "web": sum(item["type"] == "web" for item in registry.entries),

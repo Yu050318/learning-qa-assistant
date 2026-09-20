@@ -8,7 +8,9 @@ export const useAppStore=defineStore('app',()=>{
   const sessions=ref<Session[]>([]),documents=ref<DocumentItem[]>([]),messages=ref<Message[]>([])
   const currentSession=ref<Session|null>(null),capabilities=ref<Capabilities|null>(null),documentTotal=ref(0)
   const busy=ref(false),error=ref(''),selectedDocuments=ref<string[]>([])
-  const uploads=createUploadQueue(()=>userId.value,()=>loadDocuments(),()=>({allowed:capabilities.value?.upload.allowed_extensions||['.txt','.md'],max:capabilities.value?.upload.max_file_bytes||20*1024*1024,warning:capabilities.value?.upload.long_running_warning_seconds||900}))
+  let errorTimer:number|undefined
+  function notify(message:string){error.value=message;window.clearTimeout(errorTimer);errorTimer=window.setTimeout(()=>{if(error.value===message)error.value=''},8000)}
+  const uploads=createUploadQueue(()=>userId.value,()=>loadDocuments(),notify,()=>({allowed:capabilities.value?.upload.allowed_extensions||['.txt','.md'],max:capabilities.value?.upload.max_file_bytes||20*1024*1024,warning:capabilities.value?.upload.long_running_warning_seconds||900}))
   async function guard<T>(job:()=>Promise<T>){const g=generation.value;try{error.value='';const result=await job();return generation.value===g?result:undefined}catch(e:any){if(generation.value===g)error.value=e.message;throw e}}
   async function initialize(){await guard(async()=>{capabilities.value=await api.capabilities(userId.value);await Promise.all([loadSessions(),loadDocuments()])})}
   function switchUser(value:string){userId.value=value.trim()||'demo-user';localStorage.setItem('zhizhan-user',userId.value);generation.value++;sessions.value=[];documents.value=[];messages.value=[];currentSession.value=null;selectedDocuments.value=[];initialize()}

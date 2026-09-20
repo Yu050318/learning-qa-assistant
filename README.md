@@ -214,7 +214,7 @@ V2 请求示例：
 
 离线测试使用 SQLite、脚本化 LangChain 模型和 HTTP 替身，覆盖 V2 路由、会话版本、引用、Tavily 边界、MinerU 四类归一化、批次恢复、模型单步降级和 Agent 输出修复。`tests/fixtures/rag_v2_cases.json` 保存 30 题固定质量集。
 
-2026-09-13 已实测 PostgreSQL 行锁、V1/V2 隔离、Milvus 用户过滤，以及真实 Qwen Embedding、DeepSeek knowledge 问答和 Tavily web 问答。公开 W3C PDF 的 MinerU 提交和远端解析完成，但当前机器连接 `cdn-mineru.openxlab.org.cn:443` 时 TLS 建连失败，因此结果 ZIP 下载与解析准确率仍需在可访问该 CDN 的网络环境复验。
+2026-09-20 已实测 PostgreSQL 行锁、V1/V2 隔离、Milvus 用户过滤，以及真实 Qwen Embedding、DeepSeek knowledge 问答和 Tavily web 问答。MinerU 结果下载会重试临时网络故障；Windows 上 Python/OpenSSL 与结果 CDN 握手不兼容时，会使用系统 `curl.exe` 的 Schannel 安全下载，仍然校验证书并限制结果大小。
 
 基础检查：
 
