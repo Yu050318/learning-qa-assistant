@@ -1,6 +1,48 @@
 # Learning Q&A Assistant
 
-一个面向多用户的学习问答助手：同时保留 V1 固定检索 RAG，并实现 V2 单 Agent，按请求在用户私有知识库与 Tavily 网络搜索之间选择工具。
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-1.x-1C3C3C)
+![Vue](https://img.shields.io/badge/Vue-3-42B883?logo=vuedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![Milvus](https://img.shields.io/badge/Vector_DB-Milvus-00A1EA)
+![SSE](https://img.shields.io/badge/Streaming-SSE-success)
+
+一个面向多用户私有知识库的全栈 RAG Agent。系统将文档解析、向量检索、联网搜索、证据引用、模型降级、会话持久化和 SSE 事件流整合为一条可追踪、可测试的问答链路，而不是只演示一次模型调用。
+
+## 项目亮点
+
+- **双版本 RAG 架构：** 保留 V1 固定检索链路，并实现 V2 单 Agent；可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库与 Tavily 公网搜索。
+- **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
+- **SSE 流式事件已落地：** `POST /api/v2/sessions/{id}/messages/stream` 持续推送运行状态、上下文用量、token/cache 用量、最终答案及错误；事件包含 `run_id` 和递增 `sequence`，前端使用 `fetch + ReadableStream` 消费 POST 响应流。
+- **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、Excel 通过 MinerU 解析，TXT/Markdown 本地处理。
+- **模型与外部服务容错：** DeepSeek 遇到连接、超时、429 或 5xx 时可有限降级至 Ollama；已完成的检索不会重复执行，鉴权错误不会被错误地重试或降级。
+- **工程化交付：** FastAPI + Vue 3/TypeScript 前后端分离，采用应用服务、领域协议、仓储和基础设施适配器分层；提供显式迁移、结构化日志、request ID、能力发现与离线自动化测试。
+
+## 技术栈
+
+| 层级 | 技术 |
+| --- | --- |
+| 前端 | Vue 3、TypeScript、Pinia、Vue Router、Vite |
+| API / Agent | FastAPI、Pydantic、LangChain、DeepSeek、Ollama |
+| 检索 | Milvus、Qwen Embedding、Tavily Search |
+| 数据与任务状态 | PostgreSQL、SQLAlchemy |
+| 文档解析 | MinerU、PyPDF、python-docx、LibreOffice |
+| 可观测与传输 | SSE、结构化日志、request ID、LangSmith（可选） |
+
+## 核心链路
+
+```mermaid
+flowchart LR
+    UI[Vue 3 前端] -->|REST / POST SSE| API[FastAPI]
+    API --> CHAT[ChatService]
+    CHAT --> AGENT[V2 Agent Workflow]
+    AGENT -->|knowledge| RETRIEVE[Qwen Embedding + Milvus]
+    AGENT -->|web / auto| WEB[Tavily Search]
+    AGENT --> MODEL[DeepSeek / Ollama]
+    CHAT --> DB[(PostgreSQL)]
+    CHAT -->|run_started / usage / done / error| UI
+```
 
 代码学习请看 `docs/code-guide.md`：包含分层架构、依赖注入详解、上传/问答调用链和后续修改入口。
 
@@ -177,6 +219,28 @@ V2 会话使用独立路径；文档上传仍复用 `/api/v1/documents`：
 | POST | `/api/v2/sessions/{id}/messages` | Agent 非流式问答 |
 | POST | `/api/v2/sessions/{id}/messages/stream` | SSE 输出运行状态、用量与已校验的最终回答 |
 | GET | `/api/v2/documents/{id}/processing` | 查看解析阶段，不暴露上游任务 ID |
+
+### SSE 事件流（已实现）
+
+由于问答请求需要 POST body 和 `X-User-ID`，前端不使用仅支持 GET 的 `EventSource`，而是通过 `fetch` 读取 `ReadableStream`。服务端设置 `text/event-stream`、`Cache-Control: no-cache, no-transform` 和 `X-Accel-Buffering: no`，避免常见代理缓冲。
+
+| 事件 | 说明 |
+| --- | --- |
+| `run_started` | 返回 `run_id`、请求 ID、搜索模式，确认服务端已开始处理 |
+| `context_usage` | 可选；返回本轮模型上下文占用信息 |
+| `usage` | 返回 token 用量和上游报告的 cache 指标 |
+| `done` | 引用校验及数据库提交成功后，返回权威 `message_id`、完整答案、引用和运行元数据 |
+| `error` | 流启动后的业务或服务错误，携带错误码、HTTP 语义状态和 request ID |
+
+```powershell
+curl.exe -N -X POST "http://127.0.0.1:8000/api/v2/sessions/<session-id>/messages/stream" `
+  -H "X-User-ID: alice" `
+  -H "Accept: text/event-stream" `
+  -H "Content-Type: application/json" `
+  -d '{"question":"总结当前资料","search_mode":"auto","model_provider":"deepseek"}'
+```
+
+Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。为保证引用可信，当前不会把未校验的原始 token 直接展示给用户；最终答案在校验和持久化完成后通过 `done` 事件返回。前端会在生成期间实时展示 SSE 状态，并在异常时重新读取会话，避免“服务端已落库但浏览器未显示”的假失败。
 
 V2 请求示例：
 
