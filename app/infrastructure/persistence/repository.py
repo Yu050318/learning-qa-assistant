@@ -71,8 +71,8 @@ class Repository:
                 raise AppError("EMBEDDING_MODEL_MISMATCH", "指定文档使用了不同的向量模型，请重新入库", 409)
         return [document.id for document in documents if document.status == "ready" and document.embedding_model == embedding_model]
 
-    def chat_session(self, user_id: UUID, session_id: UUID, lock: bool = False, *, api_version: str = "v1") -> ChatSession:
-        statement = select(ChatSession).where(ChatSession.id == session_id, ChatSession.user_id == user_id, ChatSession.api_version == api_version)
+    def chat_session(self, user_id: UUID, session_id: UUID, lock: bool = False) -> ChatSession:
+        statement = select(ChatSession).where(ChatSession.id == session_id, ChatSession.user_id == user_id)
         if lock:
             statement = statement.with_for_update(nowait=True)
         session = self.database.scalar(statement)
@@ -80,20 +80,20 @@ class Repository:
             raise not_found()
         return session
 
-    def chat_sessions(self, user_id: UUID, offset: int = 0, limit: int = 50, *, api_version: str = "v1", query: str = "") -> list[ChatSession]:
-        statement = select(ChatSession).where(ChatSession.user_id == user_id, ChatSession.api_version == api_version)
+    def chat_sessions(self, user_id: UUID, offset: int = 0, limit: int = 50, *, query: str = "") -> list[ChatSession]:
+        statement = select(ChatSession).where(ChatSession.user_id == user_id)
         if query:
             escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
             statement = statement.where(ChatSession.title.ilike(f"%{escaped}%", escape="\\"))
         return list(self.database.scalars(statement.order_by(ChatSession.updated_at.desc(), ChatSession.id).offset(offset).limit(limit)))
 
-    def messages(self, user_id: UUID, session_id: UUID, limit: int = 100, offset: int = 0, *, api_version: str = "v1") -> list[ChatMessage]:
-        self.chat_session(user_id, session_id, api_version=api_version)
-        statement = select(ChatMessage).join(ChatSession).where(ChatSession.user_id == user_id, ChatSession.api_version == api_version, ChatMessage.session_id == session_id).order_by(ChatMessage.created_at.desc(), ChatMessage.id.desc()).offset(offset).limit(limit)
+    def messages(self, user_id: UUID, session_id: UUID, limit: int = 100, offset: int = 0) -> list[ChatMessage]:
+        self.chat_session(user_id, session_id)
+        statement = select(ChatMessage).join(ChatSession).where(ChatSession.user_id == user_id, ChatMessage.session_id == session_id).order_by(ChatMessage.created_at.desc(), ChatMessage.id.desc()).offset(offset).limit(limit)
         return list(reversed(list(self.database.scalars(statement))))
 
-    def context_messages(self, user_id: UUID, session_id: UUID, *, api_version: str = "v2") -> list[ChatMessage]:
-        session = self.chat_session(user_id, session_id, api_version=api_version)
+    def context_messages(self, user_id: UUID, session_id: UUID) -> list[ChatMessage]:
+        session = self.chat_session(user_id, session_id)
         messages = list(self.database.scalars(select(ChatMessage).where(ChatMessage.session_id == session_id).order_by(ChatMessage.created_at, ChatMessage.id)))
         if session.summarized_through:
             for index, message in enumerate(messages):

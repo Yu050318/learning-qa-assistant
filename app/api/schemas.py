@@ -74,37 +74,6 @@ class WebCitation(BaseModel):
 V2Citation = Annotated[Union[KnowledgeCitation, WebCitation], Field(discriminator="type")]
 
 
-class MessageResponse(ORMResponse):
-    id: UUID
-    role: str
-    content: str
-    model_provider: str | None
-    model_name: str | None
-    citations: list[Citation]
-    token_usage: dict | None
-    created_at: datetime
-
-
-class SessionDetail(SessionResponse):
-    messages: list[MessageResponse]
-
-
-class ChatRequest(BaseModel):
-    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
-    question: str = Field(min_length=1, max_length=8000)
-    model_provider: Literal["deepseek", "ollama"] | None = None
-    document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
-
-
-class ChatResponse(ORMResponse):
-    message_id: UUID = Field(validation_alias="id")
-    answer: str = Field(validation_alias="content")
-    model_provider: str
-    model_name: str
-    citations: list[Citation]
-    token_usage: dict | None
-
-
 class V2ChatRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     question: str = Field(min_length=1, max_length=8000)

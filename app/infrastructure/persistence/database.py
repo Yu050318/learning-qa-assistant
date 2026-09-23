@@ -1,6 +1,5 @@
 import logging
 from functools import cached_property
-from pathlib import Path
 
 from sqlalchemy import create_engine, inspect, select, text
 from sqlalchemy.engine import make_url
@@ -51,24 +50,14 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
-                if not inspect(connection).has_table(table.name, schema="rag_v1"):
+                if not inspect(connection).has_table(table.name, schema="rag"):
                     raise AppError("DATABASE_NOT_INITIALIZED", "请运行 python -m app.bootstrap --postgres", 503)
                 connection.execute(select(table).limit(0))
-            if not inspect(connection).has_table("schema_migrations", schema="rag_v1") or not connection.scalar(
-                text("SELECT count(*) = 2 FROM rag_v1.schema_migrations WHERE version IN ('001_agent_v2', '002_frontend_v3')")
-            ):
-                raise AppError("DATABASE_MIGRATION_REQUIRED", "请运行 python -m app.bootstrap --migrate-v2", 503)
 
     def initialize(self) -> None:
         with self.engine.begin() as connection:
-            connection.execute(CreateSchema("rag_v1", if_not_exists=True))
+            connection.execute(CreateSchema("rag", if_not_exists=True))
             Base.metadata.create_all(connection)
-
-    def migrate_v2(self) -> None:
-        with self.engine.connect() as connection:
-            for name in ("001_agent_v2.sql", "002_frontend_v3.sql"):
-                script = Path(__file__).resolve().parents[3] / "migrations" / name
-                connection.exec_driver_sql(script.read_text(encoding="utf-8"))
 
     def close(self) -> None:
         if "engine" in self.__dict__:

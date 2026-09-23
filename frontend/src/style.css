@@ -3,6 +3,7 @@
 @media(max-width:900px){.shell{grid-template-columns:68px 1fr}.rail{padding-inline:5px}.chat-layout{grid-template-columns:1fr}.sessions{display:none}.chat-head{padding:0 20px}.head-controls .ghost{font-size:0}.documents{padding:30px 18px}.page-title{align-items:flex-start;gap:18px}.page-title>div:last-child{flex-direction:column}.library-bar{flex-wrap:wrap}.library-bar .search{width:100%}.table-wrap{overflow:auto}th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:none}.messages{padding:25px}.composer{margin:0 18px 15px}.usage{flex-wrap:wrap}.chat-head h1{font-size:18px}}
 
 .global-error{max-width:420px;background:#fffaf5;color:#743a34;border:1px solid #dfb5ae;border-left:4px solid var(--red);box-shadow:0 16px 40px #6b30231f;animation:rise .25s ease both}
+.session-running{display:inline-block;width:7px;height:7px;margin-left:8px;border-radius:50%;background:var(--green);animation:pulse 1s infinite}.stream-error{color:var(--red);font-size:13px}
 .status-stack{display:grid;justify-items:start;gap:9px;min-width:255px}
 .failure-card{width:min(360px,32vw);display:grid;grid-template-columns:20px 1fr;gap:10px;padding:11px 13px;background:#fff8f3;border:1px solid #ead3c8;border-left:3px solid var(--red);border-radius:7px;color:#6f3d36}
 .failure-card>svg{width:18px;margin-top:1px;color:var(--red)}

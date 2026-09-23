@@ -13,7 +13,6 @@ from app.domain.contracts import AgentChatInput, ChatTurn, RunContext
 from app.infrastructure.persistence.database import Database
 from app.infrastructure.persistence.models import ChatMessage, utcnow
 from app.infrastructure.persistence.repository import Repository
-from app.workflows.rag import FixedRAGWorkflow
 from app.workflows.agent import SYSTEM_PROMPT as AGENT_SYSTEM_PROMPT
 
 logger = logging.getLogger("rag")
@@ -42,43 +41,11 @@ def prepare_public_query(payload: AgentChatInput, web_enabled: bool) -> tuple[st
 
 
 class ChatService:
-    def __init__(self, settings: Settings, database: Database, sessions: SessionService, workflow: FixedRAGWorkflow, agent_workflow=None):
+    def __init__(self, settings: Settings, database: Database, sessions: SessionService, agent_workflow):
         self.settings = settings
         self.database = database
         self.sessions = sessions
-        self.workflow = workflow
         self.agent_workflow = agent_workflow
-
-    def answer(self, user_id: UUID, session_id: UUID, question: str, document_ids: list[UUID] | None, provider: str | None):
-        started = perf_counter()
-        with self.sessions.exclusive(session_id):
-            with self.database.sessions() as database:
-                repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True)
-                ready_ids = repository.ready_document_ids(user_id, document_ids, self.settings.embedding_model)
-                history = [ChatTurn(message.role, message.content) for message in repository.messages(user_id, session_id, self.settings.memory_recent_messages)]
-                summary = session.summary
-                database.add(ChatMessage(session_id=session_id, role="user", content=question))
-                session.updated_at = utcnow()
-                database.commit()
-            answer, citations, retrieved_count = self.workflow.run(user_id, question, ready_ids, history, summary, provider)
-            with self.database.sessions() as database:
-                repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True)
-                current_ids = repository.ready_document_ids(user_id, None, self.settings.embedding_model)
-                allowed = {str(document_id) for document_id in current_ids}
-                if any(citation["document_id"] not in allowed for citation in citations):
-                    raise AppError("DOCUMENT_SCOPE_CHANGED", "回答期间引用文档已被删除或变更，请重新提问", 409)
-                message = ChatMessage(
-                    session_id=session_id, role="assistant", content=answer.content,
-                    model_provider=answer.provider, model_name=answer.model,
-                    citations=citations, token_usage=answer.token_usage,
-                )
-                database.add(message)
-                session.updated_at = utcnow()
-                database.commit()
-                logger.info("chat_completed", extra={"resource_id": str(session_id), "model_provider": answer.provider, "retrieved_count": retrieved_count, "elapsed_ms": round((perf_counter() - started) * 1000, 2)})
-                return message
 
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None):
         if self.agent_workflow is None:
@@ -91,11 +58,11 @@ class ChatService:
         with self.sessions.exclusive(session_id):
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True, api_version="v2")
+                session = repository.chat_session(user_id, session_id, lock=True)
                 requested = list(payload.document_ids) if payload.document_ids is not None else None
                 ready_ids = [] if payload.search_mode == "web" else repository.ready_document_ids(user_id, requested, self.settings.embedding_model)
                 history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
-                    user_id, session_id, api_version="v2"
+                    user_id, session_id
                 )[-self.settings.memory_recent_messages:]]
                 summary = session.summary
                 database.add(ChatMessage(session_id=session_id, role="user", content=payload.question))
@@ -110,7 +77,7 @@ class ChatService:
             result = self.agent_workflow.run(context, history, summary, on_answer_event=on_answer_event)
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True, api_version="v2")
+                session = repository.chat_session(user_id, session_id, lock=True)
                 cited = [UUID(citation["document_id"]) for citation in result.citations if citation["type"] == "knowledge"]
                 if cited:
                     current = repository.ready_document_ids(user_id, cited, self.settings.embedding_model)
@@ -150,7 +117,7 @@ class ChatService:
         if payload.session_id:
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, payload.session_id, api_version="v2")
+                session = repository.chat_session(user_id, payload.session_id)
                 messages = repository.context_messages(user_id, payload.session_id)
                 summary = session.summary
                 history = [ChatTurn(item.role, item.content) for item in messages[-self.settings.memory_recent_messages:]]
@@ -185,7 +152,7 @@ class ChatService:
         with self.sessions.exclusive(session_id):
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, api_version="v2")
+                session = repository.chat_session(user_id, session_id)
                 messages = repository.context_messages(user_id, session_id)
                 if self._context_version(session, messages) != expected_version:
                     raise AppError("CONTEXT_CHANGED", "会话内容已变化，请刷新后重试", 409)
@@ -207,7 +174,7 @@ class ChatService:
             ], provider)
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True, api_version="v2")
+                session = repository.chat_session(user_id, session_id, lock=True)
                 current = repository.context_messages(user_id, session_id)
                 if self._context_version(session, current) != expected_version:
                     raise AppError("CONTEXT_CHANGED", "会话内容已变化，请刷新后重试", 409)

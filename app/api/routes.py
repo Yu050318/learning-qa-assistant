@@ -10,14 +10,13 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from app.api.dependencies import ServiceDependency, UserDependency
 from app.api.schemas import (
-    ChatRequest, ChatResponse, DocumentResponse, MessageResponse, SessionCreate, SessionDetail,
-    SessionResponse, SessionRename, V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
+    DocumentResponse, SessionCreate, SessionResponse, SessionRename,
+    V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
     CompactRequest, ContextEstimateRequest, DocumentPage,
 )
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput
 
-router = APIRouter(prefix="/api/v1")
 v2_router = APIRouter(prefix="/api/v2")
 health_router = APIRouter(tags=["health"])
 Offset = Annotated[int, Query(ge=0)]
@@ -59,7 +58,7 @@ def ready(services: ServiceDependency):
     return JSONResponse(result, status_code=200 if result["status"] == "ready" else 503)
 
 
-@router.post("/documents", response_model=DocumentResponse, status_code=202, tags=["documents"])
+@v2_router.post("/documents", response_model=DocumentResponse, status_code=202, tags=["documents"])
 def upload_document(services: ServiceDependency, user_id: UserDependency, file: Annotated[UploadFile, File()]):
     try:
         document = services.ingestion.upload(user_id, file.filename or "", file.content_type, file.file)
@@ -69,24 +68,19 @@ def upload_document(services: ServiceDependency, user_id: UserDependency, file: 
     return document_response(document, services.settings.embedding_model)
 
 
-@router.get("/documents", response_model=list[DocumentResponse], tags=["documents"])
-def list_documents(services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50):
-    return [document_response(item, services.settings.embedding_model) for item in services.ingestion.list(user_id, offset, limit)]
-
-
-@router.get("/documents/{document_id}", response_model=DocumentResponse, tags=["documents"])
+@v2_router.get("/documents/{document_id}", response_model=DocumentResponse, tags=["documents"])
 def get_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
     return document_response(services.ingestion.get(user_id, document_id), services.settings.embedding_model)
 
 
-@router.post("/documents/{document_id}/retry", response_model=DocumentResponse, status_code=202, tags=["documents"])
+@v2_router.post("/documents/{document_id}/retry", response_model=DocumentResponse, status_code=202, tags=["documents"])
 def retry_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
     document = services.ingestion.retry(user_id, document_id)
     services.ingestion.schedule(user_id, document.id)
     return document_response(document, services.settings.embedding_model)
 
 
-@router.delete("/documents/{document_id}", status_code=204, tags=["documents"])
+@v2_router.delete("/documents/{document_id}", status_code=204, tags=["documents"])
 def delete_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
     services.ingestion.delete(user_id, document_id)
     return Response(status_code=204)
@@ -94,17 +88,17 @@ def delete_document(document_id: UUID, services: ServiceDependency, user_id: Use
 
 @v2_router.post("/sessions", response_model=SessionResponse, status_code=201, tags=["v2 sessions"])
 def create_v2_session(payload: SessionCreate, services: ServiceDependency, user_id: UserDependency):
-    return services.sessions.create(user_id, payload.title, api_version="v2")
+    return services.sessions.create(user_id, payload.title)
 
 
 @v2_router.get("/sessions", response_model=list[SessionResponse], tags=["v2 sessions"])
 def list_v2_sessions(services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50, q: Search = ""):
-    return services.sessions.list(user_id, offset, limit, api_version="v2", query=q.strip())
+    return services.sessions.list(user_id, offset, limit, query=q.strip())
 
 
 @v2_router.get("/sessions/{session_id}", response_model=V2SessionDetail, tags=["v2 sessions"])
 def get_v2_session(session_id: UUID, services: ServiceDependency, user_id: UserDependency, message_limit: Limit = 100, message_offset: Offset = 0):
-    session, messages = services.sessions.get(user_id, session_id, message_limit, message_offset, api_version="v2")
+    session, messages = services.sessions.get(user_id, session_id, message_limit, message_offset)
     return V2SessionDetail(
         **SessionResponse.model_validate(session).model_dump(),
         messages=[V2MessageResponse.model_validate(message) for message in messages],
@@ -113,7 +107,7 @@ def get_v2_session(session_id: UUID, services: ServiceDependency, user_id: UserD
 
 @v2_router.delete("/sessions/{session_id}", status_code=204, tags=["v2 sessions"])
 def delete_v2_session(session_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    services.sessions.delete(user_id, session_id, api_version="v2")
+    services.sessions.delete(user_id, session_id)
     return Response(status_code=204)
 
 
@@ -261,39 +255,3 @@ def context_estimate(payload: ContextEstimateRequest, services: ServiceDependenc
 @v2_router.post("/sessions/{session_id}/compact", tags=["v2 context"])
 def compact_context(session_id: UUID, payload: CompactRequest, services: ServiceDependency, user_id: UserDependency):
     return services.chat.compact(user_id, session_id, payload.expected_context_version, payload.model_provider)
-
-
-@router.post("/sessions", response_model=SessionResponse, status_code=201, tags=["sessions"])
-def create_session(payload: SessionCreate, services: ServiceDependency, user_id: UserDependency):
-    return services.sessions.create(user_id, payload.title)
-
-
-@router.get("/sessions", response_model=list[SessionResponse], tags=["sessions"])
-def list_sessions(services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50):
-    return services.sessions.list(user_id, offset, limit)
-
-
-@router.get("/sessions/{session_id}", response_model=SessionDetail, tags=["sessions"])
-def get_session(session_id: UUID, services: ServiceDependency, user_id: UserDependency, message_limit: Limit = 100, message_offset: Offset = 0):
-    session, messages = services.sessions.get(user_id, session_id, message_limit, message_offset)
-    return SessionDetail(
-        **SessionResponse.model_validate(session).model_dump(),
-        messages=[MessageResponse.model_validate(message) for message in messages],
-    )
-
-
-@router.delete("/sessions/{session_id}", status_code=204, tags=["sessions"])
-def delete_session(session_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    services.sessions.delete(user_id, session_id)
-    return Response(status_code=204)
-
-
-@router.post("/sessions/{session_id}/messages", response_model=ChatResponse, tags=["chat"])
-def chat(session_id: UUID, payload: ChatRequest, services: ServiceDependency, user_id: UserDependency):
-    return services.chat.answer(user_id, session_id, payload.question, payload.document_ids, payload.model_provider)
-
-
-@router.post("/sessions/{session_id}/messages/stream", tags=["chat"], responses={501: {"description": "SSE 尚未实现"}})
-def stream_chat(session_id: UUID, payload: ChatRequest, services: ServiceDependency, user_id: UserDependency):
-    services.sessions.get(user_id, session_id, message_limit=1)
-    raise AppError("NOT_IMPLEMENTED", "SSE 将在下一阶段实现，请使用非流式问答接口", 501)

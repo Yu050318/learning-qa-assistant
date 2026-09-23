@@ -11,7 +11,7 @@ def utcnow() -> datetime:
 
 
 class Base(DeclarativeBase):
-    metadata = MetaData(schema="rag_v1")
+    metadata = MetaData(schema="rag")
 
 
 class User(Base):
@@ -31,7 +31,7 @@ class DocumentRecord(Base):
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag_v1.users.id"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
     original_name: Mapped[str] = mapped_column(String(255))
     file_type: Mapped[str] = mapped_column(String(12))
     file_path: Mapped[str] = mapped_column(Text)
@@ -49,13 +49,11 @@ class DocumentRecord(Base):
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
     __table_args__ = (
-        CheckConstraint("api_version IN ('v1', 'v2')", name="ck_sessions_api_version"),
         Index("ix_sessions_user_updated", "user_id", "updated_at"),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag_v1.users.id"))
-    api_version: Mapped[str] = mapped_column(String(2), default="v1", server_default="v1")
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
     title: Mapped[str] = mapped_column(String(200))
     summary: Mapped[str] = mapped_column(Text, default="")
     summarized_through: Mapped[UUID | None]
@@ -71,7 +69,7 @@ class ChatMessage(Base):
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    session_id: Mapped[UUID] = mapped_column(ForeignKey("rag_v1.chat_sessions.id", ondelete="CASCADE"))
+    session_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_sessions.id", ondelete="CASCADE"))
     role: Mapped[str] = mapped_column(String(20))
     content: Mapped[str] = mapped_column(Text)
     model_provider: Mapped[str | None] = mapped_column(String(40))

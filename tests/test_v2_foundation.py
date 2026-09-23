@@ -2,7 +2,7 @@ import unittest
 import json
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import httpx
 from sqlalchemy import create_engine, text
@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from app.api.schemas import V2ChatRequest, V2ChatResponse
 from app.application.chat import prepare_public_query
 from app.application.evidence import EvidenceRegistry
+from app.application.sessions import SessionService
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput, Chunk, SearchHit, WebSearchBatch, WebSearchResult
@@ -21,6 +22,17 @@ from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 
 
 class V2FoundationTests(unittest.TestCase):
+    def test_session_locks_are_exact_and_reject_only_the_same_session(self):
+        service = SessionService(MagicMock())
+        first = UUID(int=1)
+        colliding_under_the_old_striped_lock = UUID(int=65)
+        with service.exclusive(first):
+            with service.exclusive(colliding_under_the_old_striped_lock):
+                with self.assertRaises(AppError) as raised:
+                    with service.exclusive(first):
+                        pass
+        self.assertEqual("RESOURCE_BUSY", raised.exception.code)
+
     def test_milvus_connection_uses_configured_uri(self):
         settings = Settings(_env_file=None, milvus_uri="http://127.0.0.1:19531")
         client = MagicMock()
@@ -83,22 +95,25 @@ class V2FoundationTests(unittest.TestCase):
         )
         self.assertEqual("web", response.citations[0].type)
 
-    def test_repository_isolates_session_api_versions(self):
+    def test_repository_isolates_sessions_by_user(self):
         engine = create_engine("sqlite://")
         connection = engine.connect()
-        connection.execute(text("ATTACH DATABASE ':memory:' AS rag_v1"))
+        connection.execute(text("ATTACH DATABASE ':memory:' AS rag"))
         Base.metadata.create_all(connection)
         sessions = sessionmaker(bind=connection)
         with sessions() as database:
-            user = User(external_id="user")
-            database.add(user)
+            first_user = User(external_id="first")
+            second_user = User(external_id="second")
+            database.add_all([first_user, second_user])
             database.flush()
-            v1 = ChatSession(user_id=user.id, title="v1", api_version="v1")
-            v2 = ChatSession(user_id=user.id, title="v2", api_version="v2")
-            database.add_all([v1, v2])
+            first_session = ChatSession(user_id=first_user.id, title="first")
+            second_session = ChatSession(user_id=second_user.id, title="second")
+            database.add_all([first_session, second_session])
             database.commit()
-            self.assertEqual([v1.id], [item.id for item in Repository(database).chat_sessions(user.id, api_version="v1")])
-            self.assertEqual([v2.id], [item.id for item in Repository(database).chat_sessions(user.id, api_version="v2")])
+            self.assertEqual([first_session.id], [item.id for item in Repository(database).chat_sessions(first_user.id)])
+            self.assertEqual([second_session.id], [item.id for item in Repository(database).chat_sessions(second_user.id)])
+            with self.assertRaises(AppError):
+                Repository(database).chat_session(first_user.id, second_session.id)
 
     def test_tavily_uses_fixed_endpoint_and_filters_unsafe_result(self):
         requests = []

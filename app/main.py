@@ -10,7 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from starlette.exceptions import HTTPException
 
 from app.api.middleware import BodyLimitMiddleware
-from app.api.routes import health_router, router, v2_router
+from app.api.routes import health_router, v2_router
 from app.application.container import Services
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
@@ -82,7 +82,6 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
         return error_response(request, "INTERNAL_ERROR", "服务内部错误，请根据 request_id 检查日志", 500)
 
     application.include_router(health_router)
-    application.include_router(router)
     application.include_router(v2_router)
     return application
 

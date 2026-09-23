@@ -12,8 +12,7 @@ from app.main import create_app
 
 
 class Sessions:
-    def create(self, user_id, title, *, api_version="v1"):
-        self.version = api_version
+    def create(self, user_id, title):
         now = datetime.now(timezone.utc)
         return SimpleNamespace(id=uuid4(), title=title, summary="", summarized_through=None,
                                created_at=now, updated_at=now)
@@ -32,13 +31,51 @@ class Chat:
         )
 
 
+class Ingestion:
+    def __init__(self):
+        self.document = self._document()
+        self.scheduled = []
+        self.deleted = []
+
+    @staticmethod
+    def _document():
+        now = datetime.now(timezone.utc)
+        return SimpleNamespace(
+            id=uuid4(), original_name="notes.txt", file_type=".txt", status="processing",
+            chunk_count=0, embedding_model="text-embedding-v4", error_message=None,
+            size_bytes=5, parser_metadata={}, created_at=now, updated_at=now,
+        )
+
+    def upload(self, user_id, filename, content_type, stream):
+        self.document.original_name = filename
+        return self.document
+
+    def schedule(self, user_id, document_id):
+        self.scheduled.append((user_id, document_id))
+
+    def get(self, user_id, document_id):
+        if document_id != self.document.id:
+            raise AppError("NOT_FOUND", "资源不存在", 404)
+        return self.document
+
+    def retry(self, user_id, document_id):
+        return self.get(user_id, document_id)
+
+    def delete(self, user_id, document_id):
+        self.get(user_id, document_id)
+        self.deleted.append((user_id, document_id))
+
+
 class Services:
     def __init__(self):
+        self.settings = Settings(_env_file=None)
         self.sessions = Sessions()
         self.chat = Chat()
+        self.ingestion = Ingestion()
+        self.current_user = uuid4()
 
     def user_id(self, external_id):
-        return uuid4()
+        return self.current_user
 
     def readiness(self):
         return {"status": "ready", "checks": {}}
@@ -54,7 +91,57 @@ class ApiV2Tests(unittest.TestCase):
         with TestClient(app) as client:
             response = client.post("/api/v2/sessions", headers={"X-User-ID": "alice"}, json={"title": "V2"})
         self.assertEqual(201, response.status_code)
-        self.assertEqual("v2", services.sessions.version)
+        self.assertEqual("V2", response.json()["title"])
+
+    def test_v2_document_upload_schedules_ingestion(self):
+        services = Services()
+        app = create_app(Settings(_env_file=None), services)
+        with TestClient(app) as client:
+            response = client.post(
+                "/api/v2/documents", headers={"X-User-ID": "alice"},
+                files={"file": ("notes.txt", b"hello", "text/plain")},
+            )
+        self.assertEqual(202, response.status_code)
+        self.assertEqual([(services.current_user, services.ingestion.document.id)], services.ingestion.scheduled)
+
+    def test_v2_document_detail_uses_user_scope(self):
+        services = Services()
+        app = create_app(Settings(_env_file=None), services)
+        with TestClient(app) as client:
+            response = client.get(
+                f"/api/v2/documents/{services.ingestion.document.id}", headers={"X-User-ID": "alice"},
+            )
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(str(services.ingestion.document.id), response.json()["id"])
+
+    def test_v2_document_retry_schedules_ingestion(self):
+        services = Services()
+        app = create_app(Settings(_env_file=None), services)
+        with TestClient(app) as client:
+            response = client.post(
+                f"/api/v2/documents/{services.ingestion.document.id}/retry",
+                headers={"X-User-ID": "alice"},
+            )
+        self.assertEqual(202, response.status_code)
+        self.assertEqual([(services.current_user, services.ingestion.document.id)], services.ingestion.scheduled)
+
+    def test_v2_document_delete_returns_204(self):
+        services = Services()
+        app = create_app(Settings(_env_file=None), services)
+        with TestClient(app) as client:
+            response = client.delete(
+                f"/api/v2/documents/{services.ingestion.document.id}", headers={"X-User-ID": "alice"},
+            )
+        self.assertEqual(204, response.status_code)
+        self.assertEqual([(services.current_user, services.ingestion.document.id)], services.ingestion.deleted)
+
+    def test_v1_routes_return_404(self):
+        app = create_app(Settings(_env_file=None), Services())
+        with TestClient(app) as client:
+            sessions = client.get("/api/v1/sessions", headers={"X-User-ID": "alice"})
+            documents = client.get("/api/v1/documents", headers={"X-User-ID": "alice"})
+        self.assertEqual(404, sessions.status_code)
+        self.assertEqual(404, documents.status_code)
 
     def test_v2_chat_reads_search_mode_from_run_metadata(self):
         app = create_app(Settings(_env_file=None), Services())

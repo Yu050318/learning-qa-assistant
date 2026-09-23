@@ -24,7 +24,7 @@ class MilvusVectorStore:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.collection = settings.milvus_collection
-        self.signature = f"rag-v1:{settings.embedding_model}:{settings.embedding_dimension}"
+        self.signature = f"rag:{settings.embedding_model}:{settings.embedding_dimension}"
 
     @contextmanager
     def connection(self, default_database: bool = False):

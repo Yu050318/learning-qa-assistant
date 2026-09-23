@@ -24,11 +24,11 @@
 ```text
 资料准备：上传文件 → 提取文本 → 切片 → 生成向量 → 保存到 Milvus
 
-聊天问答：接收问题 → 读取最近对话 → 必要时改写问题
-                       → 向量检索 → 组织提示词 → 模型回答 → 保存消息和引用
+聊天问答：接收问题 → 读取最近对话 → Agent 按模式调用知识库或网络工具
+                       → 校验证据和引用 → 保存消息与运行元数据
 ```
 
-这里的 RAG 是“先检索，再生成”。目前流程由 `FixedRAGWorkflow` 的 Python 代码决定，没有让模型自主决定是否调用检索工具，也没有自主循环执行工具的 Agent。
+当前由 `AgentRAGWorkflow` 约束模型和工具循环；知识性结论必须引用本轮登记的知识库或网页证据。
 
 需要区分三件事：
 
@@ -107,10 +107,10 @@ Services
   ├─ embeddings → QwenEmbedding
   ├─ models     → ModelRouter → DeepSeekProvider / OllamaProvider
   ├─ retriever  → RetrieverService(embeddings, vectors)
-  ├─ workflow   → FixedRAGWorkflow(retriever, models)
+  ├─ agent_workflow → AgentRAGWorkflow(retriever, models, web_search)
   ├─ ingestion  → IngestionService(...)
   ├─ sessions   → SessionService(database)
-  └─ chat       → ChatService(..., sessions, workflow)
+  └─ chat       → ChatService(..., sessions, agent_workflow)
 ```
 
 API 不需要在每个路由中重新创建数据库和模型对象，只需取得这个已经装配好的 `Services`。
@@ -292,7 +292,7 @@ def create_session(payload: SessionCreate, services: ServiceDependency, user_id:
 
 ### 5.1 请求阶段：先接收并保存文件
 
-`POST /api/v1/documents` 对应 `upload_document()`。
+`POST /api/v2/documents` 对应 `upload_document()`。
 
 执行顺序：
 
@@ -359,50 +359,43 @@ PostgreSQL 和 Milvus 没有共享事务。当前做法是“状态标记 + 确�
 
 ## 6. 跟着一次问答阅读代码
 
-主要源码：`app/application/chat.py`、`app/workflows/rag.py`、`app/application/retriever.py`。
+主要源码：`app/application/chat.py`、`app/workflows/agent.py`、`app/application/retriever.py`。
 
-### 6.1 ChatService 管业务，Workflow 管 RAG 步骤
+### 6.1 ChatService 管持久化，Agent Workflow 管工具与回答
 
-`ChatService.answer()` 负责权限范围、消息持久化和会话并发控制。
+`ChatService.answer_v2()` 负责权限范围、消息持久化和会话并发控制。
 
-`FixedRAGWorkflow.run()` 负责问题改写、检索、提示词、生成和引用检查。
+`AgentRAGWorkflow.run()` 负责受控工具调用、上下文预算、模型降级、结构化输出和引用检查。
 
 把两者分开，是为了以后替换问答策略时，不必同时重写 HTTP 接口和消息存储逻辑。
 
 ### 6.2 完整调用链
 
 ```text
-POST /api/v1/sessions/{session_id}/messages
+POST /api/v2/sessions/{session_id}/messages
   → current_user()：取得内部用户 UUID
-  → routes.chat()：取得 ChatRequest
-  → ChatService.answer()
+  → routes.chat_v2()：取得 V2ChatRequest
+  → ChatService.answer_v2()
       1. 确认会话属于当前用户，取得会话锁
       2. 检查文档范围，只允许 ready 且模型兼容的文档
       3. 读取旧摘要与最近消息
       4. 保存本次 user 消息并提交
-      5. FixedRAGWorkflow.run()
-           → 有上下文时改写查询
-           → RetrieverService.retrieve()
-               → QwenEmbedding.embed_query()
-               → MilvusVectorStore.search()
-               → 范围复核与去重
-           → 组装提示词
-           → ModelRouter.generate()
-           → 校验引用编号
+      5. AgentRAGWorkflow.run()
+           → 按 knowledge / web / auto 暴露允许的工具
+           → RetrieverService 或 Tavily 返回证据
+           → EvidenceRegistry 编号、去重并限制预算
+           → 模型生成结构化答案
+           → 校验引用编号与来源类型
       6. 再检查被引用文档是否仍有效
-      7. 保存 assistant 消息、实际模型、引用和用量
-  → ChatResponse 返回给客户端
+      7. 保存 assistant 消息、实际模型、引用、用量和运行元数据
+  → V2ChatResponse 返回给客户端
 ```
 
 如果后续调用失败，之前已经提交的 user 消息仍保留，但不会保存一个伪装成成功的 assistant 消息。
 
-### 6.3 为什么需要查询改写
+### 6.3 模式与工具边界
 
-例如历史问题是“这所学校在哪里？”，新问题是“它有哪些专业？”。直接拿第二句话检索，指代可能不明确。
-
-本代码在存在历史或摘要时先调用模型，把问题改写成独立检索查询；首轮没有上下文时跳过改写，直接使用原问题。
-
-因此，一次正常的多轮问答可能包含一次改写模型调用和一次回答模型调用，不一定只有一次模型请求。当前保存的 `token_usage` 来自最终回答调用，不是整条链路的总成本。
+`knowledge` 只允许私有知识库检索，`web` 只允许冻结后的公开查询，`auto` 先看知识库相关度再决定是否补充网页证据。工具和模型调用次数都受配置上限约束。
 
 ### 6.4 RetrieverService 不是模型
 
@@ -445,7 +438,7 @@ POST /api/v1/sessions/{session_id}/messages
 | `chat_sessions / ChatSession` | 会话归属、标题、摘要及摘要进度字段 |
 | `chat_messages / ChatMessage` | 用户/助手原文、模型信息、引用和 token 用量 |
 
-这些表放在 `rag_v1` schema 下，而不是自动占用 public 下的同名表。
+这些表放在 `rag` schema 下，而不是自动占用 public 下的同名表。
 
 `Repository` 集中写查询条件，例如读取文档时同时限制 `document_id` 和 `user_id`。仅按文档 ID 查询是不够的，因为还要验证它属于当前用户。
 
@@ -466,7 +459,7 @@ AND document_id IN 本次允许检索的文档UUID列表
 
 `user_filter()` 会把标识规范化为 UUID 字符串，再生成表达式，避免直接拼接任意用户输入。
 
-集合描述还带有 `rag-v1:模型名:维度` 签名。**相同维度不代表同一个向量空间**；代码会检查模型签名与向量维度，不能仅修改配置就继续使用不兼容的旧集合。
+集合描述还带有 `rag:模型名:维度` 签名。**相同维度不代表同一个向量空间**；代码会检查模型签名与向量维度，不能仅修改配置就继续使用不兼容的旧集合。
 
 ### 7.3 文件目录：保存原始资料
 
@@ -593,7 +586,7 @@ API 异常处理器会统一组织为：
 
 请求中间件生成 request_id，响应头也返回 `X-Request-ID`。这里的 request_id 是追踪一次 HTTP 请求用的，不是用户 ID 或会话 ID。
 
-其他主要规则：不存在和越权都返回 404；参数错误返回 422；资源竞争返回 409；上游服务不可用通常返回 503；V1 旧流式接口返回 501，V2 使用独立 SSE 接口。
+其他主要规则：不存在和越权都返回 404；参数错误返回 422；资源竞争返回 409；上游服务不可用通常返回 503；流式问答使用独立的 SSE 接口。
 
 `BodyLimitMiddleware` 还会在读取请求体时累计大小。文件自身大小限制由上传服务再检查，两层限制针对的对象不同：一个是整个 HTTP body，一个是上传文件。
 
@@ -617,7 +610,7 @@ API 异常处理器会统一组织为：
 
 ### 11.2 只按单进程开发部署理解当前锁
 
-`SessionService` 创建了 64 个锁，根据会话 UUID 分片选择。它控制单进程内的问答与会话删除竞争，不能当作跨 worker 的分布式锁。
+`SessionService` 按会话 UUID 创建独立锁。它控制单进程内的问答与会话删除竞争，不能当作跨 worker 的分布式锁。
 
 不同会话也可能映射到同一个锁，短暂收到 `RESOURCE_BUSY`；数据库行锁则用于保护相应记录。扩大部署前需要重新设计会话串行与任务执行方式，不是只给 Uvicorn 多加几个 worker 就结束。
 
@@ -630,12 +623,12 @@ API 异常处理器会统一组织为：
 3. `app/api/dependencies.py`：看服务和当前用户怎样进入路由。
 4. `app/api/routes.py`：找上传和问答两个入口。
 5. `app/application/chat.py`：看业务调用顺序与提交位置。
-6. `app/workflows/rag.py`：看真正的 RAG 步骤。
+6. `app/workflows/agent.py`：看 Agent、工具预算和引用闭环。
 
 ### 第二遍：沿着一个功能进入基础设施
 
 - 跟上传：`IngestionService.upload()` → `process()` → `LocalDocumentLoader` → `QwenEmbedding` → `MilvusVectorStore`。
-- 跟问答：`ChatService.answer()` → `FixedRAGWorkflow.run()` → `RetrieverService.retrieve()` → `ModelRouter.generate()`。
+- 跟问答：`ChatService.answer_v2()` → `AgentRAGWorkflow.run()` → 检索工具 → 模型回答。
 - 跟用户：`current_user()` → `Services.user_id()` → `Repository.user()`。
 
 ### 建议的断点
@@ -645,9 +638,9 @@ API 异常处理器会统一组织为：
 | `current_user()` 返回前 | 外部 identifier 如何变成内部 UUID；不要打印密钥 |
 | `IngestionService.upload()` 提交前 | 文档对象、内容哈希、服务器生成的路径 |
 | `IngestionService.process()` 切片后 | chunk 的正文、ID、页码/章节和数量 |
-| `ChatService.answer()` 调用工作流前 | ready_ids、最近消息、summary；确认未混入其他用户资料 |
+| `ChatService.answer_v2()` 调用工作流前 | ready_ids、最近消息、summary；确认未混入其他用户资料 |
 | `RetrieverService.retrieve()` 召回后 | 结果范围、分数、去重前后数量 |
-| `FixedRAGWorkflow.run()` 生成后 | answer 和引用编号如何对应 |
+| `AgentRAGWorkflow.run()` 生成后 | answer、证据登记和引用编号如何对应 |
 
 观察业务内容时使用自己的测试资料；不要把断点里看到的正文、连接串或密钥直接粘贴进公共日志。
 
@@ -655,7 +648,7 @@ API 异常处理器会统一组织为：
 
 | 想做的事 | 优先入口 | 还需要注意 |
 | --- | --- | --- |
-| 修改回答风格 | `app/workflows/rag.py` 的 SYSTEM_PROMPT | 不要取消来源约束与不可信数据边界 |
+| 修改回答风格 | `app/workflows/agent.py` 的 SYSTEM_PROMPT | 不要取消来源约束与不可信数据边界 |
 | 调整检索数量/切片大小 | `app/core/config.py` 对应配置 | 旧向量不会自动更新 |
 | 新增聊天模型 | `app/infrastructure/llms/providers.py`、`container.py` | 同步更新请求 provider 限制和配置 |
 | 调整 MinerU | `app/infrastructure/loaders/mineru.py` 与 `app/application/ingestion.py` | 保留签名 URL 校验、批次续接、缓存签名和短事务 |
@@ -671,7 +664,7 @@ API 异常处理器会统一组织为：
 | “API 有用户 ID，所以已经安全登录了” | 只是开发期逻辑隔离，请求头可伪造 |
 | “保存了聊天记录，所以模型能记住所有历史” | 运行时只取最近消息，自动摘要未实现 |
 | “上传返回 202，就能立即提问” | 需要等待状态 ready |
-| “V1 和 V2 都能流式输出” | 只有 V2 Agent 接口会发送 answer_delta；V1 旧接口仍返回 501 |
+| “所有模型输出都会直接流给前端” | 只有结构化答案中的 answer 增量会发送；工具调用和内部 JSON 不会暴露 |
 | “有 MinerU Token 就会使用 MinerU” | 还必须设置 `MINERU_ENABLED=true`；PDF/Office 才会进入云解析 |
 | “健康接口返回成功就表示全部服务正常” | live 只说明进程存活；ready 才检查存储和必要配置 |
 | “ready 正常说明模型 Key 和答案质量都验证过了” | 模型配置检查只看必要项是否存在，不进行真实生成 |
@@ -690,11 +683,9 @@ API 异常处理器会统一组织为：
 - 项目设计目标：`2026-09-09-rag-backend-design.md`。
 - 安装、启动与接口示例：`README.md`。
 
-## V2 补充：Agent、网络搜索与 MinerU
+## Agent、网络搜索与 MinerU
 
-V1 的 `FixedRAGWorkflow` 和 `/api/v1` 会话接口继续保留。V2 会话固定使用 `/api/v2`，数据库通过 `chat_sessions.api_version` 隔离两个版本；网页引用只会出现在 V2 消息中。
-
-一次 V2 问答从 `app/api/routes.py` 进入 `ChatService.answer_v2()`：先用短事务保存用户消息，再在事务外运行 `AgentRAGWorkflow`，最后重新检查知识库引用范围并保存完整 assistant 消息。每次请求单独创建 EvidenceRegistry，知识库和网页来源按实际登记顺序共享引用编号。
+一次问答从 `app/api/routes.py` 进入 `ChatService.answer_v2()`：先用短事务保存用户消息，再在事务外运行 `AgentRAGWorkflow`，最后重新检查知识库引用范围并保存完整 assistant 消息。每次请求单独创建 EvidenceRegistry，知识库和网页来源按实际登记顺序共享引用编号。
 
 `knowledge` 只提供知识库工具，`web` 只提供 Tavily，`auto` 根据配置提供两者。网络工具始终使用请求开始时冻结的公开查询，不接收模型临时生成的查询，因此历史消息和私有知识片段不会被拼入 Tavily 请求。
 
@@ -702,11 +693,7 @@ V1 的 `FixedRAGWorkflow` 和 `/api/v1` 会话接口继续保留。V2 会话固�
 
 新 PDF、Word、PowerPoint 和 Excel 在 `MINERU_ENABLED=true` 时先验证 PDF/OLE/OOXML 容器，再由 `MinerUParser` 申请签名上传地址、上传、轮询并读取结构化结果；TXT/Markdown 继续由本地 Loader 处理。`documents.parser_metadata` 保存解析阶段和 `batch_id`，超时 retry 会续接远端批次，已有 `normalized.json` 时直接恢复 Embedding。`GET /api/v2/documents/{id}/processing` 只返回安全的状态摘要。
 
-V2 数据库字段不会在应用启动时自动修改。升级已有数据库时运行：
-
-```powershell
-.venv/Scripts/python.exe -m app.bootstrap --migrate-v2
-```
+数据库使用当前 ORM 定义显式初始化：`.venv/Scripts/python.exe -m app.bootstrap --postgres`。
 - 实际配置字段：`app/core/config.py`；无密钥模板：`../.env`。
 - FastAPI 依赖声明与 Annotated 官方说明：`https://fastapi.tiangolo.com/tutorial/dependencies/`。
 - FastAPI Header 参数官方说明：`https://fastapi.tiangolo.com/tutorial/header-params/`。

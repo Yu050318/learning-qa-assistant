@@ -8,23 +8,19 @@ from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="显式创建 RAG schema 和/或 Milvus 集合，不删除现有数据")
+    parser = argparse.ArgumentParser(description="显式创建 RAG schema 和/或 Milvus 集合")
     parser.add_argument("--postgres", action="store_true")
     parser.add_argument("--milvus", action="store_true")
-    parser.add_argument("--migrate-v2", action="store_true")
     options = parser.parse_args()
-    if not options.postgres and not options.milvus and not options.migrate_v2:
-        parser.error("请指定 --postgres、--milvus 和/或 --migrate-v2")
+    if not options.postgres and not options.milvus:
+        parser.error("请指定 --postgres 和/或 --milvus")
     configure_logging()
     settings = get_settings()
     database = Database(settings)
     try:
         if options.postgres:
             database.initialize()
-            print("PostgreSQL: rag_v1 schema initialized")
-        if options.postgres or options.migrate_v2:
-            database.migrate_v2()
-            print("PostgreSQL: agent-v2 migration applied")
+            print("PostgreSQL: rag schema initialized")
         if options.milvus:
             MilvusVectorStore(settings).initialize()
             print("Milvus: configured collection initialized")

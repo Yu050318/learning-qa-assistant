@@ -15,7 +15,6 @@ from app.infrastructure.persistence.database import Database
 from app.infrastructure.persistence.repository import Repository
 from app.infrastructure.search.tavily import TavilySearch
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
-from app.workflows.rag import FixedRAGWorkflow
 from app.workflows.agent import AgentRAGWorkflow
 
 
@@ -27,13 +26,12 @@ class Services:
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
         self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k)
-        self.workflow = FixedRAGWorkflow(self.retriever, self.models)
         self.web_search = TavilySearch(settings)
         self.mineru = MinerUParser(settings)
         self.agent_workflow = AgentRAGWorkflow(settings, self.retriever, self.models, self.web_search)
         self.ingestion = IngestionService(settings, self.database, LocalDocumentLoader(settings), self.mineru, self.embeddings, self.vectors)
         self.sessions = SessionService(self.database)
-        self.chat = ChatService(settings, self.database, self.sessions, self.workflow, self.agent_workflow)
+        self.chat = ChatService(settings, self.database, self.sessions, self.agent_workflow)
 
     def start(self) -> None:
         try:

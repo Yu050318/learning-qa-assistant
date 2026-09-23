@@ -12,12 +12,12 @@
 
 ## 项目亮点
 
-- **双版本 RAG 架构：** 保留 V1 固定检索链路，并实现 V2 单 Agent；可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库与 Tavily 公网搜索。
+- **受控 RAG Agent：** 可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库与 Tavily 公网搜索。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
 - **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、Excel 通过 MinerU 解析，TXT/Markdown 本地处理。
 - **模型与外部服务容错：** DeepSeek 遇到连接、超时、429 或 5xx 时可有限降级至 Ollama；已完成的检索不会重复执行，鉴权错误不会被错误地重试或降级。
-- **工程化交付：** FastAPI + Vue 3/TypeScript 前后端分离，采用应用服务、领域协议、仓储和基础设施适配器分层；提供显式迁移、结构化日志、request ID、能力发现与离线自动化测试。
+- **工程化交付：** FastAPI + Vue 3/TypeScript 前后端分离，采用应用服务、领域协议、仓储和基础设施适配器分层；提供显式初始化、结构化日志、request ID、能力发现与离线自动化测试。
 
 ## 技术栈
 
@@ -36,7 +36,7 @@
 flowchart LR
     UI[Vue 3 前端] -->|REST / POST SSE| API[FastAPI]
     API --> CHAT[ChatService]
-    CHAT --> AGENT[V2 Agent Workflow]
+    CHAT --> AGENT[RAG Agent Workflow]
     AGENT -->|knowledge| RETRIEVE[Qwen Embedding + Milvus]
     AGENT -->|web / auto| WEB[Tavily Search]
     AGENT --> MODEL[DeepSeek / Ollama]
@@ -56,13 +56,13 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - 本地 TXT/Markdown、文本型 PDF、DOCX 解析；旧 DOC 通过 LibreOffice 转换。
 - 可配置 token 切片、确定性 chunk ID、千问批量 Embedding、Milvus COSINE 检索。
 - PostgreSQL 元数据和消息持久化，文档状态机、重试与删除补偿。
-- 最近消息上下文、追问改写、服务端引用、DeepSeek/Ollama 回答与 V2 SSE 增量答案。
+- 最近消息上下文、服务端引用、DeepSeek/Ollama 回答与 SSE 增量答案。
 - DeepSeek 可重试错误发生时，可显式开启一次 Ollama 降级；鉴权错误不降级。
 - LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
-- V2 `knowledge / web / auto` 三种模式、请求内证据登记、混合引用和有限工具循环。
+- `knowledge / web / auto` 三种模式、请求内证据登记、混合引用和有限工具循环。
 - Tavily 固定公开搜索词；网络结果不会写入 Milvus。
 - PDF、Word、PowerPoint、Excel 显式启用后统一经 MinerU 云解析；TXT/Markdown 保持本地解析。
-- V1/V2 会话版本隔离、V2 运行元数据和显式可重复数据库迁移。
+- 会话持久化、运行元数据和显式数据库初始化。
 
 **仍未实现：** SSE 断线续传、自动滚动摘要、正式认证、持久任务队列、多 worker、重排序和网页自动入库。
 
@@ -76,8 +76,8 @@ app/
     ingestion.py              文档入库、失败重试、删除
     sessions.py               会话 CRUD 与单进程并发控制
     chat.py                   消息保存与问答用例
-    evidence.py               V2 来源编号、去重和引用校验
-    retriever.py              V1/V2 共用知识库检索
+    evidence.py               来源编号、去重和引用校验
+    retriever.py              知识库检索
   domain/contracts.py         Chunk、SearchHit、模型/向量库协议
   infrastructure/
     persistence/              SQLAlchemy 模型、仓储与 PostgreSQL 连接
@@ -87,10 +87,9 @@ app/
     loaders/local.py          TXT/MD 本地解析与共享切片
     loaders/mineru.py         MinerU 签名上传、轮询、下载和结构归一化
     search/tavily.py          Tavily 搜索适配与结果安全过滤
-  workflows/rag.py            V1 固定 RAG
-  workflows/agent.py          V2 LangChain Agent 与工具预算
+  workflows/agent.py          LangChain Agent 与工具预算
   core/                       环境配置、异常与结构化日志
-  bootstrap.py                显式初始化存储，不删除现有数据
+  bootstrap.py                显式初始化存储
   main.py                     FastAPI 入口
 ```
 
@@ -146,7 +145,7 @@ $env:DATABASE_REQUIRE_TLS = 'false'
 
 ### Tavily
 
-设置 `WEB_SEARCH_ENABLED=true` 并配置 `TAVILY_API_KEY` 后，V2 的 `web` 和 `auto` 模式可调用网络搜索。联网时只发送当前问题或显式 `web_query`，不会发送历史消息或知识库片段。应用会阻止明显的密钥、连接串和超长公开查询，但这不是完整的隐私识别；发送前仍需确认查询可公开。
+设置 `WEB_SEARCH_ENABLED=true` 并配置 `TAVILY_API_KEY` 后，`web` 和 `auto` 模式可调用网络搜索。联网时只发送当前问题或显式 `web_query`，不会发送历史消息或知识库片段。应用会阻止明显的密钥、连接串和超长公开查询，但这不是完整的隐私识别；发送前仍需确认查询可公开。
 
 ## 4. 初始化与启动
 
@@ -154,12 +153,11 @@ $env:DATABASE_REQUIRE_TLS = 'false'
 
 ```powershell
 .venv/Scripts/python.exe -m app.bootstrap --postgres
-.venv/Scripts/python.exe -m app.bootstrap --migrate-v2
 .venv/Scripts/python.exe -m app.bootstrap --milvus
 .venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-PostgreSQL 初始化与 V2 迁移都只操作 `rag_v1` schema；迁移新增字段、约束和版本记录，重复执行不会清空数据。
+PostgreSQL 表位于独立的 `rag` schema；初始化使用当前 ORM 定义创建完整结构。
 
 - 交互式接口文档：`http://127.0.0.1:8000/docs`
 - 存活：`GET /health/live`，不连接外部服务。
@@ -175,50 +173,37 @@ PostgreSQL 初始化与 V2 迁移都只操作 `rag_v1` schema；迁移新增字�
 $headers = @{ 'X-User-ID' = 'alice' }
 
 # 上传已有本地文件；Windows 请使用 curl.exe 而非 PowerShell 的 curl 别名
-curl.exe -X POST http://127.0.0.1:8000/api/v1/documents `
+curl.exe -X POST http://127.0.0.1:8000/api/v2/documents `
   -H 'X-User-ID: alice' -F 'file=@knowledge.txt'
 
 # 保存上传响应中的文档 ID，轮询到 ready 后再问答
 $documentId = '替换为上传返回的文档UUID'
-Invoke-RestMethod "http://127.0.0.1:8000/api/v1/documents/$documentId" -Headers $headers
+Invoke-RestMethod "http://127.0.0.1:8000/api/v2/documents/$documentId" -Headers $headers
 
-$session = Invoke-RestMethod http://127.0.0.1:8000/api/v1/sessions `
+$session = Invoke-RestMethod http://127.0.0.1:8000/api/v2/sessions `
   -Method Post -Headers $headers -ContentType 'application/json; charset=utf-8' `
   -Body ([System.Text.Encoding]::UTF8.GetBytes('{"title":"学习助手"}'))
 
-$body = @{ question = '这份资料主要讲什么？'; document_ids = @($documentId); model_provider = 'deepseek' } | ConvertTo-Json
-Invoke-RestMethod "http://127.0.0.1:8000/api/v1/sessions/$($session.id)/messages" `
+$body = @{ question = '这份资料主要讲什么？'; search_mode = 'knowledge'; document_ids = @($documentId); model_provider = 'deepseek' } | ConvertTo-Json
+Invoke-RestMethod "http://127.0.0.1:8000/api/v2/sessions/$($session.id)/messages" `
   -Method Post -Headers $headers -ContentType 'application/json; charset=utf-8' `
   -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
 ```
 
-未传 `document_ids` 时使用当前用户全部 ready、且模型匹配的文档；传入空列表会被拒绝，避免误当作全库查询。检索结果为空时，返回资料不足提示，`model_provider=none`、`model_name=retrieval-only` 表示没有调用答案生成模型。
+未传 `document_ids` 时使用当前用户全部 ready、且模型匹配的文档；传入空列表会被拒绝，避免误当作全库查询。
 
 ## 6. API 与错误
 
-| 方法 | 路径（除健康接口外都加 /api/v1） | 行为 |
-| --- | --- | --- |
-| POST | /documents | 上传，202；后台入库 |
-| GET | /documents | 当前用户文档，offset/limit 分页 |
-| GET | /documents/{id} | 状态、切片数、脱敏错误 |
-| POST | /documents/{id}/retry | 重试 failed 或中断的 processing，202 |
-| DELETE | /documents/{id} | 删除向量、原文件和记录，204 |
-| POST | /sessions | 创建会话，201 |
-| GET | /sessions | 当前用户会话，offset/limit 分页 |
-| GET | /sessions/{id} | 会话与最近消息，message_limit/message_offset 分页 |
-| DELETE | /sessions/{id} | 硬删除会话，数据库级联删除消息，204 |
-| POST | /sessions/{id}/messages | 非流式问答与引用 |
-| POST | /sessions/{id}/messages/stream | 本轮明确返回 501，不写消息 |
-
-V2 会话使用独立路径；文档上传仍复用 `/api/v1/documents`：
-
 | 方法 | 路径 | 行为 |
 | --- | --- | --- |
-| POST/GET | `/api/v2/sessions` | 创建或列出 V2 会话 |
-| GET/DELETE | `/api/v2/sessions/{id}` | 读取或删除 V2 会话 |
+| POST/GET | `/api/v2/documents` | 上传，或按名称和状态分页查询 |
+| GET/DELETE | `/api/v2/documents/{id}` | 查询详情或删除文档 |
+| POST | `/api/v2/documents/{id}/retry` | 重试失败或中断的文档 |
+| GET | `/api/v2/documents/{id}/processing` | 查看解析阶段，不暴露上游任务 ID |
+| POST/GET | `/api/v2/sessions` | 创建或列出会话 |
+| GET/DELETE | `/api/v2/sessions/{id}` | 读取或删除会话 |
 | POST | `/api/v2/sessions/{id}/messages` | Agent 非流式问答 |
 | POST | `/api/v2/sessions/{id}/messages/stream` | SSE 增量输出回答、运行状态、用量与已校验的最终结果 |
-| GET | `/api/v2/documents/{id}/processing` | 查看解析阶段，不暴露上游任务 ID |
 
 ### SSE 事件流（已实现）
 
@@ -244,7 +229,7 @@ curl.exe -N -X POST "http://127.0.0.1:8000/api/v2/sessions/<session-id>/messages
 
 Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。服务端增量解析其中的 `answer` 字段，只发送回答正文，不泄露工具调用、JSON 包装或内部推理。流式正文属于临时显示：补检索、修复或模型降级会用新的 `answer_start` 重置它；引用校验和持久化成功后，前端再用 `done` 中的权威答案覆盖。异常时重新读取会话，避免“服务端已落库但浏览器未显示”的假失败。
 
-V2 请求示例：
+请求示例：
 
 ```json
 {
@@ -273,15 +258,15 @@ V2 请求示例：
 - summary/summarized_through 字段已存在并可被读取，但本轮不自动生成或推进摘要。token_usage 是最终答案调用的用量，不包含查询改写等整次请求总用量。
 - 引用只来自本次召回且在答案中被引用的编号；未知编号直接报错。该校验不等价于回答事实正确，忠实度评测仍需后续补充。
 - 检索目前仅去除完全重复正文，没有语义重排或近似重叠去重。
-- 会话使用固定 64 个分片锁控制单进程并发，不同会话可能短暂竞争同一锁。多 worker 需要改为数据库级会话串行机制。
+- 每个会话使用独立的进程内锁控制并发，不同会话可并行处理。多 worker 需要改为数据库级会话串行机制。
 - 本地解析具备文件/解压大小、页数、文本量、切片数量限制；DOC 有子进程超时，但 PDF/DOCX 解析尚未放进隔离进程。对外服务前须补解析沙箱、速率限制、正式认证和入口限制。
 - 当前没有迁移旧集合、孤儿文件自动回收和多 worker 持久任务协调；单 worker 可通过本地规范化缓存和已有 MinerU `batch_id` 显式 retry 恢复。
 
 ## 8. 本轮验证与密钥安全
 
-离线测试使用 SQLite、脚本化 LangChain 模型和 HTTP 替身，覆盖 V2 路由、会话版本、引用、Tavily 边界、MinerU 四类归一化、批次恢复、模型单步降级和 Agent 输出修复。`tests/fixtures/rag_v2_cases.json` 保存 30 题固定质量集。
+离线测试使用 SQLite、脚本化 LangChain 模型和 HTTP 替身，覆盖 API 路由、用户隔离、引用、Tavily 边界、MinerU 四类归一化、批次恢复、模型单步降级和 Agent 输出修复。`tests/fixtures/rag_v2_cases.json` 保存 30 题固定质量集。
 
-2026-09-20 已实测 PostgreSQL 行锁、V1/V2 隔离、Milvus 用户过滤，以及真实 Qwen Embedding、DeepSeek knowledge 问答和 Tavily web 问答。MinerU 结果下载会重试临时网络故障；Windows 上 Python/OpenSSL 与结果 CDN 握手不兼容时，会使用系统 `curl.exe` 的 Schannel 安全下载，仍然校验证书并限制结果大小。
+2026-09-20 已实测 PostgreSQL 行锁、用户隔离、Milvus 用户过滤，以及真实 Qwen Embedding、DeepSeek knowledge 问答和 Tavily web 问答。MinerU 结果下载会重试临时网络故障；Windows 上 Python/OpenSSL 与结果 CDN 握手不兼容时，会使用系统 `curl.exe` 的 Schannel 安全下载，仍然校验证书并限制结果大小。
 
 基础检查：
 
