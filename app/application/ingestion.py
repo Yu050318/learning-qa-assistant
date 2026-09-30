@@ -105,15 +105,15 @@ class IngestionService:
             raise AppError("INVALID_STORAGE_PATH", "文件路径不在受控目录中", 500)
         return path
 
-    def _cache_path(self, document_id: UUID) -> Path:
+    def _cache_path(self, user_id: UUID, document_id: UUID) -> Path:
         root = self.settings.parsed_dir.resolve()
-        path = (root / str(document_id) / "normalized.json").resolve()
+        path = (root / str(user_id) / str(document_id) / "normalized.json").resolve()
         if not path.is_relative_to(root) or path == root:
             raise AppError("INVALID_STORAGE_PATH", "解析缓存路径不在受控目录中", 500)
         return path
 
-    def _save_cache(self, document_id: UUID, source_hash: str, document_type: str, documents: list[Document]) -> None:
-        path = self._cache_path(document_id)
+    def _save_cache(self, user_id: UUID, document_id: UUID, source_hash: str, document_type: str, documents: list[Document]) -> None:
+        path = self._cache_path(user_id, document_id)
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".tmp")
         payload = {
@@ -123,8 +123,8 @@ class IngestionService:
         temporary.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
         temporary.replace(path)
 
-    def _load_cache(self, document_id: UUID, source_hash: str, document_type: str) -> list[Document] | None:
-        path = self._cache_path(document_id)
+    def _load_cache(self, user_id: UUID, document_id: UUID, source_hash: str, document_type: str) -> list[Document] | None:
+        path = self._cache_path(user_id, document_id)
         if not path.is_file():
             return None
         try:
@@ -141,7 +141,8 @@ class IngestionService:
             raise AppError("MINERU_NOT_CONFIGURED", "PDF/Office 解析需要启用并配置 MinerU", 503)
         self.settings.upload_dir.mkdir(parents=True, exist_ok=True)
         document_id = uuid4()
-        path = self.file_path(str(self.settings.upload_dir / f"{document_id}{extension}"))
+        path = self.file_path(str(self.settings.upload_dir / str(user_id) / f"{document_id}{extension}"))
+        path.parent.mkdir(parents=True, exist_ok=True)
         digest = hashlib.sha256()
         size = 0
         saved = False
@@ -235,7 +236,7 @@ class IngestionService:
                     if snapshot[3].get("provider") == "mineru":
                         if self.mineru is None:
                             raise AppError("MINERU_NOT_CONFIGURED", "MinerU 解析器尚未配置", 503)
-                        loaded = self._load_cache(document_id, snapshot[3]["source_hash"], snapshot[3]["document_type"])
+                        loaded = self._load_cache(user_id, document_id, snapshot[3]["source_hash"], snapshot[3]["document_type"])
                         if loaded is None:
                             loaded = self.mineru.parse(
                                 path, snapshot[1], snapshot[3]["attempt_id"],
@@ -243,7 +244,7 @@ class IngestionService:
                                 lambda: self._set_phase(user_id, document_id, generation, "parsing"),
                                 batch_id=snapshot[3].get("batch_id"),
                             )
-                            self._save_cache(document_id, snapshot[3]["source_hash"], snapshot[3]["document_type"], loaded)
+                            self._save_cache(user_id, document_id, snapshot[3]["source_hash"], snapshot[3]["document_type"], loaded)
                     else:
                         loaded = self.loader.load(path, snapshot[1])
                     self._set_phase(user_id, document_id, generation, "embedding", len(loaded))
@@ -324,7 +325,7 @@ class IngestionService:
             try:
                 self.vectors.delete_document(user_id, document_id)
                 self.file_path(document.file_path).unlink(missing_ok=True)
-                parsed = (self.settings.parsed_dir / str(document_id)).resolve()
+                parsed = (self.settings.parsed_dir / str(user_id) / str(document_id)).resolve()
                 root = self.settings.parsed_dir.resolve()
                 if parsed.is_relative_to(root) and parsed != root and parsed.is_dir():
                     for child in parsed.iterdir():

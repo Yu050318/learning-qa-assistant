@@ -12,7 +12,7 @@ class RetrieverService:
 
     def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID]) -> list[SearchHit]:
         vector = self.embeddings.embed_query(query)
-        hits = self.vectors.search(user_id, document_ids, vector, self.top_k * 2)
+        hits = self.vectors.search(user_id, document_ids, query, vector, self.top_k * 2)
         allowed = {str(document_id) for document_id in document_ids}
         unique = []
         seen = set()

@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
 import httpx
+from pymilvus import MilvusClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
@@ -18,6 +19,7 @@ from app.domain.contracts import AgentChatInput, Chunk, SearchHit, WebSearchBatc
 from app.infrastructure.persistence.models import Base, ChatSession, User
 from app.infrastructure.persistence.repository import Repository
 from app.infrastructure.search.tavily import TavilySearch
+from app.infrastructure.search.scrapling import ScraplingWebReader
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 
 
@@ -41,6 +43,62 @@ class V2FoundationTests(unittest.TestCase):
                 pass
         self.assertEqual("http://127.0.0.1:19531", constructor.call_args.kwargs["uri"])
         client.close.assert_called_once()
+
+    def test_milvus_hybrid_search_scopes_dense_and_bm25_requests(self):
+        settings = Settings(_env_file=None, embedding_dimension=64)
+        store = MilvusVectorStore(settings)
+        user_id, document_id, chunk_id = uuid4(), uuid4(), uuid4()
+        client = MagicMock()
+        client.hybrid_search.return_value = [[{
+            "entity": {
+                "chunk_id": str(chunk_id), "user_id": str(user_id),
+                "document_id": str(document_id), "chunk_index": 0,
+                "content": "错误码 ERR_XQ_731", "source_name": "manual.md",
+                "page_number": 0, "section": "",
+            },
+            "distance": 0.03,
+        }]]
+        connection = MagicMock()
+        connection.__enter__.return_value = client
+
+        with patch.object(store, "connection", return_value=connection), patch.object(store, "_validate"):
+            hits = store.search(user_id, [document_id], "ERR_XQ_731", [0.0] * 64, 12)
+
+        request = client.hybrid_search.call_args
+        dense, sparse = request.kwargs["reqs"]
+        expected_scope = f'user_id == "{user_id}" and document_id in ["{document_id}"]'
+        self.assertEqual(["vector", "sparse_vector"], [dense.anns_field, sparse.anns_field])
+        self.assertEqual([expected_scope, expected_scope], [dense.filter, sparse.filter])
+        self.assertEqual(["ERR_XQ_731"], sparse.data)
+        self.assertEqual(str(chunk_id), hits[0].chunk.chunk_id)
+        self.assertEqual(0.03, hits[0].score)
+
+    def test_milvus_initializes_native_bm25_schema(self):
+        settings = Settings(_env_file=None, embedding_dimension=64)
+        store = MilvusVectorStore(settings)
+        default_client, client = MagicMock(), MagicMock()
+        default_client.list_databases.return_value = [settings.milvus_database]
+        client.has_collection.return_value = False
+        client.prepare_index_params.side_effect = MilvusClient.prepare_index_params
+        client.describe_collection.return_value = {
+            "description": store.memory_signature,
+            "fields": [{"name": "vector", "params": {"dim": 64}}],
+        }
+        default_connection, connection = MagicMock(), MagicMock()
+        default_connection.__enter__.return_value = default_client
+        connection.__enter__.return_value = client
+
+        with patch.object(store, "connection", side_effect=[default_connection, connection]), patch.object(store, "_validate"):
+            store.initialize()
+
+        created = client.create_collection.call_args_list[0].kwargs
+        schema = created["schema"].to_dict()
+        fields = {field["name"]: field for field in schema["fields"]}
+        self.assertIn("sparse_vector", fields)
+        self.assertTrue(fields["content"]["params"]["enable_analyzer"])
+        self.assertEqual("content_bm25", schema["functions"][0]["name"])
+        sparse_index = next(index.to_dict() for index in created["index_params"] if index.field_name == "sparse_vector")
+        self.assertEqual("BM25", sparse_index["metric_type"])
 
     def test_public_web_query_blocks_obvious_connection_string(self):
         payload = AgentChatInput(
@@ -102,8 +160,8 @@ class V2FoundationTests(unittest.TestCase):
         Base.metadata.create_all(connection)
         sessions = sessionmaker(bind=connection)
         with sessions() as database:
-            first_user = User(external_id="first")
-            second_user = User(external_id="second")
+            first_user = User(username="first", password_hash="hash")
+            second_user = User(username="second", password_hash="hash")
             database.add_all([first_user, second_user])
             database.flush()
             first_session = ChatSession(user_id=first_user.id, title="first")
@@ -128,6 +186,59 @@ class V2FoundationTests(unittest.TestCase):
         batch = search.search("public query", 5)
         self.assertEqual("https://api.tavily.com/search", str(requests[0].url))
         self.assertEqual(["https://example.com/a"], [item.url for item in batch.results])
+
+    def test_scrapling_reader_rejects_private_dns_result(self):
+        fetched = []
+        reader = ScraplingWebReader(
+            Settings(_env_file=None),
+            fetch=lambda *args, **kwargs: fetched.append((args, kwargs)),
+            resolve=lambda *args, **kwargs: [(None, None, None, None, ("127.0.0.1", 443))],
+        )
+
+        with self.assertRaises(AppError) as raised:
+            reader.read("https://internal.example/page", 5)
+
+        self.assertEqual("UNSAFE_WEB_URL", raised.exception.code)
+        self.assertEqual([], fetched)
+
+    def test_scrapling_reader_returns_clean_markdown(self):
+        requests = []
+
+        class Selection:
+            def get(self):
+                return "Example documentation"
+
+        class Page:
+            url = "https://example.com/docs"
+            status = 200
+            headers = {"content-type": "text/html; charset=utf-8"}
+            body = b"<html><body>content</body></html>"
+
+            def markdown(self, main_content_only=False):
+                self.main_content_only = main_content_only
+                return "# Clean content"
+
+            def css(self, selector):
+                return Selection()
+
+        page = Page()
+
+        def fetch(url, **kwargs):
+            requests.append((url, kwargs))
+            return page
+
+        reader = ScraplingWebReader(
+            Settings(_env_file=None, scrapling_timeout=7), fetch=fetch,
+            resolve=lambda *args, **kwargs: [(None, None, None, None, ("93.184.216.34", 443))],
+        )
+
+        result = reader.read("https://example.com/docs", 10)
+
+        self.assertEqual("# Clean content", result.content)
+        self.assertEqual("Example documentation", result.title)
+        self.assertTrue(page.main_content_only)
+        self.assertEqual(7, requests[0][1]["timeout"])
+        self.assertEqual("safe", requests[0][1]["follow_redirects"])
 
 
 if __name__ == "__main__":

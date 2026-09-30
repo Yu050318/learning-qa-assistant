@@ -1,8 +1,10 @@
 from uuid import UUID
 import logging
 
+from app.application.auth import AuthService
 from app.application.chat import ChatService
 from app.application.ingestion import IngestionService
+from app.application.memories import MemoryService
 from app.application.retriever import RetrieverService
 from app.application.sessions import SessionService
 from app.core.config import Settings
@@ -13,6 +15,7 @@ from app.infrastructure.loaders.local import LocalDocumentLoader
 from app.infrastructure.loaders.mineru import MinerUParser
 from app.infrastructure.persistence.database import Database
 from app.infrastructure.persistence.repository import Repository
+from app.infrastructure.search.scrapling import ScraplingWebReader
 from app.infrastructure.search.tavily import TavilySearch
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 from app.workflows.agent import AgentRAGWorkflow
@@ -22,13 +25,19 @@ class Services:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.database = Database(settings)
+        self.auth = AuthService(settings, self.database)
         self.vectors = MilvusVectorStore(settings)
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
         self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k)
+        self.memories = MemoryService(settings, self.database, self.embeddings, self.vectors)
         self.web_search = TavilySearch(settings)
+        self.web_reader = ScraplingWebReader(settings)
         self.mineru = MinerUParser(settings)
-        self.agent_workflow = AgentRAGWorkflow(settings, self.retriever, self.models, self.web_search)
+        self.agent_workflow = AgentRAGWorkflow(
+            settings, self.retriever, self.models, self.web_search, self.memories,
+            web_reader=self.web_reader,
+        )
         self.ingestion = IngestionService(settings, self.database, LocalDocumentLoader(settings), self.mineru, self.embeddings, self.vectors)
         self.sessions = SessionService(self.database)
         self.chat = ChatService(settings, self.database, self.sessions, self.agent_workflow)
@@ -40,12 +49,6 @@ class Services:
                 logging.getLogger("rag").info("ingestion_recovered", extra={"document_count": recovered})
         except Exception as error:
             logging.getLogger("rag").warning("ingestion_recovery_unavailable", extra={"error_type": type(error).__name__})
-
-    def user_id(self, external_id: str) -> UUID:
-        with self.database.sessions() as database:
-            user = Repository(database).user(external_id)
-            database.commit()
-            return user.id
 
     def readiness(self) -> dict:
         checks = {}

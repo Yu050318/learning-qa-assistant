@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, CheckConstraint, DateTime, ForeignKey, Index, MetaData, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Index, MetaData, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -18,7 +18,23 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    external_id: Mapped[str] = mapped_column(String(200), unique=True)
+    username: Mapped[str] = mapped_column(String(32), unique=True)
+    password_hash: Mapped[str] = mapped_column(Text)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class AuthSession(Base):
+    __tablename__ = "auth_sessions"
+    __table_args__ = (Index("ix_auth_sessions_user_active", "user_id", "revoked_at"),)
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id", ondelete="CASCADE"))
+    refresh_token_hash: Mapped[str] = mapped_column(String(64))
+    absolute_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_refreshed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -50,6 +66,7 @@ class ChatSession(Base):
     __tablename__ = "chat_sessions"
     __table_args__ = (
         Index("ix_sessions_user_updated", "user_id", "updated_at"),
+        UniqueConstraint("user_id", "id"),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
@@ -65,11 +82,13 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
     __table_args__ = (
         CheckConstraint("role IN ('user', 'assistant', 'system')"),
+        ForeignKeyConstraint(["user_id", "session_id"], ["rag.chat_sessions.user_id", "rag.chat_sessions.id"], ondelete="CASCADE"),
         Index("ix_messages_session_created", "session_id", "created_at"),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    session_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_sessions.id", ondelete="CASCADE"))
+    user_id: Mapped[UUID]
+    session_id: Mapped[UUID]
     role: Mapped[str] = mapped_column(String(20))
     content: Mapped[str] = mapped_column(Text)
     model_provider: Mapped[str | None] = mapped_column(String(40))
@@ -78,3 +97,27 @@ class ChatMessage(Base):
     token_usage: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
     run_metadata: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class UserMemory(Base):
+    __tablename__ = "user_memories"
+    __table_args__ = (
+        UniqueConstraint("user_id", "content_hash"),
+        CheckConstraint("status IN ('processing', 'ready', 'failed', 'deleting')"),
+        CheckConstraint("created_via IN ('chat', 'management_ui')"),
+        Index("ix_memories_user_status", "user_id", "status"),
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id", ondelete="CASCADE"))
+    content: Mapped[str] = mapped_column(String(500))
+    content_hash: Mapped[str] = mapped_column(String(64))
+    version: Mapped[int] = mapped_column(default=1)
+    status: Mapped[str] = mapped_column(String(20), default="processing")
+    created_via: Mapped[str] = mapped_column(String(20))
+    source_session_id: Mapped[UUID | None]
+    source_message_id: Mapped[UUID | None]
+    vector_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)

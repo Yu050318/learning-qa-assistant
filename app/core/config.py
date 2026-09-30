@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     milvus_uri: str = "http://localhost:19530"
     milvus_token: SecretStr = SecretStr("")
     milvus_database: str = "rag_tutorial"
-    milvus_collection: str = "rag_docs_text_v4_1024"
+    milvus_collection: str = "rag_docs_hybrid_v1_1024"
     milvus_timeout: float = Field(default=10, gt=0)
     dashscope_api_key: SecretStr = SecretStr("")
     dashscope_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     web_search_enabled: bool = False
     tavily_api_key: SecretStr = SecretStr("")
     tavily_timeout: float = Field(default=15, gt=0)
+    scrapling_timeout: float = Field(default=15, gt=0, le=60)
+    scrapling_max_characters: int = Field(default=12000, ge=1000, le=50000)
+    fixed_crawl_urls: list[str] = Field(default_factory=list)
     agent_timeout: float = Field(default=120, gt=0)
     agent_max_model_calls: int = Field(default=6, ge=1, le=20)
     agent_max_tool_calls: int = Field(default=4, ge=1, le=20)
@@ -72,10 +75,21 @@ class Settings(BaseSettings):
     chunk_size: int = Field(default=700, ge=100, le=2000)
     chunk_overlap: int = Field(default=100, ge=0)
     retrieval_top_k: int = Field(default=6, ge=1, le=30)
-    auto_web_score_threshold: float = Field(default=0.72, ge=-1, le=1)
+    auto_web_hybrid_score_threshold: float | None = Field(default=None, ge=0)
     memory_recent_messages: int = Field(default=12, ge=2, le=40)
     libreoffice_path: str = "soffice"
     conversion_timeout: int = Field(default=60, ge=1, le=300)
+    jwt_secret: SecretStr = SecretStr("")
+    jwt_issuer: str = "learning-qa-assistant"
+    jwt_audience: str = "learning-qa-api"
+    access_token_minutes: int = Field(default=15, ge=1, le=60)
+    refresh_token_days: int = Field(default=30, ge=1, le=90)
+    registration_enabled: bool = False
+    auth_cookie_secure: bool = True
+    frontend_origin: str = "http://localhost:5173"
+    memory_collection: str = "rag_user_memories_v1_1024"
+    memory_top_k: int = Field(default=3, ge=1, le=10)
+    memory_max_items: int = Field(default=200, ge=1, le=1000)
 
     @model_validator(mode="after")
     def check_chunk_overlap(self):
@@ -86,6 +100,10 @@ class Settings(BaseSettings):
         if not self.parsed_dir.is_absolute():
             self.parsed_dir = PROJECT_ROOT / self.parsed_dir
         return self
+
+    def require_auth_configuration(self) -> None:
+        if len(self.jwt_secret.get_secret_value().encode()) < 32:
+            raise ValueError("JWT_SECRET must contain at least 32 bytes")
 
     def configure_tracing(self) -> None:
         endpoint = urlsplit(self.langsmith_endpoint)

@@ -1,9 +1,10 @@
-import hashlib
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, Header, Request
+from fastapi import Depends, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.application.auth import AuthContext
 from app.application.container import Services
 from app.core.errors import AppError
 
@@ -12,17 +13,27 @@ def get_services(request: Request) -> Services:
     return request.app.state.services
 
 
-def current_user(
+bearer = HTTPBearer(auto_error=False)
+
+
+def current_auth(
     request: Request,
     services: Annotated[Services, Depends(get_services)],
-    x_user_id: Annotated[str, Header(min_length=1, max_length=200)],
-) -> UUID:
-    identifier = x_user_id.strip()
-    if not identifier or any(ord(character) < 32 for character in identifier):
-        raise AppError("INVALID_USER_ID", "X-User-ID 不能为空或包含控制字符", 422)
-    request.state.user_hash = hashlib.sha256(identifier.encode()).hexdigest()[:16]
-    return services.user_id(identifier)
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+) -> AuthContext:
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        raise AppError("UNAUTHORIZED", "请先登录", 401)
+    context = services.auth.authenticate(credentials.credentials)
+    request.state.user_hash = str(context.user_id).replace("-", "")[:16]
+    return context
 
 
 ServiceDependency = Annotated[Services, Depends(get_services)]
+AuthDependency = Annotated[AuthContext, Depends(current_auth)]
+
+
+def current_user(context: AuthDependency) -> UUID:
+    return context.user_id
+
+
 UserDependency = Annotated[UUID, Depends(current_user)]

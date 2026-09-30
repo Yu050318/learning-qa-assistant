@@ -84,6 +84,7 @@ class RunContext:
     public_query: str | None
     web_enabled: bool
     warnings: tuple[str, ...] = ()
+    source_message_id: UUID | None = None
     started_at_utc: datetime | None = None
     deadline_monotonic: float = field(default_factory=lambda: monotonic() + 120)
 
@@ -96,7 +97,7 @@ class EmbeddingProvider(Protocol):
 class VectorStore(Protocol):
     def upsert(self, chunks: Sequence[Chunk], vectors: list[list[float]]) -> None: ...
     def delete_document(self, user_id: UUID, document_id: UUID) -> None: ...
-    def search(self, user_id: UUID, document_ids: list[UUID], vector: list[float], top_k: int) -> list[SearchHit]: ...
+    def search(self, user_id: UUID, document_ids: list[UUID], query: str, vector: list[float], top_k: int) -> list[SearchHit]: ...
     def check(self) -> None: ...
 
 

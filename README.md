@@ -12,7 +12,7 @@
 
 ## 项目亮点
 
-- **受控 RAG Agent：** 可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库与 Tavily 公网搜索。
+- **受控 RAG Agent：** 可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
 - **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、Excel 通过 MinerU 解析，TXT/Markdown 本地处理。
@@ -25,7 +25,7 @@
 | --- | --- |
 | 前端 | Vue 3、TypeScript、Pinia、Vue Router、Vite |
 | API / Agent | FastAPI、Pydantic、LangChain、DeepSeek、Ollama |
-| 检索 | Milvus、Qwen Embedding、Tavily Search |
+| 检索 | Milvus、Qwen Embedding、Tavily Search、Scrapling |
 | 数据与任务状态 | PostgreSQL、SQLAlchemy |
 | 文档解析 | MinerU、PyPDF、python-docx、LibreOffice |
 | 可观测与传输 | SSE、结构化日志、request ID、LangSmith（可选） |
@@ -39,6 +39,7 @@ flowchart LR
     CHAT --> AGENT[RAG Agent Workflow]
     AGENT -->|knowledge| RETRIEVE[Qwen Embedding + Milvus]
     AGENT -->|web / auto| WEB[Tavily Search]
+    AGENT -->|read_web_page| PAGE[Scrapling 网页正文]
     AGENT --> MODEL[DeepSeek / Ollama]
     CHAT --> DB[(PostgreSQL)]
     CHAT -->|run_started / usage / done / error| UI
@@ -52,19 +53,19 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 
 ## 1. 当前实现
 
-- FastAPI 文档与会话 API、用户作用域查询、统一错误与 request_id。
+- FastAPI 文档与会话 API、JWT 登录、可轮换 Refresh Token、用户作用域查询、统一错误与 request_id。
 - 本地 TXT/Markdown、文本型 PDF、DOCX 解析；旧 DOC 通过 LibreOffice 转换。
-- 可配置 token 切片、确定性 chunk ID、千问批量 Embedding、Milvus COSINE 检索。
+- 可配置 token 切片、确定性 chunk ID、千问批量 Embedding、Milvus Dense + 原生 BM25 混合检索。
 - PostgreSQL 元数据和消息持久化，文档状态机、重试与删除补偿。
 - 最近消息上下文、服务端引用、DeepSeek/Ollama 回答与 SSE 增量答案。
 - DeepSeek 可重试错误发生时，可显式开启一次 Ollama 降级；鉴权错误不降级。
 - LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
 - `knowledge / web / auto` 三种模式、请求内证据登记、混合引用和有限工具循环。
-- Tavily 固定公开搜索词；网络结果不会写入 Milvus。
+- Tavily 固定公开搜索词；Agent 可按本轮搜索结果编号调用 Scrapling 读取清洗后的网页正文，网络结果不会写入 Milvus。
 - PDF、Word、PowerPoint、Excel 显式启用后统一经 MinerU 云解析；TXT/Markdown 保持本地解析。
 - 会话持久化、运行元数据和显式数据库初始化。
 
-**仍未实现：** SSE 断线续传、自动滚动摘要、正式认证、持久任务队列、多 worker、重排序和网页自动入库。
+**仍未实现：** SSE 断线续传、自动滚动摘要、持久任务队列、多 worker、重排序和网页自动入库。
 
 ## 2. 项目结构
 
@@ -87,6 +88,7 @@ app/
     loaders/local.py          TXT/MD 本地解析与共享切片
     loaders/mineru.py         MinerU 签名上传、轮询、下载和结构归一化
     search/tavily.py          Tavily 搜索适配与结果安全过滤
+    search/scrapling.py       已登记搜索来源的网页正文抓取与安全校验
   workflows/agent.py          LangChain Agent 与工具预算
   core/                       环境配置、异常与结构化日志
   bootstrap.py                显式初始化存储
@@ -121,13 +123,19 @@ $env:DATABASE_REQUIRE_TLS = 'false'
 
 这只取消应用的 TLS 校验，实际连接方式仍由原 URL 的 sslmode 控制；不要把这个设置用于公网部署。
 
+### JWT 与注册
+
+必须配置至少 32 字节的 `JWT_SECRET`。可用 `python -c "import secrets; print(secrets.token_hex(32))"` 生成。Access JWT 默认 15 分钟并只保存在前端内存；30 天 Refresh Token 是 HttpOnly Cookie 中的随机 opaque token，数据库只保存哈希并在每次刷新时轮换。
+
+本地开发设置 `REGISTRATION_ENABLED=true`、`AUTH_COOKIE_SECURE=false`；HTTPS 部署必须恢复 `AUTH_COOKIE_SECURE=true`。`FRONTEND_ORIGIN` 必须是实际前端 origin，用于刷新接口的 CSRF 来源校验。
+
 ### Milvus 和 Embedding
 
-默认连接本机 `http://localhost:19530`，数据库 `rag_tutorial`，新集合 `rag_docs_text_v4_1024`。请先启动可访问的 Milvus，或配置 `MILVUS_URI`、`MILVUS_TOKEN`。本项目不自动安装或启动 Milvus。
+默认连接本机 `http://localhost:19530`，数据库 `rag_tutorial`，混合集合 `rag_docs_hybrid_v1_1024`。需要支持原生 BM25 的 Milvus 2.5+，建议至少 2.5.11；请先启动可访问的 Milvus，或配置 `MILVUS_URI`、`MILVUS_TOKEN`。本项目不自动安装或启动 Milvus。
 
 默认选择文本模型 `text-embedding-v4`、1024 维、每批最多 10 条，不沿用实验脚本中的 `qwen3-vl-embedding`。默认 DashScope 地址是北京地域的文本 Embedding 兼容接口；密钥所属地域不同需要同时调整 `DASHSCOPE_BASE_URL`。多模态接口不是本轮适配范围。
 
-集合描述记录模型和维度签名，读写时校验，避免相同维度但不同模型混用。切换模型或维度必须换新集合并重新入库；旧文档迁移工具暂未实现。请在第一次上传前确认模型配置。
+集合同时保存 Qwen 稠密向量和由中文 Analyzer 生成的 BM25 稀疏向量，检索时使用 RRF 融合；返回的知识库 `score` 是 RRF 分数，不再是 COSINE 分数。集合描述记录模型、维度和检索架构签名，读写时校验。切换模型、维度或从旧 Dense 集合升级时必须换新集合并重新入库；旧文档迁移工具暂未实现。请在第一次上传前确认模型配置。
 
 ### Ollama
 
@@ -143,9 +151,11 @@ $env:DATABASE_REQUIRE_TLS = 'false'
 
 设置 `MINERU_ENABLED=true` 并配置 `MINERU_API_TOKEN` 后，新 PDF、DOC/DOCX、PPT/PPTX、XLS/XLSX 会上传到 MinerU 云端解析；未显式启用时这些格式在创建数据库记录前返回 503。上传前会校验 PDF/OLE/OOXML 容器，解析超时后可沿用已有 `batch_id`，Embedding 重试复用本地规范化缓存；进程重启会恢复 processing 文档，若上次停在上传阶段则创建新的安全批次。TXT/MD 使用 UTF-8 且不会上传到 MinerU。`INGESTION_WORKERS` 默认 2，用于限制本进程同时处理的文档数。
 
-### Tavily
+### Tavily 与 Scrapling
 
 设置 `WEB_SEARCH_ENABLED=true` 并配置 `TAVILY_API_KEY` 后，`web` 和 `auto` 模式可调用网络搜索。联网时只发送当前问题或显式 `web_query`，不会发送历史消息或知识库片段。应用会阻止明显的密钥、连接串和超长公开查询，但这不是完整的隐私识别；发送前仍需确认查询可公开。
+
+`web` 模式下，Agent 可继续调用 `read_web_page(source_number)`，用 Scrapling 读取本轮 Tavily 已登记来源的正文。该工具不接受任意 URL，且会限制公网 DNS、端口、重定向、响应类型、2 MiB 响应体、超时和送入模型的字符数。可通过 `SCRAPLING_TIMEOUT` 与 `SCRAPLING_MAX_CHARACTERS` 调整后两项；当前只使用静态 HTTP Fetcher，不需要下载浏览器运行时。
 
 ## 4. 初始化与启动
 
@@ -165,16 +175,20 @@ PostgreSQL 表位于独立的 `rag` schema；初始化使用当前 ORM 定义创
 
 当前仅支持单进程开发部署，不要启用多个 Web worker。后台入库有持久状态和启动恢复，但执行器仍在应用进程内；需要横向扩容时再增加数据库任务租约。
 
+本次认证模型修改了已有表结构，`create_all` 不会迁移旧表。开发库按约定需要在人工确认后清空 `rag` schema、文档/记忆 Milvus 集合及 `data/uploads`、`data/parsed`，再重新执行两个 bootstrap 命令；应用启动不会自动删除任何数据。
+
 ## 5. 最小联调
 
-业务接口均要求 `X-User-ID`。这只是可伪造的开发标识，**不是认证**，禁止直接暴露到不可信网络。两个用户的相同文件允许分别上传；同一用户重复内容返回 409。
+业务接口均要求登录返回的 Bearer Access JWT。当前用户只从已验证 JWT 中取得，客户端不能指定用户 ID。两个用户的相同文件允许分别上传；同一用户重复内容返回 409。
 
 ```powershell
-$headers = @{ 'X-User-ID' = 'alice' }
+$login = Invoke-RestMethod http://127.0.0.1:8000/api/v2/auth/login -Method Post `
+  -ContentType 'application/json' -Body '{"username":"alice","password":"correct horse battery"}'
+$headers = @{ Authorization = "Bearer $($login.access_token)" }
 
 # 上传已有本地文件；Windows 请使用 curl.exe 而非 PowerShell 的 curl 别名
 curl.exe -X POST http://127.0.0.1:8000/api/v2/documents `
-  -H 'X-User-ID: alice' -F 'file=@knowledge.txt'
+  -H "Authorization: Bearer $($login.access_token)" -F 'file=@knowledge.txt'
 
 # 保存上传响应中的文档 ID，轮询到 ready 后再问答
 $documentId = '替换为上传返回的文档UUID'
@@ -207,7 +221,7 @@ Invoke-RestMethod "http://127.0.0.1:8000/api/v2/sessions/$($session.id)/messages
 
 ### SSE 事件流（已实现）
 
-由于问答请求需要 POST body 和 `X-User-ID`，前端不使用仅支持 GET 的 `EventSource`，而是通过 `fetch` 读取 `ReadableStream`。服务端设置 `text/event-stream`、`Cache-Control: no-cache, no-transform` 和 `X-Accel-Buffering: no`，避免常见代理缓冲。
+由于问答请求需要 POST body 和 Bearer Token，前端不使用仅支持 GET 的 `EventSource`，而是通过 `fetch` 读取 `ReadableStream`。服务端设置 `text/event-stream`、`Cache-Control: no-cache, no-transform` 和 `X-Accel-Buffering: no`，避免常见代理缓冲。
 
 | 事件 | 说明 |
 | --- | --- |
@@ -221,7 +235,7 @@ Invoke-RestMethod "http://127.0.0.1:8000/api/v2/sessions/$($session.id)/messages
 
 ```powershell
 curl.exe -N -X POST "http://127.0.0.1:8000/api/v2/sessions/<session-id>/messages/stream" `
-  -H "X-User-ID: alice" `
+  -H "Authorization: Bearer $($login.access_token)" `
   -H "Accept: text/event-stream" `
   -H "Content-Type: application/json" `
   -d '{"question":"总结当前资料","search_mode":"auto","model_provider":"deepseek"}'
@@ -259,7 +273,7 @@ Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。服
 - 引用只来自本次召回且在答案中被引用的编号；未知编号直接报错。该校验不等价于回答事实正确，忠实度评测仍需后续补充。
 - 检索目前仅去除完全重复正文，没有语义重排或近似重叠去重。
 - 每个会话使用独立的进程内锁控制并发，不同会话可并行处理。多 worker 需要改为数据库级会话串行机制。
-- 本地解析具备文件/解压大小、页数、文本量、切片数量限制；DOC 有子进程超时，但 PDF/DOCX 解析尚未放进隔离进程。对外服务前须补解析沙箱、速率限制、正式认证和入口限制。
+- 本地解析具备文件/解压大小、页数、文本量、切片数量限制；DOC 有子进程超时，但 PDF/DOCX 解析尚未放进隔离进程。对外服务前仍须补解析沙箱和网关级速率限制。
 - 当前没有迁移旧集合、孤儿文件自动回收和多 worker 持久任务协调；单 worker 可通过本地规范化缓存和已有 MinerU `batch_id` 显式 retry 恢复。
 
 ## 8. 本轮验证与密钥安全
@@ -282,7 +296,7 @@ $env:RUN_STORAGE_INTEGRATION='1'
 
 ## 9. 后续范围
 
-后续按需增加 SSE 断线恢复、事务式滚动摘要、正式认证、可靠任务队列、多 worker 协调、重排和网页自动入库。
+后续按需增加 SSE 断线恢复、事务式滚动摘要、密码找回、可靠任务队列、多 worker 协调、重排和网页自动入库。
 
 ## 10. 检索召回率评估
 

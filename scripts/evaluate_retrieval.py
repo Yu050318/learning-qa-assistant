@@ -46,6 +46,7 @@ def main() -> None:
     retriever = RetrieverService(QwenEmbedding(settings), MilvusVectorStore(settings), max(ks))
     rankings = []
     details = []
+    top_scores = []
 
     for case in cases:
         relevant = set(case["relevant_chunk_ids"])
@@ -55,14 +56,27 @@ def main() -> None:
             [UUID(value) for value in case["document_ids"]],
         )
         retrieved = [hit.chunk.chunk_id for hit in hits]
+        top_score = hits[0].score if hits else None
         rankings.append((retrieved, relevant))
+        if top_score is not None:
+            top_scores.append(top_score)
         details.append({
             "id": case["id"],
             "retrieved_chunk_ids": retrieved,
             "relevant_chunk_ids": sorted(relevant),
+            "top_rrf_score": top_score,
         })
 
-    print(json.dumps({"cases": details, "summary": score_rankings(rankings, ks)}, ensure_ascii=False, indent=2))
+    score_summary = None if not top_scores else {
+        "min": round(min(top_scores), 6),
+        "mean": round(sum(top_scores) / len(top_scores), 6),
+        "max": round(max(top_scores), 6),
+    }
+    print(json.dumps({
+        "cases": details,
+        "summary": score_rankings(rankings, ks),
+        "rrf_top_score_summary": score_summary,
+    }, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

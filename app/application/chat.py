@@ -65,13 +65,15 @@ class ChatService:
                     user_id, session_id
                 )[-self.settings.memory_recent_messages:]]
                 summary = session.summary
-                database.add(ChatMessage(session_id=session_id, role="user", content=payload.question))
+                user_message = ChatMessage(user_id=user_id, session_id=session_id, role="user", content=payload.question)
+                database.add(user_message)
                 session.updated_at = utcnow()
                 database.commit()
             context = RunContext(
                 request_id=request_id, user_id=user_id, session_id=session_id, question=payload.question,
                 search_mode=payload.search_mode, allowed_document_ids=tuple(ready_ids), selected_provider=selected,
                 public_query=public_query, web_enabled=web_enabled, warnings=warnings,
+                source_message_id=user_message.id,
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
             )
             result = self.agent_workflow.run(context, history, summary, on_answer_event=on_answer_event)
@@ -84,7 +86,7 @@ class ChatService:
                     if not set(current).issubset(set(ready_ids)):
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "回答期间引用文档已被删除或变更，请重新提问", 409)
                 message = ChatMessage(
-                    session_id=session_id, role="assistant", content=result.answer.content,
+                    user_id=user_id, session_id=session_id, role="assistant", content=result.answer.content,
                     model_provider=result.answer.provider, model_name=result.answer.model,
                     citations=result.citations, token_usage=result.answer.token_usage or None,
                     run_metadata=result.run_metadata,

@@ -32,3 +32,68 @@
 .citation-panel footer svg{width:16px}
 @media(max-width:520px){.citation-panel{inset:12px;width:auto;padding:18px}.citation-panel footer{align-items:stretch;flex-direction:column}.citation-panel footer .ghost{justify-content:center}}
 @keyframes citation-flash{50%{box-shadow:0 0 0 7px #f2d99355}}
+
+.auth-page{min-height:100vh;display:grid;place-items:center;background:var(--paper);padding:24px}.auth-card{width:min(420px,100%);display:grid;gap:18px;padding:38px;background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 70px #17251e18}.auth-card h1,.auth-card p{margin:0}.auth-card label{display:grid;gap:7px;font-size:13px;color:var(--muted)}.auth-card input,.memory-add textarea,.memory-card textarea{padding:12px;border:1px solid var(--line);border-radius:8px;font:inherit}.memory-add{display:flex;gap:12px;margin:24px 0}.memory-add textarea{min-height:84px;flex:1;resize:vertical}.memory-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}.memory-card{display:grid;gap:12px;padding:18px;background:white;border:1px solid var(--line);border-radius:12px}.memory-card header,.memory-card footer{display:flex;align-items:center;gap:10px}.memory-card footer{margin-top:auto}.memory-card p{white-space:pre-wrap;margin:0}.memory-card textarea{min-height:70px;resize:vertical}.identity{gap:8px}.identity span{overflow:hidden;text-overflow:ellipsis}
+
+@media(max-width:640px){
+  body{overscroll-behavior:none}
+  .shell{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .shell>main{grid-row:1;overflow:hidden}
+  .rail{grid-row:2;position:relative;height:calc(62px + env(safe-area-inset-bottom));padding:5px 8px env(safe-area-inset-bottom);display:grid;grid-template-columns:minmax(0,1fr) auto;box-shadow:0 -8px 28px #173f3124}
+  .rail>.brand{display:none}
+  .rail nav{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:0;width:100%;height:57px}
+  .rail nav a{height:54px;flex-direction:column;gap:2px;border-radius:8px;font-size:10px}
+  .rail nav a svg{width:19px}
+  .identity{margin:0 0 0 5px;display:flex}
+  .identity span{display:none}
+  .identity .icon{width:48px;height:48px;display:grid;place-items:center}
+
+  .chat-head{height:66px;padding:0 12px;gap:8px}
+  .chat-head>div:first-child{min-width:0}
+  .chat-head small{display:none}
+  .chat-head h1{max-width:42vw;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:17px}
+  .head-controls{flex:0 0 auto;gap:5px}
+  .head-controls select{width:112px;height:38px;padding:0 7px;font-size:12px}
+  .head-controls .ghost{width:40px;padding:0;justify-content:center}
+  .head-controls .ghost svg{margin:0}
+
+  .messages{padding:22px 16px}
+  .welcome{max-width:360px}
+  .welcome .orb{width:50px;height:50px}
+  .welcome h2{font-size:27px;margin:12px 0}
+  .welcome p{margin:0;font-size:14px}
+  .welcome button{padding:8px 12px;margin:12px 2px 0}
+  .message{margin-bottom:24px}
+  .message.user{margin-left:10%;padding:12px 14px}
+  .message-content{font-size:14px}
+  .composer{margin:0 10px 10px;border-radius:12px}
+  .mode-tabs{padding:6px 8px 0}
+  .mode-tabs button{padding:4px 8px;font-size:12px}
+  .composer textarea{min-height:58px;max-height:28vh;padding:8px 52px 7px 12px;font-size:16px}
+  .send{right:9px;top:40px;width:36px;height:36px}
+  .usage{gap:12px;padding:7px 10px;font-size:10px;white-space:nowrap;overflow-x:auto}
+
+  .documents{height:100%;overflow:auto;padding:24px 14px calc(24px + env(safe-area-inset-bottom))}
+  .page-title{display:block}
+  .page-title h1{font-size:29px;margin:3px 0}
+  .page-title p{margin:7px 0 18px;font-size:13px;line-height:1.6}
+  .page-title>div:last-child{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .page-title button{padding:0 10px;font-size:13px}
+  .library-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;margin:22px 0 12px;gap:8px}
+  .library-bar .search{grid-column:1/-1}
+  .library-bar select{min-width:0;height:40px}
+  .library-bar>span{margin:0;align-self:center;text-align:right}
+  .library-bar .danger{grid-column:1/-1;justify-content:center}
+  .table-wrap{border-radius:8px}
+  table{min-width:560px}
+  th,td{padding:12px 10px}
+  .failure-card{width:230px}
+  .memory-add{display:grid;gap:9px;margin:18px 0}
+  .memory-add .primary{justify-self:stretch}
+  .memory-grid{grid-template-columns:1fr}
+  .auth-page{padding:14px}
+  .auth-card{width:100%;max-width:calc(100vw - 28px);padding:28px 22px}
+  .drawer{padding:22px 18px}
+  .modal{width:calc(100% - 24px);max-height:82vh;margin:9vh auto;padding:20px}
+  .global-error{top:10px;right:10px;left:10px;max-width:none}
+}

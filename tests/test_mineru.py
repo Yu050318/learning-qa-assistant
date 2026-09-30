@@ -45,10 +45,11 @@ class MinerUTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             settings = Settings(_env_file=None, parsed_dir=Path(directory))
             service = IngestionService(settings, None, None, None, None, None)
+            user_id = uuid4()
             document_id = uuid4()
             expected = [Document(page_content="正文", metadata={"page_number": 2, "section": "标题"})]
-            service._save_cache(document_id, "hash", "pdf", expected)
-            loaded = service._load_cache(document_id, "hash", "pdf")
+            service._save_cache(user_id, document_id, "hash", "pdf", expected)
+            loaded = service._load_cache(user_id, document_id, "hash", "pdf")
             self.assertEqual(expected, loaded)
 
     def test_normalizes_pdf_and_ppt_page_numbers(self):

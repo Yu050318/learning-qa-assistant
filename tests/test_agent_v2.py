@@ -107,6 +107,18 @@ class Web:
         )], 1)
 
 
+class WebReader:
+    calls = 0
+
+    def read(self, url, timeout_seconds):
+        self.calls += 1
+        self.url = url
+        return WebSearchResult(
+            "完整页面", url, "Scrapling 提取的完整正文", None,
+            datetime(2026, 9, 10, tzinfo=timezone.utc), None,
+        )
+
+
 class AgentV2Tests(unittest.TestCase):
     def test_stream_emits_answer_deltas_from_model_chunks(self):
         model = StreamingScriptedModel(responses=[[
@@ -126,15 +138,16 @@ class AgentV2Tests(unittest.TestCase):
         self.assertEqual("answer_start", events[0][0])
         self.assertEqual("你好\n世界！", "".join(value for event, value in events if event == "answer_delta"))
 
-    def test_auto_falls_back_to_web_when_knowledge_score_is_low_even_if_model_skips_tools(self):
+    def test_auto_falls_back_to_web_when_hybrid_score_is_low_even_if_model_skips_tools(self):
         model = ScriptedModel(responses=[
             AIMessage(content='{"kind":"insufficient","answer":"资料不足"}'),
             AIMessage(content='{"kind":"grounded","answer":"综合结论[1][2]"}'),
         ])
-        retriever = Retriever(0.67)
+        retriever = Retriever(0.015)
         web = Web()
         workflow = AgentRAGWorkflow(
-            Settings(_env_file=None, web_search_enabled=True), retriever, Models(model), web
+            Settings(_env_file=None, web_search_enabled=True, auto_web_hybrid_score_threshold=0.02),
+            retriever, Models(model), web
         )
         context = RunContext(
             request_id="request", user_id=uuid4(), session_id=uuid4(), question="介绍 DeepSeek",
@@ -150,12 +163,12 @@ class AgentV2Tests(unittest.TestCase):
         self.assertEqual(1, result.run_metadata["web_attempts"])
         self.assertEqual({"knowledge", "web"}, {item["type"] for item in result.citations})
 
-    def test_auto_does_not_search_web_when_knowledge_score_is_high(self):
+    def test_auto_does_not_compare_hybrid_score_without_calibrated_threshold(self):
         model = ScriptedModel(responses=[
             AIMessage(content='{"kind":"insufficient","answer":"资料不足"}'),
             AIMessage(content='{"kind":"grounded","answer":"知识库结论[1]"}'),
         ])
-        retriever = Retriever(0.8)
+        retriever = Retriever(0.001)
         web = Web()
         workflow = AgentRAGWorkflow(
             Settings(_env_file=None, web_search_enabled=True), retriever, Models(model), web
@@ -299,6 +312,30 @@ class AgentV2Tests(unittest.TestCase):
         self.assertEqual(1, result.run_metadata["tavily_credits"])
         self.assertIn("elapsed_ms", result.run_metadata)
         self.assertEqual(2, result.run_metadata["usage_by_model"]["deepseek/scripted"]["attempts"])
+
+    def test_web_mode_can_read_search_result_with_scrapling(self):
+        model = ScriptedModel(responses=[
+            AIMessage(content="", tool_calls=[{"name": "search_web", "args": {}, "id": "call-1", "type": "tool_call"}]),
+            AIMessage(content="", tool_calls=[{"name": "read_web_page", "args": {"source_number": 1}, "id": "call-2", "type": "tool_call"}]),
+            AIMessage(content='{"kind":"grounded","answer":"原文结论[1]"}'),
+        ])
+        web, reader = Web(), WebReader()
+        workflow = AgentRAGWorkflow(
+            Settings(_env_file=None, web_search_enabled=True), ForbiddenRetriever(), Models(model), web,
+            web_reader=reader,
+        )
+        context = RunContext(
+            request_id="request", user_id=uuid4(), session_id=uuid4(), question="读取官方资料原文",
+            search_mode="web", allowed_document_ids=(), selected_provider="deepseek",
+            public_query="公开查询", web_enabled=True,
+        )
+
+        result = workflow.run(context, [], "")
+
+        self.assertEqual("https://example.com/docs", reader.url)
+        self.assertEqual(1, reader.calls)
+        self.assertEqual(1, result.run_metadata["web_reads"])
+        self.assertEqual(["search_web", "read_web_page"], [event["name"] for event in result.run_metadata["tool_events"]])
 
     def test_invalid_final_json_is_repaired_once(self):
         model = ScriptedModel(responses=[

@@ -94,10 +94,27 @@ class EvidenceRegistry:
                 truncated = True
         return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing, "truncated": truncated}
 
+    def add_memories(self, memories: list[dict]) -> dict:
+        sources, existing, truncated = [], [], False
+        for memory in memories:
+            key = ("memory", str(memory["memory_id"]))
+            citation = {
+                "type": "memory", "memory_id": str(memory["memory_id"]), "score": memory["score"],
+            }
+            source, duplicate = self._add(key, citation, "长期记忆", memory["content"])
+            if duplicate:
+                existing.append(self.keys[key])
+            elif source:
+                sources.append(source)
+            else:
+                truncated = True
+        return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing, "truncated": truncated}
+
     def validate(self, kind: str, answer: str, search_mode: str = "auto") -> list[dict]:
         numbers = sorted({int(value) for value in re.findall(r"\[(\d+)\]", answer)})
         by_number = {entry["number"]: entry for entry in self.entries}
-        if self.entries and kind != "grounded":
+        non_memory_entries = [entry for entry in self.entries if entry["type"] != "memory"]
+        if non_memory_entries and kind != "grounded":
             raise AppError("INVALID_CITATION", "已有检索证据时必须生成带引用的 grounded 回答", 502)
         if any(number not in by_number for number in numbers):
             raise AppError("INVALID_CITATION", "回答包含未知引用", 502)
@@ -105,6 +122,6 @@ class EvidenceRegistry:
         if kind == "grounded" and not citations:
             raise AppError("INVALID_CITATION", "有依据的回答必须包含引用", 502)
         expected = {"knowledge": "knowledge", "web": "web"}.get(search_mode)
-        if expected and any(citation["type"] != expected for citation in citations):
+        if expected and any(citation["type"] not in {expected, "memory"} for citation in citations):
             raise AppError("INVALID_CITATION", "回答引用了当前模式未授权的来源", 502)
         return citations

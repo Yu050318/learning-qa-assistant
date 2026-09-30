@@ -21,10 +21,17 @@ logger = logging.getLogger("rag")
 
 def error_response(request: Request, code: str, message: str, status_code: int):
     request_id = getattr(request.state, "request_id", str(uuid4()))
-    return JSONResponse(
+    response = JSONResponse(
         {"error": {"code": code, "message": message, "request_id": request_id}},
         status_code=status_code, headers={"X-Request-ID": request_id},
     )
+    if request.url.path.startswith("/api/v2/auth/"):
+        response.headers.update({"Cache-Control": "no-store", "Pragma": "no-cache"})
+    if status_code == 401:
+        response.headers["WWW-Authenticate"] = "Bearer"
+        if request.url.path == "/api/v2/auth/refresh":
+            response.delete_cookie("rag_refresh", path="/api/v2/auth")
+    return response
 
 
 def create_app(settings: Settings | None = None, services: Services | None = None) -> FastAPI:
@@ -62,7 +69,7 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
 
     @application.exception_handler(RequestValidationError)
     async def validation_error(request: Request, error: RequestValidationError):
-        return error_response(request, "VALIDATION_ERROR", "请求参数无效，请检查用户标识、UUID、文件和请求体", 422)
+        return error_response(request, "VALIDATION_ERROR", "请求参数无效，请检查认证信息、UUID、文件和请求体", 422)
 
     @application.exception_handler(HTTPException)
     async def http_error(request: Request, error: HTTPException):

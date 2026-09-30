@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from app.core.config import Settings
 from app.core.errors import AppError
+from app.application.auth import AuthContext
 from app.main import create_app
 
 
@@ -73,9 +74,7 @@ class Services:
         self.chat = Chat()
         self.ingestion = Ingestion()
         self.current_user = uuid4()
-
-    def user_id(self, external_id):
-        return self.current_user
+        self.auth = SimpleNamespace(authenticate=lambda token: AuthContext(self.current_user, "alice", uuid4()))
 
     def readiness(self):
         return {"status": "ready", "checks": {}}
@@ -85,11 +84,12 @@ class Services:
 
 
 class ApiV2Tests(unittest.TestCase):
+    headers = {"Authorization": "Bearer test"}
     def test_v2_session_route_creates_v2_session(self):
         services = Services()
         app = create_app(Settings(_env_file=None), services)
         with TestClient(app) as client:
-            response = client.post("/api/v2/sessions", headers={"X-User-ID": "alice"}, json={"title": "V2"})
+            response = client.post("/api/v2/sessions", headers=self.headers, json={"title": "V2"})
         self.assertEqual(201, response.status_code)
         self.assertEqual("V2", response.json()["title"])
 
@@ -98,7 +98,7 @@ class ApiV2Tests(unittest.TestCase):
         app = create_app(Settings(_env_file=None), services)
         with TestClient(app) as client:
             response = client.post(
-                "/api/v2/documents", headers={"X-User-ID": "alice"},
+                "/api/v2/documents", headers=self.headers,
                 files={"file": ("notes.txt", b"hello", "text/plain")},
             )
         self.assertEqual(202, response.status_code)
@@ -109,7 +109,7 @@ class ApiV2Tests(unittest.TestCase):
         app = create_app(Settings(_env_file=None), services)
         with TestClient(app) as client:
             response = client.get(
-                f"/api/v2/documents/{services.ingestion.document.id}", headers={"X-User-ID": "alice"},
+                f"/api/v2/documents/{services.ingestion.document.id}", headers=self.headers,
             )
         self.assertEqual(200, response.status_code)
         self.assertEqual(str(services.ingestion.document.id), response.json()["id"])
@@ -120,7 +120,7 @@ class ApiV2Tests(unittest.TestCase):
         with TestClient(app) as client:
             response = client.post(
                 f"/api/v2/documents/{services.ingestion.document.id}/retry",
-                headers={"X-User-ID": "alice"},
+                headers=self.headers,
             )
         self.assertEqual(202, response.status_code)
         self.assertEqual([(services.current_user, services.ingestion.document.id)], services.ingestion.scheduled)
@@ -130,7 +130,7 @@ class ApiV2Tests(unittest.TestCase):
         app = create_app(Settings(_env_file=None), services)
         with TestClient(app) as client:
             response = client.delete(
-                f"/api/v2/documents/{services.ingestion.document.id}", headers={"X-User-ID": "alice"},
+                f"/api/v2/documents/{services.ingestion.document.id}", headers=self.headers,
             )
         self.assertEqual(204, response.status_code)
         self.assertEqual([(services.current_user, services.ingestion.document.id)], services.ingestion.deleted)
@@ -138,8 +138,8 @@ class ApiV2Tests(unittest.TestCase):
     def test_v1_routes_return_404(self):
         app = create_app(Settings(_env_file=None), Services())
         with TestClient(app) as client:
-            sessions = client.get("/api/v1/sessions", headers={"X-User-ID": "alice"})
-            documents = client.get("/api/v1/documents", headers={"X-User-ID": "alice"})
+            sessions = client.get("/api/v1/sessions", headers=self.headers)
+            documents = client.get("/api/v1/documents", headers=self.headers)
         self.assertEqual(404, sessions.status_code)
         self.assertEqual(404, documents.status_code)
 
@@ -147,7 +147,7 @@ class ApiV2Tests(unittest.TestCase):
         app = create_app(Settings(_env_file=None), Services())
         with TestClient(app) as client:
             response = client.post(
-                f"/api/v2/sessions/{uuid4()}/messages", headers={"X-User-ID": "alice"},
+                f"/api/v2/sessions/{uuid4()}/messages", headers=self.headers,
                 json={"question": "你好", "search_mode": "auto"},
             )
         self.assertEqual(200, response.status_code)
@@ -157,7 +157,7 @@ class ApiV2Tests(unittest.TestCase):
         app = create_app(Settings(_env_file=None), Services())
         with TestClient(app) as client:
             response = client.post(
-                f"/api/v2/sessions/{uuid4()}/messages/stream", headers={"X-User-ID": "alice"},
+                f"/api/v2/sessions/{uuid4()}/messages/stream", headers=self.headers,
                 json={"question": "你好", "search_mode": "auto"},
             )
         self.assertEqual(200, response.status_code)
@@ -177,7 +177,7 @@ class ApiV2Tests(unittest.TestCase):
         app = create_app(Settings(_env_file=None), services)
         with TestClient(app) as client:
             response = client.post(
-                f"/api/v2/sessions/{uuid4()}/messages/stream", headers={"X-User-ID": "alice"},
+                f"/api/v2/sessions/{uuid4()}/messages/stream", headers=self.headers,
                 json={"question": "你好", "search_mode": "auto"},
             )
         self.assertEqual(200, response.status_code)

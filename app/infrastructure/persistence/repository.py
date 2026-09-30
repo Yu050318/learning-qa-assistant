@@ -1,31 +1,38 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, not_found
-from app.infrastructure.persistence.models import ChatMessage, ChatSession, DocumentRecord, User
+from app.infrastructure.persistence.models import AuthSession, ChatMessage, ChatSession, DocumentRecord, User, UserMemory, utcnow
 
 
 class Repository:
     def __init__(self, database: Session):
         self.database = database
 
-    def user(self, external_id: str) -> User:
-        statement = select(User).where(User.external_id == external_id)
-        user = self.database.scalar(statement)
-        if user is None:
-            try:
-                with self.database.begin_nested():
-                    user = User(external_id=external_id)
-                    self.database.add(user)
-                    self.database.flush()
-            except IntegrityError:
-                user = self.database.scalar(statement)
-                if user is None:
-                    raise
-        return user
+    def user_by_username(self, username: str) -> User | None:
+        return self.database.scalar(select(User).where(User.username == username))
+
+    def active_auth_session(self, user_id: UUID, session_id: UUID, lock: bool = False) -> AuthSession | None:
+        statement = select(AuthSession).join(User).where(
+            AuthSession.id == session_id, AuthSession.user_id == user_id,
+            AuthSession.revoked_at.is_(None), AuthSession.absolute_expires_at > utcnow(), User.is_active.is_(True),
+        )
+        if lock:
+            statement = statement.with_for_update()
+        return self.database.scalar(statement)
+
+    def auth_session(self, session_id: UUID, lock: bool = False) -> AuthSession | None:
+        statement = select(AuthSession).where(AuthSession.id == session_id)
+        if lock:
+            statement = statement.with_for_update()
+        return self.database.scalar(statement)
+
+    def revoke_user_sessions(self, user_id: UUID) -> None:
+        self.database.execute(update(AuthSession).where(
+            AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None)
+        ).values(revoked_at=utcnow()))
 
     def document(self, user_id: UUID, document_id: UUID, lock: bool = False) -> DocumentRecord:
         statement = select(DocumentRecord).where(DocumentRecord.id == document_id, DocumentRecord.user_id == user_id)
@@ -89,14 +96,29 @@ class Repository:
 
     def messages(self, user_id: UUID, session_id: UUID, limit: int = 100, offset: int = 0) -> list[ChatMessage]:
         self.chat_session(user_id, session_id)
-        statement = select(ChatMessage).join(ChatSession).where(ChatSession.user_id == user_id, ChatMessage.session_id == session_id).order_by(ChatMessage.created_at.desc(), ChatMessage.id.desc()).offset(offset).limit(limit)
+        statement = select(ChatMessage).where(ChatMessage.user_id == user_id, ChatMessage.session_id == session_id).order_by(ChatMessage.created_at.desc(), ChatMessage.id.desc()).offset(offset).limit(limit)
         return list(reversed(list(self.database.scalars(statement))))
 
     def context_messages(self, user_id: UUID, session_id: UUID) -> list[ChatMessage]:
         session = self.chat_session(user_id, session_id)
-        messages = list(self.database.scalars(select(ChatMessage).where(ChatMessage.session_id == session_id).order_by(ChatMessage.created_at, ChatMessage.id)))
+        messages = list(self.database.scalars(select(ChatMessage).where(ChatMessage.user_id == user_id, ChatMessage.session_id == session_id).order_by(ChatMessage.created_at, ChatMessage.id)))
         if session.summarized_through:
             for index, message in enumerate(messages):
                 if message.id == session.summarized_through:
                     return messages[index + 1:]
         return messages
+
+    def memories(self, user_id: UUID) -> list[UserMemory]:
+        return list(self.database.scalars(select(UserMemory).where(UserMemory.user_id == user_id).order_by(UserMemory.updated_at.desc())))
+
+    def memory(self, user_id: UUID, memory_id: UUID, lock: bool = False) -> UserMemory:
+        statement = select(UserMemory).where(UserMemory.id == memory_id, UserMemory.user_id == user_id)
+        if lock:
+            statement = statement.with_for_update(nowait=True)
+        memory = self.database.scalar(statement)
+        if memory is None:
+            raise not_found()
+        return memory
+
+    def memory_count(self, user_id: UUID) -> int:
+        return self.database.scalar(select(func.count()).select_from(UserMemory).where(UserMemory.user_id == user_id)) or 0

@@ -5,12 +5,12 @@ from threading import Thread
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, File, Query, Request, Response, UploadFile
+from fastapi import APIRouter, Cookie, File, Header, Query, Request, Response, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from app.api.dependencies import ServiceDependency, UserDependency
+from app.api.dependencies import AuthDependency, ServiceDependency, UserDependency
 from app.api.schemas import (
-    DocumentResponse, SessionCreate, SessionResponse, SessionRename,
+    AuthResponse, CredentialsRequest, DocumentResponse, MemoryResponse, MemoryWrite, SessionCreate, SessionResponse, SessionRename, UserResponse,
     V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
     CompactRequest, ContextEstimateRequest, DocumentPage,
 )
@@ -23,6 +23,102 @@ Offset = Annotated[int, Query(ge=0)]
 Limit = Annotated[int, Query(ge=1, le=100)]
 Search = Annotated[str, Query(max_length=200)]
 logger = logging.getLogger("rag")
+REFRESH_COOKIE = "rag_refresh"
+
+
+def auth_payload(user, access: str, seconds: int) -> dict:
+    return {"access_token": access, "token_type": "bearer", "expires_in": seconds,
+            "user": {"id": user.id, "username": user.username}}
+
+
+def set_refresh_cookie(response: Response, services, value: str) -> None:
+    response.set_cookie(
+        REFRESH_COOKIE, value, max_age=services.settings.refresh_token_days * 86400,
+        httponly=True, secure=services.settings.auth_cookie_secure, samesite="strict", path="/api/v2/auth",
+    )
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Pragma"] = "no-cache"
+
+
+def verify_cookie_origin(request: Request, services, origin: str | None, sec_fetch_site: str | None) -> None:
+    request_origin = f"{request.url.scheme}://{request.url.netloc}"
+    services.auth.verify_cookie_origin(origin, sec_fetch_site, request_origin)
+
+
+@v2_router.post("/auth/register", response_model=AuthResponse, status_code=201, tags=["auth"])
+def register(payload: CredentialsRequest, response: Response, services: ServiceDependency):
+    user, access, refresh, seconds = services.auth.register(payload.username, payload.password)
+    set_refresh_cookie(response, services, refresh)
+    return auth_payload(user, access, seconds)
+
+
+@v2_router.post("/auth/login", response_model=AuthResponse, tags=["auth"])
+def login(payload: CredentialsRequest, request: Request, response: Response, services: ServiceDependency):
+    user, access, refresh, seconds = services.auth.login(payload.username, payload.password, request.client.host if request.client else "unknown")
+    set_refresh_cookie(response, services, refresh)
+    return auth_payload(user, access, seconds)
+
+
+@v2_router.post("/auth/refresh", response_model=AuthResponse, tags=["auth"])
+def refresh_auth(request: Request, response: Response, services: ServiceDependency,
+                 refresh: Annotated[str | None, Cookie(alias=REFRESH_COOKIE)] = None,
+                 origin: Annotated[str | None, Header()] = None,
+                 sec_fetch_site: Annotated[str | None, Header(alias="Sec-Fetch-Site")] = None):
+    verify_cookie_origin(request, services, origin, sec_fetch_site)
+    if not refresh:
+        raise AppError("UNAUTHORIZED", "刷新凭据缺失", 401)
+    user, access, new_refresh, seconds = services.auth.refresh(refresh)
+    set_refresh_cookie(response, services, new_refresh)
+    return auth_payload(user, access, seconds)
+
+
+@v2_router.get("/auth/me", response_model=UserResponse, tags=["auth"])
+def me(context: AuthDependency):
+    return {"id": context.user_id, "username": context.username}
+
+
+@v2_router.post("/auth/logout", status_code=204, tags=["auth"])
+def logout(response: Response, services: ServiceDependency, context: AuthDependency):
+    services.auth.logout(context)
+    response.delete_cookie(REFRESH_COOKIE, path="/api/v2/auth")
+    response.headers["Cache-Control"] = "no-store"
+    response.status_code = 204
+    return response
+
+
+@v2_router.post("/auth/logout-all", status_code=204, tags=["auth"])
+def logout_all(response: Response, services: ServiceDependency, context: AuthDependency):
+    services.auth.logout_all(context)
+    response.delete_cookie(REFRESH_COOKIE, path="/api/v2/auth")
+    response.headers["Cache-Control"] = "no-store"
+    response.status_code = 204
+    return response
+
+
+@v2_router.get("/memories", response_model=list[MemoryResponse], tags=["memories"])
+def list_memories(services: ServiceDependency, user_id: UserDependency):
+    return services.memories.list(user_id)
+
+
+@v2_router.post("/memories", response_model=MemoryResponse, status_code=201, tags=["memories"])
+def create_memory(payload: MemoryWrite, services: ServiceDependency, user_id: UserDependency):
+    return services.memories.create(user_id, payload.content, created_via="management_ui")
+
+
+@v2_router.patch("/memories/{memory_id}", response_model=MemoryResponse, tags=["memories"])
+def update_memory(memory_id: UUID, payload: MemoryWrite, services: ServiceDependency, user_id: UserDependency):
+    return services.memories.update(user_id, memory_id, payload.content)
+
+
+@v2_router.post("/memories/{memory_id}/retry", response_model=MemoryResponse, tags=["memories"])
+def retry_memory(memory_id: UUID, services: ServiceDependency, user_id: UserDependency):
+    return services.memories.retry(user_id, memory_id)
+
+
+@v2_router.delete("/memories/{memory_id}", status_code=204, tags=["memories"])
+def delete_memory(memory_id: UUID, services: ServiceDependency, user_id: UserDependency):
+    services.memories.delete(user_id, memory_id)
+    return Response(status_code=204)
 
 
 def sse_event(event: str, data: dict) -> str:
@@ -244,7 +340,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "ollama", "model_name": settings.ollama_model, "available": True, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "upload": {"allowed_extensions": office + [".txt", ".md"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "upload": {"allowed_extensions": office + [".txt", ".md"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

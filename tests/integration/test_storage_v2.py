@@ -31,9 +31,10 @@ class StorageV2IntegrationTests(unittest.TestCase):
         first_external_id = f"integration-{uuid4()}"
         second_external_id = f"integration-{uuid4()}"
         with self.database.sessions() as session:
-            repository = Repository(session)
-            first_user = repository.user(first_external_id)
-            second_user = repository.user(second_external_id)
+            first_user = User(username=first_external_id[:32], password_hash="hash")
+            second_user = User(username=second_external_id[:32], password_hash="hash")
+            session.add_all([first_user, second_user])
+            session.flush()
             first_chat = ChatSession(user_id=first_user.id, title="first")
             second_chat = ChatSession(user_id=second_user.id, title="second")
             session.add_all([first_chat, second_chat])
@@ -63,11 +64,13 @@ class StorageV2IntegrationTests(unittest.TestCase):
     def test_postgresql_session_delete_cascades_messages(self):
         external_id = f"integration-{uuid4()}"
         with self.database.sessions() as session:
-            user = Repository(session).user(external_id)
+            user = User(username=external_id[:32], password_hash="hash")
+            session.add(user)
+            session.flush()
             chat = ChatSession(user_id=user.id, title="cascade")
             session.add(chat)
             session.flush()
-            message = ChatMessage(session_id=chat.id, role="user", content="hello")
+            message = ChatMessage(user_id=user.id, session_id=chat.id, role="user", content="hello")
             session.add(message)
             session.commit()
             user_id, chat_id, message_id = user.id, chat.id, message.id
@@ -90,7 +93,7 @@ class StorageV2IntegrationTests(unittest.TestCase):
         ]
         try:
             self.vectors.upsert(chunks, [first_vector, second_vector])
-            hits = self.vectors.search(first_user, [first_document], first_vector, 10)
+            hits = self.vectors.search(first_user, [first_document], "first", first_vector, 10)
             self.assertEqual([str(first_chunk)], [hit.chunk.chunk_id for hit in hits])
         finally:
             self.vectors.delete_document(first_user, first_document)

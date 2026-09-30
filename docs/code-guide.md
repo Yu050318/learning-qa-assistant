@@ -1,5 +1,7 @@
 # 多用户 RAG 后端：代码导读
 
+> 认证说明：本文较早章节中的 `X-User-ID` 示例已过时。当前实现使用 `/api/v2/auth/*` 登录、Bearer Access JWT 与 HttpOnly opaque Refresh Token；业务层用户 UUID 只能来自验证后的 `AuthContext`。以代码和 README 的认证章节为准。
+
 > 面向读者：已经接触 Python，希望理解这个项目各模块如何协作。
 > 编写日期：2026-09-09。说明依据当前源码，而不是把设计文档里的全部目标当成已实现功能。
 > 本文所有源码路径均相对于项目根目录；示例用户和请求不包含真实凭据。
@@ -401,15 +403,16 @@ POST /api/v2/sessions/{session_id}/messages
 
 它是检索业务服务，主要完成：
 
-1. 用 Embedding 接口把问题转换成向量。
-2. 带着用户和文档范围向 Milvus 查询。
-3. 检查返回结果仍属于允许的范围。
-4. 去掉空正文，以及去除空白后完全重复的正文。
-5. 保留最多 `top_k` 条结果。
+1. 用 Embedding 接口把问题转换成稠密向量。
+2. 同时把问题原文和稠密向量交给 Milvus。
+3. 分别执行 BM25 稀疏检索和 COSINE 稠密检索，再用 RRF 融合。
+4. 检查返回结果仍属于允许的用户和文档范围。
+5. 去掉空正文，以及去除空白后完全重复的正文。
+6. 保留最多 `top_k` 条结果。
 
-默认最终 `top_k=6`，实际向量搜索最多先请求 `top_k * 2`，即 12 条，为去重留出余量。这里只是余量召回，不是重排序；也没有实现语义相近片段去重。
+默认最终 `top_k=6`，Dense 和 BM25 每路最多请求 `top_k * 2`，由 Milvus RRF 融合出最多 12 条，再为完全重复正文去重并保留 6 条。RRF 是基于名次的结果融合，不是 Cross-Encoder 等模型重排；当前仍没有语义相近片段去重。
 
-当前没有配置“低于某个相似度就一律拒答”的阈值，所以有检索结果并不代表这些结果足以支持答案，还需要提示词约束和后续质量评估。
+RRF 分数与原来的 COSINE 分数不在同一尺度。默认不按 RRF 分数拒答或触发联网；只有在评估集上完成校准后，才设置 `AUTO_WEB_HYBRID_SCORE_THRESHOLD`。
 
 ### 6.5 Prompt 和引用分别由谁负责
 
@@ -450,7 +453,7 @@ POST /api/v2/sessions/{session_id}/messages
 
 保存的不是只有向量，还包括正文与引用所需的元数据。这样召回后可以直接拿片段构造 Prompt，并生成来源信息。
 
-每次实际向量查询都包含类似以下含义的过滤条件：
+Dense 和 BM25 两个检索请求都包含相同的过滤条件：
 
 ```text
 user_id == 当前内部用户UUID
@@ -459,7 +462,7 @@ AND document_id IN 本次允许检索的文档UUID列表
 
 `user_filter()` 会把标识规范化为 UUID 字符串，再生成表达式，避免直接拼接任意用户输入。
 
-集合描述还带有 `rag:模型名:维度` 签名。**相同维度不代表同一个向量空间**；代码会检查模型签名与向量维度，不能仅修改配置就继续使用不兼容的旧集合。
+集合的 `content` 字段开启中文 Analyzer，Milvus 的 BM25 Function 自动生成 `sparse_vector`；应用只需要写入正文和 Qwen 稠密向量。集合描述还带有 `rag-hybrid:v1:模型名:维度:chinese` 签名。**相同维度不代表同一个向量空间**；代码会检查架构签名、向量维度、Analyzer、稀疏字段和 BM25 Function，不能仅修改配置就继续使用不兼容的旧集合。
 
 ### 7.3 文件目录：保存原始资料
 
@@ -542,6 +545,7 @@ AND document_id IN 本次允许检索的文档UUID列表
 | --- | --- |
 | `CHUNK_SIZE / CHUNK_OVERLAP` | 新入库文档的切片窗口和重叠 |
 | `RETRIEVAL_TOP_K` | 去重后最多保留多少召回片段 |
+| `AUTO_WEB_HYBRID_SCORE_THRESHOLD` | 可选的 RRF 联网回退阈值，必须先用评估集校准 |
 | `MEMORY_RECENT_MESSAGES` | 最多注入多少条最近消息，不是完整轮数 |
 | `DEFAULT_MODEL_PROVIDER` | 请求未指定时的模型提供商 |
 | `ALLOW_MODEL_FALLBACK` | 是否允许有限的 DeepSeek → Ollama 降级 |

@@ -9,6 +9,43 @@ class ORMResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class CredentialsRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    username: str = Field(min_length=3, max_length=32)
+    password: str = Field(min_length=6, max_length=30)
+
+
+class UserResponse(ORMResponse):
+    id: UUID
+    username: str
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    expires_in: int
+    user: UserResponse
+
+
+class MemoryWrite(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    content: str = Field(min_length=1, max_length=500)
+
+
+class MemoryResponse(ORMResponse):
+    id: UUID
+    content: str
+    status: str
+    version: int
+    created_via: str
+    source_session_id: UUID | None
+    source_message_id: UUID | None
+    vector_updated_at: datetime | None
+    last_error: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
 class DocumentResponse(ORMResponse):
     id: UUID
     original_name: str
@@ -71,7 +108,16 @@ class WebCitation(BaseModel):
     score: float | None = None
 
 
-V2Citation = Annotated[Union[KnowledgeCitation, WebCitation], Field(discriminator="type")]
+class MemoryCitation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["memory"] = "memory"
+    number: int = Field(ge=1)
+    memory_id: UUID
+    excerpt: str = Field(max_length=500)
+    score: float
+
+
+V2Citation = Annotated[Union[KnowledgeCitation, WebCitation, MemoryCitation], Field(discriminator="type")]
 
 
 class V2ChatRequest(BaseModel):
