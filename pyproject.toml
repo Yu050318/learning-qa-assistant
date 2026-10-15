@@ -24,4 +24,5 @@ dependencies = [
     "scrapling[rag]>=0.4.15,<0.5",
     "sqlglot>=30.12,<31",
     "curl-cffi>=0.16.3,<0.17",
+    "openpyxl>=3.1.5,<4",
 ]

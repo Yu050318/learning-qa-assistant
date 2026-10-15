@@ -20,9 +20,10 @@ class RetrieverService:
             if hit.chunk.user_id != str(user_id) or hit.chunk.document_id not in allowed:
                 raise AppError("VECTOR_SCOPE_MISMATCH", "检索结果不属于当前用户范围", 503)
             normalized = "".join(hit.chunk.content.split())
-            if not normalized or normalized in seen:
+            key = (hit.chunk.document_id, hit.chunk.excel_source.source_anchor, normalized) if hit.chunk.excel_source else normalized
+            if not normalized or key in seen:
                 continue
-            seen.add(normalized)
+            seen.add(key)
             unique.append(hit)
             if len(unique) == self.top_k:
                 break

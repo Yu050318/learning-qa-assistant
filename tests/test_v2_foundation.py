@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
 import httpx
-from pymilvus import MilvusClient
+from pymilvus import DataType, MilvusClient
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
@@ -95,6 +95,8 @@ class V2FoundationTests(unittest.TestCase):
         schema = created["schema"].to_dict()
         fields = {field["name"]: field for field in schema["fields"]}
         self.assertIn("sparse_vector", fields)
+        self.assertEqual(DataType.JSON, fields["excel_source"]["type"])
+        self.assertTrue(fields["excel_source"]["nullable"])
         self.assertTrue(fields["content"]["params"]["enable_analyzer"])
         self.assertEqual("content_bm25", schema["functions"][0]["name"])
         sparse_index = next(index.to_dict() for index in created["index_params"] if index.field_name == "sparse_vector")

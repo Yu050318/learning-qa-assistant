@@ -12,7 +12,8 @@ from pypdf import PdfReader
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.domain.contracts import Chunk
+from app.domain.contracts import Chunk, ExcelSource
+from app.infrastructure.loaders.excel import load_excel, PARSER_VERSION
 
 MIME_TYPES = {
     ".txt": {"text/plain"},
@@ -99,6 +100,9 @@ class LocalDocumentLoader:
             raise AppError("INVALID_DOCUMENT", "文件损坏、编码不支持或无法解析") from None
 
     def _load(self, path: Path, extension: str) -> list[Document]:
+        if extension == ".xlsx":
+            validate_document_container(path, extension)
+            return load_excel(path, self.settings)
         if extension in {".txt", ".md"}:
             content = path.read_text(encoding="utf-8-sig")
             if "\x00" in content:
@@ -171,25 +175,32 @@ class LocalDocumentLoader:
             return self._load(converted, ".docx")
 
     def chunks(self, documents: list[Document], user_id: UUID, document_id: UUID, source_name: str) -> list[Chunk]:
-        splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-            encoding_name="cl100k_base", chunk_size=self.settings.chunk_size,
-            chunk_overlap=self.settings.chunk_overlap,
-            separators=["\n\n", "\n", "。", "！", "？", ". ", " ", ""],
-            disallowed_special=(),
-        )
+        splitter = None
         cleaned = [
             Document(page_content=re.sub(r"\n{3,}", "\n\n", document.page_content.replace("\r\n", "\n").replace("\x00", "")).strip(), metadata=document.metadata)
             for document in documents if document.page_content.strip()
         ]
-        parts = splitter.split_documents(cleaned)
+        parts = []
+        for document in cleaned:
+            if document.metadata.get("excel_source"):
+                parts.append(document)
+            else:
+                if splitter is None:
+                    splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+                        encoding_name="cl100k_base", chunk_size=self.settings.chunk_size,
+                        chunk_overlap=self.settings.chunk_overlap,
+                        separators=["\n\n", "\n", "。", "！", "？", ". ", " ", ""], disallowed_special=(),
+                    )
+                parts.extend(splitter.split_documents([document]))
         if len(parts) > self.settings.max_document_chunks:
             raise AppError("TOO_MANY_CHUNKS", "文档切片数量超出限制", 413)
         return [
             Chunk(
-                chunk_id=str(uuid5(document_id, f"{index}:{part.page_content}")),
+                chunk_id=str(uuid5(document_id, f"{PARSER_VERSION}:{part.metadata['excel_source']['source_anchor']}:{index}:{part.page_content}" if part.metadata.get("excel_source") else f"{index}:{part.page_content}")),
                 user_id=str(user_id), document_id=str(document_id), chunk_index=index,
                 content=part.page_content, source_name=source_name,
                 page_number=part.metadata.get("page_number"), section=part.metadata.get("section"),
+                excel_source=ExcelSource(**part.metadata["excel_source"]) if part.metadata.get("excel_source") else None,
             )
             for index, part in enumerate(parts)
         ]

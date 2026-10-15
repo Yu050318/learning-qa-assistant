@@ -1,6 +1,7 @@
 import re
 import json
 import hashlib
+from dataclasses import asdict
 from functools import lru_cache
 from urllib.parse import urlsplit, urlunsplit
 
@@ -89,7 +90,11 @@ class EvidenceRegistry:
                 "source_name": hit.chunk.source_name, "page_number": hit.chunk.page_number,
                 "section": hit.chunk.section, "score": hit.score,
             }
+            if hit.chunk.excel_source:
+                citation["excel_source"] = asdict(hit.chunk.excel_source)
             source, duplicate = self._add(("knowledge", hit.chunk.chunk_id), citation, hit.chunk.source_name, hit.chunk.content)
+            if source and hit.chunk.excel_source:
+                source["excel_source"] = asdict(hit.chunk.excel_source)
             if duplicate:
                 existing.append(self.keys[("knowledge", hit.chunk.chunk_id)])
             elif source:

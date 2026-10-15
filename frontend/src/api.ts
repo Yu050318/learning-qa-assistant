@@ -1,7 +1,7 @@
 export type User = { id:string; username:string }
 export type AuthResult = { access_token:string; token_type:'bearer'; expires_in:number; user:User }
 export type Session = { id:string; title:string; summary:string; summarized_through:string|null; created_at:string; updated_at:string }
-export type Citation = { type:'knowledge'|'web'|'memory'|'sql'; number:number; excerpt:string; source_name?:string; title?:string; url?:string; page_number?:number; section?:string; memory_id?:string; query?:string; columns?:string[]; row_count?:number; truncated?:boolean }
+export type Citation = { type:'knowledge'|'web'|'memory'|'sql'; number:number; excerpt:string; source_name?:string; title?:string; url?:string; page_number?:number; section?:string; memory_id?:string; query?:string; columns?:string[]; row_count?:number; truncated?:boolean; excel_source?:{sheet_name:string;row_start:number;row_end:number;source_anchor:string}|null }
 export type Message = { id:string; role:string; content:string; model_provider:string|null; model_name:string|null; citations:Citation[]; token_usage:Record<string,number>|null; run_metadata:any; created_at:string }
 export type DocumentItem = { id:string; original_name:string; file_type:string; status:'processing'|'ready'|'failed'|'deleting'; chunk_count:number; embedding_model:string; error_message:string|null; size_bytes:number|null; can_query:boolean; unavailable_reason:string|null; created_at:string; updated_at:string }
 export type MemoryItem = { id:string; content:string; status:'processing'|'ready'|'failed'|'deleting'; version:number; created_via:'chat'|'management_ui'; source_session_id:string|null; source_message_id:string|null; vector_updated_at:string|null; last_error:string|null; created_at:string; updated_at:string }

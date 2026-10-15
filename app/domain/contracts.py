@@ -4,6 +4,24 @@ from datetime import datetime
 from time import monotonic
 from typing import Literal, Protocol
 from uuid import UUID
+from urllib.parse import quote
+
+
+@dataclass(frozen=True)
+class ExcelSource:
+    sheet_name: str
+    row_start: int
+    row_end: int
+    source_anchor: str
+
+    def __post_init__(self):
+        valid = isinstance(self.sheet_name, str) and 1 <= len(self.sheet_name) <= 31
+        valid = valid and type(self.row_start) is int and type(self.row_end) is int and 2 <= self.row_start <= self.row_end <= 10000
+        expected = f"sheet:{quote(self.sheet_name, safe='')}:row:{self.row_start}" if valid else ""
+        if valid and self.row_end != self.row_start:
+            expected += f"-{self.row_end}"
+        if not valid or self.source_anchor != expected:
+            raise ValueError("Invalid Excel source")
 
 
 @dataclass(frozen=True)
@@ -16,6 +34,7 @@ class Chunk:
     source_name: str
     page_number: int | None = None
     section: str | None = None
+    excel_source: ExcelSource | None = None
 
 
 @dataclass(frozen=True)

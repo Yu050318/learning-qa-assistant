@@ -6,7 +6,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.exc import DBAPIError
 
 from app.core.config import Settings
-from app.domain.contracts import Chunk
+from app.domain.contracts import Chunk, ExcelSource
 from app.infrastructure.persistence.database import Database
 from app.infrastructure.persistence.models import ChatMessage, ChatSession, User
 from app.infrastructure.persistence.repository import Repository
@@ -98,6 +98,22 @@ class StorageV2IntegrationTests(unittest.TestCase):
         finally:
             self.vectors.delete_document(first_user, first_document)
             self.vectors.delete_document(second_user, second_document)
+
+    def test_milvus_excel_source_survives_json_roundtrip(self):
+        with self.vectors.connection() as client:
+            if "excel_source" not in self.vectors._validate(client):
+                self.skipTest("explicit --excel-provenance upgrade required on the isolated collection")
+        uid, did = uuid4(), uuid4()
+        source = ExcelSource("Specs", 4, 4, "sheet:Specs:row:4")
+        chunk = Chunk(str(uuid4()), str(uid), str(did), 0, "NX-020 power 180 W", "specs.xlsx", excel_source=source)
+        vector = [1.] + [0.] * (self.settings.embedding_dimension - 1)
+        try:
+            self.vectors.upsert([chunk], [vector])
+            hits = self.vectors.search(uid, [did], "NX-020", vector, 6)
+            self.assertEqual(source, hits[0].chunk.excel_source)
+            self.assertEqual([], self.vectors.search(uuid4(), [did], "NX-020", vector, 6))
+        finally:
+            self.vectors.delete_document(uid, did)
 
 
 if __name__ == "__main__":

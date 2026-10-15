@@ -9,7 +9,7 @@ from pymilvus.exceptions import MilvusException
 
 from app.core.config import Settings
 from app.core.errors import AppError, UpstreamError
-from app.domain.contracts import Chunk, SearchHit
+from app.domain.contracts import Chunk, ExcelSource, SearchHit
 
 
 def user_filter(user_id: UUID, document_ids: list[UUID] | None = None) -> str:
@@ -48,7 +48,7 @@ class MilvusVectorStore:
             if client is not None:
                 client.close()
 
-    def _validate(self, client: MilvusClient) -> None:
+    def _validate(self, client: MilvusClient) -> set[str]:
         description = client.describe_collection(self.collection, timeout=self.settings.milvus_timeout)
         fields = {field["name"]: field for field in description["fields"]}
         dimension = int(fields.get("vector", {}).get("params", {}).get("dim", 0))
@@ -68,6 +68,19 @@ class MilvusVectorStore:
             or not has_bm25
         ):
             raise AppError("VECTOR_SCHEMA_MISMATCH", "Milvus 集合与当前模型或维度不兼容，请创建新集合并重新入库", 503)
+        if "excel_source" in fields and fields["excel_source"].get("type") != DataType.JSON:
+            raise AppError("VECTOR_SCHEMA_MISMATCH", "Excel 来源字段必须是 JSON 类型", 503)
+        return set(fields)
+
+    def add_excel_provenance(self) -> None:
+        """Explicit, additive migration; never delete/recreate a collection."""
+        with self.connection() as client:
+            fields = self._validate(client)
+            if "excel_source" not in fields:
+                client.add_collection_field(self.collection, "excel_source", DataType.JSON,
+                                            nullable=True, timeout=self.settings.milvus_timeout)
+                if "excel_source" not in self._validate(client):
+                    raise AppError("VECTOR_SCHEMA_MISMATCH", "Excel 来源字段升级后尚不可用", 503)
 
     def initialize(self) -> None:
         with self.connection(default_database=True) as client:
@@ -91,6 +104,7 @@ class MilvusVectorStore:
                     schema.add_field(name, DataType.VARCHAR, max_length=maximum)
                 schema.add_field("chunk_index", DataType.INT64)
                 schema.add_field("page_number", DataType.INT64)
+                schema.add_field("excel_source", DataType.JSON, nullable=True)
                 indexes = client.prepare_index_params()
                 indexes.add_index(field_name="vector", index_type="AUTOINDEX", metric_type="COSINE")
                 indexes.add_index(
@@ -164,7 +178,12 @@ class MilvusVectorStore:
             for chunk, vector in zip(chunks, vectors, strict=True)
         ]
         with self.connection() as client:
-            self._validate(client)
+            fields = self._validate(client)
+            if "excel_source" not in fields:
+                if any(chunk.excel_source is not None for chunk in chunks):
+                    raise AppError("VECTOR_PROVENANCE_REQUIRED", "请先运行 app.bootstrap --excel-provenance，为现有集合增加来源字段", 503)
+                for row in rows:
+                    row.pop("excel_source", None)
             for offset in range(0, len(rows), 100):
                 client.upsert(self.collection, data=rows[offset:offset + 100], timeout=self.settings.milvus_timeout)
 
@@ -175,7 +194,7 @@ class MilvusVectorStore:
 
     def search(self, user_id: UUID, document_ids: list[UUID], query: str, vector: list[float], top_k: int) -> list[SearchHit]:
         with self.connection() as client:
-            self._validate(client)
+            fields = self._validate(client)
             if not document_ids:
                 return []
             scope = user_filter(user_id, document_ids)
@@ -189,7 +208,7 @@ class MilvusVectorStore:
             )
             result = client.hybrid_search(
                 self.collection, reqs=[dense, sparse], ranker=RRFRanker(60), limit=top_k,
-                output_fields=list(Chunk.__dataclass_fields__),
+                output_fields=[name for name in Chunk.__dataclass_fields__ if name != "excel_source"] + (["excel_source"] if "excel_source" in fields else []),
                 consistency_level="Strong", timeout=self.settings.milvus_timeout,
             )
         allowed = {str(document_id) for document_id in document_ids}
@@ -200,5 +219,10 @@ class MilvusVectorStore:
                 raise AppError("VECTOR_SCOPE_MISMATCH", "向量检索返回了范围外的结果", 503)
             entity["page_number"] = entity["page_number"] or None
             entity["section"] = entity["section"] or None
+            source = entity.get("excel_source")
+            try:
+                entity["excel_source"] = ExcelSource(**source) if source is not None else None
+            except (TypeError, ValueError):
+                raise AppError("VECTOR_METADATA_INVALID", "向量检索返回无效的 Excel 来源", 503) from None
             hits.append(SearchHit(Chunk(**entity), float(match["distance"])))
         return hits

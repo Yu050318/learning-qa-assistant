@@ -103,9 +103,24 @@ class Citation(BaseModel):
     score: float
 
 
+class ExcelSourceResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    sheet_name: str = Field(min_length=1, max_length=31)
+    row_start: int = Field(ge=2, le=10000)
+    row_end: int = Field(ge=2, le=10000)
+    source_anchor: str
+
+    @model_validator(mode="after")
+    def check_anchor(self):
+        from app.domain.contracts import ExcelSource
+        ExcelSource(**self.model_dump())
+        return self
+
+
 class KnowledgeCitation(Citation):
     model_config = ConfigDict(extra="forbid")
     type: Literal["knowledge"] = "knowledge"
+    excel_source: ExcelSourceResponse | None = None
 
 
 class WebCitation(BaseModel):

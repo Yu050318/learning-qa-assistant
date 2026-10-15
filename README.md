@@ -28,7 +28,7 @@
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
-- **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、Excel 通过 MinerU 解析，TXT/Markdown 本地处理。
+- **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、旧版 XLS 通过 MinerU 解析；XLSX 本地按行处理并保留 Sheet/行号，TXT/Markdown 本地处理。
 - **模型与外部服务容错：** DeepSeek 遇到连接、超时、429 或 5xx 时可有限降级至 Ollama；已完成的检索不会重复执行，鉴权错误不会被错误地重试或降级。
 - **工程化交付：** FastAPI + Vue 3/TypeScript 前后端分离，采用应用服务、领域协议、仓储和基础设施适配器分层；提供显式初始化、结构化日志、request ID、能力发现与离线自动化测试。
 
@@ -40,7 +40,7 @@
 | API / Agent | FastAPI、Pydantic、LangChain、DeepSeek、Ollama |
 | 检索 | Milvus、Qwen Embedding、Tavily Search、Scrapling |
 | 数据与任务状态 | PostgreSQL、SQLAlchemy |
-| 文档解析 | MinerU、PyPDF、python-docx、LibreOffice |
+| 文档解析 | MinerU、openpyxl、PyPDF、python-docx、LibreOffice |
 | 可观测与传输 | SSE、结构化日志、request ID、LangSmith（可选） |
 
 ## 核心链路
@@ -75,7 +75,7 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
 - `knowledge / web / sql / auto` 四种模式、请求内证据登记、混合引用和有限工具循环。
 - Tavily 固定公开搜索词；Web Agent 可按本轮授权 URL 调用 Scrapling 读取清洗后的网页正文，网络结果不会写入 Milvus。
-- PDF、Word、PowerPoint、Excel 显式启用后统一经 MinerU 云解析；TXT/Markdown 保持本地解析。
+- XLSX 本地表格感知解析与精确行引用；PDF、Word、PowerPoint、XLS 显式启用后经 MinerU 云解析；TXT/Markdown 本地解析。
 - 会话持久化、运行元数据和显式数据库初始化。
 
 **仍未实现：** SSE 断线续传、自动滚动摘要、持久任务队列、多 worker、重排序和网页自动入库。
@@ -98,7 +98,8 @@ app/
     vectorstores/milvus.py     Milvus schema、用户过滤、向量读写
     embeddings/qwen.py        千问兼容接口
     llms/providers.py         LangChain 模型适配、选择与有限降级
-    loaders/local.py          TXT/MD 本地解析与共享切片
+    loaders/local.py          本地解析与共享切片
+    loaders/excel.py          XLSX 行语义、物理行号与稳定来源锚点
     loaders/mineru.py         MinerU 签名上传、轮询、下载和结构归一化
     search/tavily.py          Tavily 搜索适配与结果安全过滤
     search/scrapling.py       已登记搜索来源的网页正文抓取与安全校验
@@ -161,9 +162,13 @@ $env:DATABASE_REQUIRE_TLS = 'false'
 
 默认 `LANGSMITH_HIDE_INPUTS=true`、`LANGSMITH_HIDE_OUTPUTS=true`，不上传完整问题/检索正文/回答；追踪仍可能包含模型名和调用元数据。不开启完整正文追踪，除非确认资料可发送到该平台。
 
+### XLSX 精确行引用
+
+新 `.xlsx` 默认在本地按行解析，保留表头、单位、Sheet 与真实物理行号，无需 MinerU。支持多 Sheet、空行与长行拆片；首版要求第一行是单层表头，不支持合并单元格。既有 Milvus 集合需先显式执行 `python -m app.bootstrap --excel-provenance` 添加可空 JSON 字段，命令要求服务端支持字段追加（目标 Milvus 2.6+），不会删除数据。旧文档保持可查，旧 XLSX 不自动重建。详见 [第二阶段实现与升级说明](docs/excel-row-citations.md)。
+
 ### MinerU 与 Office/PDF
 
-设置 `MINERU_ENABLED=true` 并配置 `MINERU_API_TOKEN` 后，新 PDF、DOC/DOCX、PPT/PPTX、XLS/XLSX 会上传到 MinerU 云端解析；未显式启用时这些格式在创建数据库记录前返回 503。上传前会校验 PDF/OLE/OOXML 容器，解析超时后可沿用已有 `batch_id`，Embedding 重试复用本地规范化缓存；进程重启会恢复 processing 文档，若上次停在上传阶段则创建新的安全批次。TXT/MD 使用 UTF-8 且不会上传到 MinerU。`INGESTION_WORKERS` 默认 2，用于限制本进程同时处理的文档数。
+设置 `MINERU_ENABLED=true` 并配置 `MINERU_API_TOKEN` 后，新 PDF、DOC/DOCX、PPT/PPTX、XLS 会上传到 MinerU 云端解析；未显式启用时这些格式在创建数据库记录前返回 503。上传前会校验 PDF/OLE/OOXML 容器，解析超时后可沿用已有 `batch_id`，Embedding 重试复用本地规范化缓存；进程重启会恢复 processing 文档，若上次停在上传阶段则创建新的安全批次。TXT/MD 使用 UTF-8 且不会上传到 MinerU。`INGESTION_WORKERS` 默认 2，用于限制本进程同时处理的文档数。
 
 ### Tavily 与 Scrapling
 

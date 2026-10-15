@@ -137,7 +137,8 @@ class IngestionService:
 
     def upload(self, user_id: UUID, filename: str, content_type: str | None, stream: BinaryIO) -> DocumentRecord:
         name, extension = validate_upload(filename, content_type)
-        if extension in DOCUMENT_TYPES and (not self.settings.mineru_enabled or not self.settings.mineru_api_token.get_secret_value()):
+        use_mineru = extension in DOCUMENT_TYPES and extension != ".xlsx"
+        if use_mineru and (not self.settings.mineru_enabled or not self.settings.mineru_api_token.get_secret_value()):
             raise AppError("MINERU_NOT_CONFIGURED", "PDF/Office 解析需要启用并配置 MinerU", 503)
         self.settings.upload_dir.mkdir(parents=True, exist_ok=True)
         document_id = uuid4()
@@ -166,10 +167,11 @@ class IngestionService:
                     file_path=str(path), content_hash=digest.hexdigest(), size_bytes=size, status="processing",
                     embedding_model=self.settings.embedding_model,
                     parser_metadata={
-                        "provider": "mineru" if extension in DOCUMENT_TYPES else "local",
+                        "provider": "mineru" if use_mineru else "local",
+                        "parser_version": "xlsx-row-v1" if extension == ".xlsx" else None,
                         "document_type": DOCUMENT_TYPES.get(extension, "text"), "phase": "validating",
                         "generation": 1, "attempt_id": str(uuid4()), "batch_id": None,
-                        "model_version": self.settings.mineru_model_version if extension in DOCUMENT_TYPES else None,
+                        "model_version": self.settings.mineru_model_version if use_mineru else None,
                         "source_hash": digest.hexdigest(), "normalized_schema_version": None,
                         "parsed_unit_count": None, "unit_kind": None, "failed_phase": None, "error_code": None,
                     },

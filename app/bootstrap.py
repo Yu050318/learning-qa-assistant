@@ -11,9 +11,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="显式创建 RAG schema 和/或 Milvus 集合")
     parser.add_argument("--postgres", action="store_true")
     parser.add_argument("--milvus", action="store_true")
+    parser.add_argument("--excel-provenance", action="store_true", help="显式为已有集合添加可空的 Excel JSON 来源字段（Milvus 2.6+）")
     options = parser.parse_args()
-    if not options.postgres and not options.milvus:
-        parser.error("请指定 --postgres 和/或 --milvus")
+    if not options.postgres and not options.milvus and not options.excel_provenance:
+        parser.error("请指定 --postgres、--milvus 或 --excel-provenance")
     configure_logging()
     settings = get_settings()
     database = Database(settings)
@@ -24,6 +25,9 @@ def main() -> int:
         if options.milvus:
             MilvusVectorStore(settings).initialize()
             print("Milvus: configured collection initialized")
+        if options.excel_provenance:
+            MilvusVectorStore(settings).add_excel_provenance()
+            print("Milvus: nullable Excel provenance field ready")
         return 0
     except AppError as error:
         print(f"Initialization failed: {error.code}: {error.message}")

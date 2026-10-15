@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { extractWebUrls, agentLabel, statusLabel } from '../src/agents.ts'
+import { extractWebUrls, agentLabel, statusLabel, citationLocation } from '../src/agents.ts'
 
 test('extract only user message URLs, strip prose punctuation and deduplicate', () => {
   assert.deepEqual(extractWebUrls('阅读 https://example.com/a，和（https://other.example/b）。https://example.com/a'),
@@ -17,4 +17,12 @@ test('agent activity has readable labels', () => {
   assert.equal(agentLabel('sql'), 'SQL Agent')
   assert.equal(statusLabel('partial'), '部分完成')
   assert.equal(statusLabel('failed'), '执行失败')
+})
+
+test('Excel citations display physical rows, legacy citations keep their location', () => {
+  assert.equal(citationLocation({excel_source:{sheet_name:'参数',row_start:4,row_end:4}}),'参数 · 第 4 行')
+  assert.equal(citationLocation({excel_source:{sheet_name:'参数',row_start:4,row_end:6}}),'参数 · 第 4–6 行')
+  assert.equal(citationLocation({section:'正文'}),'正文')
+  assert.equal(citationLocation({page_number:3}),'第 3 页')
+  assert.equal(citationLocation({}),'')
 })
