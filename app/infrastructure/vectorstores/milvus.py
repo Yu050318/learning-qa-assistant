@@ -1,7 +1,8 @@
 import json
 from collections.abc import Sequence
 from contextlib import contextmanager
-from dataclasses import asdict
+from dataclasses import asdict, replace
+from time import monotonic
 from uuid import UUID
 
 from pymilvus import AnnSearchRequest, DataType, Function, FunctionType, MilvusClient, RRFRanker
@@ -9,7 +10,7 @@ from pymilvus.exceptions import MilvusException
 
 from app.core.config import Settings
 from app.core.errors import AppError, UpstreamError
-from app.domain.contracts import Chunk, ExcelSource, SearchHit
+from app.domain.contracts import Chunk, ExcelSource, ParentContext, SearchHit
 
 
 def user_filter(user_id: UUID, document_ids: list[UUID] | None = None) -> str:
@@ -18,6 +19,22 @@ def user_filter(user_id: UUID, document_ids: list[UUID] | None = None) -> str:
         identifiers = [str(UUID(str(document_id))) for document_id in document_ids]
         expression += f" and document_id in {json.dumps(identifiers)}"
     return expression
+
+
+def decode_chunk(entity: dict) -> Chunk:
+    """One decoder for search hits and their context siblings."""
+    try:
+        entity = dict(entity)
+        entity["page_number"] = entity.get("page_number") or None
+        entity["section"] = entity.get("section") or None
+        source = entity.get("excel_source")
+        entity["excel_source"] = ExcelSource(**source) if source is not None else None
+        chunk = Chunk(**entity)
+        if type(chunk.chunk_index) is not int or chunk.chunk_index < 0 or not isinstance(chunk.content, str):
+            raise ValueError
+        return chunk
+    except (TypeError, ValueError):
+        raise AppError("VECTOR_METADATA_INVALID", "向量检索返回无效的切片或 Excel 来源", 503) from None
 
 
 class MilvusVectorStore:
@@ -192,6 +209,63 @@ class MilvusVectorStore:
             self._validate(client)
             client.delete(self.collection, filter=user_filter(user_id, [document_id]), timeout=self.settings.milvus_timeout)
 
+    def expand_context(self, user_id: UUID, document_ids: list[UUID], hits: list[SearchHit]) -> list[SearchHit]:
+        """Read bounded neighboring leaves; parents are derived, never separately indexed."""
+        if not hits:
+            return []
+        group_size = self.settings.retrieval_parent_group_size
+        deadline = monotonic() + self.settings.milvus_timeout
+        allowed = {str(document_id) for document_id in document_ids}
+        groups = {}
+        expanded = []
+
+        def timeout():
+            left = deadline - monotonic()
+            if left <= 0:
+                raise AppError("PARENT_CONTEXT_TIMEOUT", "父块上下文读取超时", 504)
+            return left
+
+        with self.connection() as client:
+            fields = self._validate(client)
+            output_fields = [name for name in Chunk.__dataclass_fields__ if name != "excel_source"] + (["excel_source"] if "excel_source" in fields else [])
+            for hit in hits:
+                leaf = hit.chunk
+                if leaf.user_id != str(user_id) or leaf.document_id not in allowed:
+                    raise AppError("VECTOR_SCOPE_MISMATCH", "父块检索范围无效", 503)
+                if type(leaf.chunk_index) is not int or leaf.chunk_index < 0:
+                    raise AppError("VECTOR_METADATA_INVALID", "切片位置无效", 503)
+                if leaf.source_name.lower().endswith((".xls", ".xlsx")) and leaf.excel_source is None and not leaf.section:
+                    expanded.append(replace(hit, context_warning="PARENT_CONTEXT_BOUNDARY_UNKNOWN"))
+                    continue
+                # ponytail: derive two-level parents from existing indices; persist a hierarchy only if evaluation warrants it.
+                start = leaf.chunk_index // group_size * group_size
+                key = (leaf.document_id, start)
+                if key not in groups:
+                    rows = client.query(self.collection,
+                                        filter=f"{user_filter(user_id, [UUID(leaf.document_id)])} and chunk_index >= {start} and chunk_index < {start + group_size}",
+                                        output_fields=output_fields, limit=group_size + 1,
+                                        consistency_level="Strong", timeout=timeout())
+                    siblings = [decode_chunk(row) for row in rows]
+                    if any(child.user_id != str(user_id) or child.document_id != leaf.document_id
+                           or not start <= child.chunk_index < start + group_size for child in siblings):
+                        raise AppError("VECTOR_SCOPE_MISMATCH", "父块读取返回了范围外的切片", 503)
+                    if len(siblings) > group_size or len({child.chunk_index for child in siblings}) != len(siblings):
+                        raise AppError("VECTOR_METADATA_INVALID", "父块读取返回重复的切片位置", 503)
+                    groups[key] = sorted(siblings, key=lambda child: child.chunk_index)
+                siblings = groups[key]
+                if leaf not in siblings:
+                    expanded.append(replace(hit, context_warning="PARENT_CONTEXT_STALE"))
+                    continue
+                children = tuple(child for child in siblings if ParentContext.boundary(child) == ParentContext.boundary(leaf))
+                if len(children) < 2:
+                    expanded.append(hit)
+                elif sum(len(child.content) for child in children) + 2 * (len(children) - 1) > 12000:
+                    expanded.append(replace(hit, context_warning="PARENT_CONTEXT_TOO_LARGE"))
+                else:
+                    expanded.append(replace(hit, parent_context=ParentContext(children)))
+            timeout()
+        return expanded
+
     def search(self, user_id: UUID, document_ids: list[UUID], query: str, vector: list[float], top_k: int) -> list[SearchHit]:
         with self.connection() as client:
             fields = self._validate(client)
@@ -217,12 +291,5 @@ class MilvusVectorStore:
             entity = match["entity"]
             if entity["user_id"] != str(user_id) or entity["document_id"] not in allowed:
                 raise AppError("VECTOR_SCOPE_MISMATCH", "向量检索返回了范围外的结果", 503)
-            entity["page_number"] = entity["page_number"] or None
-            entity["section"] = entity["section"] or None
-            source = entity.get("excel_source")
-            try:
-                entity["excel_source"] = ExcelSource(**source) if source is not None else None
-            except (TypeError, ValueError):
-                raise AppError("VECTOR_METADATA_INVALID", "向量检索返回无效的 Excel 来源", 503) from None
-            hits.append(SearchHit(Chunk(**entity), float(match["distance"])))
+            hits.append(SearchHit(decode_chunk(entity), float(match["distance"])))
         return hits

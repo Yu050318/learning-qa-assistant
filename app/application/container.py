@@ -30,7 +30,8 @@ class Services:
         self.vectors = MilvusVectorStore(settings)
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
-        self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k)
+        self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k,
+                                          context_expander=self.vectors.expand_context if settings.retrieval_parent_context else None)
         self.memories = MemoryService(settings, self.database, self.embeddings, self.vectors)
         self.web_search = TavilySearch(settings)
         self.web_reader = ScraplingWebReader(settings)

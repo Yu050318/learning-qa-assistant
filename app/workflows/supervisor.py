@@ -84,6 +84,9 @@ class SupervisorWorkflow:
                         remaining()
                         event["status"] = result.get("status", "ok")
                         event["source_numbers"] = [source["number"] for source in result.get("sources", [])] + result.get("existing_numbers", [])
+                        if "contexts" in result:
+                            event["parent_context_count"] = len(result["contexts"])
+                            event["warnings"] = result.get("warnings", [])
                         return result
                     except AppError as error:
                         event.update(status="failed", error_code=error.code)
@@ -218,7 +221,7 @@ class SupervisorWorkflow:
                 if role == "web" and self.web_reader and settings.fixed_crawl_urls:
                     tools = [*tools, crawl_fixed_sites]
                 rules = {
-                    "rag": "事实任务必须先检索知识库。",
+                    "rag": "事实任务必须先检索知识库。context_only 父块只辅助理解，没有引用编号；事实引用只能来自真实命中的 sources 小块，不得将父块中其他行当作命中行。",
                     "sql": "先查看获准表结构再查询；只读 PostgreSQL，表名必须带 schema。结果截断时说明限制。",
                     "web": f"指定网页优先直接读取，无需先搜索；仅允许这些用户 URL：{json.dumps(context.web_urls)}。搜索结果可继续读取。不得把私有数据用于公开搜索。",
                 }[role]
@@ -234,7 +237,8 @@ class SupervisorWorkflow:
                         raise AppError("INVALID_AGENT_OUTPUT", "子 Agent 未取得工具证据", 502)
                     event["status"] = "partial" if len(failures) > failure_count else report.status
                     return {**report.model_dump(), "agent": role, "status": event["status"],
-                            "sources": list(registry.sources.values()), "failures": failures[failure_count:]}
+                            "sources": list(registry.sources.values()), "contexts": list(registry.contexts.values()),
+                            "warnings": sorted(registry.context_warnings), "failures": failures[failure_count:]}
                 except (ValidationError, TypeError):
                     event.update(status="failed", error_code="INVALID_AGENT_OUTPUT")
                     failures.append({"agent": role, "code": "INVALID_AGENT_OUTPUT"})
@@ -318,6 +322,7 @@ class SupervisorWorkflow:
             repair_prompt = (
                 f"问题：{context.question}\n有效来源编号：" + "、".join(f"[{source['number']}]" for source in registry.entries)
                 + f"\n本轮证据：{json.dumps(list(registry.sources.values()), ensure_ascii=False)}"
+                + f"\n无编号理解上下文：{json.dumps(list(registry.contexts.values()), ensure_ascii=False)}"
                 + f"\n失败：{json.dumps(failures)}\n上次输出：{final_message.content}\n错误：{error.code}。重新生成最终 JSON。"
             )
             runtime.on_chunk = lambda chunk, stream_id: emit_repair(chunk, stream_id)
@@ -351,7 +356,8 @@ class SupervisorWorkflow:
             "registered_sources": dict(Counter(item["type"] for item in registry.entries)),
             "cited_sources": dict(Counter(item["type"] for item in citations)),
             "elapsed_ms": round((perf_counter() - started) * 1000, 2), "tavily_credits": tavily_credits,
-            "usage_by_model": runtime.usage_by_model, "tool_events": tool_events, "warnings": list(context.warnings),
+            "usage_by_model": runtime.usage_by_model, "tool_events": tool_events,
+            "parent_context_count": len(registry.contexts), "warnings": sorted(set(context.warnings) | registry.context_warnings),
             "metrics": {"cache": {"scope": "reported_calls", "by_model": cache_models},
                         "context": {"calls": runtime.context_calls, "complete": bool(runtime.context_calls),
                                     "highest_usage_attempt_index": max(runtime.context_calls, key=lambda item: item["usage_ratio"])["attempt_index"] if runtime.context_calls else None}},

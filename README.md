@@ -23,6 +23,10 @@
 
 调用链、只读角色配置、测试与分阶段学习说明见 [多 Agent 实现指南](docs/multi-agent-guide.md)。
 
+## 父子上下文检索
+
+知识库问答默认先检索小块，再补充同一文档、页/章节/Sheet 内的相邻分组作为无编号理解上下文；引用仍只绑定实际命中的片段，Excel 行号不会被父块扩大。父块读取失败或超过预算时保留叶子并记录警告。复用既有索引，无需重建文档或新增 schema；可通过 `RETRIEVAL_PARENT_CONTEXT=false` 关闭。当前是两层实现，尚无三级自动合并或精排，详见 [第三阶段说明](docs/parent-context-retrieval.md)。
+
 ## 项目亮点
 
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。

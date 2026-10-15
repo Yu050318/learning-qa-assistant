@@ -45,6 +45,9 @@ class EvidenceRegistry:
         self.token_budget = token_budget
         self.entries: list[dict] = []
         self.sources: dict[int, dict] = {}
+        self.contexts: dict[str, dict] = {}
+        self.context_tokens = 0
+        self.context_warnings: set[str] = set()
         self.keys: dict[tuple[str, str], int] = {}
         self.used_tokens = 0
 
@@ -83,6 +86,8 @@ class EvidenceRegistry:
         return {"status": "ok", "sources": [source], "existing_numbers": [], "truncated": len(content) < len(page.content)}
 
     def add_knowledge(self, hits: list[SearchHit]) -> dict:
+        if any(hit.parent_context and not hit.parent_context.contains(hit.chunk) for hit in hits):
+            raise AppError("VECTOR_SCOPE_MISMATCH", "父块上下文不包含本轮命中的原始证据", 503)
         sources, existing, truncated = [], [], False
         for hit in hits:
             citation = {
@@ -101,7 +106,30 @@ class EvidenceRegistry:
                 sources.append(source)
             else:
                 truncated = True
-        return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing, "truncated": truncated}
+        context_ids = set()
+        warnings = {hit.context_warning for hit in hits if hit.context_warning}
+        for hit in hits:
+            parent = hit.parent_context
+            number = self.keys.get(("knowledge", hit.chunk.chunk_id))
+            if parent is None or number is None:
+                continue
+            context_id = parent.context_id
+            if context_id not in self.contexts:
+                tokens = count_tokens(parent.content)
+                # ponytail: at most one third of evidence budget for unnumbered context; leaves keep priority.
+                if tokens > min(self.token_budget - self.used_tokens, self.token_budget // 3 - self.context_tokens):
+                    warnings.add("PARENT_CONTEXT_BUDGET_EXCEEDED")
+                    continue
+                self.contexts[context_id] = {"context_id": context_id, "type": "context_only", "for_numbers": [],
+                                             "title": hit.chunk.source_name, "content": parent.content}
+                self.used_tokens += tokens
+                self.context_tokens += tokens
+            if number not in self.contexts[context_id]["for_numbers"]:
+                self.contexts[context_id]["for_numbers"].append(number)
+            context_ids.add(context_id)
+        self.context_warnings.update(warnings)
+        return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing,
+                "truncated": truncated, "contexts": [self.contexts[key] for key in sorted(context_ids)], "warnings": sorted(warnings)}
 
     def add_web(self, batch: WebSearchBatch) -> dict:
         sources, existing, truncated = [], [], False

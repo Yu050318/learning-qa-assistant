@@ -5,6 +5,10 @@ from time import monotonic
 from typing import Literal, Protocol
 from uuid import UUID
 from urllib.parse import quote
+import hashlib
+import json
+from dataclasses import asdict
+from uuid import uuid5
 
 
 @dataclass(frozen=True)
@@ -38,9 +42,46 @@ class Chunk:
 
 
 @dataclass(frozen=True)
+class ParentContext:
+    """Unnumbered context built from persisted children in one source boundary."""
+    children: tuple[Chunk, ...]
+
+    def __post_init__(self):
+        if not 2 <= len(self.children) <= 8 or len(self.content) > 12000:
+            raise ValueError("Parent context exceeds bounds")
+        first = self.children[0]
+        positions = [child.chunk_index for child in self.children]
+        if any(type(index) is not int or index < 0 for index in positions) or positions != sorted(set(positions)):
+            raise ValueError("Invalid child positions")
+        if len({child.chunk_id for child in self.children}) != len(self.children):
+            raise ValueError("Duplicate child identities")
+        if any(self.boundary(child) != self.boundary(first) for child in self.children):
+            raise ValueError("Parent crosses a source boundary")
+
+    @staticmethod
+    def boundary(chunk: Chunk):
+        return (chunk.user_id, chunk.document_id, chunk.source_name, chunk.page_number, chunk.section,
+                chunk.excel_source.sheet_name if chunk.excel_source else None)
+
+    @property
+    def content(self) -> str:
+        return "\n\n".join(child.content for child in self.children)
+
+    @property
+    def context_id(self) -> str:
+        digest = hashlib.sha256(json.dumps([asdict(child) for child in self.children], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        return str(uuid5(UUID(self.children[0].document_id), f"parent-context:v1:{digest}"))
+
+    def contains(self, leaf: Chunk) -> bool:
+        return leaf in self.children
+
+
+@dataclass(frozen=True)
 class SearchHit:
     chunk: Chunk
     score: float
+    parent_context: ParentContext | None = None
+    context_warning: str | None = None
 
 
 @dataclass(frozen=True)

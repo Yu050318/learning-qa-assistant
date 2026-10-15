@@ -43,7 +43,9 @@ def main() -> None:
     ks = sorted({int(value) for value in args.ks.split(",") if int(value) > 0})
     cases = json.loads(args.dataset.read_text(encoding="utf-8"))
     settings = Settings()
-    retriever = RetrieverService(QwenEmbedding(settings), MilvusVectorStore(settings), max(ks))
+    vectors = MilvusVectorStore(settings)
+    retriever = RetrieverService(QwenEmbedding(settings), vectors, max(ks),
+                                 context_expander=vectors.expand_context if settings.retrieval_parent_context else None)
     rankings = []
     details = []
     top_scores = []
@@ -65,6 +67,8 @@ def main() -> None:
             "retrieved_chunk_ids": retrieved,
             "relevant_chunk_ids": sorted(relevant),
             "top_rrf_score": top_score,
+            "parent_context_count": len({hit.parent_context.context_id for hit in hits if hit.parent_context}),
+            "context_warnings": sorted({hit.context_warning for hit in hits if hit.context_warning}),
         })
 
     score_summary = None if not top_scores else {

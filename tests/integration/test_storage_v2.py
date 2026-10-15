@@ -115,6 +115,20 @@ class StorageV2IntegrationTests(unittest.TestCase):
         finally:
             self.vectors.delete_document(uid, did)
 
+    def test_parent_context_reads_existing_leaf_rows_without_new_schema(self):
+        uid, did = uuid4(), uuid4()
+        vector = [1.] + [0.] * (self.settings.embedding_dimension - 1)
+        chunks = [Chunk(str(uuid4()), str(uid), str(did), index, f"parent context fact {index}", "context.md") for index in range(2)]
+        try:
+            self.vectors.upsert(chunks, [vector, vector])
+            hits = self.vectors.search(uid, [did], "context", vector, 1)
+            expanded = self.vectors.expand_context(uid, [did], hits)
+            self.assertEqual(hits[0].chunk, expanded[0].chunk)
+            self.assertEqual(tuple(chunks), expanded[0].parent_context.children)
+            self.assertTrue(expanded[0].parent_context.contains(hits[0].chunk))
+        finally:
+            self.vectors.delete_document(uid, did)
+
 
 if __name__ == "__main__":
     unittest.main()

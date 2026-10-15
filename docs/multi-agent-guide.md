@@ -135,3 +135,5 @@ $env:SQL_TEST_ADMIN_URL = 'postgresql://测试管理员:密码@localhost:5432/po
 ## 后续
 
 首期多 Agent 不扩建父子块、精排、文档版本、独立 Worker、可恢复 Run/Event、多租户及模型中心。后续已在独立阶段接入 [Excel 行级来源](excel-row-citations.md)，沿用本页的 Supervisor 与专职 Agent。
+
+后续检索增强：[父子上下文检索](parent-context-retrieval.md)，保留本页 Supervisor/子 Agent 分工。
