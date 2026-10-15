@@ -1,4 +1,6 @@
 import re
+import json
+import hashlib
 from functools import lru_cache
 from urllib.parse import urlsplit, urlunsplit
 
@@ -41,6 +43,7 @@ class EvidenceRegistry:
     def __init__(self, token_budget: int = 12000):
         self.token_budget = token_budget
         self.entries: list[dict] = []
+        self.sources: dict[int, dict] = {}
         self.keys: dict[tuple[str, str], int] = {}
         self.used_tokens = 0
 
@@ -56,7 +59,27 @@ class EvidenceRegistry:
         self.entries.append(citation)
         self.keys[key] = number
         self.used_tokens += tokens
-        return {"number": number, "type": citation["type"], "title": title[:500], "content": content}, False
+        source = {"number": number, "type": citation["type"], "title": title[:500], "content": content}
+        self.sources[number] = source
+        return source, False
+
+    def add_web_page(self, page) -> dict:
+        key = ("web", normalized_url(page.url))
+        number = self.keys.get(key)
+        if number is None:
+            return self.add_web(WebSearchBatch([page]))
+        previous = self.sources[number]
+        available = self.token_budget - self.used_tokens + count_tokens(previous["content"])
+        content = page.content[:12000].strip()
+        while content and count_tokens(content) > available:
+            content = content[:len(content) // 2]
+        if not content:
+            return {"status": "empty", "sources": [], "existing_numbers": [number], "truncated": True}
+        self.used_tokens += count_tokens(content) - count_tokens(previous["content"])
+        source = {**previous, "content": content, "title": page.title[:500]}
+        self.sources[number] = source
+        self.entries[number - 1].update(excerpt=content[:500], title=page.title[:500])
+        return {"status": "ok", "sources": [source], "existing_numbers": [], "truncated": len(content) < len(page.content)}
 
     def add_knowledge(self, hits: list[SearchHit]) -> dict:
         sources, existing, truncated = [], [], False
@@ -110,6 +133,19 @@ class EvidenceRegistry:
                 truncated = True
         return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing, "truncated": truncated}
 
+    def add_sql(self, result: dict) -> dict:
+        content = json.dumps(result, ensure_ascii=False, default=str)
+        key = ("sql", hashlib.sha256(content.encode()).hexdigest())
+        citation = {"type": "sql", "source_name": result["source_name"], "query": result["query"],
+                    "columns": result["columns"], "row_count": len(result["rows"]), "truncated": result["truncated"]}
+        source, duplicate = self._add(key, citation, result["source_name"], content)
+        if source:
+            preview = "\n".join("；".join(f"{column}：{value}" for column, value in zip(result["columns"], row))
+                                for row in result["rows"]) or "查询结果为空（0 行）"
+            self.entries[source["number"] - 1]["excerpt"] = preview[:500]
+        return {"status": "ok" if source or duplicate else "empty", "sources": [source] if source else [],
+                "existing_numbers": [self.keys[key]] if duplicate else [], "truncated": source is None and not duplicate}
+
     def validate(self, kind: str, answer: str, search_mode: str = "auto") -> list[dict]:
         numbers = sorted({int(value) for value in re.findall(r"\[(\d+)\]", answer)})
         by_number = {entry["number"]: entry for entry in self.entries}
@@ -121,7 +157,7 @@ class EvidenceRegistry:
         citations = [by_number[number] for number in numbers]
         if kind == "grounded" and not citations:
             raise AppError("INVALID_CITATION", "有依据的回答必须包含引用", 502)
-        expected = {"knowledge": "knowledge", "web": "web"}.get(search_mode)
+        expected = {"knowledge": "knowledge", "web": "web", "sql": "sql"}.get(search_mode)
         if expected and any(citation["type"] not in {expected, "memory"} for citation in citations):
             raise AppError("INVALID_CITATION", "回答引用了当前模式未授权的来源", 502)
         return citations

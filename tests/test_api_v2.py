@@ -85,6 +85,64 @@ class Services:
 
 class ApiV2Tests(unittest.TestCase):
     headers = {"Authorization": "Bearer test"}
+
+    def test_agent_events_and_sql_citation_roundtrip(self):
+        services = Services()
+        original = services.chat.answer_v2
+        received = []
+
+        def answer(user_id, session_id, payload, request_id, on_answer_event=None):
+            received.append(payload)
+            if on_answer_event:
+                on_answer_event("agent_started", {"agent": "sql", "status": "running"})
+                on_answer_event("agent_finished", {"agent": "sql", "status": "ok"})
+            message = original(user_id, session_id, payload, request_id, on_answer_event)
+            message.citations = [{"type": "sql", "number": 1, "source_name": "业务库", "query": "SELECT 1",
+                                  "columns": ["value"], "row_count": 1, "truncated": False, "excerpt": "1"}]
+            message.run_metadata = {"search_mode": "sql"}
+            return message
+
+        services.chat.answer_v2 = answer
+        with TestClient(create_app(Settings(_env_file=None), services)) as client:
+            response = client.post(f"/api/v2/sessions/{uuid4()}/messages/stream", headers=self.headers,
+                                   json={"question": "销量", "search_mode": "sql"})
+            history_contract = client.post(f"/api/v2/sessions/{uuid4()}/messages", headers=self.headers,
+                                           json={"question": "销量", "search_mode": "sql"})
+        self.assertEqual("sql", received[0].search_mode)
+        self.assertIn('"agent": "sql"', response.text)
+        self.assertIn("event: agent_finished", response.text)
+        self.assertEqual(200, history_contract.status_code)
+        self.assertEqual("sql", history_contract.json()["citations"][0]["type"])
+
+    def test_url_and_mode_validation(self):
+        from app.api.schemas import V2ChatRequest, ContextEstimateRequest
+        from pydantic import ValidationError
+        for schema in (V2ChatRequest, ContextEstimateRequest):
+            self.assertEqual(["https://example.com"], schema(question="读取", web_urls=["https://example.com"]).web_urls)
+            for body in (
+                {"search_mode": "sql", "web_urls": ["https://example.com"]},
+                {"search_mode": "sql", "document_ids": [str(uuid4())]},
+                {"web_urls": ["http://127.0.0.1"]},
+                {"web_urls": ["https://example.com"] * 4},
+            ):
+                with self.subTest(body=body), self.assertRaises(ValidationError):
+                    schema(question="查询", **body)
+
+    def test_specified_urls_passed_to_workflow_input(self):
+        services = Services()
+        original = services.chat.answer_v2
+        received = []
+
+        def answer(user_id, session_id, payload, request_id, on_answer_event=None):
+            received.append(payload)
+            return original(user_id, session_id, payload, request_id, on_answer_event)
+
+        services.chat.answer_v2 = answer
+        with TestClient(create_app(Settings(_env_file=None), services)) as client:
+            response = client.post(f"/api/v2/sessions/{uuid4()}/messages", headers=self.headers,
+                                   json={"question": "读取", "search_mode": "web", "web_urls": ["https://example.com/docs"]})
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(("https://example.com/docs",), received[0].web_urls)
     def test_v2_session_route_creates_v2_session(self):
         services = Services()
         app = create_app(Settings(_env_file=None), services)

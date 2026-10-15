@@ -217,7 +217,7 @@ def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services
     data = AgentChatInput(
         question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
-        web_query=payload.web_query,
+        web_query=payload.web_query, web_urls=tuple(payload.web_urls),
     )
     message = services.chat.answer_v2(user_id, session_id, data, request.state.request_id)
     return V2ChatResponse(
@@ -232,7 +232,7 @@ def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, s
     data = AgentChatInput(
         question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
-        web_query=payload.web_query,
+        web_query=payload.web_query, web_urls=tuple(payload.web_urls),
     )
     run_id = str(uuid4())
     request_id = request.state.request_id
@@ -272,6 +272,8 @@ def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, s
                 event_data = {"run_id": run_id, "sequence": sequence}
                 if event == "answer_delta":
                     event_data["delta"] = value
+                elif event in {"agent_started", "agent_finished", "agent_failed"}:
+                    event_data.update(value)
                 yield sse_event(event, event_data)
             metadata = message.run_metadata or {}
             metrics = metadata.get("metrics", {})
@@ -340,7 +342,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "ollama", "model_name": settings.ollama_model, "available": True, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "upload": {"allowed_extensions": office + [".txt", ".md"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

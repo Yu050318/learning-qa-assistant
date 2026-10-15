@@ -10,9 +10,22 @@
 
 一个面向多用户私有知识库的全栈 RAG Agent。系统将文档解析、向量检索、联网搜索、证据引用、模型降级、会话持久化和 SSE 事件流整合为一条可追踪、可测试的问答链路，而不是只演示一次模型调用。
 
+## Supervisor 多 Agent（首期）
+
+聊天入口现由 Supervisor 识别意图，委派 RAG、SQL、Web 三个专职 Agent，并统一汇总引用。
+支持一次提问组合多个 Agent；子任务顺序执行，共享模型/工具预算与请求 deadline。
+
+- `knowledge`：仅私有知识库；`sql`：仅业务只读 PostgreSQL；`web`：Tavily 搜索或 Scrapling 读网页；`auto`：自动组合。
+- 在聊天框输入网页 URL 即可授权本轮读取（最多 3 个）。指定网页无需先搜索，未配置 Tavily 也可读取；搜索结果也可读取，正文链接不会自动授权。
+- SQL 配置使用 `.env.example` 中的 `SQL_DATABASE_URL` 和 `SQL_ALLOWED_TABLES`；平台数据库不可作为业务数据源。数据源是所有已登录用户共享的获准业务数据集，只应授权他们均可查看的表；需要按用户限制时，应先增加业务授权层再开放。
+- 新增 SSE `agent_started / agent_finished / agent_failed`；聊天中展示执行状态，最终 SQL 来源卡保留查询、返回行数与截断提示。历史消息复用相同格式。
+- 每轮默认 16 次模型调用、12 次工具调用、最多 6 次委派、每个 Agent 最多 2 次；所有调用及降级共用预算。预算耗尽直接报错，不无限重试。
+
+调用链、只读角色配置、测试与分阶段学习说明见 [多 Agent 实现指南](docs/multi-agent-guide.md)。
+
 ## 项目亮点
 
-- **受控 RAG Agent：** 可在 `knowledge / web / auto` 三种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
+- **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
 - **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、Excel 通过 MinerU 解析，TXT/Markdown 本地处理。
@@ -36,7 +49,7 @@
 flowchart LR
     UI[Vue 3 前端] -->|REST / POST SSE| API[FastAPI]
     API --> CHAT[ChatService]
-    CHAT --> AGENT[RAG Agent Workflow]
+    CHAT --> AGENT[Supervisor / RAG / SQL / Web]
     AGENT -->|knowledge| RETRIEVE[Qwen Embedding + Milvus]
     AGENT -->|web / auto| WEB[Tavily Search]
     AGENT -->|read_web_page| PAGE[Scrapling 网页正文]
@@ -60,8 +73,8 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - 最近消息上下文、服务端引用、DeepSeek/Ollama 回答与 SSE 增量答案。
 - DeepSeek 可重试错误发生时，可显式开启一次 Ollama 降级；鉴权错误不降级。
 - LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
-- `knowledge / web / auto` 三种模式、请求内证据登记、混合引用和有限工具循环。
-- Tavily 固定公开搜索词；Agent 可按本轮搜索结果编号调用 Scrapling 读取清洗后的网页正文，网络结果不会写入 Milvus。
+- `knowledge / web / sql / auto` 四种模式、请求内证据登记、混合引用和有限工具循环。
+- Tavily 固定公开搜索词；Web Agent 可按本轮授权 URL 调用 Scrapling 读取清洗后的网页正文，网络结果不会写入 Milvus。
 - PDF、Word、PowerPoint、Excel 显式启用后统一经 MinerU 云解析；TXT/Markdown 保持本地解析。
 - 会话持久化、运行元数据和显式数据库初始化。
 
@@ -89,7 +102,8 @@ app/
     loaders/mineru.py         MinerU 签名上传、轮询、下载和结构归一化
     search/tavily.py          Tavily 搜索适配与结果安全过滤
     search/scrapling.py       已登记搜索来源的网页正文抓取与安全校验
-  workflows/agent.py          LangChain Agent 与工具预算
+  workflows/supervisor.py     Supervisor 与 RAG/SQL/Web 子 Agent
+  workflows/agent.py          共享模型预算、降级及答案增量解析
   core/                       环境配置、异常与结构化日志
   bootstrap.py                显式初始化存储
   main.py                     FastAPI 入口
@@ -155,7 +169,7 @@ $env:DATABASE_REQUIRE_TLS = 'false'
 
 设置 `WEB_SEARCH_ENABLED=true` 并配置 `TAVILY_API_KEY` 后，`web` 和 `auto` 模式可调用网络搜索。联网时只发送当前问题或显式 `web_query`，不会发送历史消息或知识库片段。应用会阻止明显的密钥、连接串和超长公开查询，但这不是完整的隐私识别；发送前仍需确认查询可公开。
 
-`web` 模式下，Agent 可继续调用 `read_web_page(source_number)`，用 Scrapling 读取本轮 Tavily 已登记来源的正文。该工具不接受任意 URL，且会限制公网 DNS、端口、重定向、响应类型、2 MiB 响应体、超时和送入模型的字符数。可通过 `SCRAPLING_TIMEOUT` 与 `SCRAPLING_MAX_CHARACTERS` 调整后两项；当前只使用静态 HTTP Fetcher，不需要下载浏览器运行时。
+`web` 模式下，Web Agent 可继续调用 `read_web_page(url)`，用 Scrapling 读取本轮 Tavily 已登记来源的正文。该工具仅接受本轮用户指定、搜索返回或服务端配置的 URL，且会限制公网 DNS、端口、重定向、响应类型、2 MiB 响应体、超时和送入模型的字符数。可通过 `SCRAPLING_TIMEOUT` 与 `SCRAPLING_MAX_CHARACTERS` 调整后两项；当前只使用静态 HTTP Fetcher，不需要下载浏览器运行时。
 
 ## 4. 初始化与启动
 
@@ -255,7 +269,7 @@ Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。服
 }
 ```
 
-`knowledge` 禁止 `web_query`；`web` 禁止 `document_ids`；`auto` 可以同时授权两种来源。网页引用与知识库引用使用同一连续编号。
+`knowledge/sql` 禁止联网参数；`web/sql` 禁止 `document_ids`；`auto` 可以组合 RAG、SQL 与 Web。网页引用与知识库引用使用同一连续编号。
 
 资源不存在与越权访问均返回 404。忙碌资源返回 409。响应不暴露原文件路径、凭据或上游原始错误：
 

@@ -1,3 +1,5 @@
+> 多 Agent 改造后的入口和调用链请先阅读 [多 Agent 实现指南](multi-agent-guide.md)。本文其余内容保留原 Demo 的分层说明。
+
 # 多用户 RAG 后端：代码导读
 
 > 认证说明：本文较早章节中的 `X-User-ID` 示例已过时。当前实现使用 `/api/v2/auth/*` 登录、Bearer Access JWT 与 HttpOnly opaque Refresh Token；业务层用户 UUID 只能来自验证后的 `AuthContext`。以代码和 README 的认证章节为准。
@@ -30,7 +32,7 @@
                        → 校验证据和引用 → 保存消息与运行元数据
 ```
 
-当前由 `AgentRAGWorkflow` 约束模型和工具循环；知识性结论必须引用本轮登记的知识库或网页证据。
+当前由 `SupervisorWorkflow` 约束模型和工具循环；知识性结论必须引用本轮登记的知识库或网页证据。
 
 需要区分三件事：
 
@@ -109,7 +111,7 @@ Services
   ├─ embeddings → QwenEmbedding
   ├─ models     → ModelRouter → DeepSeekProvider / OllamaProvider
   ├─ retriever  → RetrieverService(embeddings, vectors)
-  ├─ agent_workflow → AgentRAGWorkflow(retriever, models, web_search)
+  ├─ agent_workflow → SupervisorWorkflow(retriever, models, web_search)
   ├─ ingestion  → IngestionService(...)
   ├─ sessions   → SessionService(database)
   └─ chat       → ChatService(..., sessions, agent_workflow)
@@ -367,7 +369,7 @@ PostgreSQL 和 Milvus 没有共享事务。当前做法是“状态标记 + 确�
 
 `ChatService.answer_v2()` 负责权限范围、消息持久化和会话并发控制。
 
-`AgentRAGWorkflow.run()` 负责受控工具调用、上下文预算、模型降级、结构化输出和引用检查。
+`SupervisorWorkflow.run()` 负责受控工具调用、上下文预算、模型降级、结构化输出和引用检查。
 
 把两者分开，是为了以后替换问答策略时，不必同时重写 HTTP 接口和消息存储逻辑。
 
@@ -382,7 +384,7 @@ POST /api/v2/sessions/{session_id}/messages
       2. 检查文档范围，只允许 ready 且模型兼容的文档
       3. 读取旧摘要与最近消息
       4. 保存本次 user 消息并提交
-      5. AgentRAGWorkflow.run()
+      5. SupervisorWorkflow.run()
            → 按 knowledge / web / auto 暴露允许的工具
            → RetrieverService 或 Tavily 返回证据
            → EvidenceRegistry 编号、去重并限制预算
@@ -412,7 +414,7 @@ POST /api/v2/sessions/{session_id}/messages
 
 默认最终 `top_k=6`，Dense 和 BM25 每路最多请求 `top_k * 2`，由 Milvus RRF 融合出最多 12 条，再为完全重复正文去重并保留 6 条。RRF 是基于名次的结果融合，不是 Cross-Encoder 等模型重排；当前仍没有语义相近片段去重。
 
-RRF 分数与原来的 COSINE 分数不在同一尺度。默认不按 RRF 分数拒答或触发联网；只有在评估集上完成校准后，才设置 `AUTO_WEB_HYBRID_SCORE_THRESHOLD`。
+RRF 分数与原来的 COSINE 分数不在同一尺度。默认不按 RRF 分数拒答或触发联网；由 Supervisor 根据意图与子 Agent 结果决定是否委派 Web。
 
 ### 6.5 Prompt 和引用分别由谁负责
 
@@ -545,7 +547,7 @@ AND document_id IN 本次允许检索的文档UUID列表
 | --- | --- |
 | `CHUNK_SIZE / CHUNK_OVERLAP` | 新入库文档的切片窗口和重叠 |
 | `RETRIEVAL_TOP_K` | 去重后最多保留多少召回片段 |
-| `AUTO_WEB_HYBRID_SCORE_THRESHOLD` | 可选的 RRF 联网回退阈值，必须先用评估集校准 |
+| `SUPERVISOR_MAX_DELEGATIONS` | 单轮子 Agent 委派上限，默认 6 |
 | `MEMORY_RECENT_MESSAGES` | 最多注入多少条最近消息，不是完整轮数 |
 | `DEFAULT_MODEL_PROVIDER` | 请求未指定时的模型提供商 |
 | `ALLOW_MODEL_FALLBACK` | 是否允许有限的 DeepSeek → Ollama 降级 |
@@ -632,7 +634,7 @@ API 异常处理器会统一组织为：
 ### 第二遍：沿着一个功能进入基础设施
 
 - 跟上传：`IngestionService.upload()` → `process()` → `LocalDocumentLoader` → `QwenEmbedding` → `MilvusVectorStore`。
-- 跟问答：`ChatService.answer_v2()` → `AgentRAGWorkflow.run()` → 检索工具 → 模型回答。
+- 跟问答：`ChatService.answer_v2()` → `SupervisorWorkflow.run()` → 检索工具 → 模型回答。
 - 跟用户：`current_user()` → `Services.user_id()` → `Repository.user()`。
 
 ### 建议的断点
@@ -644,7 +646,7 @@ API 异常处理器会统一组织为：
 | `IngestionService.process()` 切片后 | chunk 的正文、ID、页码/章节和数量 |
 | `ChatService.answer_v2()` 调用工作流前 | ready_ids、最近消息、summary；确认未混入其他用户资料 |
 | `RetrieverService.retrieve()` 召回后 | 结果范围、分数、去重前后数量 |
-| `AgentRAGWorkflow.run()` 生成后 | answer、证据登记和引用编号如何对应 |
+| `SupervisorWorkflow.run()` 生成后 | answer、证据登记和引用编号如何对应 |
 
 观察业务内容时使用自己的测试资料；不要把断点里看到的正文、连接串或密钥直接粘贴进公共日志。
 
@@ -657,7 +659,7 @@ API 异常处理器会统一组织为：
 | 新增聊天模型 | `app/infrastructure/llms/providers.py`、`container.py` | 同步更新请求 provider 限制和配置 |
 | 调整 MinerU | `app/infrastructure/loaders/mineru.py` 与 `app/application/ingestion.py` | 保留签名 URL 校验、批次续接、缓存签名和短事务 |
 | 实现滚动摘要 | 聊天保存流程和会话字段更新 | 原始消息保留；摘要和进度应一致提交 |
-| 扩展 V2 SSE | `AgentRAGWorkflow.run()`、V2 流式路由和前端 store | 保持 answer_start 重置、done 权威覆盖与持久化语义 |
+| 扩展 V2 SSE | `SupervisorWorkflow.run()`、V2 流式路由和前端 store | 保持 answer_start 重置、done 权威覆盖与持久化语义 |
 | 添加真实认证 | `app/api/dependencies.py` 的 current_user | 保留各层用户过滤，不把鉴权当作过滤的替代品 |
 | 升级为按需检索 Agent | 替换/扩展工作流，复用 RetrieverService | 仍需保证检索工具强制用户作用域 |
 
@@ -689,7 +691,7 @@ API 异常处理器会统一组织为：
 
 ## Agent、网络搜索与 MinerU
 
-一次问答从 `app/api/routes.py` 进入 `ChatService.answer_v2()`：先用短事务保存用户消息，再在事务外运行 `AgentRAGWorkflow`，最后重新检查知识库引用范围并保存完整 assistant 消息。每次请求单独创建 EvidenceRegistry，知识库和网页来源按实际登记顺序共享引用编号。
+一次问答从 `app/api/routes.py` 进入 `ChatService.answer_v2()`：先用短事务保存用户消息，再在事务外运行 `SupervisorWorkflow`，最后重新检查知识库引用范围并保存完整 assistant 消息。每次请求单独创建 EvidenceRegistry，知识库和网页来源按实际登记顺序共享引用编号。
 
 `knowledge` 只提供知识库工具，`web` 只提供 Tavily，`auto` 根据配置提供两者。网络工具始终使用请求开始时冻结的公开查询，不接收模型临时生成的查询，因此历史消息和私有知识片段不会被拼入 Tavily 请求。
 

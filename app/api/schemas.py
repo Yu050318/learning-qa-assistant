@@ -4,6 +4,18 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.infrastructure.search.tavily import safe_public_url
+
+
+def validate_web_scope(payload):
+    if payload.search_mode in {"knowledge", "sql"} and (payload.web_query is not None or payload.web_urls):
+        raise ValueError("当前模式不接受联网参数")
+    if payload.search_mode in {"web", "sql"} and payload.document_ids is not None:
+        raise ValueError("当前模式不接受知识库文档")
+    if any(len(url) > 2048 or not safe_public_url(url) for url in payload.web_urls):
+        raise ValueError("网页地址无效或不是公网 HTTP(S) 地址")
+    payload.web_urls = list(dict.fromkeys(payload.web_urls))
+
 
 class ORMResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -117,23 +129,33 @@ class MemoryCitation(BaseModel):
     score: float
 
 
-V2Citation = Annotated[Union[KnowledgeCitation, WebCitation, MemoryCitation], Field(discriminator="type")]
+class SQLCitation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["sql"] = "sql"
+    number: int = Field(ge=1)
+    source_name: str
+    query: str
+    columns: list[str]
+    row_count: int = Field(ge=0)
+    truncated: bool
+    excerpt: str = Field(max_length=500)
+
+
+V2Citation = Annotated[Union[KnowledgeCitation, WebCitation, MemoryCitation, SQLCitation], Field(discriminator="type")]
 
 
 class V2ChatRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     question: str = Field(min_length=1, max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
-    search_mode: Literal["knowledge", "web", "auto"] = "auto"
+    search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     web_query: str | None = Field(default=None, min_length=1, max_length=400)
+    web_urls: list[str] = Field(default_factory=list, max_length=3)
 
     @model_validator(mode="after")
     def validate_scope(self):
-        if self.search_mode == "knowledge" and self.web_query is not None:
-            raise ValueError("knowledge mode does not accept web_query")
-        if self.search_mode == "web" and self.document_ids is not None:
-            raise ValueError("web mode does not accept document_ids")
+        validate_web_scope(self)
         if self.document_ids is not None:
             self.document_ids = list(dict.fromkeys(self.document_ids))
         return self
@@ -161,7 +183,7 @@ class V2ChatResponse(BaseModel):
     answer: str = Field(validation_alias="content")
     model_provider: str
     model_name: str
-    search_mode: Literal["knowledge", "web", "auto"]
+    search_mode: Literal["knowledge", "web", "sql", "auto"]
     citations: list[V2Citation]
     token_usage: dict | None
     run_metadata: dict
@@ -179,16 +201,14 @@ class ContextEstimateRequest(BaseModel):
     session_id: UUID | None = None
     question: str = Field(default="", max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
-    search_mode: Literal["knowledge", "web", "auto"] = "auto"
+    search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     web_query: str | None = Field(default=None, min_length=1, max_length=400)
+    web_urls: list[str] = Field(default_factory=list, max_length=3)
 
     @model_validator(mode="after")
     def validate_scope(self):
-        if self.search_mode == "knowledge" and self.web_query is not None:
-            raise ValueError("knowledge mode does not accept web_query")
-        if self.search_mode == "web" and self.document_ids is not None:
-            raise ValueError("web mode does not accept document_ids")
+        validate_web_scope(self)
         if self.document_ids:
             self.document_ids = list(dict.fromkeys(self.document_ids))
         return self

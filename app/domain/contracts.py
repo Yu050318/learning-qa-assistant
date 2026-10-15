@@ -57,10 +57,11 @@ class WebSearchBatch:
 @dataclass(frozen=True)
 class AgentChatInput:
     question: str
-    search_mode: Literal["knowledge", "web", "auto"] = "auto"
+    search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: tuple[UUID, ...] | None = None
     web_query: str | None = None
     model_provider: str | None = None
+    web_urls: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -78,11 +79,12 @@ class RunContext:
     user_id: UUID
     session_id: UUID
     question: str
-    search_mode: Literal["knowledge", "web", "auto"]
+    search_mode: Literal["knowledge", "web", "sql", "auto"]
     allowed_document_ids: tuple[UUID, ...]
     selected_provider: str
     public_query: str | None
     web_enabled: bool
+    web_urls: tuple[str, ...] = ()
     warnings: tuple[str, ...] = ()
     source_message_id: UUID | None = None
     started_at_utc: datetime | None = None

@@ -237,8 +237,55 @@ class V2FoundationTests(unittest.TestCase):
         self.assertEqual("# Clean content", result.content)
         self.assertEqual("Example documentation", result.title)
         self.assertTrue(page.main_content_only)
-        self.assertEqual(7, requests[0][1]["timeout"])
-        self.assertEqual("safe", requests[0][1]["follow_redirects"])
+        self.assertLessEqual(requests[0][1]["timeout"], 7)
+        self.assertFalse(requests[0][1]["follow_redirects"])
+
+    def test_scrapling_validates_redirect_before_connecting_to_target(self):
+        from types import SimpleNamespace
+        fetched = []
+
+        def fetch(url, **kwargs):
+            fetched.append(url)
+            return SimpleNamespace(url=url, status=302, headers={"Location": "http://127.0.0.1/secret"})
+
+        reader = ScraplingWebReader(Settings(_env_file=None), fetch=fetch,
+                                   resolve=lambda *args, **kwargs: [(None, None, None, None, ("93.184.216.34", 443))])
+        with self.assertRaises(AppError) as raised:
+            reader.read("https://example.com/docs", 5)
+        self.assertEqual("UNSAFE_WEB_URL", raised.exception.code)
+        self.assertEqual(["https://example.com/docs"], fetched)
+
+    def test_scrapling_transport_pins_dns_and_bounds_download_before_parsing(self):
+        import ipaddress
+        from types import SimpleNamespace
+        from unittest.mock import patch, MagicMock
+        from curl_cffi import CurlOpt
+
+        response = SimpleNamespace(url="https://example.com/docs", status_code=200, reason="OK", encoding="utf-8",
+                                   headers={"content-type": "text/html"})
+        session = MagicMock()
+
+        def get(url, **kwargs):
+            kwargs["content_callback"](b"<html><title>Docs</title><main>Public content</main></html>")
+            return response
+
+        session.get.side_effect = get
+        with patch("app.infrastructure.search.scrapling.Session") as factory:
+            factory.return_value.__enter__.return_value = session
+            result = ScraplingWebReader._fetch_pinned("https://example.com/docs", {ipaddress.ip_address("93.184.216.34")}, 5)
+            self.assertIn("Public content", result.markdown())
+            self.assertEqual([b"example.com:443:93.184.216.34"], factory.call_args.kwargs["curl_options"][CurlOpt.RESOLVE])
+            self.assertFalse(factory.call_args.kwargs["trust_env"])
+            self.assertFalse(session.get.call_args.kwargs["allow_redirects"])
+
+            def too_big(url, **kwargs):
+                self.assertEqual(0, kwargs["content_callback"](b"x" * (2 * 1024 * 1024 + 1)))
+                raise RuntimeError("aborted")
+
+            session.get.side_effect = too_big
+            with self.assertRaises(AppError) as raised:
+                ScraplingWebReader._fetch_pinned("https://example.com/docs", {ipaddress.ip_address("93.184.216.34")}, 5)
+            self.assertEqual("WEB_PAGE_TOO_LARGE", raised.exception.code)
 
 
 if __name__ == "__main__":

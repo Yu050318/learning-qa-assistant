@@ -18,7 +18,8 @@ from app.infrastructure.persistence.repository import Repository
 from app.infrastructure.search.scrapling import ScraplingWebReader
 from app.infrastructure.search.tavily import TavilySearch
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
-from app.workflows.agent import AgentRAGWorkflow
+from app.workflows.supervisor import SupervisorWorkflow
+from app.infrastructure.sql import ReadOnlySQL
 
 
 class Services:
@@ -34,9 +35,10 @@ class Services:
         self.web_search = TavilySearch(settings)
         self.web_reader = ScraplingWebReader(settings)
         self.mineru = MinerUParser(settings)
-        self.agent_workflow = AgentRAGWorkflow(
+        self.sql = ReadOnlySQL(settings)
+        self.agent_workflow = SupervisorWorkflow(
             settings, self.retriever, self.models, self.web_search, self.memories,
-            web_reader=self.web_reader,
+            web_reader=self.web_reader, sql=self.sql,
         )
         self.ingestion = IngestionService(settings, self.database, LocalDocumentLoader(settings), self.mineru, self.embeddings, self.vectors)
         self.sessions = SessionService(self.database)
@@ -70,4 +72,5 @@ class Services:
         self.ingestion.close()
         self.web_search.close()
         self.mineru.close()
+        self.sql.close()
         self.database.close()

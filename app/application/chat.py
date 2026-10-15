@@ -26,10 +26,12 @@ _SENSITIVE_PUBLIC_QUERY = re.compile(
 
 
 def prepare_public_query(payload: AgentChatInput, web_enabled: bool) -> tuple[str | None, bool, tuple[str, ...]]:
-    if payload.search_mode == "knowledge":
+    if payload.search_mode in {"knowledge", "sql"}:
         return None, False, ()
     query = (payload.web_query or payload.question).strip()
     blocked = len(query) > 400 or _SENSITIVE_PUBLIC_QUERY.search(query) is not None
+    if payload.web_urls and payload.web_query is None:
+        return None, web_enabled, ()
     if payload.search_mode == "web":
         if blocked:
             raise AppError("WEB_QUERY_REQUIRED", "联网查询过长或包含明显敏感配置，请提供安全的 web_query", 422)
@@ -51,7 +53,7 @@ class ChatService:
         if self.agent_workflow is None:
             raise AppError("NOT_IMPLEMENTED", "V2 Agent 尚未配置", 503)
         public_query, web_enabled, warnings = prepare_public_query(payload, self.settings.web_search_enabled)
-        if payload.search_mode == "web" and not self.settings.web_search_enabled:
+        if payload.search_mode == "web" and not self.settings.web_search_enabled and not payload.web_urls:
             raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
         selected = payload.model_provider or self.settings.default_model_provider
         started = perf_counter()
@@ -60,7 +62,7 @@ class ChatService:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True)
                 requested = list(payload.document_ids) if payload.document_ids is not None else None
-                ready_ids = [] if payload.search_mode == "web" else repository.ready_document_ids(user_id, requested, self.settings.embedding_model)
+                ready_ids = [] if payload.search_mode in {"web", "sql"} else repository.ready_document_ids(user_id, requested, self.settings.embedding_model)
                 history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
                     user_id, session_id
                 )[-self.settings.memory_recent_messages:]]
@@ -73,6 +75,7 @@ class ChatService:
                 request_id=request_id, user_id=user_id, session_id=session_id, question=payload.question,
                 search_mode=payload.search_mode, allowed_document_ids=tuple(ready_ids), selected_provider=selected,
                 public_query=public_query, web_enabled=web_enabled, warnings=warnings,
+                web_urls=payload.web_urls,
                 source_message_id=user_message.id,
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
             )
@@ -115,7 +118,7 @@ class ChatService:
 
     def estimate_context(self, user_id: UUID, payload) -> dict:
         provider, model_name, budget = self._model_details(payload.model_provider)
-        summary, history, version = "", [], None
+        summary, history, version, ready = "", [], None, []
         if payload.session_id:
             with self.database.sessions() as database:
                 repository = Repository(database)
@@ -124,16 +127,16 @@ class ChatService:
                 summary = session.summary
                 history = [ChatTurn(item.role, item.content) for item in messages[-self.settings.memory_recent_messages:]]
                 version = self._context_version(session, messages)
-                if payload.search_mode != "web":
+                if payload.search_mode in {"knowledge", "auto"}:
                     requested = list(payload.document_ids) if payload.document_ids else None
                     ready = repository.ready_document_ids(user_id, requested, self.settings.embedding_model)
         else:
             ready = []
-            if payload.search_mode != "web":
+            if payload.search_mode in {"knowledge", "auto"}:
                 with self.database.sessions() as database:
                     requested = list(payload.document_ids) if payload.document_ids else None
                     ready = Repository(database).ready_document_ids(user_id, requested, self.settings.embedding_model)
-        has_evidence = payload.search_mode == "web" and self.settings.web_search_enabled or payload.search_mode != "web" and bool(ready)
+        has_evidence = bool(ready) or payload.search_mode in {"web", "auto"} and (self.settings.web_search_enabled or bool(payload.web_urls)) or payload.search_mode in {"sql", "auto"} and bool(self.settings.sql_allowed_tables)
         reserved = evidence_token_budget(budget) if has_evidence else 0
         estimated = count_tokens(
             AGENT_SYSTEM_PROMPT, summary,
