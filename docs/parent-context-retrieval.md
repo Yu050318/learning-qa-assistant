@@ -85,6 +85,6 @@ contexts 没有 `number`，不会进入引用列表。重复父块只占一次�
 真实 Milvus 往返放入原 opt-in 存储集成测试；当前缺少隔离服务配置，因此未执行，不用替身测试冒充在线验证。
 
 已有 `scripts/evaluate_retrieval.py` 继续调用正式 RetrieverService，新增逐题父块数量与警告输出；Recall/MRR 仍按原始叶子 ID 计算。
-后续应在固定数据集上测量答案质量、上下文成本和耗时，再决定是否加入三级持久父块、Auto-merging 与精排；本阶段不填虚构提升指标。
+后续应在固定数据集上测量答案质量、上下文成本和耗时，再决定是否加入三级持久父块与 Auto-merging；本阶段不填虚构提升指标。可选精排已在[第四阶段](rerank-retrieval.md)接入，默认关闭。
 
 2026-10-15 验证记录：后端全量 **137 passed、9 skipped**，其中本阶段专项测试 26 项；`uv lock --check` 与 diff 空白检查通过。未修改前端组件、未运行真实 Milvus 邻居读取或在线模型对比，也未执行集合升级或重新 Embedding。

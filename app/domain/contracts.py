@@ -77,11 +77,25 @@ class ParentContext:
 
 
 @dataclass(frozen=True)
+class RerankTrace:
+    status: Literal["applied", "fallback"]
+    model: str
+    candidate_count: int
+    elapsed_ms: float
+    attempts: int
+    input_truncated: bool = False
+    error_code: str | None = None
+    total_tokens: int | None = None
+
+
+@dataclass(frozen=True)
 class SearchHit:
     chunk: Chunk
     score: float
     parent_context: ParentContext | None = None
     context_warning: str | None = None
+    rerank_score: float | None = None
+    rerank_trace: RerankTrace | None = None
 
 
 @dataclass(frozen=True)

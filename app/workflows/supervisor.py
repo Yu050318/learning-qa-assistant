@@ -87,6 +87,8 @@ class SupervisorWorkflow:
                         if "contexts" in result:
                             event["parent_context_count"] = len(result["contexts"])
                             event["warnings"] = result.get("warnings", [])
+                        if "rerank" in result:
+                            event["rerank"] = result["rerank"]
                         return result
                     except AppError as error:
                         event.update(status="failed", error_code=error.code)
@@ -107,7 +109,8 @@ class SupervisorWorkflow:
             if counters["knowledge_searches"] >= settings.agent_max_knowledge_calls:
                 raise AppError("AGENT_LIMIT_EXCEEDED", "知识库检索超过限制", 502)
             counters["knowledge_searches"] += 1
-            hits = self.retriever.retrieve(context.user_id, query, list(context.allowed_document_ids)) if context.allowed_document_ids else []
+            hits = self.retriever.retrieve(context.user_id, query, list(context.allowed_document_ids),
+                                           deadline=context.deadline_monotonic) if context.allowed_document_ids else []
             return registry.add_knowledge(hits)
 
         @instrument
@@ -238,7 +241,7 @@ class SupervisorWorkflow:
                     event["status"] = "partial" if len(failures) > failure_count else report.status
                     return {**report.model_dump(), "agent": role, "status": event["status"],
                             "sources": list(registry.sources.values()), "contexts": list(registry.contexts.values()),
-                            "warnings": sorted(registry.context_warnings), "failures": failures[failure_count:]}
+                            "warnings": sorted(registry.warnings), "failures": failures[failure_count:]}
                 except (ValidationError, TypeError):
                     event.update(status="failed", error_code="INVALID_AGENT_OUTPUT")
                     failures.append({"agent": role, "code": "INVALID_AGENT_OUTPUT"})
@@ -357,7 +360,8 @@ class SupervisorWorkflow:
             "cited_sources": dict(Counter(item["type"] for item in citations)),
             "elapsed_ms": round((perf_counter() - started) * 1000, 2), "tavily_credits": tavily_credits,
             "usage_by_model": runtime.usage_by_model, "tool_events": tool_events,
-            "parent_context_count": len(registry.contexts), "warnings": sorted(set(context.warnings) | registry.context_warnings),
+            "parent_context_count": len(registry.contexts), "warnings": sorted(set(context.warnings) | registry.warnings),
+            "rerank_events": registry.rerank_events,
             "metrics": {"cache": {"scope": "reported_calls", "by_model": cache_models},
                         "context": {"calls": runtime.context_calls, "complete": bool(runtime.context_calls),
                                     "highest_usage_attempt_index": max(runtime.context_calls, key=lambda item: item["usage_ratio"])["attempt_index"] if runtime.context_calls else None}},

@@ -121,6 +121,7 @@ class KnowledgeCitation(Citation):
     model_config = ConfigDict(extra="forbid")
     type: Literal["knowledge"] = "knowledge"
     excel_source: ExcelSourceResponse | None = None
+    rerank_score: float | None = Field(default=None, ge=0, le=1, allow_inf_nan=False)
 
 
 class WebCitation(BaseModel):

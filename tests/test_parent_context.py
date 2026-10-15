@@ -243,7 +243,7 @@ def test_supervisor_receives_unnumbered_context_and_final_citation_stays_on_leaf
     uid, did, chunks = leaves(excel=True)
     parent = ParentContext(tuple(chunks))
     model = ScriptedModel(responses=[call("delegate_rag", task="参数查询"), call("search_knowledge", query="NX-001"), report(), final("功率 101W[1]")])
-    retriever = SimpleNamespace(retrieve=lambda *args: [SearchHit(chunks[1], .03, parent)])
+    retriever = SimpleNamespace(retrieve=lambda *args, **kwargs: [SearchHit(chunks[1], .03, parent)])
     workflow = SupervisorWorkflow(Settings(_env_file=None), retriever, Models(model), Web())
     context = RunContext(request_id="parent-test", user_id=uid, session_id=uuid4(), question="NX-001 的功率？",
                          search_mode="knowledge", allowed_document_ids=(did,), selected_provider="deepseek",

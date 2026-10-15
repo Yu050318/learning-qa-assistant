@@ -90,7 +90,7 @@ class Retriever:
         self.score = score
         self.calls = 0
 
-    def retrieve(self, user_id, query, document_ids):
+    def retrieve(self, user_id, query, document_ids, *, deadline=None):
         self.calls += 1
         return [SearchHit(Chunk(
             chunk_id="chunk-1", user_id=str(user_id), document_id=str(document_ids[0]),

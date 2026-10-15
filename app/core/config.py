@@ -84,6 +84,11 @@ class Settings(BaseSettings):
     retrieval_top_k: int = Field(default=6, ge=1, le=30)
     retrieval_parent_context: bool = True
     retrieval_parent_group_size: int = Field(default=4, ge=2, le=8)
+    rerank_enabled: bool = False
+    rerank_endpoint: str = ""
+    rerank_model: str = "gte-rerank-v2"
+    rerank_api_key: SecretStr = SecretStr("")
+    rerank_timeout: float = Field(default=5, gt=0, le=30)
     memory_recent_messages: int = Field(default=12, ge=2, le=40)
     libreoffice_path: str = "soffice"
     conversion_timeout: int = Field(default=60, ge=1, le=300)
@@ -101,6 +106,12 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def check_chunk_overlap(self):
+        if self.rerank_enabled:
+            endpoint = urlsplit(self.rerank_endpoint)
+            if (endpoint.scheme != "https" or not endpoint.hostname or endpoint.username or endpoint.password
+                    or endpoint.port == 0 or endpoint.query or endpoint.fragment or not self.rerank_model.strip()
+                    or not self.rerank_api_key.get_secret_value().strip()):
+                raise ValueError("Enabled rerank requires an HTTPS endpoint, model and API key")
         if self.chunk_overlap >= self.chunk_size:
             raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
         if not self.upload_dir.is_absolute():

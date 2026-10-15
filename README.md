@@ -25,7 +25,11 @@
 
 ## 父子上下文检索
 
-知识库问答默认先检索小块，再补充同一文档、页/章节/Sheet 内的相邻分组作为无编号理解上下文；引用仍只绑定实际命中的片段，Excel 行号不会被父块扩大。父块读取失败或超过预算时保留叶子并记录警告。复用既有索引，无需重建文档或新增 schema；可通过 `RETRIEVAL_PARENT_CONTEXT=false` 关闭。当前是两层实现，尚无三级自动合并或精排，详见 [第三阶段说明](docs/parent-context-retrieval.md)。
+知识库问答默认先检索小块，再补充同一文档、页/章节/Sheet 内的相邻分组作为无编号理解上下文；引用仍只绑定实际命中的片段，Excel 行号不会被父块扩大。父块读取失败或超过预算时保留叶子并记录警告。复用既有索引，无需重建文档或新增 schema；可通过 `RETRIEVAL_PARENT_CONTEXT=false` 关闭。当前是两层实现，尚无三级自动合并，详见 [第三阶段说明](docs/parent-context-retrieval.md)。
+
+## 可选 Rerank 精排
+
+混合召回的候选先校验用户/文档权限、去重，再交给百炼文本排序 API，选出 Top K 后才扩展父块。默认关闭；在服务端配置 `RERANK_ENABLED / RERANK_ENDPOINT / RERANK_MODEL / RERANK_API_KEY` 后启用，不新增依赖或改变索引。引用中的 `score` 仍是 RRF 分数，新增 `rerank_score` 单独记录相关性分数。超时、服务错误和非法返回均沿用原排序，`run_metadata.rerank_events` 与 `warnings` 记录降级。配置、调用链及基线对比命令见 [第四阶段说明](docs/rerank-retrieval.md)。
 
 ## 项目亮点
 
@@ -82,7 +86,7 @@ V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-
 - XLSX 本地表格感知解析与精确行引用；PDF、Word、PowerPoint、XLS 显式启用后经 MinerU 云解析；TXT/Markdown 本地解析。
 - 会话持久化、运行元数据和显式数据库初始化。
 
-**仍未实现：** SSE 断线续传、自动滚动摘要、持久任务队列、多 worker、重排序和网页自动入库。
+**仍未实现：** SSE 断线续传、自动滚动摘要、持久任务队列、多 worker 和网页自动入库。
 
 ## 2. 项目结构
 
@@ -319,7 +323,7 @@ $env:RUN_STORAGE_INTEGRATION='1'
 
 ## 9. 后续范围
 
-后续按需增加 SSE 断线恢复、事务式滚动摘要、密码找回、可靠任务队列、多 worker 协调、重排和网页自动入库。
+后续按需增加 SSE 断线恢复、事务式滚动摘要、密码找回、可靠任务队列、多 worker 协调和网页自动入库。
 
 ## 10. 检索召回率评估
 

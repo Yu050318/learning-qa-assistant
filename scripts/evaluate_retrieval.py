@@ -1,6 +1,8 @@
 """Evaluate the live knowledge retriever against manually labelled queries."""
 
 import argparse
+from contextlib import ExitStack
+from dataclasses import asdict
 import json
 from pathlib import Path
 from uuid import UUID
@@ -9,6 +11,7 @@ from app.application.retriever import RetrieverService
 from app.core.config import Settings
 from app.infrastructure.embeddings.qwen import QwenEmbedding
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
+from app.infrastructure.rerank import TextReranker
 
 
 def score_rankings(rankings: list[tuple[list[str], set[str]]], ks: list[int]) -> dict:
@@ -34,18 +37,25 @@ def score_rankings(rankings: list[tuple[list[str], set[str]]], ks: list[int]) ->
     return summary
 
 
-def main() -> None:
+def main(stack: ExitStack) -> None:
     parser = argparse.ArgumentParser(description="计算当前 Milvus + Embedding 检索链路的召回指标")
     parser.add_argument("dataset", type=Path, help="JSON 评估集路径")
     parser.add_argument("--ks", default="1,3,6", help="逗号分隔的 K，默认 1,3,6")
+    parser.add_argument("--no-rerank", action="store_true", help="关闭精排，用同一评估集记录混合召回基线")
     args = parser.parse_args()
 
     ks = sorted({int(value) for value in args.ks.split(",") if int(value) > 0})
+    if not ks or max(ks) > 30:
+        parser.error("K 必须在 1..30 范围内")
     cases = json.loads(args.dataset.read_text(encoding="utf-8"))
     settings = Settings()
+    reranker = TextReranker(settings) if settings.rerank_enabled and not args.no_rerank else None
+    if reranker is not None:
+        stack.callback(reranker.close)
     vectors = MilvusVectorStore(settings)
     retriever = RetrieverService(QwenEmbedding(settings), vectors, max(ks),
-                                 context_expander=vectors.expand_context if settings.retrieval_parent_context else None)
+                                 context_expander=vectors.expand_context if settings.retrieval_parent_context else None,
+                                 reranker=reranker)
     rankings = []
     details = []
     top_scores = []
@@ -67,6 +77,8 @@ def main() -> None:
             "retrieved_chunk_ids": retrieved,
             "relevant_chunk_ids": sorted(relevant),
             "top_rrf_score": top_score,
+            "top_rerank_score": hits[0].rerank_score if hits else None,
+            "rerank": asdict(hits[0].rerank_trace) if hits and hits[0].rerank_trace else None,
             "parent_context_count": len({hit.parent_context.context_id for hit in hits if hit.parent_context}),
             "context_warnings": sorted({hit.context_warning for hit in hits if hit.context_warning}),
         })
@@ -77,6 +89,7 @@ def main() -> None:
         "max": round(max(top_scores), 6),
     }
     print(json.dumps({
+        "rerank_enabled": reranker is not None,
         "cases": details,
         "summary": score_rankings(rankings, ks),
         "rrf_top_score_summary": score_summary,
@@ -84,4 +97,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with ExitStack() as stack:
+        main(stack)

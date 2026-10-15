@@ -6,13 +6,14 @@ from app.domain.contracts import EmbeddingProvider, SearchHit, VectorStore
 
 
 class RetrieverService:
-    def __init__(self, embeddings: EmbeddingProvider, vectors: VectorStore, top_k: int, *, context_expander=None):
+    def __init__(self, embeddings: EmbeddingProvider, vectors: VectorStore, top_k: int, *, context_expander=None, reranker=None):
         self.embeddings = embeddings
         self.vectors = vectors
         self.top_k = top_k
         self.context_expander = context_expander
+        self.reranker = reranker
 
-    def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID]) -> list[SearchHit]:
+    def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID], *, deadline=None) -> list[SearchHit]:
         vector = self.embeddings.embed_query(query)
         hits = self.vectors.search(user_id, document_ids, query, vector, self.top_k * 2)
         allowed = {str(document_id) for document_id in document_ids}
@@ -27,8 +28,10 @@ class RetrieverService:
                 continue
             seen.add(key)
             unique.append(hit)
-            if len(unique) == self.top_k:
-                break
+        if self.reranker is not None and unique:
+            unique = self.reranker.rerank(query, unique[:self.top_k * 2], self.top_k, deadline=deadline)
+        else:
+            unique = unique[:self.top_k]
         if self.context_expander is None or not unique:
             return unique
         try:
@@ -40,6 +43,7 @@ class RetrieverService:
         # Expansion can enrich, but cannot reorder, replace or add retrieved evidence.
         if len(expanded) != len(unique) or any(
             before.chunk != after.chunk or before.score != after.score
+            or before.rerank_score != after.rerank_score or before.rerank_trace != after.rerank_trace
             or after.parent_context and not after.parent_context.contains(before.chunk)
             for before, after in zip(unique, expanded)
         ):

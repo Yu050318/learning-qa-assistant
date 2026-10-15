@@ -47,7 +47,8 @@ class EvidenceRegistry:
         self.sources: dict[int, dict] = {}
         self.contexts: dict[str, dict] = {}
         self.context_tokens = 0
-        self.context_warnings: set[str] = set()
+        self.warnings: set[str] = set()
+        self.rerank_events: list[dict] = []
         self.keys: dict[tuple[str, str], int] = {}
         self.used_tokens = 0
 
@@ -88,6 +89,9 @@ class EvidenceRegistry:
     def add_knowledge(self, hits: list[SearchHit]) -> dict:
         if any(hit.parent_context and not hit.parent_context.contains(hit.chunk) for hit in hits):
             raise AppError("VECTOR_SCOPE_MISMATCH", "父块上下文不包含本轮命中的原始证据", 503)
+        trace = hits[0].rerank_trace if hits else None
+        if trace is not None:
+            self.rerank_events.append(asdict(trace))
         sources, existing, truncated = [], [], False
         for hit in hits:
             citation = {
@@ -97,6 +101,8 @@ class EvidenceRegistry:
             }
             if hit.chunk.excel_source:
                 citation["excel_source"] = asdict(hit.chunk.excel_source)
+            if hit.rerank_score is not None:
+                citation["rerank_score"] = hit.rerank_score
             source, duplicate = self._add(("knowledge", hit.chunk.chunk_id), citation, hit.chunk.source_name, hit.chunk.content)
             if source and hit.chunk.excel_source:
                 source["excel_source"] = asdict(hit.chunk.excel_source)
@@ -108,6 +114,8 @@ class EvidenceRegistry:
                 truncated = True
         context_ids = set()
         warnings = {hit.context_warning for hit in hits if hit.context_warning}
+        if trace and trace.error_code:
+            warnings.add(trace.error_code)
         for hit in hits:
             parent = hit.parent_context
             number = self.keys.get(("knowledge", hit.chunk.chunk_id))
@@ -127,9 +135,12 @@ class EvidenceRegistry:
             if number not in self.contexts[context_id]["for_numbers"]:
                 self.contexts[context_id]["for_numbers"].append(number)
             context_ids.add(context_id)
-        self.context_warnings.update(warnings)
-        return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing,
+        self.warnings.update(warnings)
+        result = {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing,
                 "truncated": truncated, "contexts": [self.contexts[key] for key in sorted(context_ids)], "warnings": sorted(warnings)}
+        if trace is not None:
+            result["rerank"] = asdict(trace)
+        return result
 
     def add_web(self, batch: WebSearchBatch) -> dict:
         sources, existing, truncated = [], [], False

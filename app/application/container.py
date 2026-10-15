@@ -20,6 +20,7 @@ from app.infrastructure.search.tavily import TavilySearch
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 from app.workflows.supervisor import SupervisorWorkflow
 from app.infrastructure.sql import ReadOnlySQL
+from app.infrastructure.rerank import TextReranker
 
 
 class Services:
@@ -30,8 +31,10 @@ class Services:
         self.vectors = MilvusVectorStore(settings)
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
+        self.reranker = TextReranker(settings) if settings.rerank_enabled else None
         self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k,
-                                          context_expander=self.vectors.expand_context if settings.retrieval_parent_context else None)
+                                          context_expander=self.vectors.expand_context if settings.retrieval_parent_context else None,
+                                          reranker=self.reranker)
         self.memories = MemoryService(settings, self.database, self.embeddings, self.vectors)
         self.web_search = TavilySearch(settings)
         self.web_reader = ScraplingWebReader(settings)
@@ -70,6 +73,8 @@ class Services:
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 
     def close(self) -> None:
+        if self.reranker is not None:
+            self.reranker.close()
         self.ingestion.close()
         self.web_search.close()
         self.mineru.close()
