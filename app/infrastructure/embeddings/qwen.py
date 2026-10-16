@@ -39,6 +39,10 @@ class QwenEmbedding:
             return vectors
         except AppError:
             raise
+        except httpx.HTTPStatusError as error:
+            raise UpstreamError("embedding", retryable=error.response.status_code == 429 or error.response.status_code >= 500) from None
+        except httpx.RequestError:
+            raise UpstreamError("embedding", retryable=True) from None
         except (httpx.HTTPError, ValueError, KeyError, TypeError):
             raise UpstreamError("embedding") from None
 

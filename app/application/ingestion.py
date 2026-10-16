@@ -2,7 +2,7 @@ import hashlib
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from pathlib import Path
 from threading import Lock
 from typing import BinaryIO
@@ -13,6 +13,7 @@ from langchain_core.documents import Document
 
 from app.core.config import Settings
 from app.core.errors import AppError
+from app.application.ingestion_jobs import IngestionQueue
 from app.domain.contracts import EmbeddingProvider, VectorStore
 from app.infrastructure.loaders.local import LocalDocumentLoader, validate_document_container, validate_upload
 from app.infrastructure.loaders.mineru import DOCUMENT_TYPES, MinerUParser
@@ -39,6 +40,7 @@ def prepare_retry_metadata(metadata: dict) -> dict:
             batch_id=None,
         )
     result.update(phase="validating", failed_phase=None, error_code=None)
+    result.pop("retryable", None)
     return result
 
 
@@ -51,11 +53,15 @@ class IngestionService:
         self.embeddings = embeddings
         self.vectors = vectors
         self.locks = [Lock() for _ in range(64)]
-        self.executor = ThreadPoolExecutor(max_workers=settings.ingestion_workers, thread_name_prefix="ingestion")
+        self.queue = IngestionQueue(settings, database) if settings.ingestion_mode == "durable" else None
+        self.executor = None if self.queue else ThreadPoolExecutor(max_workers=settings.ingestion_workers, thread_name_prefix="ingestion")
         self.scheduled: set[UUID] = set()
         self.schedule_lock = Lock()
 
     def schedule(self, user_id: UUID, document_id: UUID) -> bool:
+        if self.queue:
+            # Upload/retry already enqueued atomically; API never executes durable jobs.
+            return True
         with self.schedule_lock:
             if document_id in self.scheduled:
                 return False
@@ -76,6 +82,8 @@ class IngestionService:
                 self.scheduled.discard(document_id)
 
     def recover_pending(self) -> int:
+        if self.queue:
+            return self.queue.reconcile()
         with self.database.sessions() as database:
             documents = Repository(database).processing_documents()
             for document in documents:
@@ -86,7 +94,8 @@ class IngestionService:
         return sum(self.schedule(document.user_id, document.id) for document in documents)
 
     def close(self) -> None:
-        self.executor.shutdown(wait=True, cancel_futures=True)
+        if self.executor:
+            self.executor.shutdown(wait=True, cancel_futures=True)
 
     @contextmanager
     def exclusive(self, document_id: UUID):
@@ -94,7 +103,11 @@ class IngestionService:
         if not lock.acquire(blocking=False):
             raise AppError("RESOURCE_BUSY", "文档正在处理中，请稍后重试", 409)
         try:
-            yield
+            if self.queue:
+                with self.database.document_lock(document_id) as probe:
+                    yield probe
+            else:
+                yield lambda: None
         finally:
             lock.release()
 
@@ -184,6 +197,8 @@ class IngestionService:
                     database.flush()
                     if self.settings.document_versions_enabled:
                         repository.bind_document_version(user_id, document, base_document_id)
+                    if self.queue:
+                        self.queue.enqueue(database, document)
                     database.commit()
                 except IntegrityError:
                     database.rollback()
@@ -256,27 +271,42 @@ class IngestionService:
                 document.error_message = None
                 document.embedding_model = self.settings.embedding_model
                 document.chunk_count = 0
+                if self.queue:
+                    self.queue.enqueue(database, document, reset=True)
                 database.commit()
                 self.annotate_versions(Repository(database), user_id, [document])
                 return document
 
-    def process(self, user_id: UUID, document_id: UUID) -> None:
+    def process(self, user_id: UUID, document_id: UUID, *, guard=lambda: None, already_locked=False, raise_errors=False) -> None:
         try:
-            with self.exclusive(document_id):
+            with (nullcontext() if already_locked else self.exclusive(document_id)):
+                guard()
                 with self.database.sessions() as database:
                     document = Repository(database).document(user_id, document_id, lock=True)
+                    if self.queue and document.status == "failed":
+                        failed_metadata = document.parser_metadata or {}
+                        if not failed_metadata.get("retryable", False):
+                            raise AppError(failed_metadata.get("error_code") or "INGESTION_FAILED",
+                                           "上次入库已失败，请手动重试", 409)
+                        document.status = "processing"
+                        document.parser_metadata = prepare_retry_metadata(document.parser_metadata or {})
                     if document.status != "processing":
                         return
                     metadata = dict(document.parser_metadata or {})
+                    if self.queue and metadata.get("phase") == "uploading":
+                        metadata = prepare_retry_metadata(metadata)
                     generation = int(metadata.get("generation", 0))
                     metadata["phase"] = "parsing" if metadata.get("provider") == "mineru" else "normalizing"
                     document.parser_metadata = metadata
                     snapshot = (document.file_path, document.file_type, document.original_name, metadata, document.content_hash)
+                    guard()
                     database.commit()
                 try:
+                    guard()
                     self.vectors.delete_document(user_id, document_id)
+                    guard()
                     path = self.file_path(snapshot[0])
-                    if self.settings.document_versions_enabled:
+                    if self.settings.document_versions_enabled or self.queue:
                         # Verify immutable source bytes before parsing or using the normalized cache.
                         with path.open("rb") as source:
                             actual_hash = hashlib.file_digest(source, "sha256").hexdigest()
@@ -289,21 +319,25 @@ class IngestionService:
                         if loaded is None:
                             loaded = self.mineru.parse(
                                 path, snapshot[1], snapshot[3]["attempt_id"],
-                                lambda batch_id: self._set_batch(user_id, document_id, generation, batch_id),
-                                lambda: self._set_phase(user_id, document_id, generation, "parsing"),
+                                lambda batch_id: self._set_batch(user_id, document_id, generation, batch_id, guard=guard),
+                                lambda: self._set_phase(user_id, document_id, generation, "parsing", guard=guard),
                                 batch_id=snapshot[3].get("batch_id"),
                             )
+                            guard()
                             self._save_cache(user_id, document_id, snapshot[3]["source_hash"], snapshot[3]["document_type"], loaded)
                     else:
                         loaded = self.loader.load(path, snapshot[1])
-                    self._set_phase(user_id, document_id, generation, "embedding", len(loaded))
+                    self._set_phase(user_id, document_id, generation, "embedding", len(loaded), guard=guard)
                     chunks = self.loader.chunks(loaded, user_id, document_id, snapshot[2])
                     if not chunks:
                         raise AppError("EMPTY_DOCUMENT", "文档没有可入库的文本")
                     for offset in range(0, len(chunks), self.settings.embedding_batch_size):
                         batch = chunks[offset:offset + self.settings.embedding_batch_size]
+                        guard()
                         embeddings = self.embeddings.embed_documents([chunk.content for chunk in batch])
+                        guard()
                         self.vectors.upsert(batch, embeddings)
+                        guard()
                     with self.database.sessions() as database:
                         document = Repository(database).document(user_id, document_id, lock=True)
                         metadata = dict(document.parser_metadata or {})
@@ -314,13 +348,20 @@ class IngestionService:
                         document.status = "ready"
                         document.chunk_count = len(chunks)
                         document.error_message = None
+                        guard()
                         database.commit()
                 except Exception as error:
-                    self._fail(user_id, document_id, generation, error)
+                    guard()
+                    self._fail(user_id, document_id, generation, error, guard=guard)
+                    if raise_errors:
+                        raise
         except Exception as error:
             logger.error("ingestion_transaction_failed", extra={"resource_id": str(document_id), "error_type": type(error).__name__})
+            if raise_errors:
+                raise
 
-    def _set_batch(self, user_id: UUID, document_id: UUID, generation: int, batch_id: str) -> None:
+    def _set_batch(self, user_id: UUID, document_id: UUID, generation: int, batch_id: str, *, guard=lambda: None) -> None:
+        guard()
         with self.database.sessions() as database:
             document = Repository(database).document(user_id, document_id, lock=True)
             metadata = dict(document.parser_metadata or {})
@@ -328,9 +369,11 @@ class IngestionService:
                 return
             metadata.update(batch_id=batch_id, phase="uploading")
             document.parser_metadata = metadata
+            guard()
             database.commit()
 
-    def _set_phase(self, user_id: UUID, document_id: UUID, generation: int, phase: str, parsed_units: int | None = None) -> None:
+    def _set_phase(self, user_id: UUID, document_id: UUID, generation: int, phase: str, parsed_units: int | None = None, *, guard=lambda: None) -> None:
+        guard()
         with self.database.sessions() as database:
             document = Repository(database).document(user_id, document_id, lock=True)
             metadata = dict(document.parser_metadata or {})
@@ -338,29 +381,36 @@ class IngestionService:
                 return
             metadata.update(phase=phase, parsed_unit_count=parsed_units)
             document.parser_metadata = metadata
+            guard()
             database.commit()
 
-    def _fail(self, user_id: UUID, document_id: UUID, generation: int, error: Exception) -> None:
+    def _fail(self, user_id: UUID, document_id: UUID, generation: int, error: Exception, *, guard=lambda: None) -> None:
+        guard()
         with self.database.sessions() as database:
             document = Repository(database).document(user_id, document_id, lock=True)
             metadata = dict(document.parser_metadata or {})
             if int(metadata.get("generation", 0)) != generation or document.status != "processing":
                 return
         try:
+            guard()
             self.vectors.delete_document(user_id, document_id)
         except Exception as cleanup_error:
             logger.warning("ingestion_cleanup_failed", extra={"resource_id": str(document_id), "error_type": type(cleanup_error).__name__})
         with self.database.sessions() as database:
+            guard()
             document = Repository(database).document(user_id, document_id, lock=True)
             metadata = dict(document.parser_metadata or {})
             if int(metadata.get("generation", 0)) != generation or document.status != "processing":
                 return
             code = error.code if isinstance(error, AppError) else "INGESTION_FAILED"
             metadata.update(failed_phase=metadata.get("phase"), phase="failed", error_code=code)
+            if self.queue:
+                metadata["retryable"] = self.queue.retryable(error)
             document.parser_metadata = metadata
             document.status = "failed"
             document.chunk_count = 0
             document.error_message = error.message if isinstance(error, AppError) else "文档处理失败，请检查服务状态后重试"
+            guard()
             database.commit()
         logger.warning("ingestion_failed", extra={"resource_id": str(document_id), "error_type": type(error).__name__})
 

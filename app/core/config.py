@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     mineru_timeout: float = Field(default=15, gt=0)
     mineru_parse_timeout: float = Field(default=600, gt=0)
     ingestion_workers: int = Field(default=2, ge=1, le=8)
+    ingestion_mode: Literal["in_process", "durable"] = "in_process"
+    ingestion_lease_seconds: int = Field(default=120, ge=15, le=3600)
+    ingestion_max_attempts: int = Field(default=3, ge=1, le=10)
+    ingestion_poll_seconds: float = Field(default=2, ge=0.1, le=60)
     parsed_dir: Path = PROJECT_ROOT / "data" / "parsed"
     web_search_enabled: bool = False
     tavily_api_key: SecretStr = SecretStr("")

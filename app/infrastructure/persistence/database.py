@@ -1,4 +1,6 @@
 import logging
+import hashlib
+from contextlib import contextmanager
 from functools import cached_property
 
 from sqlalchemy import create_engine, inspect, select, text
@@ -8,7 +10,7 @@ from sqlalchemy.schema import CreateSchema
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion
+from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion, IngestionJob
 
 
 class Database:
@@ -50,6 +52,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name == "ingestion_jobs" and self.settings.ingestion_mode != "durable":
+                    continue
                 if not self.settings.document_versions_enabled and table.name in {"document_series", "document_versions"}:
                     continue
                 if not inspect(connection).has_table(table.name, schema="rag"):
@@ -70,3 +74,33 @@ class Database:
     def close(self) -> None:
         if "engine" in self.__dict__:
             self.engine.dispose()
+
+    def initialize_ingestion_jobs(self) -> None:
+        with self.engine.begin() as connection:
+            if not inspect(connection).has_table("documents", schema="rag"):
+                raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
+            Base.metadata.create_all(connection, tables=[IngestionJob.__table__])
+
+    @contextmanager
+    def document_lock(self, document_id):
+        # Session lock spans parser/HTTP/vector calls without holding a SQL transaction.
+        key = int.from_bytes(hashlib.sha256(f"ingestion:{document_id}".encode()).digest()[:8], "big", signed=True)
+        with self.engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
+            acquired = False
+            try:
+                acquired = connection.scalar(text("SELECT pg_try_advisory_lock(:key)"), {"key": key})
+                if not acquired:
+                    raise AppError("RESOURCE_BUSY", "文档正在处理中，请稍后重试", 409)
+                backend = connection.scalar(text("SELECT pg_backend_pid()"))
+
+                def probe():
+                    if connection.scalar(text("SELECT pg_backend_pid()")) != backend:
+                        raise AppError("INGESTION_LEASE_LOST", "文档锁连接已改变", 409)
+
+                yield probe
+            finally:
+                if acquired:
+                    try:
+                        connection.execute(text("SELECT pg_advisory_unlock(:key)"), {"key": key})
+                    except Exception:
+                        connection.invalidate()

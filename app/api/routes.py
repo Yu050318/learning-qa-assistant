@@ -348,6 +348,7 @@ def processing_v2(document_id: UUID, services: ServiceDependency, user_id: UserD
         "parser": metadata.get("provider"), "document_type": metadata.get("document_type"),
         "phase": metadata.get("phase"), "parsed_unit_count": metadata.get("parsed_unit_count"),
         "unit_kind": metadata.get("unit_kind"), "error_code": metadata.get("error_code"),
+        "task": services.ingestion.queue.status(user_id, document_id) if getattr(services.ingestion, "queue", None) else None,
     }
 
 

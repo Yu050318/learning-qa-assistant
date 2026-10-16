@@ -39,6 +39,8 @@
 
 第七阶段加入[文档版本管理](docs/document-versions.md)：新版本使用独立文件、文档 ID、缓存和向量，旧版保留；就绪后在资料页的版本面板明确“设为当前”，默认问答只查当前版，指定旧版仍可查。历史引用保存版本号与内容哈希。先显式运行 `python -m app.bootstrap --document-versions` 添加两张表，再设置 `DOCUMENT_VERSIONS_ENABLED=true`；不会自动迁移或清理已有文件。
 
+第八阶段提供[独立入库 Worker](docs/durable-ingestion.md)：复用 PostgreSQL 和原入库流程，任务与文档原子落库，支持跨进程领取、租约心跳、崩溃接管和有限重试。默认关闭；显式运行 `python -m app.bootstrap --ingestion-jobs` 后，在所有 API/Worker 设置 `INGESTION_MODE=durable`，并用 `python -m app.worker` 启动独立进程。所有进程需共享上传/缓存路径，不支持事务级连接池。
+
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
