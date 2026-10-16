@@ -91,7 +91,7 @@ class AnswerStreamParser:
 
 class ModelRuntime(AgentMiddleware):
     def __init__(self, models, primary, provider: str, model_name: str, fallback, max_attempts: int,
-                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None):
+                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None, call_observer=None):
         self.models = models
         self.active_model = primary
         self.active_provider = provider
@@ -107,6 +107,7 @@ class ModelRuntime(AgentMiddleware):
         self.max_input_tokens = 0
         self.context_calls = []
         self.on_chunk = on_chunk
+        self.call_observer = call_observer
 
     def _remaining(self) -> float:
         value = self.deadline - monotonic()
@@ -182,13 +183,18 @@ class ModelRuntime(AgentMiddleware):
         estimated = self._check_context(request.messages, request.system_message, request.tools)
         model = self._fresh_model()
         usage = self._reserve(self.active_provider, self.active_model_name)
+        handle = self.call_observer.start(self.active_provider, self.active_model_name, self.attempts, self.fallback_used) if self.call_observer else None
         try:
             response = handler(request.override(model=model))
-        except Exception:
+        except Exception as error:
             usage.update(input_tokens=None, output_tokens=None, total_tokens=None, complete=False)
+            if self.call_observer:
+                self.call_observer.finish(handle, error=error)
             raise
         if response.result:
             self._record(usage, response.result[0], estimated)
+        if self.call_observer:
+            self.call_observer.finish(handle, message=response.result[0] if response.result else None)
         self._remaining()
         return response
 
@@ -197,6 +203,7 @@ class ModelRuntime(AgentMiddleware):
             estimated = self._check_context(messages)
             model = self._fresh_model()
             usage = self._reserve(self.active_provider, self.active_model_name)
+            handle = self.call_observer.start(self.active_provider, self.active_model_name, self.attempts, self.fallback_used) if self.call_observer else None
             try:
                 if self.on_chunk is None:
                     message = model.invoke(messages)
@@ -209,10 +216,14 @@ class ModelRuntime(AgentMiddleware):
                     if combined is None:
                         raise AppError("INVALID_AGENT_OUTPUT", "Agent 未返回最终消息", 502)
                     message = message_chunk_to_message(combined)
-            except Exception:
+            except Exception as error:
                 usage.update(input_tokens=None, output_tokens=None, total_tokens=None, complete=False)
+                if self.call_observer:
+                    self.call_observer.finish(handle, error=error)
                 raise
             self._record(usage, message, estimated)
+            if self.call_observer:
+                self.call_observer.finish(handle, message=message)
             self._remaining()
             return message
 

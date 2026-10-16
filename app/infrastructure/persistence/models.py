@@ -214,6 +214,43 @@ class ChatRunEvent(Base):
     payload: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
 
 
+class ModelConfiguration(Base):
+    __tablename__ = "model_configuration"
+    __table_args__ = (CheckConstraint("id = 1 AND revision >= 1"),)
+    id: Mapped[int] = mapped_column(primary_key=True, default=1)
+    revision: Mapped[int] = mapped_column(default=1)
+    configuration: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    health: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class ModelCall(Base):
+    __tablename__ = "model_calls"
+    __table_args__ = (
+        ForeignKeyConstraint(["user_id", "session_id"], ["rag.chat_sessions.user_id", "rag.chat_sessions.id"], ondelete="CASCADE"),
+        UniqueConstraint("user_id", "request_id", "operation", "attempt_index"),
+        CheckConstraint("status IN ('started', 'succeeded', 'failed')"),
+        Index("ix_model_calls_user_created", "user_id", "created_at"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID]
+    session_id: Mapped[UUID]
+    request_id: Mapped[str] = mapped_column(String(100))
+    operation: Mapped[str] = mapped_column(String(30))
+    attempt_index: Mapped[int]
+    configuration_revision: Mapped[int]
+    provider: Mapped[str] = mapped_column(String(30))
+    model_name: Mapped[str] = mapped_column(String(200))
+    status: Mapped[str] = mapped_column(String(12), default="started")
+    fallback: Mapped[bool] = mapped_column(Boolean, default=False)
+    input_tokens: Mapped[int | None]
+    output_tokens: Mapped[int | None]
+    total_tokens: Mapped[int | None]
+    elapsed_ms: Mapped[int | None]
+    error_code: Mapped[str | None] = mapped_column(String(80))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class UserMemory(Base):
     __tablename__ = "user_memories"
     __table_args__ = (

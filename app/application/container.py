@@ -9,6 +9,7 @@ from app.application.retriever import RetrieverService
 from app.application.sessions import SessionService
 from app.application.runs import RunService
 from app.application.sharing import SharingService
+from app.application.model_center import ModelCenter
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.embeddings.qwen import QwenEmbedding
@@ -33,6 +34,7 @@ class Services:
         self.vectors = MilvusVectorStore(settings)
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
+        self.model_center = ModelCenter(settings, self.database) if settings.model_center_enabled else None
         self.reranker = TextReranker(settings) if settings.rerank_enabled else None
         self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k,
                                           context_expander=self.vectors.expand_context if settings.retrieval_parent_context else None,
@@ -71,8 +73,12 @@ class Services:
             except Exception:
                 checks[name] = "unavailable"
         configured = bool(self.settings.dashscope_api_key.get_secret_value())
-        if self.settings.default_model_provider == "deepseek":
-            configured = configured and bool(self.settings.deepseek_api_key.get_secret_value())
+        try:
+            active = self.model_center.snapshot().settings if self.model_center else self.settings
+            if active.default_model_provider == "deepseek":
+                configured = configured and bool(active.deepseek_api_key.get_secret_value())
+        except AppError:
+            configured = False
         checks["model_configuration"] = "ok" if configured else "missing"
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 

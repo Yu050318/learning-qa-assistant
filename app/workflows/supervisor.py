@@ -42,7 +42,7 @@ class SupervisorWorkflow:
         self.web_search, self.memories, self.web_reader, self.sql = web_search, memories, web_reader, sql
         self.sharing = sharing
 
-    def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None):
+    def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None, call_observer=None):
         started = perf_counter()
         settings = self.settings
         registry = EvidenceRegistry(evidence_token_budget(settings.agent_context_token_budget))
@@ -66,7 +66,7 @@ class SupervisorWorkflow:
         runtime = ModelRuntime(self.models, model, provider, model_name,
                                self.models.agent_fallback(provider, min(remaining(), settings.model_timeout)),
                                settings.agent_max_model_calls, context.deadline_monotonic,
-                               settings.model_timeout, settings.agent_context_token_budget)
+                               settings.model_timeout, settings.agent_context_token_budget, call_observer=call_observer)
 
         def emit(event, data):
             if on_answer_event:

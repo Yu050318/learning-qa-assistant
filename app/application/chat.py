@@ -3,10 +3,12 @@ import re
 import hashlib
 import json
 from time import monotonic, perf_counter
-from uuid import UUID
+from uuid import UUID, uuid4
+from copy import copy
 
 from app.application.sessions import SessionService
 from app.application.sharing import SharingService
+from app.application.model_center import ModelCenter
 from app.application.evidence import count_tokens, evidence_token_budget
 from app.core.config import Settings
 from app.core.errors import AppError
@@ -50,14 +52,24 @@ class ChatService:
         self.sessions = sessions
         self.agent_workflow = agent_workflow
         self.sharing = SharingService(settings, database)
+        self.model_center = ModelCenter(settings, database) if settings.model_center_enabled else None
 
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
         if self.agent_workflow is None:
             raise AppError("NOT_IMPLEMENTED", "V2 Agent 尚未配置", 503)
+        settings, workflow, options = self.settings, self.agent_workflow, {}
+        if self.model_center:
+            snapshot = self.model_center.snapshot(payload.model_provider)
+            settings = snapshot.settings
+            workflow = copy(self.agent_workflow)
+            workflow.settings, workflow.models = settings, snapshot.router()
+            options["call_observer"] = self.model_center.observer(user_id, session_id, request_id, snapshot.revision)
         public_query, web_enabled, warnings = prepare_public_query(payload, self.settings.web_search_enabled)
         if payload.search_mode == "web" and not self.settings.web_search_enabled and not payload.web_urls:
             raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
-        selected = payload.model_provider or self.settings.default_model_provider
+        selected = payload.model_provider or settings.default_model_provider
+        if selected not in settings.enabled_model_providers:
+            raise AppError("MODEL_DISABLED", "该模型已停用", 403)
         started = perf_counter()
         with self.sessions.exclusive(session_id) as probe:
             with self.database.sessions() as database:
@@ -91,7 +103,9 @@ class ChatService:
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
                 knowledge_base_ids=payload.knowledge_base_ids, document_owners=tuple(owners.items()),
             )
-            result = self.agent_workflow.run(context, history, summary, on_answer_event=on_answer_event)
+            result = workflow.run(context, history, summary, on_answer_event=on_answer_event, **options)
+            if self.model_center:
+                result.run_metadata["model_configuration_revision"] = snapshot.revision
             if run_binding:
                 run_binding[2]()  # Flush the last coalesced draft delta before terminal events.
             if probe:
@@ -136,12 +150,15 @@ class ChatService:
                 return message
 
     def _model_details(self, provider: str | None) -> tuple[str, str, int]:
-        selected = provider or self.settings.default_model_provider
-        names = {"deepseek": self.settings.deepseek_model, "ollama": self.settings.ollama_model}
-        windows = {"deepseek": self.settings.deepseek_context_window, "ollama": self.settings.ollama_context_window}
+        settings = self.model_center.snapshot(provider).settings if self.model_center else self.settings
+        selected = provider or settings.default_model_provider
+        names = {"deepseek": settings.deepseek_model, "ollama": settings.ollama_model}
+        windows = {"deepseek": settings.deepseek_context_window, "ollama": settings.ollama_context_window}
         if selected not in names:
             raise AppError("MODEL_UNAVAILABLE", "所选模型不可用", 503)
-        return selected, names[selected], min(self.settings.agent_context_token_budget, windows[selected] - self.settings.model_max_tokens)
+        if selected not in settings.enabled_model_providers:
+            raise AppError("MODEL_DISABLED", "该模型已停用", 403)
+        return selected, names[selected], min(settings.agent_context_token_budget, windows[selected] - settings.model_max_tokens)
 
     @staticmethod
     def _context_version(session, messages) -> str:
@@ -206,12 +223,19 @@ class ChatService:
                 old_summary = session.summary
                 boundary = prefix[-1].id
             source = [{"role": item.role, "content": item.content} for item in prefix]
-            if count_tokens(old_summary, json.dumps(source, ensure_ascii=False)) > self.settings.agent_context_token_budget:
-                raise AppError("COMPACTION_LIMIT_EXCEEDED", "待压缩历史过长，请新建会话", 409)
-            answer = self.agent_workflow.models.generate([
+            models, options, budget = self.agent_workflow.models, {}, self.settings.agent_context_token_budget
+            if self.model_center:
+                snapshot = self.model_center.snapshot(provider)
+                models = snapshot.router()
+                budget = snapshot.settings.agent_context_token_budget
+                options["call_observer"] = self.model_center.observer(user_id, session_id, uuid4().hex, snapshot.revision, "compaction")
+            prompts = [
                 ChatTurn("system", "将对话整理为忠实、简洁的中文摘要。保留用户目标、约束、决定和未解决问题，不添加事实，不输出解释。"),
                 ChatTurn("user", json.dumps({"previous_summary": old_summary, "conversation": source}, ensure_ascii=False)),
-            ], provider)
+            ]
+            if count_tokens(*(message.content for message in prompts)) > budget:
+                raise AppError("COMPACTION_LIMIT_EXCEEDED", "待压缩历史过长，请新建会话", 409)
+            answer = models.generate(prompts, provider, **options)
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True)

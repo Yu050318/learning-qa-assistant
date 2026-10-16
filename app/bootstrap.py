@@ -5,6 +5,7 @@ from app.core.errors import AppError
 from app.core.logging import configure_logging
 from app.infrastructure.persistence.database import Database
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
+from app.application.model_center import ModelCenter
 
 
 def main() -> int:
@@ -13,12 +14,13 @@ def main() -> int:
     parser.add_argument("--ingestion-jobs", action="store_true", help="显式添加持久化入库任务表")
     parser.add_argument("--chat-runs", action="store_true", help="显式添加问答 Run/Event 表")
     parser.add_argument("--sharing", action="store_true", help="显式添加组织与知识库共享表")
+    parser.add_argument("--model-center", action="store_true", help="显式添加模型配置和调用记录表并从服务端配置初始化")
     parser.add_argument("--milvus", action="store_true")
     parser.add_argument("--document-versions", action="store_true", help="显式为已有平台库添加文档版本表，不更改或删除原文档")
     parser.add_argument("--excel-provenance", action="store_true", help="显式为已有集合添加可空的 Excel JSON 来源字段（Milvus 2.6+）")
     options = parser.parse_args()
-    if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs, options.chat_runs, options.sharing)):
-        parser.error("请指定 --postgres、--milvus、--excel-provenance、--document-versions、--ingestion-jobs、--chat-runs 或 --sharing")
+    if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs, options.chat_runs, options.sharing, options.model_center)):
+        parser.error("请指定 --postgres、--milvus、--excel-provenance、--document-versions、--ingestion-jobs、--chat-runs、--sharing 或 --model-center")
     configure_logging()
     settings = get_settings()
     database = Database(settings)
@@ -35,6 +37,10 @@ def main() -> int:
         if options.sharing:
             database.initialize_sharing()
             print("PostgreSQL: organization and knowledge sharing tables ready")
+        if options.model_center:
+            database.initialize_model_center()
+            ModelCenter(settings, database).initialize()
+            print("PostgreSQL: model center initialized without overwriting existing configuration")
         if options.milvus:
             MilvusVectorStore(settings).initialize()
             print("Milvus: configured collection initialized")

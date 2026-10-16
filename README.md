@@ -45,6 +45,8 @@
 
 第十阶段提供[组织与共享知识库](docs/organization-sharing.md)：组织所有者/管理员管理成员与 viewer/editor 授权，成员可发布自己的就绪文档；聊天可显式选择共享库，检索按真实文档归属分组，保存答案前复核权限。原始文件管理仍归所有者，不复制索引。先显式执行 `python -m app.bootstrap --sharing`，再设置 `SHARING_ENABLED=true`；默认关闭，新增五张关系表。
 
+第十一阶段加入[模型中心](docs/model-center.md)：复用 DeepSeek/Ollama 适配器，提供受管理员控制的版本化配置、目录检测和个人/全局调用统计；每轮冻结配置，失败、降级及未知用量分别记账。先显式执行 `python -m app.bootstrap --model-center`，再设置 `MODEL_CENTER_ENABLED=true` 与已确认账号的 `MODEL_ADMIN_USERNAMES`。连接地址和密钥继续仅由服务端管理。
+
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。

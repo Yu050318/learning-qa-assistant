@@ -75,6 +75,9 @@ class Settings(BaseSettings):
     document_versions_enabled: bool = False
     chat_runs_enabled: bool = False
     sharing_enabled: bool = False
+    model_center_enabled: bool = False
+    model_admin_usernames: list[str] = Field(default_factory=list)
+    enabled_model_providers: list[Literal["deepseek", "ollama"]] = Field(default_factory=lambda: ["deepseek", "ollama"])
     chat_run_workers: int = Field(default=4, ge=1, le=16)
     agent_context_token_budget: int = Field(default=24000, ge=4000)
     langsmith_tracing: bool = False

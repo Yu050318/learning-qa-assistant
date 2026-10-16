@@ -88,7 +88,7 @@ class OllamaProvider(LangChainProvider):
     def agent_client(self, timeout_seconds: float):
         return ChatOllama(
             model=self.model_name, base_url=self.settings.ollama_base_url,
-            temperature=0, num_predict=self.settings.model_max_tokens,
+            temperature=0, num_predict=self.settings.model_max_tokens, num_ctx=self.settings.ollama_context_window,
             client_kwargs={"timeout": timeout_seconds},
         )
 
@@ -98,15 +98,28 @@ class ModelRouter:
         self.settings = settings
         self.providers = providers
 
-    def generate(self, messages: list[ChatTurn], provider: str | None = None) -> ModelAnswer:
+    def generate(self, messages: list[ChatTurn], provider: str | None = None, *, call_observer=None) -> ModelAnswer:
         selected = provider or self.settings.default_model_provider
         implementation = self._provider(selected)
-        try:
-            return implementation.generate(messages)
-        except UpstreamError as error:
-            if selected != "deepseek" or not self.settings.allow_model_fallback or not error.retryable:
+
+        def invoke(implementation, attempt, fallback=False):
+            handle = call_observer.start(implementation.name, implementation.model_name, attempt, fallback) if call_observer else None
+            try:
+                result = implementation.generate(messages)
+            except Exception as error:
+                if call_observer:
+                    call_observer.finish(handle, error=error)
                 raise
-            return self._provider("ollama").generate(messages)
+            if call_observer:
+                call_observer.finish(handle, message=result)
+            return result
+
+        try:
+            return invoke(implementation, 1)
+        except UpstreamError as error:
+            if selected != "deepseek" or not self.settings.allow_model_fallback or not error.retryable or "ollama" not in self.settings.enabled_model_providers:
+                raise
+            return invoke(self._provider("ollama"), 2, True)
 
     def agent_model(self, provider: str | None, timeout_seconds: float):
         selected = provider or self.settings.default_model_provider
@@ -114,7 +127,7 @@ class ModelRouter:
         return implementation.agent_client(timeout_seconds), selected, implementation.model_name
 
     def agent_fallback(self, provider: str, timeout_seconds: float):
-        if provider != "deepseek" or not self.settings.allow_model_fallback or "ollama" not in self.providers:
+        if provider != "deepseek" or not self.settings.allow_model_fallback or "ollama" not in self.providers or "ollama" not in self.settings.enabled_model_providers:
             return None
         implementation = self.providers["ollama"]
         return implementation.agent_client(timeout_seconds), "ollama", implementation.model_name
@@ -123,4 +136,6 @@ class ModelRouter:
         implementation = self.providers.get(provider)
         if implementation is None:
             raise AppError("INVALID_MODEL_PROVIDER", "不支持的模型提供商")
+        if provider not in self.settings.enabled_model_providers:
+            raise AppError("MODEL_DISABLED", "该模型已停用", 403)
         return implementation
