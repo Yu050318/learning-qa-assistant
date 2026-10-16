@@ -11,12 +11,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="显式创建 RAG schema 和/或 Milvus 集合")
     parser.add_argument("--postgres", action="store_true")
     parser.add_argument("--ingestion-jobs", action="store_true", help="显式添加持久化入库任务表")
+    parser.add_argument("--chat-runs", action="store_true", help="显式添加问答 Run/Event 表")
     parser.add_argument("--milvus", action="store_true")
     parser.add_argument("--document-versions", action="store_true", help="显式为已有平台库添加文档版本表，不更改或删除原文档")
     parser.add_argument("--excel-provenance", action="store_true", help="显式为已有集合添加可空的 Excel JSON 来源字段（Milvus 2.6+）")
     options = parser.parse_args()
-    if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs)):
-        parser.error("请指定 --postgres、--milvus、--excel-provenance、--document-versions 或 --ingestion-jobs")
+    if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs, options.chat_runs)):
+        parser.error("请指定 --postgres、--milvus、--excel-provenance、--document-versions、--ingestion-jobs 或 --chat-runs")
     configure_logging()
     settings = get_settings()
     database = Database(settings)
@@ -27,6 +28,9 @@ def main() -> int:
         if options.ingestion_jobs:
             database.initialize_ingestion_jobs()
             print("PostgreSQL: durable ingestion jobs ready")
+        if options.chat_runs:
+            database.initialize_chat_runs()
+            print("PostgreSQL: durable chat run/event tables ready")
         if options.milvus:
             MilvusVectorStore(settings).initialize()
             print("Milvus: configured collection initialized")

@@ -7,6 +7,7 @@ from app.application.ingestion import IngestionService
 from app.application.memories import MemoryService
 from app.application.retriever import RetrieverService
 from app.application.sessions import SessionService
+from app.application.runs import RunService
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.embeddings.qwen import QwenEmbedding
@@ -47,6 +48,7 @@ class Services:
         self.ingestion = IngestionService(settings, self.database, LocalDocumentLoader(settings), self.mineru, self.embeddings, self.vectors)
         self.sessions = SessionService(self.database)
         self.chat = ChatService(settings, self.database, self.sessions, self.agent_workflow)
+        self.runs = RunService(settings, self.database, self.chat) if settings.chat_runs_enabled else None
 
     def start(self) -> None:
         try:
@@ -73,6 +75,8 @@ class Services:
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 
     def close(self) -> None:
+        if self.runs is not None:
+            self.runs.close()
         if self.reranker is not None:
             self.reranker.close()
         self.ingestion.close()

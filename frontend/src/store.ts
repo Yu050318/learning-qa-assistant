@@ -21,9 +21,54 @@ export const useAppStore=defineStore('app',()=>{
   function messagesFor(id:string){return messagesBySession.value[id]||(messagesBySession.value[id]=[])}
   function runFor(id:string){return runsBySession.value[id]||(runsBySession.value[id]={busy:false,status:'',error:'',attempt:0})}
   async function loadSessions(q=''){const value=await api.sessions(q);sessions.value=value;return value}
-  async function loadSession(id:string,replaceWhileBusy=false){const attempt=loadAttempts[id]=(loadAttempts[id]||0)+1;const value=await guard(()=>api.session(id));if(loadAttempts[id]===attempt&&(replaceWhileBusy||!runFor(id).busy))messagesBySession.value[id]=value.messages;return value}
+  async function loadSession(id:string,replaceWhileBusy=false){
+    const attempt=loadAttempts[id]=(loadAttempts[id]||0)+1,value=await guard(()=>api.session(id))
+    if(loadAttempts[id]===attempt&&(replaceWhileBusy||!runFor(id).busy))messagesBySession.value[id]=value.messages
+    if(!replaceWhileBusy&&!runFor(id).busy&&capabilities.value?.features.durable_runs){
+      const recent=await api.runs(id)
+      if(loadAttempts[id]===attempt&&!runFor(id).busy){
+        const latest=recent[0]
+        if(latest?.state==='running')void recoverRun(id,latest.run_id)
+        else if(latest?.state==='succeeded'&&latest.message_id&&!messagesFor(id).some(message=>message.id===latest.message_id))messagesBySession.value[id]=(await api.session(id)).messages
+        else if(latest?.state==='interrupted')runFor(id).error='上次问答已中断，请查看历史后重新提问'
+        else if(latest?.state==='failed')runFor(id).error='上次问答失败，请检查配置或重新提问'
+      }
+    }
+    return value
+  }
   async function createSession(title='新对话'){const value=await guard(()=>api.createSession(title));sessions.value.unshift(value);messagesBySession.value[value.id]=[];runFor(value.id);return value}
-  async function send(id:string,body:any){const run=runFor(id);if(run.busy)return;run.busy=true;run.status='正在连接';run.error='';const attempt=++run.attempt,now=new Date().toISOString(),key=crypto.randomUUID(),assistantId=`pending-assistant-${key}`,messages=messagesFor(id);messages.push({id:`pending-user-${key}`,role:'user',content:body.question,model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:now},{id:assistantId,role:'assistant',content:'',model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:now});try{const value=await api.chatStream(id,body,(event,data)=>{if(run.attempt!==attempt)return;const assistant=messages.find(message=>message.id===assistantId);if(!assistant)return;if(event==='answer_start')assistant.content='';else if(event==='answer_delta')assistant.content+=data.delta||'';else if(['agent_started','agent_finished','agent_failed'].includes(event)){const metadata=assistant.run_metadata||(assistant.run_metadata={agent_events:[]});metadata.agent_events.push({agent:data.agent,status:data.status,error_code:data.error_code});run.status=`${agentLabel(data.agent)} · ${statusLabel(data.status)}`}else if(event==='done'){assistant.content=data.answer;assistant.model_provider=data.model_provider;assistant.model_name=data.model_name;assistant.citations=data.citations||[];assistant.token_usage=data.token_usage;assistant.run_metadata=data.run_metadata}run.status=event==='run_started'?'Supervisor 正在识别与分发任务':event==='answer_delta'?'正在生成回答':event==='context_usage'?'正在汇总上下文':event==='usage'?'正在保存回答':run.status});if(run.attempt===attempt){await loadSession(id,true);await Promise.all([loadSessions(),loadMemories()])}return value}catch(caught:any){if(run.attempt===attempt){run.error=caught?.message||'请求失败';await loadSession(id,true).catch(()=>{})}throw caught}finally{if(run.attempt===attempt){run.busy=false;run.status=''}}}
+  function streamInto(id:string,assistantId:string,attempt:number){return(event:string,data:any)=>{
+    const run=runFor(id);if(run.attempt!==attempt)return
+    const assistant=messagesFor(id).find(message=>message.id===assistantId);if(!assistant)return
+    if(event==='answer_start')assistant.content=''
+    else if(event==='answer_delta')assistant.content+=data.delta||''
+    else if(['agent_started','agent_finished','agent_failed'].includes(event)){
+      const metadata=assistant.run_metadata||(assistant.run_metadata={agent_events:[]})
+      metadata.agent_events.push({agent:data.agent,status:data.status,error_code:data.error_code})
+      run.status=`${agentLabel(data.agent)} · ${statusLabel(data.status)}`
+    }else if(event==='done')Object.assign(assistant,{content:data.answer,model_provider:data.model_provider,model_name:data.model_name,citations:data.citations||[],token_usage:data.token_usage,run_metadata:data.run_metadata})
+    run.status=event==='run_started'?'Supervisor 正在识别与分发任务':event==='answer_delta'?'正在生成回答':event==='context_usage'?'正在汇总上下文':event==='usage'?'正在保存回答':run.status
+  }}
+  async function recoverRun(id:string,runId:string){
+    const run=runFor(id);if(run.busy)return
+    run.busy=true;run.error='';run.status='正在恢复回答';const attempt=++run.attempt,assistantId=`replay-${runId}`
+    messagesFor(id).push({id:assistantId,role:'assistant',content:'',model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:new Date().toISOString()})
+    try{await api.resumeRun(runId,streamInto(id,assistantId,attempt));await loadSession(id,true)}
+    catch(error:any){run.error=error.message;await loadSession(id,true).catch(()=>{})}
+    finally{if(run.attempt===attempt){run.busy=false;run.status=''}}
+  }
+  async function send(id:string,body:any){
+    const run=runFor(id);if(run.busy)return
+    run.busy=true;run.status='正在连接';run.error=''
+    const attempt=++run.attempt,now=new Date().toISOString(),key=crypto.randomUUID(),assistantId=`pending-assistant-${key}`
+    messagesFor(id).push({id:`pending-user-${key}`,role:'user',content:body.question,model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:now},{id:assistantId,role:'assistant',content:'',model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:now})
+    try{
+      const value=await api.chatStream(id,body,streamInto(id,assistantId,attempt),capabilities.value?.features.durable_runs===true)
+      if(run.attempt===attempt){await loadSession(id,true);await Promise.all([loadSessions(),loadMemories()])}
+      return value
+    }catch(caught:any){if(run.attempt===attempt){run.error=caught?.message||'请求失败';await loadSession(id,true).catch(()=>{})}throw caught}
+    finally{if(run.attempt===attempt){run.busy=false;run.status=''}}
+  }
   async function loadDocuments(q='',status=''){const value=await api.documents(q,status);documents.value=value.items;documentTotal.value=value.total;selectedDocuments.value=selectedDocuments.value.filter(id=>value.items.some(d=>d.id===id&&d.can_query));uploads.recover(value.items)}
   async function removeDocuments(ids:string[]){await Promise.allSettled(ids.map(id=>api.deleteDocument(id)));await loadDocuments()}
   async function retryDocument(id:string){await api.retry(id);await loadDocuments()}

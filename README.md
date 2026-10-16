@@ -41,6 +41,8 @@
 
 第八阶段提供[独立入库 Worker](docs/durable-ingestion.md)：复用 PostgreSQL 和原入库流程，任务与文档原子落库，支持跨进程领取、租约心跳、崩溃接管和有限重试。默认关闭；显式运行 `python -m app.bootstrap --ingestion-jobs` 后，在所有 API/Worker 设置 `INGESTION_MODE=durable`，并用 `python -m app.worker` 启动独立进程。所有进程需共享上传/缓存路径，不支持事务级连接池。
 
+第九阶段加入 [Run/Event 持久化与 SSE 断线重放](docs/durable-chat-runs.md)：先保存事件，再发送给客户端；相同请求标识复用原 Run，重连按游标续传，最终助手消息与 done 事件原子提交。显式运行 `python -m app.bootstrap --chat-runs` 后设置 `CHAT_RUNS_ENABLED=true` 并重启 API。进程中断会标记错误，不自动重跑模型或工具；默认关闭，保留原流式入口。
+
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。

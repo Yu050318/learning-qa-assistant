@@ -1,5 +1,6 @@
 import json
 import logging
+import asyncio
 from queue import Empty, Queue
 from threading import Thread
 from typing import Annotated
@@ -7,6 +8,8 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Cookie, File, Header, Query, Request, Response, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
+from starlette.concurrency import run_in_threadpool
+from sqlalchemy import select
 
 from app.api.dependencies import AuthDependency, ServiceDependency, UserDependency
 from app.api.schemas import (
@@ -16,6 +19,8 @@ from app.api.schemas import (
 )
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput
+from app.infrastructure.persistence.models import ChatRun
+from app.infrastructure.persistence.repository import Repository
 
 v2_router = APIRouter(prefix="/api/v2")
 health_router = APIRouter(tags=["health"])
@@ -258,6 +263,14 @@ def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, s
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
         web_query=payload.web_query, web_urls=tuple(payload.web_urls),
     )
+    if services.settings.chat_runs_enabled:
+        client_key = request.headers.get("Idempotency-Key")
+        try:
+            key = UUID(client_key) if client_key else uuid4()
+        except ValueError:
+            raise AppError("INVALID_IDEMPOTENCY_KEY", "Idempotency-Key 必须为 UUID", 422) from None
+        run = services.runs.start(user_id, session_id, data, request.state.request_id, key)
+        return durable_stream(run.id, request, services, user_id, 0)
     run_id = str(uuid4())
     request_id = request.state.request_id
 
@@ -339,6 +352,82 @@ def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, s
     )
 
 
+def require_runs(services):
+    if not services.settings.chat_runs_enabled:
+        raise AppError("CHAT_RUNS_DISABLED", "问答事件持久化尚未启用", 503)
+
+
+def run_response(run):
+    return {"run_id": run.id, "session_id": run.session_id, "state": run.state,
+            "sequence": run.sequence, "message_id": run.message_id, "expires_at": run.expires_at,
+            "events_url": f"/api/v2/runs/{run.id}/events"}
+
+
+@v2_router.post("/sessions/{session_id}/runs", status_code=202, tags=["v2 runs"])
+def start_run(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency,
+              client_key: Annotated[UUID, Header(alias="Idempotency-Key")]):
+    require_runs(services)
+    data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
+                          document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
+                          web_query=payload.web_query, web_urls=tuple(payload.web_urls))
+    return run_response(services.runs.start(user_id, session_id, data, request.state.request_id, client_key))
+
+
+@v2_router.get("/sessions/{session_id}/runs", tags=["v2 runs"])
+def session_runs(session_id: UUID, services: ServiceDependency, user_id: UserDependency):
+    require_runs(services)
+    with services.database.sessions() as database:
+        Repository(database).chat_session(user_id, session_id)
+        ids = list(database.scalars(select(ChatRun.id).where(ChatRun.session_id == session_id, ChatRun.user_id == user_id)
+                                   .order_by(ChatRun.created_at.desc(), ChatRun.id.desc()).limit(20)))
+    return [run_response(services.runs.store.read(user_id, run_id)[0]) for run_id in ids]
+
+
+@v2_router.get("/runs/{run_id}", tags=["v2 runs"])
+def get_run(run_id: UUID, services: ServiceDependency, user_id: UserDependency):
+    require_runs(services)
+    return run_response(services.runs.store.read(user_id, run_id)[0])
+
+
+def durable_stream(run_id, request, services, user_id, after):
+    header = request.headers.get("Last-Event-ID")
+    if header:
+        try:
+            header_run, raw_sequence = header.rsplit(":", 1)
+            if UUID(header_run) != run_id or not raw_sequence.isdecimal():
+                raise ValueError()
+            after = int(raw_sequence)
+            if after > 2**31 - 1:
+                raise ValueError()
+        except ValueError:
+            raise AppError("INVALID_EVENT_CURSOR", "Last-Event-ID 与本轮问答不匹配", 422) from None
+    initial = services.runs.store.read(user_id, run_id, after)
+
+    async def events():
+        cursor, batch = after, initial
+        while not await request.is_disconnected():
+            run, rows = batch
+            for row in rows:
+                cursor = row.sequence
+                yield sse_event(row.event, row.payload)
+            if run.state != "running" and cursor >= run.sequence:
+                return
+            if not rows:
+                yield ": keep-alive\n\n"
+                await asyncio.sleep(.5)
+            batch = await run_in_threadpool(services.runs.store.read, user_id, run_id, cursor)
+
+    return StreamingResponse(events(), media_type="text/event-stream", headers={
+        "Cache-Control": "no-store, no-transform", "X-Accel-Buffering": "no", "X-Run-ID": str(run_id)})
+
+
+@v2_router.get("/runs/{run_id}/events", tags=["v2 runs"])
+def replay_run(run_id: UUID, request: Request, services: ServiceDependency, user_id: UserDependency,
+               after: Annotated[int, Query(ge=0, le=2**31 - 1)] = 0):
+    require_runs(services)
+    return durable_stream(run_id, request, services, user_id, after)
+
+
 @v2_router.get("/documents/{document_id}/processing", tags=["v2 documents"])
 def processing_v2(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
     document = services.ingestion.get(user_id, document_id)
@@ -367,7 +456,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "ollama", "model_name": settings.ollama_model, "available": True, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

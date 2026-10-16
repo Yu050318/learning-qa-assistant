@@ -10,7 +10,7 @@ from sqlalchemy.schema import CreateSchema
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion, IngestionJob
+from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion, IngestionJob, ChatRun, ChatRunEvent
 
 
 class Database:
@@ -52,6 +52,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name in {"chat_runs", "chat_run_events"} and not self.settings.chat_runs_enabled:
+                    continue
                 if table.name == "ingestion_jobs" and self.settings.ingestion_mode != "durable":
                     continue
                 if not self.settings.document_versions_enabled and table.name in {"document_series", "document_versions"}:
@@ -83,8 +85,19 @@ class Database:
 
     @contextmanager
     def document_lock(self, document_id):
+        with self.resource_lock("ingestion", document_id) as probe:
+            yield probe
+
+    def initialize_chat_runs(self):
+        with self.engine.begin() as connection:
+            if not inspect(connection).has_table("chat_messages", schema="rag"):
+                raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
+            Base.metadata.create_all(connection, tables=[ChatRun.__table__, ChatRunEvent.__table__])
+
+    @contextmanager
+    def resource_lock(self, namespace, resource_id):
         # Session lock spans parser/HTTP/vector calls without holding a SQL transaction.
-        key = int.from_bytes(hashlib.sha256(f"ingestion:{document_id}".encode()).digest()[:8], "big", signed=True)
+        key = int.from_bytes(hashlib.sha256(f"{namespace}:{resource_id}".encode()).digest()[:8], "big", signed=True)
         with self.engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
             acquired = False
             try:

@@ -49,7 +49,7 @@ class ChatService:
         self.sessions = sessions
         self.agent_workflow = agent_workflow
 
-    def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None):
+    def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
         if self.agent_workflow is None:
             raise AppError("NOT_IMPLEMENTED", "V2 Agent 尚未配置", 503)
         public_query, web_enabled, warnings = prepare_public_query(payload, self.settings.web_search_enabled)
@@ -57,10 +57,12 @@ class ChatService:
             raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
         selected = payload.model_provider or self.settings.default_model_provider
         started = perf_counter()
-        with self.sessions.exclusive(session_id):
+        with self.sessions.exclusive(session_id) as probe:
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True)
+                if run_binding:
+                    run_binding[0].guard(database, user_id, run_binding[1])
                 requested = list(payload.document_ids) if payload.document_ids is not None else None
                 version_options = {"current_only": True} if self.settings.document_versions_enabled else {}
                 ready_ids = [] if payload.search_mode in {"web", "sql"} else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, **version_options)
@@ -81,6 +83,10 @@ class ChatService:
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
             )
             result = self.agent_workflow.run(context, history, summary, on_answer_event=on_answer_event)
+            if run_binding:
+                run_binding[2]()  # Flush the last coalesced draft delta before terminal events.
+            if probe:
+                probe()
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True)
@@ -102,6 +108,9 @@ class ChatService:
                 )
                 database.add(message)
                 session.updated_at = utcnow()
+                if run_binding:
+                    database.flush()
+                    run_binding[0].complete(database, user_id, run_binding[1], message)
                 database.commit()
                 logger.info("agent_chat_completed", extra={"resource_id": str(session_id), "model_provider": result.answer.provider, "elapsed_ms": round((perf_counter() - started) * 1000, 2)})
                 return message

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Index, MetaData, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Index, MetaData, String, Text, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -137,6 +137,39 @@ class ChatMessage(Base):
     token_usage: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
     run_metadata: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ChatRun(Base):
+    __tablename__ = "chat_runs"
+    __table_args__ = (
+        ForeignKeyConstraint(["user_id", "session_id"], ["rag.chat_sessions.user_id", "rag.chat_sessions.id"], ondelete="CASCADE"),
+        UniqueConstraint("user_id", "client_key"),
+        CheckConstraint("state IN ('running', 'succeeded', 'failed', 'interrupted')"),
+        Index("ix_chat_runs_session_active", "session_id", unique=True,
+              postgresql_where=text("state = 'running'"), sqlite_where=text("state = 'running'")),
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID]
+    session_id: Mapped[UUID]
+    client_key: Mapped[UUID]
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    state: Mapped[str] = mapped_column(String(20), default="running")
+    sequence: Mapped[int] = mapped_column(default=0)
+    event_bytes: Mapped[int] = mapped_column(default=0)
+    request_id: Mapped[str] = mapped_column(String(100))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    message_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.chat_messages.id", ondelete="SET NULL"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ChatRunEvent(Base):
+    __tablename__ = "chat_run_events"
+
+    run_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_runs.id", ondelete="CASCADE"), primary_key=True)
+    sequence: Mapped[int] = mapped_column(primary_key=True)
+    event: Mapped[str] = mapped_column(String(40))
+    payload: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
 
 
 class UserMemory(Base):

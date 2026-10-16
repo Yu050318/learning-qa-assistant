@@ -73,6 +73,8 @@ class Settings(BaseSettings):
     agent_max_knowledge_calls: int = Field(default=3, ge=1, le=20)
     knowledge_quality_enabled: bool = False
     document_versions_enabled: bool = False
+    chat_runs_enabled: bool = False
+    chat_run_workers: int = Field(default=4, ge=1, le=16)
     agent_context_token_budget: int = Field(default=24000, ge=4000)
     langsmith_tracing: bool = False
     langsmith_api_key: SecretStr = SecretStr("")

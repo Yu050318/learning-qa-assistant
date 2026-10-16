@@ -22,7 +22,11 @@ class SessionService:
         if not lock.acquire(blocking=False):
             raise AppError("RESOURCE_BUSY", "会话正在处理中，请稍后重试", 409)
         try:
-            yield
+            if getattr(getattr(self.database, "settings", None), "chat_runs_enabled", False):
+                with self.database.resource_lock("chat", session_id) as probe:
+                    yield probe
+            else:
+                yield None
         finally:
             lock.release()
 
