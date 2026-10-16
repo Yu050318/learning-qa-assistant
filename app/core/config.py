@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     agent_max_model_calls: int = Field(default=16, ge=1, le=40)
     agent_max_tool_calls: int = Field(default=12, ge=1, le=30)
     agent_max_knowledge_calls: int = Field(default=3, ge=1, le=20)
+    knowledge_quality_enabled: bool = False
     agent_context_token_budget: int = Field(default=24000, ge=4000)
     langsmith_tracing: bool = False
     langsmith_api_key: SecretStr = SecretStr("")

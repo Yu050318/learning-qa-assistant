@@ -49,6 +49,7 @@ class EvidenceRegistry:
         self.context_tokens = 0
         self.warnings: set[str] = set()
         self.rerank_events: list[dict] = []
+        self.excluded_numbers: set[int] = set()
         self.keys: dict[tuple[str, str], int] = {}
         self.used_tokens = 0
 
@@ -192,8 +193,8 @@ class EvidenceRegistry:
 
     def validate(self, kind: str, answer: str, search_mode: str = "auto") -> list[dict]:
         numbers = sorted({int(value) for value in re.findall(r"\[(\d+)\]", answer)})
-        by_number = {entry["number"]: entry for entry in self.entries}
-        non_memory_entries = [entry for entry in self.entries if entry["type"] != "memory"]
+        by_number = {entry["number"]: entry for entry in self.entries if entry["number"] not in self.excluded_numbers}
+        non_memory_entries = [entry for entry in by_number.values() if entry["type"] != "memory"]
         if non_memory_entries and kind != "grounded":
             raise AppError("INVALID_CITATION", "已有检索证据时必须生成带引用的 grounded 回答", 502)
         if any(number not in by_number for number in numbers):

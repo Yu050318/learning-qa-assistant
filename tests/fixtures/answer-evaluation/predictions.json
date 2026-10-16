@@ -1,0 +1,428 @@
+[
+  {
+    "id": "excel-good",
+    "answer": "功率为100W[1]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "knowledge",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "chunk_id": "00000000-0000-0000-0000-000000000003",
+        "source_name": "synthetic.xlsx",
+        "page_number": null,
+        "section": null,
+        "score": 0.03,
+        "excel_source": {
+          "sheet_name": "Specs",
+          "row_start": 2,
+          "row_end": 2,
+          "source_anchor": "sheet:Specs:row:2"
+        },
+        "number": 1,
+        "excerpt": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "knowledge",
+          "document_id": "00000000-0000-0000-0000-000000000002",
+          "chunk_id": "00000000-0000-0000-0000-000000000003",
+          "source_name": "synthetic.xlsx",
+          "page_number": null,
+          "section": null,
+          "score": 0.03,
+          "excel_source": {
+            "sheet_name": "Specs",
+            "row_start": 2,
+            "row_end": 2,
+            "source_anchor": "sheet:Specs:row:2"
+          },
+          "number": 1,
+          "excerpt": "型号 NX-1；额定功率 100W"
+        },
+        "content": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "excel-wrong-row",
+    "answer": "功率为100W[1]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "knowledge",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "chunk_id": "00000000-0000-0000-0000-000000000003",
+        "source_name": "synthetic.xlsx",
+        "page_number": null,
+        "section": null,
+        "score": 0.03,
+        "excel_source": {
+          "sheet_name": "Specs",
+          "row_start": 3,
+          "row_end": 3,
+          "source_anchor": "sheet:Specs:row:3"
+        },
+        "number": 1,
+        "excerpt": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "knowledge",
+          "document_id": "00000000-0000-0000-0000-000000000002",
+          "chunk_id": "00000000-0000-0000-0000-000000000003",
+          "source_name": "synthetic.xlsx",
+          "page_number": null,
+          "section": null,
+          "score": 0.03,
+          "excel_source": {
+            "sheet_name": "Specs",
+            "row_start": 2,
+            "row_end": 2,
+            "source_anchor": "sheet:Specs:row:2"
+          },
+          "number": 1,
+          "excerpt": "型号 NX-1；额定功率 100W"
+        },
+        "content": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "hallucinated-warranty",
+    "answer": "功率为100W。保修十年[1]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "knowledge",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "chunk_id": "00000000-0000-0000-0000-000000000003",
+        "source_name": "synthetic.xlsx",
+        "page_number": null,
+        "section": null,
+        "score": 0.03,
+        "excel_source": {
+          "sheet_name": "Specs",
+          "row_start": 2,
+          "row_end": 2,
+          "source_anchor": "sheet:Specs:row:2"
+        },
+        "number": 1,
+        "excerpt": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "knowledge",
+          "document_id": "00000000-0000-0000-0000-000000000002",
+          "chunk_id": "00000000-0000-0000-0000-000000000003",
+          "source_name": "synthetic.xlsx",
+          "page_number": null,
+          "section": null,
+          "score": 0.03,
+          "excel_source": {
+            "sheet_name": "Specs",
+            "row_start": 2,
+            "row_end": 2,
+            "source_anchor": "sheet:Specs:row:2"
+          },
+          "number": 1,
+          "excerpt": "型号 NX-1；额定功率 100W"
+        },
+        "content": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "unknown-reference",
+    "answer": "功率为100W[99]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "knowledge",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "chunk_id": "00000000-0000-0000-0000-000000000003",
+        "source_name": "synthetic.xlsx",
+        "page_number": null,
+        "section": null,
+        "score": 0.03,
+        "excel_source": {
+          "sheet_name": "Specs",
+          "row_start": 2,
+          "row_end": 2,
+          "source_anchor": "sheet:Specs:row:2"
+        },
+        "number": 99,
+        "excerpt": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "knowledge",
+          "document_id": "00000000-0000-0000-0000-000000000002",
+          "chunk_id": "00000000-0000-0000-0000-000000000003",
+          "source_name": "synthetic.xlsx",
+          "page_number": null,
+          "section": null,
+          "score": 0.03,
+          "excel_source": {
+            "sheet_name": "Specs",
+            "row_start": 2,
+            "row_end": 2,
+            "source_anchor": "sheet:Specs:row:2"
+          },
+          "number": 1,
+          "excerpt": "型号 NX-1；额定功率 100W"
+        },
+        "content": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "mixed-sql-web",
+    "answer": "销量合计42[1]。新包装于2024年6月上线[2]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "sql",
+        "source_name": "合成销量库",
+        "query": "SELECT SUM(amount) AS total FROM sales.orders",
+        "columns": [
+          "total"
+        ],
+        "row_count": 1,
+        "truncated": false,
+        "number": 1,
+        "excerpt": "total：42"
+      },
+      {
+        "type": "web",
+        "title": "合成官网公告",
+        "url": "https://example.com/notice",
+        "retrieved_at": "2024-06-01T00:00:00+00:00",
+        "published_at": null,
+        "score": null,
+        "number": 2,
+        "excerpt": "NX-1 新包装于2024年6月上线。"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "sql",
+          "source_name": "合成销量库",
+          "query": "SELECT SUM(amount) AS total FROM sales.orders",
+          "columns": [
+            "total"
+          ],
+          "row_count": 1,
+          "truncated": false,
+          "number": 1,
+          "excerpt": "total：42"
+        },
+        "content": "{\"source_name\": \"合成销量库\", \"query\": \"SELECT SUM(amount) AS total FROM sales.orders\", \"columns\": [\"total\"], \"rows\": [[42]], \"truncated\": false}"
+      },
+      {
+        "citation": {
+          "type": "web",
+          "title": "合成官网公告",
+          "url": "https://example.com/notice",
+          "retrieved_at": "2024-06-01T00:00:00+00:00",
+          "published_at": null,
+          "score": null,
+          "number": 2,
+          "excerpt": "NX-1 新包装于2024年6月上线。"
+        },
+        "content": "NX-1 新包装于2024年6月上线。"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "clarification",
+    "answer": "请提供产品型号和购买日期。",
+    "kind": "clarification",
+    "citations": [],
+    "evidence": [],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "insufficient",
+    "answer": "资料没有预算信息，无法确定。",
+    "kind": "insufficient",
+    "citations": [],
+    "evidence": [],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "parent-not-evidence",
+    "answer": "保修两年[1]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "knowledge",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "chunk_id": "00000000-0000-0000-0000-000000000003",
+        "source_name": "synthetic.xlsx",
+        "page_number": null,
+        "section": null,
+        "score": 0.03,
+        "excel_source": {
+          "sheet_name": "Specs",
+          "row_start": 2,
+          "row_end": 2,
+          "source_anchor": "sheet:Specs:row:2"
+        },
+        "number": 1,
+        "excerpt": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "knowledge",
+          "document_id": "00000000-0000-0000-0000-000000000002",
+          "chunk_id": "00000000-0000-0000-0000-000000000003",
+          "source_name": "synthetic.xlsx",
+          "page_number": null,
+          "section": null,
+          "score": 0.03,
+          "excel_source": {
+            "sheet_name": "Specs",
+            "row_start": 2,
+            "row_end": 2,
+            "source_anchor": "sheet:Specs:row:2"
+          },
+          "number": 1,
+          "excerpt": "型号 NX-1；额定功率 100W"
+        },
+        "content": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "unreviewed",
+    "answer": "功率为100W[1]。",
+    "kind": "grounded",
+    "citations": [
+      {
+        "type": "knowledge",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "chunk_id": "00000000-0000-0000-0000-000000000003",
+        "source_name": "synthetic.xlsx",
+        "page_number": null,
+        "section": null,
+        "score": 0.03,
+        "excel_source": {
+          "sheet_name": "Specs",
+          "row_start": 2,
+          "row_end": 2,
+          "source_anchor": "sheet:Specs:row:2"
+        },
+        "number": 1,
+        "excerpt": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "evidence": [
+      {
+        "citation": {
+          "type": "knowledge",
+          "document_id": "00000000-0000-0000-0000-000000000002",
+          "chunk_id": "00000000-0000-0000-0000-000000000003",
+          "source_name": "synthetic.xlsx",
+          "page_number": null,
+          "section": null,
+          "score": 0.03,
+          "excel_source": {
+            "sheet_name": "Specs",
+            "row_start": 2,
+            "row_end": 2,
+            "source_anchor": "sheet:Specs:row:2"
+          },
+          "number": 1,
+          "excerpt": "型号 NX-1；额定功率 100W"
+        },
+        "content": "型号 NX-1；额定功率 100W"
+      }
+    ],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  },
+  {
+    "id": "smalltalk",
+    "answer": "你好！",
+    "kind": "smalltalk",
+    "citations": [],
+    "evidence": [],
+    "provider": "synthetic",
+    "model": "recorded-fixture",
+    "run_metadata": {
+      "model_attempts": 0,
+      "knowledge_searches": 0,
+      "warnings": []
+    }
+  }
+]

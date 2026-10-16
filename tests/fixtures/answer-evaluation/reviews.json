@@ -1,0 +1,155 @@
+[
+  {
+    "id": "excel-good",
+    "reviewer": "human",
+    "claims": [
+      {
+        "text": "功率为100W[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 100W"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ],
+    "input_sha256": "07377a99ed9532e1c99748f81ecb8b48236063755282f1e43aa20a418d2a8c39"
+  },
+  {
+    "id": "excel-wrong-row",
+    "reviewer": "human",
+    "claims": [
+      {
+        "text": "功率为100W[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 100W"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ],
+    "input_sha256": "eed11c9332be1d9d46b728e867844ce2d7140103658002f573fdf99b0bc85ab8"
+  },
+  {
+    "id": "hallucinated-warranty",
+    "reviewer": "human",
+    "claims": [
+      {
+        "text": "功率为100W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 100W"
+          }
+        ]
+      },
+      {
+        "text": "保修十年[1]。",
+        "verdict": "unsupported",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "incorrect"
+    ],
+    "input_sha256": "526ed75bcb5627c2e309e3483f6ae42dc3b1d382d446ae4ac4b13fe8dea7ef36"
+  },
+  {
+    "id": "unknown-reference",
+    "reviewer": "human",
+    "claims": [
+      {
+        "text": "功率为100W[99]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 100W"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ],
+    "input_sha256": "52a577470d0fd78be9c766909a83c2cca50c925ab3a642841875c2cf209c24f8"
+  },
+  {
+    "id": "mixed-sql-web",
+    "reviewer": "human",
+    "claims": [
+      {
+        "text": "销量合计42[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "42"
+          }
+        ]
+      },
+      {
+        "text": "新包装于2024年6月上线[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-1 新包装于2024年6月上线。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ],
+    "input_sha256": "062d3d0cec63dce906c99a7a1003d65125b4edd17af8f6d2ad0f7a9f33ea8af2"
+  },
+  {
+    "id": "clarification",
+    "reviewer": "human",
+    "claims": [],
+    "fact_coverage": [],
+    "input_sha256": "cefe0d19ac8d93a3b8941b90878cdba73e2bafc5c58b390f7952bf2918c047e8"
+  },
+  {
+    "id": "insufficient",
+    "reviewer": "human",
+    "claims": [],
+    "fact_coverage": [],
+    "input_sha256": "9cce2fb47843ace18551aadf5ca54466f5e6fa2ab29f10a3be3d27eb7339b334"
+  },
+  {
+    "id": "parent-not-evidence",
+    "reviewer": "human",
+    "claims": [
+      {
+        "text": "保修两年[1]。",
+        "verdict": "unsupported",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "incorrect"
+    ],
+    "input_sha256": "3e96db393667259cf1b61b9588a00c9e14064c103f63cc1f9c18b44e8d0aba58"
+  },
+  {
+    "id": "smalltalk",
+    "reviewer": "human",
+    "claims": [],
+    "fact_coverage": [],
+    "input_sha256": "34d96d8970d1e984952373b379269d7b0530b442d6e908fc376170da22ac1ece"
+  }
+]

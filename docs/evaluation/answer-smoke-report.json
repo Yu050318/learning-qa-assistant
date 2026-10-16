@@ -1,0 +1,758 @@
+{
+  "schema_version": 1,
+  "dataset_sha256": "c29199866624682e5e4a6ed55d677aaeb77154d9f4fd401f53ffa0cf4b3b8c34",
+  "predictions_sha256": "c71e4928e9daa235ac2fec72498d6807d813e8c92c52ac47cd46e087a71330ad",
+  "reviews_sha256": "a5e897e38e9ca7832f48f8e6861a750847658c4fc8b52d8b993fc858164c0371",
+  "summary": {
+    "cases": 10,
+    "successful_runs": 10,
+    "failed_runs": 0,
+    "invalid_reviews": 0,
+    "metrics": {
+      "citation_support": {
+        "value": 0.333333,
+        "scored_cases": 6
+      },
+      "citation_validity": {
+        "value": 0.714286,
+        "scored_cases": 7
+      },
+      "citations_valid": {
+        "value": 0.8,
+        "scored_cases": 10
+      },
+      "claim_citation_coverage": {
+        "value": 0.916667,
+        "scored_cases": 6
+      },
+      "fact_coverage": {
+        "value": 0.75,
+        "scored_cases": 6
+      },
+      "faithfulness": {
+        "value": 0.75,
+        "scored_cases": 6
+      },
+      "kind_correct": {
+        "value": 0.9,
+        "scored_cases": 10
+      },
+      "source_types_correct": {
+        "value": 0.8,
+        "scored_cases": 10
+      }
+    }
+  },
+  "by_category": {
+    "citation-negative": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "citation_validity": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "faithfulness": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 0.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "clarification": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citation_validity": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "fact_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "faithfulness": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "excel": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "faithfulness": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "faithfulness-negative": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": 0.5,
+          "scored_cases": 1
+        },
+        "fact_coverage": {
+          "value": 0.5,
+          "scored_cases": 1
+        },
+        "faithfulness": {
+          "value": 0.5,
+          "scored_cases": 1
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "insufficient": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citation_validity": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "fact_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "faithfulness": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "mixed": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "faithfulness": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "parent-negative": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "fact_coverage": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "faithfulness": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "kind_correct": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "provenance-negative": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "citation_validity": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 0.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "faithfulness": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 0.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "smalltalk": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citation_validity": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "fact_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "faithfulness": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    },
+    "unreviewed": {
+      "cases": 1,
+      "successful_runs": 1,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "claim_citation_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "fact_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "faithfulness": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 1
+        }
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "excel-good",
+      "category": "excel",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "excel-wrong-row",
+      "category": "provenance-negative",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 0.0,
+        "citation_validity": 0.0,
+        "source_types_correct": 0.0,
+        "faithfulness": 1.0,
+        "citation_support": 0.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [
+        1
+      ],
+      "invalid_citation_cards": 1,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "hallucinated-warranty",
+      "category": "faithfulness-negative",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 0.0,
+        "fact_coverage": 0.5,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "unknown-reference",
+      "category": "citation-negative",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 0.0,
+        "citation_validity": 0.0,
+        "source_types_correct": 0.0,
+        "faithfulness": 1.0,
+        "citation_support": 0.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [
+        99
+      ],
+      "invalid_citation_cards": 1,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "mixed-sql-web",
+      "category": "mixed",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "clarification",
+      "category": "clarification",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": null,
+        "source_types_correct": 1.0,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 0,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "insufficient",
+      "category": "insufficient",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": null,
+        "source_types_correct": 1.0,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 0,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "parent-not-evidence",
+      "category": "parent-negative",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.0,
+        "citation_support": 0.0,
+        "fact_coverage": 0.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "unreviewed",
+      "category": "unreviewed",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      },
+      "reviewer": null,
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 0,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    },
+    {
+      "id": "smalltalk",
+      "category": "smalltalk",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": null,
+        "source_types_correct": 1.0,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      },
+      "reviewer": "human",
+      "review_error": null,
+      "judge_policy": null,
+      "reviewed_claims": 0,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "recorded-fixture",
+      "provider": "synthetic",
+      "trace": {
+        "elapsed_ms": null,
+        "model_attempts": 0,
+        "knowledge_searches": 0,
+        "knowledge_rewrites": null,
+        "warnings": []
+      }
+    }
+  ],
+  "run_mode": "offline_recorded",
+  "judge_events": [],
+  "semantic_method": "explicit_claim_reviews",
+  "configs": []
+}

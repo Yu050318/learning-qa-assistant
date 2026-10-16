@@ -1,0 +1,143 @@
+[
+  {
+    "id": "excel-good",
+    "category": "excel",
+    "question": "NX-1 的功率？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "grounded"
+    ],
+    "expected_facts": [
+      "NX-1 额定功率为100W"
+    ],
+    "expected_source_types": [
+      "knowledge"
+    ]
+  },
+  {
+    "id": "excel-wrong-row",
+    "category": "provenance-negative",
+    "question": "NX-1 的功率？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "grounded"
+    ],
+    "expected_facts": [
+      "NX-1 额定功率为100W"
+    ],
+    "expected_source_types": [
+      "knowledge"
+    ]
+  },
+  {
+    "id": "hallucinated-warranty",
+    "category": "faithfulness-negative",
+    "question": "NX-1 的功率和保修？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "grounded"
+    ],
+    "expected_facts": [
+      "功率100W",
+      "资料没有保修期限，应说明不足"
+    ],
+    "expected_source_types": [
+      "knowledge"
+    ]
+  },
+  {
+    "id": "unknown-reference",
+    "category": "citation-negative",
+    "question": "NX-1 的功率？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "grounded"
+    ],
+    "expected_facts": [
+      "功率100W"
+    ],
+    "expected_source_types": [
+      "knowledge"
+    ]
+  },
+  {
+    "id": "mixed-sql-web",
+    "category": "mixed",
+    "question": "统计销量，并结合合成官网公告说明变化。",
+    "search_mode": "auto",
+    "expected_kinds": [
+      "grounded"
+    ],
+    "expected_facts": [
+      "销量合计42",
+      "新包装于2024年6月上线"
+    ],
+    "expected_source_types": [
+      "sql",
+      "web"
+    ]
+  },
+  {
+    "id": "clarification",
+    "category": "clarification",
+    "question": "它的保修多久？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "clarification"
+    ],
+    "expected_facts": [],
+    "expected_source_types": []
+  },
+  {
+    "id": "insufficient",
+    "category": "insufficient",
+    "question": "文档未记载的预算是多少？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "insufficient"
+    ],
+    "expected_facts": [],
+    "expected_source_types": []
+  },
+  {
+    "id": "parent-not-evidence",
+    "category": "parent-negative",
+    "question": "NX-1 的保修？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "insufficient"
+    ],
+    "expected_facts": [
+      "当前命中叶子没有保修信息，应说明不足"
+    ],
+    "expected_source_types": [
+      "knowledge"
+    ]
+  },
+  {
+    "id": "unreviewed",
+    "category": "unreviewed",
+    "question": "NX-1 的功率？",
+    "search_mode": "knowledge",
+    "expected_kinds": [
+      "grounded"
+    ],
+    "expected_facts": [
+      "功率100W"
+    ],
+    "expected_source_types": [
+      "knowledge"
+    ]
+  },
+  {
+    "id": "smalltalk",
+    "category": "smalltalk",
+    "question": "你好",
+    "search_mode": "auto",
+    "expected_kinds": [
+      "smalltalk"
+    ],
+    "expected_facts": [],
+    "expected_source_types": []
+  }
+]

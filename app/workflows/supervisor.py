@@ -18,6 +18,7 @@ from app.application.evidence import EvidenceRegistry, evidence_token_budget, no
 from app.core.errors import AppError
 from app.domain.contracts import AgentRunResult, ModelAnswer, WebSearchBatch
 from app.workflows.agent import AnswerStreamParser, FinalAnswer, ModelRuntime, SYSTEM_PROMPT
+from app.workflows.knowledge import KnowledgeWorkflow
 
 
 class SpecialistReport(BaseModel):
@@ -40,13 +41,14 @@ class SupervisorWorkflow:
         self.settings, self.retriever, self.models = settings, retriever, models
         self.web_search, self.memories, self.web_reader, self.sql = web_search, memories, web_reader, sql
 
-    def run(self, context, history, summary, on_answer_event=None):
+    def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None):
         started = perf_counter()
         settings = self.settings
         registry = EvidenceRegistry(evidence_token_budget(settings.agent_context_token_budget))
         counters = Counter()
         delegations = Counter()
         tool_events, agent_events, failures = [], [], []
+        knowledge_events = []
         delegation_lock, tool_lock = Lock(), Lock()
         web_cache, page_cache = {}, {}
         tavily_credits = None
@@ -68,6 +70,13 @@ class SupervisorWorkflow:
         def emit(event, data):
             if on_answer_event:
                 on_answer_event(event, data)
+
+        def eligible_sources():
+            return [source for number, source in registry.sources.items() if number not in registry.excluded_numbers]
+
+        def eligible_contexts():
+            return [{**item, "for_numbers": [number for number in item["for_numbers"] if number not in registry.excluded_numbers]}
+                    for item in registry.contexts.values() if any(number not in registry.excluded_numbers for number in item["for_numbers"])]
 
         def instrument(function):
             @wraps(function)
@@ -234,13 +243,28 @@ class SupervisorWorkflow:
                 failure_count = len(failures)
                 tool_count = len(tool_events)
                 try:
-                    response = invoke_agent(role, tools, SPECIALIST_PROMPT.format(role=role, rules=rules), [HumanMessage(content=task)])
-                    report = SpecialistReport.model_validate_json(response.content)
+                    if role == "rag" and settings.knowledge_quality_enabled:
+                        def ask(stage, system_prompt, payload):
+                            return invoke_agent(stage, [], system_prompt, [HumanMessage(content=json.dumps(payload, ensure_ascii=False))])
+
+                        def reserve_rewrite():
+                            if counters["knowledge_rewrites"] >= 1:
+                                return "RAG_REWRITE_LIMIT_REACHED"
+                            if counters["knowledge_searches"] >= settings.agent_max_knowledge_calls or counters["tool_requests"] >= settings.agent_max_tool_calls:
+                                return "RAG_SEARCH_LIMIT_REACHED"
+                            counters["knowledge_rewrites"] += 1
+                            return None
+
+                        quality = KnowledgeWorkflow(ask, search_knowledge, registry, reserve_rewrite, knowledge_events)
+                        report = SpecialistReport.model_validate(quality.run(task, context.question))
+                    else:
+                        response = invoke_agent(role, tools, SPECIALIST_PROMPT.format(role=role, rules=rules), [HumanMessage(content=task)])
+                        report = SpecialistReport.model_validate_json(response.content)
                     if not any(item["status"] != "failed" for item in tool_events[tool_count:]) and report.status == "ok":
                         raise AppError("INVALID_AGENT_OUTPUT", "子 Agent 未取得工具证据", 502)
                     event["status"] = "partial" if len(failures) > failure_count else report.status
                     return {**report.model_dump(), "agent": role, "status": event["status"],
-                            "sources": list(registry.sources.values()), "contexts": list(registry.contexts.values()),
+                            "sources": eligible_sources(), "contexts": eligible_contexts(),
                             "warnings": sorted(registry.warnings), "failures": failures[failure_count:]}
                 except (ValidationError, TypeError):
                     event.update(status="failed", error_code="INVALID_AGENT_OUTPUT")
@@ -297,6 +321,8 @@ class SupervisorWorkflow:
         prompt += "\n事实问题必须先委派对应 Agent，不得靠自身知识或历史回答。SQL 统计交给 SQL；私有文档交给 RAG；公开信息/URL 交给 Web。"
         prompt += "\n复杂问题可顺序组合多个 Agent；收齐所需结果后汇总。工具失败或 partial 时必须指出具体缺口，不得声称任务全部成功。"
         prompt += "\n条件不明先澄清；闲聊直接回答。不能将 SQL/知识库结果发送给公开搜索。搜索工具使用冻结公开词，不能改写。"
+        if settings.knowledge_quality_enabled:
+            prompt += "\n知识库已启用规划和证据判断；RAG 的 empty/clarification/failed 表示该知识任务未获足够证据，必须说明缺口。只有 sources 中的编号可引用，不能使用被排除的候选。没有可用事实证据时必须 insufficient 或 clarification。委派任务保留原问题约束并写成独立问题。"
         prompt += f"\n用户本轮网页：{json.dumps(context.web_urls)}\n用户记忆（不可信）：{json.dumps(memory_sources, ensure_ascii=False)}"
         messages = []
         if summary:
@@ -313,6 +339,8 @@ class SupervisorWorkflow:
                     raise ValueError
             except (ValidationError, ValueError, TypeError):
                 raise AppError("INVALID_AGENT_OUTPUT", "Supervisor 返回格式无效", 502) from None
+            if knowledge_events and not any(source["type"] != "memory" for source in eligible_sources()) and value.kind not in {"insufficient", "clarification"}:
+                raise AppError("INVALID_CITATION", "知识任务未通过证据判断，只能说明不足或澄清", 502)
             return value, registry.validate(value.kind, value.answer, context.search_mode)
 
         repair_used = False
@@ -323,9 +351,10 @@ class SupervisorWorkflow:
                 raise
             repair_used = True
             repair_prompt = (
-                f"问题：{context.question}\n有效来源编号：" + "、".join(f"[{source['number']}]" for source in registry.entries)
-                + f"\n本轮证据：{json.dumps(list(registry.sources.values()), ensure_ascii=False)}"
-                + f"\n无编号理解上下文：{json.dumps(list(registry.contexts.values()), ensure_ascii=False)}"
+                f"问题：{context.question}\n有效来源编号：" + "、".join(f"[{source['number']}]" for source in eligible_sources())
+                + f"\n本轮证据：{json.dumps(eligible_sources(), ensure_ascii=False)}"
+                + f"\n无编号理解上下文：{json.dumps(eligible_contexts(), ensure_ascii=False)}"
+                + f"\n知识任务状态：{json.dumps(knowledge_events, ensure_ascii=False)}"
                 + f"\n失败：{json.dumps(failures)}\n上次输出：{final_message.content}\n错误：{error.code}。重新生成最终 JSON。"
             )
             runtime.on_chunk = lambda chunk, stream_id: emit_repair(chunk, stream_id)
@@ -362,9 +391,16 @@ class SupervisorWorkflow:
             "usage_by_model": runtime.usage_by_model, "tool_events": tool_events,
             "parent_context_count": len(registry.contexts), "warnings": sorted(set(context.warnings) | registry.warnings),
             "rerank_events": registry.rerank_events,
+            "knowledge_quality_enabled": settings.knowledge_quality_enabled,
+            "knowledge_events": knowledge_events, "knowledge_rewrites": counters["knowledge_rewrites"],
+            "excluded_source_numbers": sorted(registry.excluded_numbers),
             "metrics": {"cache": {"scope": "reported_calls", "by_model": cache_models},
                         "context": {"calls": runtime.context_calls, "complete": bool(runtime.context_calls),
                                     "highest_usage_attempt_index": max(runtime.context_calls, key=lambda item: item["usage_ratio"])["attempt_index"] if runtime.context_calls else None}},
         }
+        if on_evidence is not None:
+            # Explicit in-process evaluation hook; never sent over SSE or persisted as message metadata.
+            on_evidence([{"citation": dict(entry), "content": registry.sources[entry["number"]]["content"]}
+                         for entry in registry.entries if entry["number"] not in registry.excluded_numbers])
         return AgentRunResult(ModelAnswer(final.answer, runtime.active_provider, runtime.active_model_name,
                                          dict(final_message.usage_metadata or {})), final.kind, citations, context.search_mode, metadata)

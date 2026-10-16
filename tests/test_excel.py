@@ -6,11 +6,13 @@ from unittest.mock import MagicMock, patch
 from urllib.parse import quote
 from uuid import uuid4
 from zipfile import ZipFile, ZIP_DEFLATED
+import json
 
 import pytest
 from openpyxl import Workbook
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from langchain_core.messages import AIMessage
 
 from app.api.schemas import KnowledgeCitation, V2MessageResponse
 from app.application.chat import ChatService
@@ -230,7 +232,9 @@ def test_bad_vector_provenance_rejected_and_old_search_has_no_new_field(settings
         assert error.value.code == "VECTOR_METADATA_INVALID"
 
 
-def test_upload_to_supervisor_to_persisted_citation(tmp_path, settings):
+@pytest.mark.parametrize("quality_enabled", [False, True])
+def test_upload_to_supervisor_to_persisted_citation(tmp_path, settings, quality_enabled):
+    settings = settings.model_copy(update={"knowledge_quality_enabled": quality_enabled})
     engine = create_engine("sqlite://")
     connection = engine.connect()
     connection.execute(text("ATTACH DATABASE ':memory:' AS rag"))
@@ -265,7 +269,12 @@ def test_upload_to_supervisor_to_persisted_citation(tmp_path, settings):
         assert document.parser_metadata["provider"] == "local"
         ingestion.process(user_id, document.id)
         assert ingestion.get(user_id, document.id).status == "ready"
-        models = Models(ScriptedModel(responses=[call("delegate_rag", task="查询功率"), call("search_knowledge", query="NX-020"), report(), final("额定功率 180W[1]")]))
+        intermediate = [call("search_knowledge", query="NX-020"), report()]
+        if quality_enabled:
+            intermediate = [AIMessage(content=json.dumps({"route": "retrieve", "queries": ["NX-020 功率"]})),
+                            AIMessage(content=json.dumps({"route": "answer", "relevance": "strong", "answerability": "sufficient",
+                                                         "ambiguity": "none", "supported_numbers": [1], "summary": "功率180W[1]"}))]
+        models = Models(ScriptedModel(responses=[call("delegate_rag", task="查询功率"), *intermediate, final("额定功率 180W[1]")]))
         workflow = SupervisorWorkflow(settings, RetrieverService(embeddings, vectors, 6), models, Web())
         sessions = SessionService(database)
         chat = ChatService(settings, database, sessions, workflow)
@@ -276,6 +285,10 @@ def test_upload_to_supervisor_to_persisted_citation(tmp_path, settings):
         _, history = sessions.get(user_id, conversation.id)
         persisted = V2MessageResponse.model_validate(history[-1])
         assert persisted.citations[0].excel_source.sheet_name == "产品参数"
+        assert persisted.run_metadata["knowledge_quality_enabled"] == quality_enabled
+        if quality_enabled:
+            assert persisted.run_metadata["knowledge_events"][0]["grades"][0]["supported_numbers"] == [1]
+            assert persisted.run_metadata["knowledge_searches"] == 1
         assert "answer_delta" in events
         with pytest.raises(AppError):
             ingestion.get(uuid4(), document.id)
