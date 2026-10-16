@@ -17,7 +17,7 @@
     "fact_coverage": [
       "covered"
     ],
-    "input_sha256": "07377a99ed9532e1c99748f81ecb8b48236063755282f1e43aa20a418d2a8c39"
+    "input_sha256": "3deb169e03b0dec6e3024d3c1da74a0084184b9c7157f07e9b016b24b05010bb"
   },
   {
     "id": "excel-wrong-row",
@@ -37,7 +37,7 @@
     "fact_coverage": [
       "covered"
     ],
-    "input_sha256": "eed11c9332be1d9d46b728e867844ce2d7140103658002f573fdf99b0bc85ab8"
+    "input_sha256": "8b250d60092a6ea45c2213b100053617199b45a7aeb1b826e474c2379a39359c"
   },
   {
     "id": "hallucinated-warranty",
@@ -63,7 +63,7 @@
       "covered",
       "incorrect"
     ],
-    "input_sha256": "526ed75bcb5627c2e309e3483f6ae42dc3b1d382d446ae4ac4b13fe8dea7ef36"
+    "input_sha256": "3c872f63f680c022b319e2dafb9120f7e18838d2e728fcc18dc598d72476d1d8"
   },
   {
     "id": "unknown-reference",
@@ -83,7 +83,7 @@
     "fact_coverage": [
       "covered"
     ],
-    "input_sha256": "52a577470d0fd78be9c766909a83c2cca50c925ab3a642841875c2cf209c24f8"
+    "input_sha256": "0f0fd016019c99b51acfb05244fba05f273c5c946161899197729feb333ec43d"
   },
   {
     "id": "mixed-sql-web",
@@ -143,7 +143,7 @@
     "fact_coverage": [
       "incorrect"
     ],
-    "input_sha256": "3e96db393667259cf1b61b9588a00c9e14064c103f63cc1f9c18b44e8d0aba58"
+    "input_sha256": "5ed380c53a1fb01540fd4eaf1351d83bc1a6abb023e4ccdb26766e83f91af583"
   },
   {
     "id": "smalltalk",

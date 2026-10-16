@@ -84,7 +84,7 @@ class SemanticReview(StrictModel):
 citation_adapter = TypeAdapter(V2Citation)
 CONFIG_KEYS = ("retrieval_top_k", "retrieval_parent_context", "retrieval_parent_group_size", "rerank_enabled",
                "rerank_model", "knowledge_quality_enabled", "embedding_model", "agent_max_model_calls",
-               "agent_max_tool_calls", "agent_max_knowledge_calls")
+               "agent_max_tool_calls", "agent_max_knowledge_calls", "document_versions_enabled")
 
 
 def digest(value) -> str:

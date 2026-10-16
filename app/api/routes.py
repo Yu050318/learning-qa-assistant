@@ -12,7 +12,7 @@ from app.api.dependencies import AuthDependency, ServiceDependency, UserDependen
 from app.api.schemas import (
     AuthResponse, CredentialsRequest, DocumentResponse, MemoryResponse, MemoryWrite, SessionCreate, SessionResponse, SessionRename, UserResponse,
     V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
-    CompactRequest, ContextEstimateRequest, DocumentPage,
+    CompactRequest, ContextEstimateRequest, DocumentPage, ActivateDocumentVersion,
 )
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput
@@ -139,6 +139,7 @@ def document_response(document, embedding_model: str) -> dict:
         "status": document.status, "chunk_count": document.chunk_count, "embedding_model": document.embedding_model,
         "error_message": document.error_message, "size_bytes": document.size_bytes,
         "can_query": reason is None, "unavailable_reason": reason,
+        "version_info": getattr(document, "version_info", None),
         "created_at": document.created_at, "updated_at": document.updated_at,
     }
 
@@ -167,6 +168,29 @@ def upload_document(services: ServiceDependency, user_id: UserDependency, file: 
 @v2_router.get("/documents/{document_id}", response_model=DocumentResponse, tags=["documents"])
 def get_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
     return document_response(services.ingestion.get(user_id, document_id), services.settings.embedding_model)
+
+
+@v2_router.get("/documents/{document_id}/versions", response_model=DocumentPage, tags=["documents"])
+def document_versions(document_id: UUID, services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50):
+    documents, total = services.ingestion.versions(user_id, document_id, offset, limit)
+    return {"items": [document_response(document, services.settings.embedding_model) for document in documents],
+            "total": total, "offset": offset, "limit": limit}
+
+
+@v2_router.post("/documents/{document_id}/versions", response_model=DocumentResponse, status_code=202, tags=["documents"])
+def upload_document_version(document_id: UUID, services: ServiceDependency, user_id: UserDependency, file: Annotated[UploadFile, File()]):
+    try:
+        document = services.ingestion.upload(user_id, file.filename or "", file.content_type, file.file, base_document_id=document_id)
+    finally:
+        file.file.close()
+    services.ingestion.schedule(user_id, document.id)
+    return document_response(document, services.settings.embedding_model)
+
+
+@v2_router.post("/documents/{document_id}/activate", response_model=DocumentResponse, tags=["documents"])
+def activate_document_version(document_id: UUID, payload: ActivateDocumentVersion, services: ServiceDependency, user_id: UserDependency):
+    document = services.ingestion.activate_version(user_id, document_id, payload.expected_current_document_id)
+    return document_response(document, services.settings.embedding_model)
 
 
 @v2_router.post("/documents/{document_id}/retry", response_model=DocumentResponse, status_code=202, tags=["documents"])
@@ -342,7 +366,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "ollama", "model_name": settings.ollama_model, "available": True, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

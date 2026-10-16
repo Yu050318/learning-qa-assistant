@@ -62,6 +62,25 @@ class DocumentRecord(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
 
+class DocumentSeries(Base):
+    __tablename__ = "document_series"
+    __table_args__ = (CheckConstraint("next_version >= 2"), Index("ix_document_series_user", "user_id"))
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id", ondelete="CASCADE"))
+    current_document_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.documents.id", ondelete="SET NULL"))
+    next_version: Mapped[int] = mapped_column(default=2)
+
+
+class DocumentVersion(Base):
+    __tablename__ = "document_versions"
+    __table_args__ = (UniqueConstraint("series_id", "version_number"), CheckConstraint("version_number >= 1"))
+
+    document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
+    series_id: Mapped[UUID] = mapped_column(ForeignKey("rag.document_series.id"))
+    version_number: Mapped[int]
+
+
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
     __table_args__ = (

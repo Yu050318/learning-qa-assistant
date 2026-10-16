@@ -58,6 +58,23 @@ class MemoryResponse(ORMResponse):
     updated_at: datetime
 
 
+class DocumentVersionSource(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    series_id: UUID
+    version_number: int = Field(ge=1)
+    content_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class DocumentVersionInfo(DocumentVersionSource):
+    current_document_id: UUID | None
+    is_current: bool
+
+
+class ActivateDocumentVersion(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    expected_current_document_id: UUID | None
+
+
 class DocumentResponse(ORMResponse):
     id: UUID
     original_name: str
@@ -68,6 +85,7 @@ class DocumentResponse(ORMResponse):
     error_message: str | None
     size_bytes: int | None = Field(default=None, ge=0)
     can_query: bool = False
+    version_info: DocumentVersionInfo | None = None
     unavailable_reason: Literal["DOCUMENT_NOT_READY", "EMBEDDING_MODEL_MISMATCH", "DOCUMENT_DELETING"] | None = None
     created_at: datetime
     updated_at: datetime
@@ -122,6 +140,7 @@ class KnowledgeCitation(Citation):
     type: Literal["knowledge"] = "knowledge"
     excel_source: ExcelSourceResponse | None = None
     rerank_score: float | None = Field(default=None, ge=0, le=1, allow_inf_nan=False)
+    document_version: DocumentVersionSource | None = None
 
 
 class WebCitation(BaseModel):

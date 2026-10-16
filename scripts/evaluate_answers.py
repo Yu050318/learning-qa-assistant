@@ -5,7 +5,7 @@ from contextlib import ExitStack
 import json
 from pathlib import Path
 from time import monotonic
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import TypeAdapter
@@ -57,6 +57,14 @@ def predict_live(case, services):
                              web_enabled=enabled, web_urls=tuple(request.web_urls), warnings=warnings,
                              deadline_monotonic=monotonic() + services.settings.agent_timeout)
         result = workflow.run(context, [], "", on_evidence=captured.extend)
+        if services.settings.document_versions_enabled:
+            ids = [UUID(citation["document_id"]) for citation in result.citations if citation["type"] == "knowledge"]
+            ids.extend(UUID(item["citation"]["document_id"]) for item in captured if item["citation"]["type"] == "knowledge")
+            with services.database.sessions() as database:
+                sources = Repository(database).version_sources(case.user_id, list(set(ids)))
+            for citation in [*result.citations, *(item["citation"] for item in captured)]:
+                if citation["type"] == "knowledge":
+                    citation["document_version"] = sources[citation["document_id"]]
         return Prediction(id=case.id, answer=result.answer.content, kind=result.kind, citations=result.citations,
                           evidence=captured, run_metadata=result.run_metadata, provider=result.answer.provider,
                           model=result.answer.model, config={key: getattr(services.settings, key) for key in CONFIG_KEYS})

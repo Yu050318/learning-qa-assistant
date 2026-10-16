@@ -135,7 +135,10 @@ class IngestionService:
         except (OSError, ValueError, KeyError, TypeError):
             return None
 
-    def upload(self, user_id: UUID, filename: str, content_type: str | None, stream: BinaryIO) -> DocumentRecord:
+    def upload(self, user_id: UUID, filename: str, content_type: str | None, stream: BinaryIO, *, base_document_id: UUID | None = None) -> DocumentRecord:
+        if base_document_id is not None:
+            self.require_versions()
+            self.get(user_id, base_document_id)  # Fail before writing bytes for an unauthorized base.
         name, extension = validate_upload(filename, content_type)
         use_mineru = extension in DOCUMENT_TYPES and extension != ".xlsx"
         if use_mineru and (not self.settings.mineru_enabled or not self.settings.mineru_api_token.get_secret_value()):
@@ -178,13 +181,19 @@ class IngestionService:
                 )
                 database.add(document)
                 try:
+                    database.flush()
+                    if self.settings.document_versions_enabled:
+                        repository.bind_document_version(user_id, document, base_document_id)
                     database.commit()
                 except IntegrityError:
                     database.rollback()
                     if repository.duplicate(user_id, digest.hexdigest()):
                         raise AppError("DUPLICATE_DOCUMENT", "相同内容的文档已存在", 409) from None
+                    if self.settings.document_versions_enabled:
+                        raise AppError("DOCUMENT_VERSION_CONFLICT", "版本创建冲突，请刷新后重试", 409) from None
                     raise
                 saved = True
+                self.annotate_versions(repository, user_id, [document])
                 return document
         finally:
             if not saved:
@@ -192,15 +201,46 @@ class IngestionService:
 
     def list(self, user_id: UUID, offset: int, limit: int):
         with self.database.sessions() as database:
-            return Repository(database).documents(user_id, offset, limit)
+            repository = Repository(database)
+            documents = repository.documents(user_id, offset, limit)
+            return self.annotate_versions(repository, user_id, documents)
 
     def search(self, user_id: UUID, query: str, status: str | None, offset: int, limit: int):
         with self.database.sessions() as database:
-            return Repository(database).search_documents(user_id, query, status, offset, limit)
+            repository = Repository(database)
+            documents, total = repository.search_documents(user_id, query, status, offset, limit)
+            return self.annotate_versions(repository, user_id, documents), total
 
     def get(self, user_id: UUID, document_id: UUID):
         with self.database.sessions() as database:
-            return Repository(database).document(user_id, document_id)
+            repository = Repository(database)
+            return self.annotate_versions(repository, user_id, [repository.document(user_id, document_id)])[0]
+
+    def require_versions(self):
+        if not self.settings.document_versions_enabled:
+            raise AppError("DOCUMENT_VERSIONS_DISABLED", "文档版本管理尚未启用", 503)
+
+    def annotate_versions(self, repository, user_id, documents):
+        if self.settings.document_versions_enabled:
+            versions = repository.version_info(user_id, documents)
+            for document in documents:
+                document.version_info = versions[document.id]
+        return documents
+
+    def versions(self, user_id: UUID, document_id: UUID, offset: int, limit: int):
+        self.require_versions()
+        with self.database.sessions() as database:
+            repository = Repository(database)
+            documents, total = repository.document_versions(user_id, document_id, offset, limit)
+            return self.annotate_versions(repository, user_id, documents), total
+
+    def activate_version(self, user_id: UUID, document_id: UUID, expected_current: UUID | None):
+        self.require_versions()
+        with self.exclusive(document_id), self.database.sessions() as database:
+            repository = Repository(database)
+            document = repository.activate_document_version(user_id, document_id, expected_current, self.settings.embedding_model)
+            database.commit()
+            return self.annotate_versions(repository, user_id, [document])[0]
 
     def retry(self, user_id: UUID, document_id: UUID):
         with self.exclusive(document_id):
@@ -217,6 +257,7 @@ class IngestionService:
                 document.embedding_model = self.settings.embedding_model
                 document.chunk_count = 0
                 database.commit()
+                self.annotate_versions(Repository(database), user_id, [document])
                 return document
 
     def process(self, user_id: UUID, document_id: UUID) -> None:
@@ -230,11 +271,17 @@ class IngestionService:
                     generation = int(metadata.get("generation", 0))
                     metadata["phase"] = "parsing" if metadata.get("provider") == "mineru" else "normalizing"
                     document.parser_metadata = metadata
-                    snapshot = (document.file_path, document.file_type, document.original_name, metadata)
+                    snapshot = (document.file_path, document.file_type, document.original_name, metadata, document.content_hash)
                     database.commit()
                 try:
                     self.vectors.delete_document(user_id, document_id)
                     path = self.file_path(snapshot[0])
+                    if self.settings.document_versions_enabled:
+                        # Verify immutable source bytes before parsing or using the normalized cache.
+                        with path.open("rb") as source:
+                            actual_hash = hashlib.file_digest(source, "sha256").hexdigest()
+                        if actual_hash != snapshot[4]:
+                            raise AppError("DOCUMENT_SOURCE_CHANGED", "原始文件与入库版本哈希不符，请上传新版本", 409)
                     if snapshot[3].get("provider") == "mineru":
                         if self.mineru is None:
                             raise AppError("MINERU_NOT_CONFIGURED", "MinerU 解析器尚未配置", 503)
@@ -321,6 +368,8 @@ class IngestionService:
         with self.exclusive(document_id), self.database.sessions() as database:
             repository = Repository(database)
             document = repository.document(user_id, document_id, lock=True)
+            if self.settings.document_versions_enabled:
+                repository.prepare_version_delete(user_id, document_id)
             document.status = "deleting"
             database.commit()
             document = repository.document(user_id, document_id, lock=True)
@@ -338,5 +387,7 @@ class IngestionService:
                 document.error_message = error.message if isinstance(error, AppError) else "删除失败，请重试 DELETE 请求"
                 database.commit()
                 raise
+            if self.settings.document_versions_enabled:
+                repository.finish_version_delete(document_id)
             database.delete(document)
             database.commit()

@@ -25,4 +25,5 @@ test('Excel citations display physical rows, legacy citations keep their locatio
   assert.equal(citationLocation({section:'正文'}),'正文')
   assert.equal(citationLocation({page_number:3}),'第 3 页')
   assert.equal(citationLocation({}),'')
+  assert.equal(citationLocation({document_version:{version_number:2},excel_source:{sheet_name:'参数',row_start:4,row_end:4}}),'v2 · 参数 · 第 4 行')
 })

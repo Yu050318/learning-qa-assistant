@@ -8,7 +8,7 @@ from sqlalchemy.schema import CreateSchema
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.infrastructure.persistence.models import Base
+from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion
 
 
 class Database:
@@ -50,6 +50,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if not self.settings.document_versions_enabled and table.name in {"document_series", "document_versions"}:
+                    continue
                 if not inspect(connection).has_table(table.name, schema="rag"):
                     raise AppError("DATABASE_NOT_INITIALIZED", "请运行 python -m app.bootstrap --postgres", 503)
                 connection.execute(select(table).limit(0))
@@ -58,6 +60,12 @@ class Database:
         with self.engine.begin() as connection:
             connection.execute(CreateSchema("rag", if_not_exists=True))
             Base.metadata.create_all(connection)
+
+    def initialize_document_versions(self) -> None:
+        with self.engine.begin() as connection:
+            if not inspect(connection).has_table("documents", schema="rag"):
+                raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
+            Base.metadata.create_all(connection, tables=[DocumentSeries.__table__, DocumentVersion.__table__])
 
     def close(self) -> None:
         if "engine" in self.__dict__:

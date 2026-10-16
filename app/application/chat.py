@@ -62,7 +62,8 @@ class ChatService:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True)
                 requested = list(payload.document_ids) if payload.document_ids is not None else None
-                ready_ids = [] if payload.search_mode in {"web", "sql"} else repository.ready_document_ids(user_id, requested, self.settings.embedding_model)
+                version_options = {"current_only": True} if self.settings.document_versions_enabled else {}
+                ready_ids = [] if payload.search_mode in {"web", "sql"} else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, **version_options)
                 history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
                     user_id, session_id
                 )[-self.settings.memory_recent_messages:]]
@@ -88,6 +89,11 @@ class ChatService:
                     current = repository.ready_document_ids(user_id, cited, self.settings.embedding_model)
                     if not set(current).issubset(set(ready_ids)):
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "回答期间引用文档已被删除或变更，请重新提问", 409)
+                    if self.settings.document_versions_enabled:
+                        versions = repository.version_sources(user_id, cited)
+                        for citation in result.citations:
+                            if citation["type"] == "knowledge":
+                                citation["document_version"] = versions[str(citation["document_id"])]
                 message = ChatMessage(
                     user_id=user_id, session_id=session_id, role="assistant", content=result.answer.content,
                     model_provider=result.answer.provider, model_name=result.answer.model,
@@ -129,13 +135,13 @@ class ChatService:
                 version = self._context_version(session, messages)
                 if payload.search_mode in {"knowledge", "auto"}:
                     requested = list(payload.document_ids) if payload.document_ids else None
-                    ready = repository.ready_document_ids(user_id, requested, self.settings.embedding_model)
+                    ready = repository.ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
         else:
             ready = []
             if payload.search_mode in {"knowledge", "auto"}:
                 with self.database.sessions() as database:
                     requested = list(payload.document_ids) if payload.document_ids else None
-                    ready = Repository(database).ready_document_ids(user_id, requested, self.settings.embedding_model)
+                    ready = Repository(database).ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
         has_evidence = bool(ready) or payload.search_mode in {"web", "auto"} and (self.settings.web_search_enabled or bool(payload.web_urls)) or payload.search_mode in {"sql", "auto"} and bool(self.settings.sql_allowed_tables)
         reserved = evidence_token_budget(budget) if has_evidence else 0
         estimated = count_tokens(
