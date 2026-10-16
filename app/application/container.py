@@ -10,6 +10,7 @@ from app.application.sessions import SessionService
 from app.application.runs import RunService
 from app.application.sharing import SharingService
 from app.application.model_center import ModelCenter
+from app.application.hierarchy import HierarchyService
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.embeddings.qwen import QwenEmbedding
@@ -36,9 +37,11 @@ class Services:
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
         self.model_center = ModelCenter(settings, self.database) if settings.model_center_enabled else None
         self.reranker = TextReranker(settings) if settings.rerank_enabled else None
+        self.hierarchy = HierarchyService(settings, self.database,
+                                          legacy_expander=self.vectors.expand_context if settings.retrieval_parent_context else None) if settings.hierarchy_enabled else None
         self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k,
                                           context_expander=self.vectors.expand_context if settings.retrieval_parent_context else None,
-                                          reranker=self.reranker)
+                                          reranker=self.reranker, hierarchy_expander=self.hierarchy.expand if self.hierarchy else None)
         self.memories = MemoryService(settings, self.database, self.embeddings, self.vectors)
         self.web_search = TavilySearch(settings)
         self.web_reader = ScraplingWebReader(settings)

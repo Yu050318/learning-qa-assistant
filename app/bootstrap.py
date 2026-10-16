@@ -15,12 +15,13 @@ def main() -> int:
     parser.add_argument("--chat-runs", action="store_true", help="显式添加问答 Run/Event 表")
     parser.add_argument("--sharing", action="store_true", help="显式添加组织与知识库共享表")
     parser.add_argument("--model-center", action="store_true", help="显式添加模型配置和调用记录表并从服务端配置初始化")
+    parser.add_argument("--hierarchy", action="store_true", help="显式添加三级分块节点表；不重建原有文档或向量")
     parser.add_argument("--milvus", action="store_true")
     parser.add_argument("--document-versions", action="store_true", help="显式为已有平台库添加文档版本表，不更改或删除原文档")
     parser.add_argument("--excel-provenance", action="store_true", help="显式为已有集合添加可空的 Excel JSON 来源字段（Milvus 2.6+）")
     options = parser.parse_args()
-    if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs, options.chat_runs, options.sharing, options.model_center)):
-        parser.error("请指定 --postgres、--milvus、--excel-provenance、--document-versions、--ingestion-jobs、--chat-runs、--sharing 或 --model-center")
+    if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs, options.chat_runs, options.sharing, options.model_center, options.hierarchy)):
+        parser.error("请指定 --postgres、--milvus、--excel-provenance、--document-versions、--ingestion-jobs、--chat-runs、--sharing、--model-center 或 --hierarchy")
     configure_logging()
     settings = get_settings()
     database = Database(settings)
@@ -41,6 +42,9 @@ def main() -> int:
             database.initialize_model_center()
             ModelCenter(settings, database).initialize()
             print("PostgreSQL: model center initialized without overwriting existing configuration")
+        if options.hierarchy:
+            database.initialize_hierarchy()
+            print("PostgreSQL: additive hierarchy table ready; existing vectors unchanged")
         if options.milvus:
             MilvusVectorStore(settings).initialize()
             print("Milvus: configured collection initialized")

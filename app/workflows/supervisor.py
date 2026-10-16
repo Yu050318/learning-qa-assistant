@@ -120,6 +120,9 @@ class SupervisorWorkflow:
                 raise AppError("AGENT_LIMIT_EXCEEDED", "知识库检索超过限制", 502)
             counters["knowledge_searches"] += 1
             options = {}
+            if getattr(self.retriever, "hierarchy_expander", None):
+                options["context_token_budget"] = min(registry.token_budget - registry.used_tokens,
+                                                      registry.token_budget // 3 - registry.context_tokens)
             if context.knowledge_base_ids:
                 if self.sharing is None:
                     raise AppError("SHARING_DISABLED", "共享知识库尚未配置", 503)
@@ -400,6 +403,7 @@ class SupervisorWorkflow:
             "usage_by_model": runtime.usage_by_model, "tool_events": tool_events,
             "parent_context_count": len(registry.contexts), "warnings": sorted(set(context.warnings) | registry.warnings),
             "rerank_events": registry.rerank_events,
+            "hierarchy_events": registry.hierarchy_events,
             "knowledge_quality_enabled": settings.knowledge_quality_enabled,
             "knowledge_events": knowledge_events, "knowledge_rewrites": counters["knowledge_rewrites"],
             "excluded_source_numbers": sorted(registry.excluded_numbers),

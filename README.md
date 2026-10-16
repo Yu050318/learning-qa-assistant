@@ -25,7 +25,7 @@
 
 ## 父子上下文检索
 
-知识库问答默认先检索小块，再补充同一文档、页/章节/Sheet 内的相邻分组作为无编号理解上下文；引用仍只绑定实际命中的片段，Excel 行号不会被父块扩大。父块读取失败或超过预算时保留叶子并记录警告。复用既有索引，无需重建文档或新增 schema；可通过 `RETRIEVAL_PARENT_CONTEXT=false` 关闭。当前是两层实现，尚无三级自动合并，详见 [第三阶段说明](docs/parent-context-retrieval.md)。
+知识库问答默认先检索小块，再补充同一文档、页/章节/Sheet 内的相邻分组作为无编号理解上下文；引用仍只绑定实际命中的片段，Excel 行号不会被父块扩大。默认两层路径复用既有索引，无需重建文档或新增 schema；可通过 `RETRIEVAL_PARENT_CONTEXT=false` 关闭，详见 [第三阶段说明](docs/parent-context-retrieval.md)。第十二阶段可显式启用下面的三级分块与自动合并。
 
 ## 可选 Rerank 精排
 
@@ -46,6 +46,8 @@
 第十阶段提供[组织与共享知识库](docs/organization-sharing.md)：组织所有者/管理员管理成员与 viewer/editor 授权，成员可发布自己的就绪文档；聊天可显式选择共享库，检索按真实文档归属分组，保存答案前复核权限。原始文件管理仍归所有者，不复制索引。先显式执行 `python -m app.bootstrap --sharing`，再设置 `SHARING_ENABLED=true`；默认关闭，新增五张关系表。
 
 第十一阶段加入[模型中心](docs/model-center.md)：复用 DeepSeek/Ollama 适配器，提供受管理员控制的版本化配置、目录检测和个人/全局调用统计；每轮冻结配置，失败、降级及未知用量分别记账。先显式执行 `python -m app.bootstrap --model-center`，再设置 `MODEL_CENTER_ENABLED=true` 与已确认账号的 `MODEL_ADMIN_USERNAMES`。连接地址和密钥继续仅由服务端管理。
+
+第十二阶段提供[三级分块与自动合并](docs/hierarchical-retrieval.md)：新文本递归生成根块、父块和叶子，仅叶子入 Milvus，结构与父级正文存 PostgreSQL；根据本轮叶子命中比例和证据预算补充父级上下文，引用仍只来自真实命中的叶子。先显式执行 `python -m app.bootstrap --hierarchy`，再设置 `HIERARCHY_ENABLED=true` 并同步重启 API/Worker。旧文档可逐个显式补建，保留原叶子 ID 和向量；不自动重切或清库。
 
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。

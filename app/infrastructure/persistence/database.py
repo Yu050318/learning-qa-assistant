@@ -13,6 +13,7 @@ from app.core.errors import AppError
 from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion, IngestionJob, ChatRun, ChatRunEvent
 from app.infrastructure.persistence.models import Organization, OrganizationMember, KnowledgeBase, KnowledgeGrant, KnowledgeDocument
 from app.infrastructure.persistence.models import ModelConfiguration, ModelCall
+from app.infrastructure.persistence.models import HierarchyNode
 
 
 class Database:
@@ -54,6 +55,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name == "hierarchy_nodes" and not self.settings.hierarchy_enabled:
+                    continue
                 if table.name in {"model_configuration", "model_calls"} and not self.settings.model_center_enabled:
                     continue
                 if table.name in {"organizations", "organization_members", "knowledge_bases", "knowledge_grants", "knowledge_documents"} and not self.settings.sharing_enabled:
@@ -111,6 +114,12 @@ class Database:
             if not inspect(connection).has_table("chat_messages", schema="rag"):
                 raise AppError("DATABASE_NOT_INITIALIZED", "请先初始化平台 PostgreSQL schema", 503)
             Base.metadata.create_all(connection, tables=[ModelConfiguration.__table__, ModelCall.__table__])
+
+    def initialize_hierarchy(self):
+        with self.engine.begin() as connection:
+            if not inspect(connection).has_table("documents", schema="rag"):
+                raise AppError("DATABASE_NOT_INITIALIZED", "请先初始化平台 PostgreSQL schema", 503)
+            Base.metadata.create_all(connection, tables=[HierarchyNode.__table__])
 
     @contextmanager
     def resource_lock(self, namespace, resource_id):

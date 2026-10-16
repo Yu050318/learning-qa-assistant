@@ -49,6 +49,7 @@ class EvidenceRegistry:
         self.context_tokens = 0
         self.warnings: set[str] = set()
         self.rerank_events: list[dict] = []
+        self.hierarchy_events: list[dict] = []
         self.excluded_numbers: set[int] = set()
         self.keys: dict[tuple[str, str], int] = {}
         self.used_tokens = 0
@@ -95,6 +96,8 @@ class EvidenceRegistry:
             self.rerank_events.append(asdict(trace))
         sources, existing, truncated = [], [], False
         for hit in hits:
+            if hit.hierarchy_trace and hit.hierarchy_trace not in self.hierarchy_events:
+                self.hierarchy_events.append(dict(hit.hierarchy_trace))
             citation = {
                 "type": "knowledge", "document_id": hit.chunk.document_id, "chunk_id": hit.chunk.chunk_id,
                 "source_name": hit.chunk.source_name, "page_number": hit.chunk.page_number,

@@ -4,18 +4,20 @@ from collections import defaultdict
 from time import monotonic
 
 from app.core.errors import AppError
+from app.application.evidence import count_tokens
 from app.domain.contracts import EmbeddingProvider, SearchHit, VectorStore
 
 
 class RetrieverService:
-    def __init__(self, embeddings: EmbeddingProvider, vectors: VectorStore, top_k: int, *, context_expander=None, reranker=None):
+    def __init__(self, embeddings: EmbeddingProvider, vectors: VectorStore, top_k: int, *, context_expander=None, reranker=None, hierarchy_expander=None):
         self.embeddings = embeddings
         self.vectors = vectors
         self.top_k = top_k
         self.context_expander = context_expander
         self.reranker = reranker
+        self.hierarchy_expander = hierarchy_expander
 
-    def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID], *, deadline=None, document_owners=None) -> list[SearchHit]:
+    def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID], *, deadline=None, document_owners=None, context_token_budget=None) -> list[SearchHit]:
         owners = document_owners or {did: user_id for did in document_ids}
         if set(owners) != set(document_ids):
             raise AppError("VECTOR_SCOPE_MISMATCH", "检索范围与文档归属不一致", 503)
@@ -51,7 +53,7 @@ class RetrieverService:
             unique = self.reranker.rerank(query, unique[:self.top_k * 2], self.top_k, deadline=deadline)
         else:
             unique = unique[:self.top_k]
-        if self.context_expander is None or not unique:
+        if (self.context_expander is None and self.hierarchy_expander is None) or not unique:
             return unique
         try:
             expanded_by_id = {}
@@ -59,13 +61,17 @@ class RetrieverService:
                 selected = [hit for hit in unique if hit.chunk.user_id == str(owner)]
                 if selected:
                     check_deadline()
-                    batch = self.context_expander(owner, ids, selected)
+                    batch = (self.hierarchy_expander(owner, ids, selected, deadline=deadline, token_budget=context_token_budget)
+                             if self.hierarchy_expander else self.context_expander(owner, ids, selected))
+                    if context_token_budget is not None:
+                        context_token_budget = max(0, context_token_budget - sum(
+                            count_tokens(parent.content) for parent in {h.parent_context.context_id: h.parent_context for h in batch if h.parent_context}.values()))
                     if len(batch) != len(selected) or any(before.chunk != after.chunk for before, after in zip(selected, batch)):
                         raise AppError("VECTOR_SCOPE_MISMATCH", "父块扩展改变了文档归属", 503)
                     expanded_by_id.update({hit.chunk.chunk_id: hit for hit in batch})
             expanded = [expanded_by_id[hit.chunk.chunk_id] for hit in unique]
         except AppError as error:
-            if error.code not in {"MILVUS_UNAVAILABLE", "PARENT_CONTEXT_TIMEOUT"}:
+            if error.code not in {"MILVUS_UNAVAILABLE", "PARENT_CONTEXT_TIMEOUT", "HIERARCHY_UNAVAILABLE", "HIERARCHY_TIMEOUT"}:
                 raise
             return [replace(hit, context_warning=error.code) for hit in unique]
         # Expansion can enrich, but cannot reorder, replace or add retrieved evidence.

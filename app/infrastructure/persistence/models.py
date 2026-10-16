@@ -125,6 +125,28 @@ class KnowledgeDocument(Base):
     document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
 
 
+class HierarchyNode(Base):
+    __tablename__ = "hierarchy_nodes"
+    __table_args__ = (
+        UniqueConstraint("node_id", "document_id", "user_id"),
+        UniqueConstraint("document_id", "leaf_index"),
+        ForeignKeyConstraint(["parent_id", "document_id", "user_id"], ["rag.hierarchy_nodes.node_id", "rag.hierarchy_nodes.document_id", "rag.hierarchy_nodes.user_id"], ondelete="CASCADE"),
+        CheckConstraint("(level = 1 AND parent_id IS NULL) OR (level IN (2,3) AND parent_id IS NOT NULL)"),
+        CheckConstraint("(level = 3 AND leaf_index IS NOT NULL) OR (level IN (1,2) AND leaf_index IS NULL)"),
+        Index("ix_hierarchy_document_parent", "document_id", "parent_id"),
+    )
+    node_id: Mapped[UUID] = mapped_column(primary_key=True)
+    document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    parent_id: Mapped[UUID | None]
+    level: Mapped[int]
+    leaf_index: Mapped[int | None]
+    text: Mapped[str] = mapped_column(Text)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    node_metadata: Mapped[dict] = mapped_column(JSON().with_variant(JSONB,"postgresql"))
+
+
 class DocumentSeries(Base):
     __tablename__ = "document_series"
     __table_args__ = (CheckConstraint("next_version >= 2"), Index("ix_document_series_user", "user_id"))

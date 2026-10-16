@@ -77,6 +77,37 @@ class ParentContext:
 
 
 @dataclass(frozen=True)
+class HierarchyContext:
+    node_id: str
+    level: int
+    text: str
+    children: tuple[Chunk, ...]
+
+    def __post_init__(self):
+        UUID(self.node_id)
+        if self.level not in {1, 2} or not 2 <= len(self.children) <= 64 or not 1 <= len(self.text) <= 48000:
+            raise ValueError("Invalid hierarchy context")
+        first = self.children[0]
+        positions = [c.chunk_index for c in self.children]
+        if any(type(i) is not int or i < 0 for i in positions) or positions != sorted(set(positions)):
+            raise ValueError("Invalid hierarchy positions")
+        if (len({child.chunk_id for child in self.children}) != len(self.children)
+                or any(ParentContext.boundary(child) != ParentContext.boundary(first) or child.content not in self.text for child in self.children)):
+            raise ValueError("Hierarchy crosses a source boundary")
+
+    @property
+    def content(self):
+        return self.text
+
+    @property
+    def context_id(self):
+        return self.node_id
+
+    def contains(self, leaf):
+        return leaf in self.children
+
+
+@dataclass(frozen=True)
 class RerankTrace:
     status: Literal["applied", "fallback"]
     model: str
@@ -92,10 +123,11 @@ class RerankTrace:
 class SearchHit:
     chunk: Chunk
     score: float
-    parent_context: ParentContext | None = None
+    parent_context: ParentContext | HierarchyContext | None = None
     context_warning: str | None = None
     rerank_score: float | None = None
     rerank_trace: RerankTrace | None = None
+    hierarchy_trace: dict | None = None
 
 
 @dataclass(frozen=True)

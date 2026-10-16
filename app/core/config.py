@@ -76,6 +76,8 @@ class Settings(BaseSettings):
     chat_runs_enabled: bool = False
     sharing_enabled: bool = False
     model_center_enabled: bool = False
+    hierarchy_enabled: bool = False
+    hierarchy_merge_threshold: float = Field(default=.6, ge=.5, le=1)
     model_admin_usernames: list[str] = Field(default_factory=list)
     enabled_model_providers: list[Literal["deepseek", "ollama"]] = Field(default_factory=lambda: ["deepseek", "ollama"])
     chat_run_workers: int = Field(default=4, ge=1, le=16)

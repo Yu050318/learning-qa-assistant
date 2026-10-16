@@ -209,12 +209,42 @@ class MilvusVectorStore:
             self._validate(client)
             client.delete(self.collection, filter=user_filter(user_id, [document_id]), timeout=self.settings.milvus_timeout)
 
-    def expand_context(self, user_id: UUID, document_ids: list[UUID], hits: list[SearchHit]) -> list[SearchHit]:
+    def read_document_chunks(self, user_id: UUID, document_id: UUID, expected_count: int) -> list[Chunk]:
+        """Explicit hierarchy backfill reads source leaves without writing vectors."""
+        if not 1 <= expected_count <= self.settings.max_document_chunks:
+            raise AppError("HIERARCHY_STALE", "文档切片数量无效", 409)
+        deadline = monotonic() + self.settings.milvus_timeout
+        leaves = []
+        with self.connection() as client:
+            fields = self._validate(client)
+            output = [name for name in Chunk.__dataclass_fields__ if name != "excel_source"] + (["excel_source"] if "excel_source" in fields else [])
+            for start in range(0, expected_count, 500):
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    raise AppError("HIERARCHY_TIMEOUT", "补建读取切片超时", 504)
+                end = min(start + 500, expected_count)
+                rows = client.query(self.collection, filter=f"{user_filter(user_id, [document_id])} and chunk_index >= {start} and chunk_index < {end}",
+                                    output_fields=output, limit=end - start + 1, consistency_level="Strong", timeout=remaining)
+                batch = [decode_chunk(row) for row in rows]
+                if (any(c.user_id != str(user_id) or c.document_id != str(document_id) for c in batch)
+                        or sorted(c.chunk_index for c in batch) != list(range(start, end))):
+                    raise AppError("HIERARCHY_SCOPE_MISMATCH", "补建切片来源、数量或序号不符", 503)
+                leaves.extend(sorted(batch, key=lambda c: c.chunk_index))
+            remaining = deadline - monotonic()
+            if remaining <= 0:
+                raise AppError("HIERARCHY_TIMEOUT", "补建读取切片超时", 504)
+            overflow = client.query(self.collection, filter=f"{user_filter(user_id, [document_id])} and (chunk_index < 0 or chunk_index >= {expected_count})",
+                                    output_fields=["chunk_id"], limit=1, consistency_level="Strong", timeout=remaining)
+            if overflow or len({c.chunk_id for c in leaves}) != expected_count:
+                raise AppError("HIERARCHY_STALE", "原有向量切片总数与文档记录不符", 409)
+        return leaves
+
+    def expand_context(self, user_id: UUID, document_ids: list[UUID], hits: list[SearchHit], *, deadline=None) -> list[SearchHit]:
         """Read bounded neighboring leaves; parents are derived, never separately indexed."""
         if not hits:
             return []
         group_size = self.settings.retrieval_parent_group_size
-        deadline = monotonic() + self.settings.milvus_timeout
+        deadline = min(deadline, monotonic() + self.settings.milvus_timeout) if deadline is not None else monotonic() + self.settings.milvus_timeout
         allowed = {str(document_id) for document_id in document_ids}
         groups = {}
         expanded = []

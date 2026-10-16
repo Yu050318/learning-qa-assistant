@@ -14,6 +14,8 @@ from langchain_core.documents import Document
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.application.ingestion_jobs import IngestionQueue
+from app.application.hierarchy import publish_tree
+from app.infrastructure.loaders.hierarchy import HierarchyBuilder
 from app.domain.contracts import EmbeddingProvider, VectorStore
 from app.infrastructure.loaders.local import LocalDocumentLoader, validate_document_container, validate_upload
 from app.infrastructure.loaders.mineru import DOCUMENT_TYPES, MinerUParser
@@ -306,7 +308,7 @@ class IngestionService:
                     self.vectors.delete_document(user_id, document_id)
                     guard()
                     path = self.file_path(snapshot[0])
-                    if self.settings.document_versions_enabled or self.queue:
+                    if self.settings.document_versions_enabled or self.queue or self.settings.hierarchy_enabled:
                         # Verify immutable source bytes before parsing or using the normalized cache.
                         with path.open("rb") as source:
                             actual_hash = hashlib.file_digest(source, "sha256").hexdigest()
@@ -328,7 +330,8 @@ class IngestionService:
                     else:
                         loaded = self.loader.load(path, snapshot[1])
                     self._set_phase(user_id, document_id, generation, "embedding", len(loaded), guard=guard)
-                    chunks = self.loader.chunks(loaded, user_id, document_id, snapshot[2])
+                    tree = HierarchyBuilder(self.settings).build(loaded, user_id, document_id, snapshot[2]) if self.settings.hierarchy_enabled else None
+                    chunks = tree.leaves if tree else self.loader.chunks(loaded, user_id, document_id, snapshot[2])
                     if not chunks:
                         raise AppError("EMPTY_DOCUMENT", "文档没有可入库的文本")
                     for offset in range(0, len(chunks), self.settings.embedding_batch_size):
@@ -348,6 +351,8 @@ class IngestionService:
                         document.status = "ready"
                         document.chunk_count = len(chunks)
                         document.error_message = None
+                        if tree:
+                            publish_tree(database, document, tree)
                         guard()
                         database.commit()
                 except Exception as error:
