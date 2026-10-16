@@ -79,8 +79,8 @@ $env:SHARING_TEST_DATABASE_URL='postgresql+psycopg://TEST_ROLE:TEST_PASSWORD@loc
 .venv/Scripts/python.exe -m pytest tests/integration/test_sharing.py -q
 ```
 
-该用例验证最终事务持有 ACL 快照时，另一个连接撤销会因锁超时被拒绝；最终事务结束后撤销生效。当前尚未执行真实 PostgreSQL 集成、真实向量服务或浏览器多账号验收，留待最终联合验收记录；没有升级现有真实数据库或调用收费模型。关闭 `SHARING_ENABLED` 并重启 API 可隐藏共享入口并拒绝共享查询，保留已有五张表、源资料和历史回答。
+该用例验证最终事务持有 ACL 快照时，另一个连接撤销会因锁超时被拒绝；最终事务结束后撤销生效。已在临时 PostgreSQL 18 容器通过，与版本、Worker、Run/Event 和只读 SQL 共 8 项真实 PostgreSQL 测试一同完成，见[验证记录](validation/postgresql-stage10.md)。真实向量服务和浏览器多账号验收仍待最终联合验收；没有升级现有数据库或调用收费模型。关闭 `SHARING_ENABLED` 并重启 API 可隐藏共享入口并拒绝共享查询，保留已有五张表、源资料和历史回答。
 
 下一阶段为模型中心，随后补齐完整三级分块及真实环境联合验收。
 
-2026-10-16 验证记录：全量后端 **297 passed、13 skipped、38 subtests passed**；随后补充旧 Run 请求指纹兼容及共享 Run 组合后，问答/共享专项 **25 passed**。前端 vue-tsc/Vite 构建和 **8 项 Node 测试**通过，`uv lock --check`、diff 空白检查通过；26 个变更源码/文档文件未命中当前配置的长密钥值。第九阶段 `9fc2f1f` 已推送 GitHub main。真实升级、并发锁集成与浏览器多账号验收尚未执行。
+2026-10-16 验证记录：全量后端 **297 passed、13 skipped、38 subtests passed**；随后补充旧 Run 请求指纹兼容及共享 Run 组合后，问答/共享专项 **25 passed**。前端 vue-tsc/Vite 构建和 **8 项 Node 测试**通过，`uv lock --check`、diff 空白检查通过；26 个变更源码/文档文件未命中当前配置的长密钥值。第九阶段 `9fc2f1f` 已推送 GitHub main。后续预验收已通过独立 PostgreSQL 的 8 项集成测试；真实平台库升级、真实向量联调和浏览器多账号验收未执行。
