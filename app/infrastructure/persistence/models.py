@@ -83,6 +83,48 @@ class IngestionJob(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
 
+class Organization(Base):
+    __tablename__ = "organizations"
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    name: Mapped[str] = mapped_column(String(100))
+    owner_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+
+
+class OrganizationMember(Base):
+    __tablename__ = "organization_members"
+    __table_args__ = (CheckConstraint("role IN ('owner', 'admin', 'member')"),)
+    organization_id: Mapped[UUID] = mapped_column(ForeignKey("rag.organizations.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"), primary_key=True)
+    role: Mapped[str] = mapped_column(String(12))
+
+
+class KnowledgeBase(Base):
+    __tablename__ = "knowledge_bases"
+    __table_args__ = (UniqueConstraint("organization_id", "id"),)
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    organization_id: Mapped[UUID] = mapped_column(ForeignKey("rag.organizations.id", ondelete="CASCADE"))
+    name: Mapped[str] = mapped_column(String(100))
+
+
+class KnowledgeGrant(Base):
+    __tablename__ = "knowledge_grants"
+    __table_args__ = (
+        ForeignKeyConstraint(["organization_id", "user_id"], ["rag.organization_members.organization_id", "rag.organization_members.user_id"], ondelete="CASCADE"),
+        ForeignKeyConstraint(["organization_id", "knowledge_base_id"], ["rag.knowledge_bases.organization_id", "rag.knowledge_bases.id"], ondelete="CASCADE"),
+        CheckConstraint("role IN ('viewer', 'editor')"),
+    )
+    knowledge_base_id: Mapped[UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(primary_key=True)
+    organization_id: Mapped[UUID]
+    role: Mapped[str] = mapped_column(String(12))
+
+
+class KnowledgeDocument(Base):
+    __tablename__ = "knowledge_documents"
+    knowledge_base_id: Mapped[UUID] = mapped_column(ForeignKey("rag.knowledge_bases.id", ondelete="CASCADE"), primary_key=True)
+    document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
+
+
 class DocumentSeries(Base):
     __tablename__ = "document_series"
     __table_args__ = (CheckConstraint("next_version >= 2"), Index("ix_document_series_user", "user_id"))

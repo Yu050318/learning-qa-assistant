@@ -136,6 +136,7 @@ class AgentChatInput:
     web_query: str | None = None
     model_provider: str | None = None
     web_urls: tuple[str, ...] = ()
+    knowledge_base_ids: tuple[UUID, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -163,6 +164,8 @@ class RunContext:
     source_message_id: UUID | None = None
     started_at_utc: datetime | None = None
     deadline_monotonic: float = field(default_factory=lambda: monotonic() + 120)
+    knowledge_base_ids: tuple[UUID, ...] = ()
+    document_owners: tuple[tuple[UUID, UUID], ...] = ()
 
 
 class EmbeddingProvider(Protocol):

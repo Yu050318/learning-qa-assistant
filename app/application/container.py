@@ -8,6 +8,7 @@ from app.application.memories import MemoryService
 from app.application.retriever import RetrieverService
 from app.application.sessions import SessionService
 from app.application.runs import RunService
+from app.application.sharing import SharingService
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.embeddings.qwen import QwenEmbedding
@@ -41,9 +42,10 @@ class Services:
         self.web_reader = ScraplingWebReader(settings)
         self.mineru = MinerUParser(settings)
         self.sql = ReadOnlySQL(settings)
+        self.sharing = SharingService(settings, self.database)
         self.agent_workflow = SupervisorWorkflow(
             settings, self.retriever, self.models, self.web_search, self.memories,
-            web_reader=self.web_reader, sql=self.sql,
+            web_reader=self.web_reader, sql=self.sql, sharing=self.sharing,
         )
         self.ingestion = IngestionService(settings, self.database, LocalDocumentLoader(settings), self.mineru, self.embeddings, self.vectors)
         self.sessions = SessionService(self.database)

@@ -11,6 +11,7 @@ from sqlalchemy.schema import CreateSchema
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion, IngestionJob, ChatRun, ChatRunEvent
+from app.infrastructure.persistence.models import Organization, OrganizationMember, KnowledgeBase, KnowledgeGrant, KnowledgeDocument
 
 
 class Database:
@@ -52,6 +53,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name in {"organizations", "organization_members", "knowledge_bases", "knowledge_grants", "knowledge_documents"} and not self.settings.sharing_enabled:
+                    continue
                 if table.name in {"chat_runs", "chat_run_events"} and not self.settings.chat_runs_enabled:
                     continue
                 if table.name == "ingestion_jobs" and self.settings.ingestion_mode != "durable":
@@ -93,6 +96,12 @@ class Database:
             if not inspect(connection).has_table("chat_messages", schema="rag"):
                 raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
             Base.metadata.create_all(connection, tables=[ChatRun.__table__, ChatRunEvent.__table__])
+
+    def initialize_sharing(self):
+        with self.engine.begin() as connection:
+            if not inspect(connection).has_table("documents", schema="rag"):
+                raise AppError("DATABASE_NOT_INITIALIZED", "请先初始化平台 PostgreSQL schema", 503)
+            Base.metadata.create_all(connection, tables=[Organization.__table__, OrganizationMember.__table__, KnowledgeBase.__table__, KnowledgeGrant.__table__, KnowledgeDocument.__table__])
 
     @contextmanager
     def resource_lock(self, namespace, resource_id):

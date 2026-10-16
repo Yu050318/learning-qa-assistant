@@ -57,7 +57,10 @@ class RunStore:
             run.state = "interrupted"
 
     def create(self, user_id, session_id, payload, request_id, client_key):
-        fingerprint = hashlib.sha256(json.dumps({"session_id": str(session_id), "input": asdict(payload)}, sort_keys=True, default=str).encode()).hexdigest()
+        inputs = asdict(payload)
+        if not inputs.get("knowledge_base_ids"):
+            inputs.pop("knowledge_base_ids", None)  # Preserve phase-nine keys across this additive request field.
+        fingerprint = hashlib.sha256(json.dumps({"session_id": str(session_id), "input": inputs}, sort_keys=True, default=str).encode()).hexdigest()
         try:
             with self.database.sessions() as session:
                 Repository(session).chat_session(user_id, session_id, lock=True)

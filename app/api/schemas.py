@@ -10,7 +10,7 @@ from app.infrastructure.search.tavily import safe_public_url
 def validate_web_scope(payload):
     if payload.search_mode in {"knowledge", "sql"} and (payload.web_query is not None or payload.web_urls):
         raise ValueError("当前模式不接受联网参数")
-    if payload.search_mode in {"web", "sql"} and payload.document_ids is not None:
+    if payload.search_mode in {"web", "sql"} and (payload.document_ids is not None or getattr(payload, "knowledge_base_ids", [])):
         raise ValueError("当前模式不接受知识库文档")
     if any(len(url) > 2048 or not safe_public_url(url) for url in payload.web_urls):
         raise ValueError("网页地址无效或不是公网 HTTP(S) 地址")
@@ -185,6 +185,7 @@ class V2ChatRequest(BaseModel):
     model_provider: Literal["deepseek", "ollama"] | None = None
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
+    knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
     web_query: str | None = Field(default=None, min_length=1, max_length=400)
     web_urls: list[str] = Field(default_factory=list, max_length=3)
 
@@ -238,6 +239,7 @@ class ContextEstimateRequest(BaseModel):
     model_provider: Literal["deepseek", "ollama"] | None = None
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
+    knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
     web_query: str | None = Field(default=None, min_length=1, max_length=400)
     web_urls: list[str] = Field(default_factory=list, max_length=3)
 

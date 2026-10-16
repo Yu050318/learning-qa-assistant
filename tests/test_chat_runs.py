@@ -118,6 +118,20 @@ def test_repeated_post_reuses_run_and_conflicting_payload_is_rejected(system):
     assert start(system, key).id == run.id and system.workflow.calls == 1
 
 
+def test_empty_shared_scope_preserves_pre_sharing_idempotency_fingerprint(system):
+    import hashlib
+    import json
+    from dataclasses import asdict
+    key = uuid4()
+    payload = AgentChatInput("你好", "sql")
+    legacy = asdict(payload);legacy.pop("knowledge_base_ids")
+    expected = hashlib.sha256(json.dumps({"session_id":str(system.sid),"input":legacy},sort_keys=True,default=str).encode()).hexdigest()
+    run = start(system, key)
+    with system.database.sessions() as session:
+        assert session.get(ChatRun, run.id).fingerprint == expected
+    assert start(system,key).id == run.id
+
+
 def test_expiry_is_persisted_and_late_completion_cannot_save_assistant(system):
     run = start(system)
     assert system.workflow.entered.wait(3)

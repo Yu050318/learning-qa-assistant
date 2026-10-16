@@ -246,7 +246,7 @@ def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services
     data = AgentChatInput(
         question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
-        web_query=payload.web_query, web_urls=tuple(payload.web_urls),
+        web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
     message = services.chat.answer_v2(user_id, session_id, data, request.state.request_id)
     return V2ChatResponse(
@@ -261,7 +261,7 @@ def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, s
     data = AgentChatInput(
         question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
-        web_query=payload.web_query, web_urls=tuple(payload.web_urls),
+        web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
     if services.settings.chat_runs_enabled:
         client_key = request.headers.get("Idempotency-Key")
@@ -369,7 +369,7 @@ def start_run(session_id: UUID, payload: V2ChatRequest, request: Request, servic
     require_runs(services)
     data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
                           document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
-                          web_query=payload.web_query, web_urls=tuple(payload.web_urls))
+                          web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids))
     return run_response(services.runs.start(user_id, session_id, data, request.state.request_id, client_key))
 
 
@@ -456,7 +456,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "ollama", "model_name": settings.ollama_model, "available": True, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

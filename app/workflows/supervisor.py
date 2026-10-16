@@ -37,9 +37,10 @@ _FATAL = {"AGENT_TIMEOUT", "AGENT_LIMIT_EXCEEDED", "CONTEXT_LIMIT_EXCEEDED"}
 
 
 class SupervisorWorkflow:
-    def __init__(self, settings, retriever, models, web_search, memories=None, web_reader=None, sql=None):
+    def __init__(self, settings, retriever, models, web_search, memories=None, web_reader=None, sql=None, sharing=None):
         self.settings, self.retriever, self.models = settings, retriever, models
         self.web_search, self.memories, self.web_reader, self.sql = web_search, memories, web_reader, sql
+        self.sharing = sharing
 
     def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None):
         started = perf_counter()
@@ -118,8 +119,16 @@ class SupervisorWorkflow:
             if counters["knowledge_searches"] >= settings.agent_max_knowledge_calls:
                 raise AppError("AGENT_LIMIT_EXCEEDED", "知识库检索超过限制", 502)
             counters["knowledge_searches"] += 1
+            options = {}
+            if context.knowledge_base_ids:
+                if self.sharing is None:
+                    raise AppError("SHARING_DISABLED", "共享知识库尚未配置", 503)
+                owners = self.sharing.scope(context.user_id, context.knowledge_base_ids, list(context.allowed_document_ids))
+                if owners != dict(context.document_owners):
+                    raise AppError("DOCUMENT_SCOPE_CHANGED", "共享权限或文档归属已变化", 409)
+                options["document_owners"] = owners
             hits = self.retriever.retrieve(context.user_id, query, list(context.allowed_document_ids),
-                                           deadline=context.deadline_monotonic) if context.allowed_document_ids else []
+                                           deadline=context.deadline_monotonic, **options) if context.allowed_document_ids else []
             return registry.add_knowledge(hits)
 
         @instrument

@@ -43,6 +43,8 @@
 
 第九阶段加入 [Run/Event 持久化与 SSE 断线重放](docs/durable-chat-runs.md)：先保存事件，再发送给客户端；相同请求标识复用原 Run，重连按游标续传，最终助手消息与 done 事件原子提交。显式运行 `python -m app.bootstrap --chat-runs` 后设置 `CHAT_RUNS_ENABLED=true` 并重启 API。进程中断会标记错误，不自动重跑模型或工具；默认关闭，保留原流式入口。
 
+第十阶段提供[组织与共享知识库](docs/organization-sharing.md)：组织所有者/管理员管理成员与 viewer/editor 授权，成员可发布自己的就绪文档；聊天可显式选择共享库，检索按真实文档归属分组，保存答案前复核权限。原始文件管理仍归所有者，不复制索引。先显式执行 `python -m app.bootstrap --sharing`，再设置 `SHARING_ENABLED=true`；默认关闭，新增五张关系表。
+
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。

@@ -1,4 +1,8 @@
 import {readEventStream,type StreamCursor} from './sse'
+export type Organization = {id:string;name:string;role:'owner'|'admin'|'member'}
+export type KnowledgeBase = {id:string;name:string;organization_id:string;role:'admin'|'editor'|'viewer'}
+export type Member = {user_id:string;username:string;role:string}
+export type SharedDocument = {id:string;original_name:string;status:string;can_query:boolean}
 export type User = { id:string; username:string }
 export type DocumentVersionInfo = {series_id:string;version_number:number;current_document_id:string|null;is_current:boolean;content_hash:string}
 export type AuthResult = { access_token:string; token_type:'bearer'; expires_in:number; user:User }
@@ -61,6 +65,11 @@ async function durableChat(id:string,body:any,onEvent:(event:string,data:StreamE
   return resumeRun(run.run_id,onEvent)
 }
 export const api={
+  organizations:()=>request<Organization[]>('/api/v2/organizations'),createOrganization:(name:string)=>request<Organization>('/api/v2/organizations',{method:'POST',body:JSON.stringify({name})}),deleteOrganization:(id:string)=>request<void>(`/api/v2/organizations/${id}`,{method:'DELETE'}),
+  members:(id:string)=>request<Member[]>(`/api/v2/organizations/${id}/members`),setMember:(id:string,username:string,role:string)=>request<void>(`/api/v2/organizations/${id}/members`,{method:'PUT',body:JSON.stringify({username,role})}),removeMember:(id:string,user:string)=>request<void>(`/api/v2/organizations/${id}/members/${user}`,{method:'DELETE'}),
+  knowledgeBases:()=>request<KnowledgeBase[]>('/api/v2/knowledge-bases'),createBase:(id:string,name:string)=>request<KnowledgeBase>(`/api/v2/organizations/${id}/knowledge-bases`,{method:'POST',body:JSON.stringify({name})}),deleteBase:(id:string)=>request<void>(`/api/v2/knowledge-bases/${id}`,{method:'DELETE'}),
+  grants:(id:string)=>request<Member[]>(`/api/v2/knowledge-bases/${id}/grants`),setGrant:(id:string,user:string,role:string)=>request<void>(`/api/v2/knowledge-bases/${id}/grants/${user}`,{method:'PUT',body:JSON.stringify({role})}),revokeGrant:(id:string,user:string)=>request<void>(`/api/v2/knowledge-bases/${id}/grants/${user}`,{method:'DELETE'}),
+  sharedDocuments:(id:string)=>request<SharedDocument[]>(`/api/v2/knowledge-bases/${id}/documents`),publish:(id:string,document:string)=>request<void>(`/api/v2/knowledge-bases/${id}/documents/${document}`,{method:'PUT',body:'{}'}),unpublish:(id:string,document:string)=>request<void>(`/api/v2/knowledge-bases/${id}/documents/${document}`,{method:'DELETE'}),
   resumeRun,runs:(id:string)=>request<RunInfo[]>(`/api/v2/sessions/${id}/runs`),
 
   versions:(id:string,offset=0)=>request<{items:DocumentItem[];total:number}>(`/api/v2/documents/${id}/versions?offset=${offset}&limit=20`),

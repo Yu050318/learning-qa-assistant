@@ -6,6 +6,7 @@ from time import monotonic, perf_counter
 from uuid import UUID
 
 from app.application.sessions import SessionService
+from app.application.sharing import SharingService
 from app.application.evidence import count_tokens, evidence_token_budget
 from app.core.config import Settings
 from app.core.errors import AppError
@@ -48,6 +49,7 @@ class ChatService:
         self.database = database
         self.sessions = sessions
         self.agent_workflow = agent_workflow
+        self.sharing = SharingService(settings, database)
 
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
         if self.agent_workflow is None:
@@ -65,7 +67,13 @@ class ChatService:
                     run_binding[0].guard(database, user_id, run_binding[1])
                 requested = list(payload.document_ids) if payload.document_ids is not None else None
                 version_options = {"current_only": True} if self.settings.document_versions_enabled else {}
-                ready_ids = [] if payload.search_mode in {"web", "sql"} else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, **version_options)
+                ready_ids = [] if payload.search_mode in {"web", "sql"} or payload.knowledge_base_ids else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, **version_options)
+                owners = {}
+                if payload.knowledge_base_ids:
+                    if payload.search_mode in {"web", "sql"}:
+                        raise AppError("INVALID_SCOPE", "此模式不接受共享知识库", 422)
+                    owners = self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=database)
+                    ready_ids = list(owners)
                 history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
                     user_id, session_id
                 )[-self.settings.memory_recent_messages:]]
@@ -81,6 +89,7 @@ class ChatService:
                 web_urls=payload.web_urls,
                 source_message_id=user_message.id,
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
+                knowledge_base_ids=payload.knowledge_base_ids, document_owners=tuple(owners.items()),
             )
             result = self.agent_workflow.run(context, history, summary, on_answer_event=on_answer_event)
             if run_binding:
@@ -90,13 +99,24 @@ class ChatService:
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True)
+                if payload.knowledge_base_ids:
+                    final_owners = self.sharing.scope(user_id, payload.knowledge_base_ids, ready_ids, session=database, lock=True)
+                    if final_owners != owners:
+                        raise AppError("DOCUMENT_SCOPE_CHANGED", "共享权限或文档范围已变化", 409)
                 cited = [UUID(citation["document_id"]) for citation in result.citations if citation["type"] == "knowledge"]
                 if cited:
-                    current = repository.ready_document_ids(user_id, cited, self.settings.embedding_model)
+                    if payload.knowledge_base_ids:
+                        if not set(cited).issubset(final_owners):
+                            raise AppError("DOCUMENT_SCOPE_CHANGED", "共享文档授权已变化", 409)
+                        current = cited
+                    else:
+                        current = repository.ready_document_ids(user_id, cited, self.settings.embedding_model)
                     if not set(current).issubset(set(ready_ids)):
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "回答期间引用文档已被删除或变更，请重新提问", 409)
                     if self.settings.document_versions_enabled:
-                        versions = repository.version_sources(user_id, cited)
+                        versions = {}
+                        for owner in {owners.get(did, user_id) for did in cited}:
+                            versions.update(repository.version_sources(owner, [did for did in cited if owners.get(did, user_id) == owner]))
                         for citation in result.citations:
                             if citation["type"] == "knowledge":
                                 citation["document_version"] = versions[str(citation["document_id"])]
@@ -144,13 +164,13 @@ class ChatService:
                 version = self._context_version(session, messages)
                 if payload.search_mode in {"knowledge", "auto"}:
                     requested = list(payload.document_ids) if payload.document_ids else None
-                    ready = repository.ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
+                    ready = list(self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=database)) if payload.knowledge_base_ids else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
         else:
             ready = []
             if payload.search_mode in {"knowledge", "auto"}:
                 with self.database.sessions() as database:
                     requested = list(payload.document_ids) if payload.document_ids else None
-                    ready = Repository(database).ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
+                    ready = list(self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=database)) if payload.knowledge_base_ids else Repository(database).ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
         has_evidence = bool(ready) or payload.search_mode in {"web", "auto"} and (self.settings.web_search_enabled or bool(payload.web_urls)) or payload.search_mode in {"sql", "auto"} and bool(self.settings.sql_allowed_tables)
         reserved = evidence_token_budget(budget) if has_evidence else 0
         estimated = count_tokens(
