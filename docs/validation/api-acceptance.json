@@ -1,0 +1,1182 @@
+{
+  "scope": "Isolated real PostgreSQL/Milvus, real embeddings/DeepSeek/Scrapling, actual API/Worker/Run flow",
+  "checks": [
+    {
+      "name": "durable-worker-ready-acceptance-manual.md",
+      "passed": true,
+      "chunk_count": 3
+    },
+    {
+      "name": "private-document-isolation",
+      "passed": true
+    },
+    {
+      "name": "run-idempotency",
+      "passed": true
+    },
+    {
+      "name": "run-success",
+      "passed": true
+    },
+    {
+      "name": "sql-rag-web-combined-sources",
+      "passed": true,
+      "citation_types": [
+        "knowledge",
+        "sql",
+        "web"
+      ]
+    },
+    {
+      "name": "combined-answer-facts",
+      "passed": true
+    },
+    {
+      "name": "hierarchy-used",
+      "passed": true,
+      "events": [
+        {
+          "status": "merged",
+          "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+          "chunk_id": "10073061-c6f3-58df-bede-0866c0bddcbb",
+          "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+          "selected_level": 1,
+          "total_children": 1,
+          "matched_children": 1
+        },
+        {
+          "status": "merged",
+          "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+          "chunk_id": "d518d309-e3df-5193-ae82-4b1fb7737ab7",
+          "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+          "selected_level": 1,
+          "total_children": 1,
+          "matched_children": 1
+        },
+        {
+          "status": "merged",
+          "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+          "chunk_id": "a33ccda4-1ac6-53c6-8e90-b8625db3c350",
+          "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+          "selected_level": 1,
+          "total_children": 1,
+          "matched_children": 1
+        }
+      ]
+    },
+    {
+      "name": "three-agents-delegated",
+      "passed": true,
+      "delegations": {
+        "rag": 1,
+        "sql": 1,
+        "web": 1
+      }
+    },
+    {
+      "name": "durable-sse-replay",
+      "passed": true
+    },
+    {
+      "name": "session-and-run-isolation",
+      "passed": true
+    },
+    {
+      "name": "durable-worker-ready-acceptance-manual-v2.md",
+      "passed": true,
+      "chunk_count": 3
+    },
+    {
+      "name": "new-version-not-auto-activated",
+      "passed": true
+    },
+    {
+      "name": "explicit-version-activation",
+      "passed": true
+    },
+    {
+      "name": "shared-document-visible",
+      "passed": true
+    },
+    {
+      "name": "run-idempotency",
+      "passed": true
+    },
+    {
+      "name": "run-success",
+      "passed": true
+    },
+    {
+      "name": "shared-version-grounding",
+      "passed": true
+    },
+    {
+      "name": "revoked-sharing-blocked-before-model",
+      "passed": true
+    },
+    {
+      "name": "real-model-call-accounting",
+      "passed": true,
+      "metrics": {
+        "scope": "current_user",
+        "days": 30,
+        "models": [
+          {
+            "provider": "deepseek",
+            "model_name": "deepseek-chat",
+            "attempts": 9,
+            "succeeded": 9,
+            "failed": 0,
+            "incomplete": 0,
+            "fallback_attempts": 0,
+            "reported_calls": 9,
+            "reported_input_tokens": 8538,
+            "reported_output_tokens": 668,
+            "reported_total_tokens": 9206,
+            "average_ms": 1061.1,
+            "total_tokens": 9206
+          }
+        ],
+        "includes": [
+          "agent",
+          "compaction"
+        ],
+        "missing_usage_is_zero": false
+      }
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "323e470b-2d32-48dc-b8f9-cfe2c54f285a",
+      "state": "succeeded",
+      "elapsed_seconds": 13.84,
+      "sequences": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "answer": {
+        "id": "f5df61e1-827d-4b99-a6cd-862803726fcc",
+        "role": "assistant",
+        "content": "三项任务均已完成：\n\n1）业务库统计：sales.orders 中 product = 'NX-DEMO' 的 amount 合计为 300 [1]（表结构为 id/product/amount，查询未截断）。\n\n2）私有文档：根据知识库文档 acceptance-manual.md，产品 NX-DEMO 的保修期为 12 个月，且质保仅适用于正常使用 [2]。\n\n3）指定网页：直接读取 https://example.com 得到的页面标题为「Example Domain」[5]；页面内容说明该域名用于文档示例、无需许可即可使用，并非实际服务，不建议依赖其进行测试和监控 [5]。\n\n说明：第 3 项仅按你的要求读取了该 URL，未进行任何联网搜索。",
+        "model_provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "citations": [
+          {
+            "type": "sql",
+            "number": 1,
+            "source_name": "合成销售测试库",
+            "query": "SELECT SUM(amount) AS total_amount FROM ONLY sales.orders WHERE product = 'NX-DEMO'",
+            "columns": [
+              "total_amount"
+            ],
+            "row_count": 1,
+            "truncated": false,
+            "excerpt": "total_amount：300"
+          },
+          {
+            "number": 2,
+            "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+            "chunk_id": "10073061-c6f3-58df-bede-0866c0bddcbb",
+            "source_name": "acceptance-manual.md",
+            "page_number": null,
+            "section": "NX-DEMO 产品说明",
+            "excerpt": "# NX-DEMO 产品说明\n\nNX-DEMO 的保修期为12个月。质保仅适用于正常使用。",
+            "score": 0.032786883413791656,
+            "type": "knowledge",
+            "excel_source": null,
+            "rerank_score": null,
+            "document_version": {
+              "series_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "version_number": 1,
+              "content_hash": "736230cef2b8b90f925e2bd9de1496efe120f50cc5d25dd32c4af8b05ecb11c6"
+            }
+          },
+          {
+            "type": "web",
+            "number": 5,
+            "title": "Example Domain",
+            "url": "https://example.com/",
+            "excerpt": "This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.",
+            "retrieved_at": "2026-10-16T13:30:48.948490Z",
+            "published_at": null,
+            "score": null
+          }
+        ],
+        "token_usage": {
+          "input_tokens": 3118,
+          "total_tokens": 3301,
+          "output_tokens": 183,
+          "input_token_details": {
+            "cache_read": 896
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "kind": "grounded",
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "complete": false,
+                  "hit_rate": null,
+                  "provider": "deepseek",
+                  "hit_tokens": null,
+                  "model_name": "deepseek-chat",
+                  "miss_tokens": null,
+                  "total_calls": 9,
+                  "reported_calls": 0
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.033167,
+                  "input_tokens": 796,
+                  "attempt_index": 1,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.019375,
+                  "input_tokens": 465,
+                  "attempt_index": 2,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.023708,
+                  "input_tokens": 569,
+                  "attempt_index": 3,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.031167,
+                  "input_tokens": 748,
+                  "attempt_index": 4,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.017958,
+                  "input_tokens": 431,
+                  "attempt_index": 5,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.054833,
+                  "input_tokens": 1316,
+                  "attempt_index": 6,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.020125,
+                  "input_tokens": 483,
+                  "attempt_index": 7,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.0255,
+                  "input_tokens": 612,
+                  "attempt_index": 8,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.129917,
+                  "input_tokens": 3118,
+                  "attempt_index": 9,
+                  "input_budget_tokens": 24000
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 9
+            }
+          },
+          "failures": [],
+          "warnings": [],
+          "web_reads": 1,
+          "elapsed_ms": 13340.7,
+          "delegations": {
+            "rag": 1,
+            "sql": 1,
+            "web": 1
+          },
+          "repair_used": false,
+          "search_mode": "auto",
+          "sql_queries": 1,
+          "tool_events": [
+            {
+              "name": "describe_sql_schema",
+              "status": "ok",
+              "elapsed_ms": 47.24,
+              "error_code": null,
+              "source_numbers": []
+            },
+            {
+              "name": "execute_sql",
+              "status": "ok",
+              "elapsed_ms": 25.21,
+              "error_code": null,
+              "source_numbers": [
+                1
+              ]
+            },
+            {
+              "name": "search_knowledge",
+              "status": "ok",
+              "warnings": [],
+              "elapsed_ms": 1997.86,
+              "error_code": null,
+              "source_numbers": [
+                2,
+                3,
+                4
+              ],
+              "parent_context_count": 1
+            },
+            {
+              "name": "read_web_page",
+              "status": "ok",
+              "elapsed_ms": 570.77,
+              "error_code": null,
+              "source_numbers": [
+                5
+              ]
+            }
+          ],
+          "agent_events": [
+            {
+              "agent": "sql",
+              "status": "ok",
+              "elapsed_ms": 2685.18,
+              "error_code": null
+            },
+            {
+              "agent": "rag",
+              "status": "ok",
+              "elapsed_ms": 3649.79,
+              "error_code": null
+            },
+            {
+              "agent": "web",
+              "status": "ok",
+              "elapsed_ms": 2608.98,
+              "error_code": null
+            }
+          ],
+          "web_attempts": 0,
+          "cited_sources": {
+            "sql": 1,
+            "web": 1,
+            "knowledge": 1
+          },
+          "fallback_used": false,
+          "rerank_events": [],
+          "tool_requests": 4,
+          "model_attempts": 9,
+          "schema_version": 3,
+          "tavily_credits": null,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "attempts": 9,
+              "complete": true,
+              "hit_tokens": 0,
+              "miss_tokens": 0,
+              "input_tokens": 8538,
+              "total_tokens": 9206,
+              "output_tokens": 668,
+              "reported_cache_calls": 0
+            }
+          },
+          "hierarchy_events": [
+            {
+              "status": "merged",
+              "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+              "chunk_id": "10073061-c6f3-58df-bede-0866c0bddcbb",
+              "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+              "chunk_id": "d518d309-e3df-5193-ae82-4b1fb7737ab7",
+              "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+              "chunk_id": "a33ccda4-1ac6-53c6-8e90-b8625db3c350",
+              "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            }
+          ],
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "knowledge_searches": 1,
+          "registered_sources": {
+            "sql": 1,
+            "web": 1,
+            "knowledge": 3
+          },
+          "parent_context_count": 1,
+          "excluded_source_numbers": [],
+          "knowledge_quality_enabled": false,
+          "model_configuration_revision": 1
+        },
+        "created_at": "2026-10-16T13:30:51.798189Z"
+      },
+      "terminal_event": {
+        "event": "done",
+        "answer": "三项任务均已完成：\n\n1）业务库统计：sales.orders 中 product = 'NX-DEMO' 的 amount 合计为 300 [1]（表结构为 id/product/amount，查询未截断）。\n\n2）私有文档：根据知识库文档 acceptance-manual.md，产品 NX-DEMO 的保修期为 12 个月，且质保仅适用于正常使用 [2]。\n\n3）指定网页：直接读取 https://example.com 得到的页面标题为「Example Domain」[5]；页面内容说明该域名用于文档示例、无需许可即可使用，并非实际服务，不建议依赖其进行测试和监控 [5]。\n\n说明：第 3 项仅按你的要求读取了该 URL，未进行任何联网搜索。",
+        "run_id": "323e470b-2d32-48dc-b8f9-cfe2c54f285a",
+        "sequence": 16,
+        "citations": [
+          {
+            "type": "sql",
+            "query": "SELECT SUM(amount) AS total_amount FROM ONLY sales.orders WHERE product = 'NX-DEMO'",
+            "number": 1,
+            "columns": [
+              "total_amount"
+            ],
+            "excerpt": "total_amount：300",
+            "row_count": 1,
+            "truncated": false,
+            "source_name": "合成销售测试库"
+          },
+          {
+            "type": "knowledge",
+            "score": 0.032786883413791656,
+            "number": 2,
+            "excerpt": "# NX-DEMO 产品说明\n\nNX-DEMO 的保修期为12个月。质保仅适用于正常使用。",
+            "section": "NX-DEMO 产品说明",
+            "chunk_id": "10073061-c6f3-58df-bede-0866c0bddcbb",
+            "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+            "page_number": null,
+            "source_name": "acceptance-manual.md",
+            "document_version": {
+              "series_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "content_hash": "736230cef2b8b90f925e2bd9de1496efe120f50cc5d25dd32c4af8b05ecb11c6",
+              "version_number": 1
+            }
+          },
+          {
+            "url": "https://example.com/",
+            "type": "web",
+            "score": null,
+            "title": "Example Domain",
+            "number": 5,
+            "excerpt": "This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.",
+            "published_at": null,
+            "retrieved_at": "2026-10-16T13:30:48.948490+00:00"
+          }
+        ],
+        "message_id": "f5df61e1-827d-4b99-a6cd-862803726fcc",
+        "model_name": "deepseek-chat",
+        "search_mode": "auto",
+        "token_usage": {
+          "input_tokens": 3118,
+          "total_tokens": 3301,
+          "output_tokens": 183,
+          "input_token_details": {
+            "cache_read": 896
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "kind": "grounded",
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "complete": false,
+                  "hit_rate": null,
+                  "provider": "deepseek",
+                  "hit_tokens": null,
+                  "model_name": "deepseek-chat",
+                  "miss_tokens": null,
+                  "total_calls": 9,
+                  "reported_calls": 0
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.033167,
+                  "input_tokens": 796,
+                  "attempt_index": 1,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.019375,
+                  "input_tokens": 465,
+                  "attempt_index": 2,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.023708,
+                  "input_tokens": 569,
+                  "attempt_index": 3,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.031167,
+                  "input_tokens": 748,
+                  "attempt_index": 4,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.017958,
+                  "input_tokens": 431,
+                  "attempt_index": 5,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.054833,
+                  "input_tokens": 1316,
+                  "attempt_index": 6,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.020125,
+                  "input_tokens": 483,
+                  "attempt_index": 7,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.0255,
+                  "input_tokens": 612,
+                  "attempt_index": 8,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.129917,
+                  "input_tokens": 3118,
+                  "attempt_index": 9,
+                  "input_budget_tokens": 24000
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 9
+            }
+          },
+          "failures": [],
+          "warnings": [],
+          "web_reads": 1,
+          "elapsed_ms": 13340.7,
+          "delegations": {
+            "rag": 1,
+            "sql": 1,
+            "web": 1
+          },
+          "repair_used": false,
+          "search_mode": "auto",
+          "sql_queries": 1,
+          "tool_events": [
+            {
+              "name": "describe_sql_schema",
+              "status": "ok",
+              "elapsed_ms": 47.24,
+              "error_code": null,
+              "source_numbers": []
+            },
+            {
+              "name": "execute_sql",
+              "status": "ok",
+              "elapsed_ms": 25.21,
+              "error_code": null,
+              "source_numbers": [
+                1
+              ]
+            },
+            {
+              "name": "search_knowledge",
+              "status": "ok",
+              "warnings": [],
+              "elapsed_ms": 1997.86,
+              "error_code": null,
+              "source_numbers": [
+                2,
+                3,
+                4
+              ],
+              "parent_context_count": 1
+            },
+            {
+              "name": "read_web_page",
+              "status": "ok",
+              "elapsed_ms": 570.77,
+              "error_code": null,
+              "source_numbers": [
+                5
+              ]
+            }
+          ],
+          "agent_events": [
+            {
+              "agent": "sql",
+              "status": "ok",
+              "elapsed_ms": 2685.18,
+              "error_code": null
+            },
+            {
+              "agent": "rag",
+              "status": "ok",
+              "elapsed_ms": 3649.79,
+              "error_code": null
+            },
+            {
+              "agent": "web",
+              "status": "ok",
+              "elapsed_ms": 2608.98,
+              "error_code": null
+            }
+          ],
+          "web_attempts": 0,
+          "cited_sources": {
+            "sql": 1,
+            "web": 1,
+            "knowledge": 1
+          },
+          "fallback_used": false,
+          "rerank_events": [],
+          "tool_requests": 4,
+          "model_attempts": 9,
+          "schema_version": 3,
+          "tavily_credits": null,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "attempts": 9,
+              "complete": true,
+              "hit_tokens": 0,
+              "miss_tokens": 0,
+              "input_tokens": 8538,
+              "total_tokens": 9206,
+              "output_tokens": 668,
+              "reported_cache_calls": 0
+            }
+          },
+          "hierarchy_events": [
+            {
+              "status": "merged",
+              "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+              "chunk_id": "10073061-c6f3-58df-bede-0866c0bddcbb",
+              "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+              "chunk_id": "d518d309-e3df-5193-ae82-4b1fb7737ab7",
+              "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "8facab2f-766f-5cd8-b288-3e8e8ede25b5",
+              "chunk_id": "a33ccda4-1ac6-53c6-8e90-b8625db3c350",
+              "document_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            }
+          ],
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "knowledge_searches": 1,
+          "registered_sources": {
+            "sql": 1,
+            "web": 1,
+            "knowledge": 3
+          },
+          "parent_context_count": 1,
+          "excluded_source_numbers": [],
+          "knowledge_quality_enabled": false,
+          "model_configuration_revision": 1
+        },
+        "model_provider": "deepseek"
+      }
+    },
+    {
+      "run_id": "a9ac01cb-c460-4fe9-9c46-e7a7c0b89c3b",
+      "state": "succeeded",
+      "elapsed_seconds": 6.48,
+      "sequences": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "answer": {
+        "id": "6fc1fd01-0b33-4017-8966-8da1bc68c315",
+        "role": "assistant",
+        "content": "NX-DEMO 的保修期为 24 个月。依据：共享库文档 acceptance-manual-v2.md 中「NX-DEMO 的保修期为24个月。质保仅适用于正常使用。」[1]",
+        "model_provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "citations": [
+          {
+            "number": 1,
+            "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+            "chunk_id": "ae0c74d2-10bf-5642-a568-0267b0a2d628",
+            "source_name": "acceptance-manual-v2.md",
+            "page_number": null,
+            "section": "NX-DEMO 产品说明",
+            "excerpt": "# NX-DEMO 产品说明\n\nNX-DEMO 的保修期为24个月。质保仅适用于正常使用。",
+            "score": 0.032786883413791656,
+            "type": "knowledge",
+            "excel_source": null,
+            "rerank_score": null,
+            "document_version": {
+              "series_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "version_number": 2,
+              "content_hash": "15c4dd29385b401d2d7023ecddbfbfc96928ff7dea2f9f7c83f8bbbba10cabc4"
+            }
+          }
+        ],
+        "token_usage": {
+          "input_tokens": 1594,
+          "total_tokens": 1651,
+          "output_tokens": 57,
+          "input_token_details": {
+            "cache_read": 640
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "kind": "grounded",
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "complete": false,
+                  "hit_rate": null,
+                  "provider": "deepseek",
+                  "hit_tokens": null,
+                  "model_name": "deepseek-chat",
+                  "miss_tokens": null,
+                  "total_calls": 4,
+                  "reported_calls": 0
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.026417,
+                  "input_tokens": 634,
+                  "attempt_index": 1,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.018167,
+                  "input_tokens": 436,
+                  "attempt_index": 2,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.055542,
+                  "input_tokens": 1333,
+                  "attempt_index": 3,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.066417,
+                  "input_tokens": 1594,
+                  "attempt_index": 4,
+                  "input_budget_tokens": 24000
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 4
+            }
+          },
+          "failures": [],
+          "warnings": [],
+          "web_reads": 0,
+          "elapsed_ms": 5982.43,
+          "delegations": {
+            "rag": 1
+          },
+          "repair_used": false,
+          "search_mode": "knowledge",
+          "sql_queries": 0,
+          "tool_events": [
+            {
+              "name": "search_knowledge",
+              "status": "ok",
+              "warnings": [],
+              "elapsed_ms": 1780.03,
+              "error_code": null,
+              "source_numbers": [
+                1,
+                2,
+                3
+              ],
+              "parent_context_count": 1
+            }
+          ],
+          "agent_events": [
+            {
+              "agent": "rag",
+              "status": "ok",
+              "elapsed_ms": 3817.42,
+              "error_code": null
+            }
+          ],
+          "web_attempts": 0,
+          "cited_sources": {
+            "knowledge": 1
+          },
+          "fallback_used": false,
+          "rerank_events": [],
+          "tool_requests": 1,
+          "model_attempts": 4,
+          "schema_version": 3,
+          "tavily_credits": null,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "attempts": 4,
+              "complete": true,
+              "hit_tokens": 0,
+              "miss_tokens": 0,
+              "input_tokens": 3997,
+              "total_tokens": 4217,
+              "output_tokens": 220,
+              "reported_cache_calls": 0
+            }
+          },
+          "hierarchy_events": [
+            {
+              "status": "merged",
+              "node_id": "a6750b9a-5d30-5477-8d6f-997abd9e3016",
+              "chunk_id": "ae0c74d2-10bf-5642-a568-0267b0a2d628",
+              "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "a6750b9a-5d30-5477-8d6f-997abd9e3016",
+              "chunk_id": "f15a0858-10bb-519e-8b0b-7a63c5844302",
+              "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "a6750b9a-5d30-5477-8d6f-997abd9e3016",
+              "chunk_id": "c780a07c-19c9-5d56-9ea7-323ed95ce30c",
+              "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            }
+          ],
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "knowledge_searches": 1,
+          "registered_sources": {
+            "knowledge": 3
+          },
+          "parent_context_count": 1,
+          "excluded_source_numbers": [],
+          "knowledge_quality_enabled": false,
+          "model_configuration_revision": 1
+        },
+        "created_at": "2026-10-16T13:31:01.281601Z"
+      },
+      "terminal_event": {
+        "event": "done",
+        "answer": "NX-DEMO 的保修期为 24 个月。依据：共享库文档 acceptance-manual-v2.md 中「NX-DEMO 的保修期为24个月。质保仅适用于正常使用。」[1]",
+        "run_id": "a9ac01cb-c460-4fe9-9c46-e7a7c0b89c3b",
+        "sequence": 10,
+        "citations": [
+          {
+            "type": "knowledge",
+            "score": 0.032786883413791656,
+            "number": 1,
+            "excerpt": "# NX-DEMO 产品说明\n\nNX-DEMO 的保修期为24个月。质保仅适用于正常使用。",
+            "section": "NX-DEMO 产品说明",
+            "chunk_id": "ae0c74d2-10bf-5642-a568-0267b0a2d628",
+            "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+            "page_number": null,
+            "source_name": "acceptance-manual-v2.md",
+            "document_version": {
+              "series_id": "715e450f-aa58-48f4-a27d-fbf51c5a3a59",
+              "content_hash": "15c4dd29385b401d2d7023ecddbfbfc96928ff7dea2f9f7c83f8bbbba10cabc4",
+              "version_number": 2
+            }
+          }
+        ],
+        "message_id": "6fc1fd01-0b33-4017-8966-8da1bc68c315",
+        "model_name": "deepseek-chat",
+        "search_mode": "knowledge",
+        "token_usage": {
+          "input_tokens": 1594,
+          "total_tokens": 1651,
+          "output_tokens": 57,
+          "input_token_details": {
+            "cache_read": 640
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "kind": "grounded",
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "complete": false,
+                  "hit_rate": null,
+                  "provider": "deepseek",
+                  "hit_tokens": null,
+                  "model_name": "deepseek-chat",
+                  "miss_tokens": null,
+                  "total_calls": 4,
+                  "reported_calls": 0
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.026417,
+                  "input_tokens": 634,
+                  "attempt_index": 1,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.018167,
+                  "input_tokens": 436,
+                  "attempt_index": 2,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.055542,
+                  "input_tokens": 1333,
+                  "attempt_index": 3,
+                  "input_budget_tokens": 24000
+                },
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "measurement": "reported",
+                  "usage_ratio": 0.066417,
+                  "input_tokens": 1594,
+                  "attempt_index": 4,
+                  "input_budget_tokens": 24000
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 4
+            }
+          },
+          "failures": [],
+          "warnings": [],
+          "web_reads": 0,
+          "elapsed_ms": 5982.43,
+          "delegations": {
+            "rag": 1
+          },
+          "repair_used": false,
+          "search_mode": "knowledge",
+          "sql_queries": 0,
+          "tool_events": [
+            {
+              "name": "search_knowledge",
+              "status": "ok",
+              "warnings": [],
+              "elapsed_ms": 1780.03,
+              "error_code": null,
+              "source_numbers": [
+                1,
+                2,
+                3
+              ],
+              "parent_context_count": 1
+            }
+          ],
+          "agent_events": [
+            {
+              "agent": "rag",
+              "status": "ok",
+              "elapsed_ms": 3817.42,
+              "error_code": null
+            }
+          ],
+          "web_attempts": 0,
+          "cited_sources": {
+            "knowledge": 1
+          },
+          "fallback_used": false,
+          "rerank_events": [],
+          "tool_requests": 1,
+          "model_attempts": 4,
+          "schema_version": 3,
+          "tavily_credits": null,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "attempts": 4,
+              "complete": true,
+              "hit_tokens": 0,
+              "miss_tokens": 0,
+              "input_tokens": 3997,
+              "total_tokens": 4217,
+              "output_tokens": 220,
+              "reported_cache_calls": 0
+            }
+          },
+          "hierarchy_events": [
+            {
+              "status": "merged",
+              "node_id": "a6750b9a-5d30-5477-8d6f-997abd9e3016",
+              "chunk_id": "ae0c74d2-10bf-5642-a568-0267b0a2d628",
+              "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "a6750b9a-5d30-5477-8d6f-997abd9e3016",
+              "chunk_id": "f15a0858-10bb-519e-8b0b-7a63c5844302",
+              "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            },
+            {
+              "status": "merged",
+              "node_id": "a6750b9a-5d30-5477-8d6f-997abd9e3016",
+              "chunk_id": "c780a07c-19c9-5d56-9ea7-323ed95ce30c",
+              "document_id": "01139d9f-a672-4530-9a54-84c4892ad6e8",
+              "selected_level": 1,
+              "total_children": 1,
+              "matched_children": 1
+            }
+          ],
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "knowledge_searches": 1,
+          "registered_sources": {
+            "knowledge": 3
+          },
+          "parent_context_count": 1,
+          "excluded_source_numbers": [],
+          "knowledge_quality_enabled": false,
+          "model_configuration_revision": 1
+        },
+        "model_provider": "deepseek"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "scope": "First real combined run before idempotency-lock fix",
+  "finding": "Immediate same-key POST retried during session-row lock returned RESOURCE_BUSY; original Run succeeded once",
+  "runs": [
+    {
+      "run_id": "7722ddb3-0e74-4d95-ab01-cbea3f822be0",
+      "session_id": "34ef7c6a-fd9c-4614-b3c8-bb4bacfb6752",
+      "state": "succeeded",
+      "sequence": 17,
+      "message_id": "9c60b797-6e36-4927-b734-51ac14df1444",
+      "expires_at": "2026-10-16T13:31:08.355729+00:00",
+      "events_url": "/api/v2/runs/7722ddb3-0e74-4d95-ab01-cbea3f822be0/events"
+    }
+  ],
+  "answer": "三项任务结果如下：\n\n1）业务库 sales.orders 中产品 NX-DEMO 的 amount 合计：SUM(amount) = 300 [1]。表结构为 id/product/amount，查询未截断 [1]。\n\n2）私有文档中 NX-DEMO 的保修期：12 个月，且质保仅适用于正常使用（来源：acceptance-manual.md）[2]。\n\n3）https://example.com 页面标题：Example Domain [5]。\n\n说明：第 2 项仅依据命中的编号小块 [2]；同文档中关于安装通风、断电维护的内容属于父块上下文，不作为该小块的证据。三项任务均成功，无失败或截断。",
+  "citation_types": [
+    "sql",
+    "knowledge",
+    "web"
+  ],
+  "delegations": {
+    "rag": 1,
+    "sql": 1,
+    "web": 1
+  },
+  "follow_up": "Fixed exact-key retry lookup before session row lock; integration regression and final API acceptance passed."
+}

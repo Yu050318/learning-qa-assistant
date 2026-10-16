@@ -49,6 +49,8 @@
 
 第十二阶段提供[三级分块与自动合并](docs/hierarchical-retrieval.md)：新文本递归生成根块、父块和叶子，仅叶子入 Milvus，结构与父级正文存 PostgreSQL；根据本轮叶子命中比例和证据预算补充父级上下文，引用仍只来自真实命中的叶子。先显式执行 `python -m app.bootstrap --hierarchy`，再设置 `HIERARCHY_ENABLED=true` 并同步重启 API/Worker。旧文档可逐个显式补建，保留原叶子 ID 和向量；不自动重切或清库。
 
+第十三阶段的[最终验收记录](docs/validation/final-acceptance.md)汇总真实存储、模型、SQL＋RAG＋Web 组合问答、Worker/版本/共享库/SSE 与浏览器上传问答的证据、演示步骤和边界，保留失败与降级记录。联调修复了同标识重试在会话行锁下被误拒绝的问题，并将 SQL 配置上限固定为 100 行。
+
 - **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
 - **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
 - **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。

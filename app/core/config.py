@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     sql_allowed_tables: list[str] = Field(default_factory=list)
     sql_source_name: str = Field(default="业务数据库", min_length=1, max_length=100)
     sql_timeout: float = Field(default=5, gt=0, le=30)
-    sql_max_rows: int = Field(default=100, ge=1, le=1000)
+    sql_max_rows: int = Field(default=100, ge=1, le=100)
     supervisor_max_delegations: int = Field(default=6, ge=1, le=6)
     supervisor_max_per_agent: int = Field(default=2, ge=1, le=2)
     agent_timeout: float = Field(default=120, gt=0)

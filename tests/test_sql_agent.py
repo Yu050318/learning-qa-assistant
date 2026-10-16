@@ -72,6 +72,8 @@ class SQLGuardTests(unittest.TestCase):
             adapter._configure(connection, 5)
 
     def test_query_bounds_rows_and_parameterless_percent_literals(self):
+        with self.assertRaises(ValueError):
+            Settings(_env_file=None, sql_max_rows=101)
         settings = Settings(_env_file=None, sql_allowed_tables=self.allowed, sql_max_rows=2)
         adapter = ReadOnlySQL(settings)
         engine, connection = MagicMock(), MagicMock()

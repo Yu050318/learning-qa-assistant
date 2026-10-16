@@ -1,0 +1,531 @@
+{
+  "scope": "Real DeepSeek single-mode routing, Tavily search tool, ambiguity clarification; independent synthetic sessions",
+  "results": [
+    {
+      "case": "sql-only",
+      "passed": true,
+      "elapsed_seconds": 6.69,
+      "status_code": 200,
+      "response": {
+        "message_id": "0e017d7c-59f7-4d39-8b8d-cf445966efd1",
+        "answer": "sales.orders 中 product = 'NX-DEMO' 的 amount 合计为 300 [1]。查询语句：SELECT SUM(amount) AS total_amount FROM ONLY sales.orders WHERE product = 'NX-DEMO'，结果未截断 [1]。",
+        "model_provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "search_mode": "sql",
+        "citations": [
+          {
+            "type": "sql",
+            "number": 1,
+            "source_name": "合成销售测试库",
+            "query": "SELECT SUM(amount) AS total_amount FROM ONLY sales.orders WHERE product = 'NX-DEMO'",
+            "columns": [
+              "total_amount"
+            ],
+            "row_count": 1,
+            "truncated": false,
+            "excerpt": "total_amount：300"
+          }
+        ],
+        "token_usage": {
+          "input_tokens": 902,
+          "output_tokens": 67,
+          "total_tokens": 969,
+          "input_token_details": {
+            "cache_read": 640
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "schema_version": 3,
+          "search_mode": "sql",
+          "kind": "grounded",
+          "tool_requests": 2,
+          "knowledge_searches": 0,
+          "web_attempts": 0,
+          "web_reads": 0,
+          "sql_queries": 1,
+          "delegations": {
+            "sql": 1
+          },
+          "agent_events": [
+            {
+              "agent": "sql",
+              "status": "ok",
+              "error_code": null,
+              "elapsed_ms": 2618.97
+            }
+          ],
+          "failures": [],
+          "model_attempts": 5,
+          "fallback_used": false,
+          "repair_used": false,
+          "registered_sources": {
+            "sql": 1
+          },
+          "cited_sources": {
+            "sql": 1
+          },
+          "elapsed_ms": 4766.53,
+          "tavily_credits": null,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "input_tokens": 3355,
+              "output_tokens": 290,
+              "total_tokens": 3645,
+              "attempts": 5,
+              "complete": true,
+              "hit_tokens": 1792,
+              "miss_tokens": 1563,
+              "reported_cache_calls": 5
+            }
+          },
+          "tool_events": [
+            {
+              "name": "describe_sql_schema",
+              "status": "ok",
+              "error_code": null,
+              "source_numbers": [],
+              "elapsed_ms": 17.56
+            },
+            {
+              "name": "execute_sql",
+              "status": "ok",
+              "error_code": null,
+              "source_numbers": [
+                1
+              ],
+              "elapsed_ms": 10.92
+            }
+          ],
+          "parent_context_count": 0,
+          "warnings": [],
+          "rerank_events": [],
+          "hierarchy_events": [],
+          "knowledge_quality_enabled": false,
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "excluded_source_numbers": [],
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "hit_tokens": 1792,
+                  "miss_tokens": 1563,
+                  "hit_rate": 0.534128,
+                  "reported_calls": 5,
+                  "total_calls": 5,
+                  "complete": true
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "attempt_index": 1,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 645,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.026875,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 2,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 471,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.019625,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 3,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 579,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.024125,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 4,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 758,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.031583,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 5,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 902,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.037583,
+                  "measurement": "reported"
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 5
+            }
+          },
+          "model_configuration_revision": 1
+        }
+      }
+    },
+    {
+      "case": "ambiguous-intent",
+      "passed": true,
+      "elapsed_seconds": 3.36,
+      "status_code": 200,
+      "response": {
+        "message_id": "2a01caa6-c7a3-4fb6-b977-c09375d13d6d",
+        "answer": "请补充一下具体信息：您想查的是哪类数据？例如：\n1. 业务数据库中的统计/筛选/汇总（如订单量、销售额、用户数等）——请说明指标、时间范围和筛选条件；\n2. 私有文档中的内容（如某份报告、合同、手册）——请说明文档名称或主题；\n3. 公开信息或某个网页链接——请提供具体问题或 URL。\n\n另外，如果涉及具体文件，请告知文件名。补充后我立即为您查询。",
+        "model_provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "search_mode": "auto",
+        "citations": [],
+        "token_usage": {
+          "input_tokens": 731,
+          "output_tokens": 126,
+          "total_tokens": 857,
+          "input_token_details": {
+            "cache_read": 512
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "schema_version": 3,
+          "search_mode": "auto",
+          "kind": "clarification",
+          "tool_requests": 0,
+          "knowledge_searches": 0,
+          "web_attempts": 0,
+          "web_reads": 0,
+          "sql_queries": 0,
+          "delegations": {},
+          "agent_events": [],
+          "failures": [],
+          "model_attempts": 1,
+          "fallback_used": false,
+          "repair_used": false,
+          "registered_sources": {},
+          "cited_sources": {},
+          "elapsed_ms": 1796.55,
+          "tavily_credits": null,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "input_tokens": 731,
+              "output_tokens": 126,
+              "total_tokens": 857,
+              "attempts": 1,
+              "complete": true,
+              "hit_tokens": 512,
+              "miss_tokens": 219,
+              "reported_cache_calls": 1
+            }
+          },
+          "tool_events": [],
+          "parent_context_count": 0,
+          "warnings": [],
+          "rerank_events": [],
+          "hierarchy_events": [],
+          "knowledge_quality_enabled": false,
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "excluded_source_numbers": [],
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "hit_tokens": 512,
+                  "miss_tokens": 219,
+                  "hit_rate": 0.70041,
+                  "reported_calls": 1,
+                  "total_calls": 1,
+                  "complete": true
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "attempt_index": 1,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 731,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.030458,
+                  "measurement": "reported"
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 1
+            }
+          },
+          "model_configuration_revision": 1
+        }
+      }
+    },
+    {
+      "case": "web-search",
+      "passed": false,
+      "elapsed_seconds": 16.91,
+      "status_code": 200,
+      "response": {
+        "message_id": "e9a3ba1f-dfd7-45d3-bf38-60655958156f",
+        "answer": "IANA 将 example.com、example.net、example.org 等域名保留用于文档说明和示例用途。根据 IANA 官方页面，这些域名依据 RFC 2606 和 RFC 6761 维护，可在文档中作为示例使用而无需事先与 IANA 协调，且不可注册或转让 [2]。RFC 2606 注册表进一步说明：EXAMPLE 推荐用于文档或示例，EXAMPLE.COM、EXAMPLE.NET、EXAMPLE.ORG 可用于示例 [3]。此外，这些域名被保证不会注册给任何人，因此在教程、代码示例和 DNS 测试中使用是安全的，不会与真实网站冲突 [1][5]。需要说明的是，本轮 Web Agent 返回了 INVALID_AGENT_OUTPUT 错误，read_web_page 工具也不可用，但已有上述编号来源可作为证据。",
+        "model_provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "search_mode": "web",
+        "citations": [
+          {
+            "type": "web",
+            "number": 1,
+            "title": "Facebook",
+            "url": "https://www.facebook.com/fb-answers/iana-example-reserved-domain-documentation",
+            "excerpt": "Log in\n\nLog in\n\nForgotten account?\n\n## Iana Example Reserved Domain Documentation\n\nSummarized by Meta AI\n\n48 people talking about this\n\nIANA reserves example domains like example.com, example.net, and example.org for documentation and testing so they won't conflict with real sites. The Internet Assigned Numbers Authority also manages IP address reservations and DNS root zone functions, with details published on iana.org.\n\nIANA reserved example domains for documentation [...] IANA sets aside spec",
+            "retrieved_at": "2026-10-16T13:37:09.471954Z",
+            "published_at": null,
+            "score": 0.9281033
+          },
+          {
+            "type": "web",
+            "number": 2,
+            "title": "IANA-managed Reserved Domains",
+            "url": "https://www.iana.org/domains/reserved",
+            "excerpt": "[![Homepage](/static/img/iana-logo-header.426b3ac01d35.svg)](/)\n\n* [Domains](/domains)\n* [Protocols](/protocols)\n* [Numbers](/numbers)\n* [About](/about)\n\nIANA-managed Reserved Domains\n=============================\n\nCertain domains are set aside, and nominally registered to “IANA”, for specific\npolicy or technical purposes.\n\nExample domains\n---------------\n\nAs described in [RFC 2606](/go/rfc2606) and [RFC 6761](/go/rfc6761),\na number of domains such as example.com and example.org\nare maintained f",
+            "retrieved_at": "2026-10-16T13:37:09.471954Z",
+            "published_at": null,
+            "score": 0.8619225
+          },
+          {
+            "type": "web",
+            "number": 3,
+            "title": "Reserved Domain Names",
+            "url": "https://www.ietf.org/archive/id/draft-jabley-reserved-domain-names-00.html",
+            "excerpt": "The IETF has identified particular domain names to have special considerations associated with their use. Examples of such domain names are \"LOCALHOST\" and \"EXAMPLE.ORG\" which are discussed in (#RFC2606), and \"LOCAL\" and \"254.169.IN-ADDR.ARPA\" which are described in (#I-D.cheshire-dnsext-multicastdns).\n\nThis document describes the creation of an IANA registry to catalogue such domain names and provides direction about how this registry should be maintained. [...] | Domain Name | Description | Re",
+            "retrieved_at": "2026-10-16T13:37:09.471954Z",
+            "published_at": null,
+            "score": 0.82895297
+          },
+          {
+            "type": "web",
+            "number": 5,
+            "title": "Respect example domains · mdn · Discussion #450 · GitHub",
+            "url": "https://github.com/orgs/mdn/discussions/450",
+            "excerpt": "# Example domains\n\nRFC 6761 Specifies reserved domain for Example usage in documentation.\n\n`.example`\n`.example.com`\n`.example.net`\n`.example.org`\n\nMDN content should respect these usage in their document, sample code, sequence images etc.\n\n# Why\n\nThere are tons of documents in MDN which uses Real Domain as example usage. for example. [...] | Example domains RFC 6761 Specifies reserved domain for Example usage in documentation.      `.example`  `.example.com`  `.example.net`  `.example.org`   MD",
+            "retrieved_at": "2026-10-16T13:37:09.471954Z",
+            "published_at": null,
+            "score": 0.7783298
+          }
+        ],
+        "token_usage": {
+          "input_tokens": 2922,
+          "output_tokens": 182,
+          "total_tokens": 3104,
+          "input_token_details": {
+            "cache_read": 128
+          },
+          "output_token_details": {}
+        },
+        "run_metadata": {
+          "schema_version": 3,
+          "search_mode": "web",
+          "kind": "grounded",
+          "tool_requests": 3,
+          "knowledge_searches": 0,
+          "web_attempts": 1,
+          "web_reads": 1,
+          "sql_queries": 0,
+          "delegations": {
+            "web": 1
+          },
+          "agent_events": [
+            {
+              "agent": "web",
+              "status": "failed",
+              "error_code": "INVALID_AGENT_OUTPUT",
+              "elapsed_ms": 10768.44
+            }
+          ],
+          "failures": [
+            {
+              "tool": "read_web_page",
+              "code": "TOOL_NOT_ALLOWED"
+            },
+            {
+              "agent": "web",
+              "code": "INVALID_AGENT_OUTPUT"
+            }
+          ],
+          "model_attempts": 7,
+          "fallback_used": false,
+          "repair_used": true,
+          "registered_sources": {
+            "web": 5
+          },
+          "cited_sources": {
+            "web": 4
+          },
+          "elapsed_ms": 15012.92,
+          "tavily_credits": 1,
+          "usage_by_model": {
+            "deepseek/deepseek-chat": {
+              "input_tokens": 13851,
+              "output_tokens": 990,
+              "total_tokens": 14841,
+              "attempts": 7,
+              "complete": true,
+              "hit_tokens": 6400,
+              "miss_tokens": 4529,
+              "reported_cache_calls": 6
+            }
+          },
+          "tool_events": [
+            {
+              "name": "search_web",
+              "status": "ok",
+              "error_code": null,
+              "source_numbers": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "elapsed_ms": 3272.98
+            },
+            {
+              "name": "read_web_page",
+              "status": "ok",
+              "error_code": null,
+              "source_numbers": [
+                2
+              ],
+              "elapsed_ms": 1067.75
+            },
+            {
+              "name": "read_web_page",
+              "status": "failed",
+              "error_code": "TOOL_NOT_ALLOWED",
+              "source_numbers": [],
+              "elapsed_ms": 0.06
+            }
+          ],
+          "parent_context_count": 0,
+          "warnings": [],
+          "rerank_events": [],
+          "hierarchy_events": [],
+          "knowledge_quality_enabled": false,
+          "knowledge_events": [],
+          "knowledge_rewrites": 0,
+          "excluded_source_numbers": [],
+          "metrics": {
+            "cache": {
+              "scope": "reported_calls",
+              "by_model": [
+                {
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "hit_tokens": 6400,
+                  "miss_tokens": 4529,
+                  "hit_rate": 0.585598,
+                  "reported_calls": 6,
+                  "total_calls": 7,
+                  "complete": false
+                }
+              ]
+            },
+            "context": {
+              "calls": [
+                {
+                  "attempt_index": 1,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 632,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.026333,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 2,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 493,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.020542,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 3,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 2012,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.083833,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 4,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 3464,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.144333,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 5,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 3582,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.14925,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 6,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 746,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.031083,
+                  "measurement": "reported"
+                },
+                {
+                  "attempt_index": 7,
+                  "provider": "deepseek",
+                  "model_name": "deepseek-chat",
+                  "input_tokens": 2922,
+                  "input_budget_tokens": 24000,
+                  "usage_ratio": 0.12175,
+                  "measurement": "reported"
+                }
+              ],
+              "complete": true,
+              "highest_usage_attempt_index": 5
+            }
+          },
+          "model_configuration_revision": 1
+        }
+      },
+      "verified_scope": "Search evidence retention and explicit degradation after rejected unregistered URL; this is not a clean specialist-success case.",
+      "observed_status": "degraded",
+      "checks": {
+        "search_tool_succeeded": true,
+        "unregistered_url_rejected": true,
+        "failure_disclosed": true,
+        "specialist_clean_success": false
+      },
+      "expected_failure_handling_verified": true
+    }
+  ]
+}

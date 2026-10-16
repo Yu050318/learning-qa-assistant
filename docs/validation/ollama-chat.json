@@ -1,0 +1,101 @@
+{
+  "status_code": 200,
+  "elapsed_seconds": 35.86,
+  "response": {
+    "message_id": "f5c4a17d-108f-4cc4-ab22-4ddc3349e545",
+    "answer": "你好",
+    "model_provider": "ollama",
+    "model_name": "qwen3.5:9b",
+    "search_mode": "auto",
+    "citations": [],
+    "token_usage": {
+      "input_tokens": 421,
+      "output_tokens": 213,
+      "total_tokens": 634
+    },
+    "run_metadata": {
+      "schema_version": 3,
+      "search_mode": "auto",
+      "kind": "smalltalk",
+      "tool_requests": 0,
+      "knowledge_searches": 0,
+      "web_attempts": 0,
+      "web_reads": 0,
+      "sql_queries": 0,
+      "delegations": {},
+      "agent_events": [],
+      "failures": [],
+      "model_attempts": 2,
+      "fallback_used": false,
+      "repair_used": true,
+      "registered_sources": {},
+      "cited_sources": {},
+      "elapsed_ms": 34214.72,
+      "tavily_credits": null,
+      "usage_by_model": {
+        "ollama/qwen3.5:9b": {
+          "input_tokens": 1179,
+          "output_tokens": 256,
+          "total_tokens": 1435,
+          "attempts": 2,
+          "complete": true,
+          "hit_tokens": 0,
+          "miss_tokens": 0,
+          "reported_cache_calls": 0
+        }
+      },
+      "tool_events": [],
+      "parent_context_count": 0,
+      "warnings": [],
+      "rerank_events": [],
+      "hierarchy_events": [],
+      "knowledge_quality_enabled": false,
+      "knowledge_events": [],
+      "knowledge_rewrites": 0,
+      "excluded_source_numbers": [],
+      "metrics": {
+        "cache": {
+          "scope": "reported_calls",
+          "by_model": [
+            {
+              "provider": "ollama",
+              "model_name": "qwen3.5:9b",
+              "hit_tokens": null,
+              "miss_tokens": null,
+              "hit_rate": null,
+              "reported_calls": 0,
+              "total_calls": 2,
+              "complete": false
+            }
+          ]
+        },
+        "context": {
+          "calls": [
+            {
+              "attempt_index": 1,
+              "provider": "ollama",
+              "model_name": "qwen3.5:9b",
+              "input_tokens": 758,
+              "input_budget_tokens": 24000,
+              "usage_ratio": 0.031583,
+              "measurement": "reported"
+            },
+            {
+              "attempt_index": 2,
+              "provider": "ollama",
+              "model_name": "qwen3.5:9b",
+              "input_tokens": 421,
+              "input_budget_tokens": 24000,
+              "usage_ratio": 0.017542,
+              "measurement": "reported"
+            }
+          ],
+          "complete": true,
+          "highest_usage_attempt_index": 1
+        }
+      },
+      "model_configuration_revision": 1
+    }
+  },
+  "scope": "Real local Ollama through ChatService/model center; configured context window 32768, output cap 2048, timeout 45s"
+}

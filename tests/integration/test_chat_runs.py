@@ -4,8 +4,9 @@ from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.engine import make_url
+from sqlalchemy.exc import DBAPIError
 
 from app.application.runs import RunStore
 from app.core.config import Settings
@@ -31,6 +32,19 @@ def test_postgresql_run_lock_and_event_sequences():
             session.add(ChatSession(id=sid, user_id=uid, title="fixture"));session.commit()
         run, created = store.create(uid, sid, AgentChatInput("fixture", "sql"), "fixture", key)
         assert created and not store.create(uid, sid, AgentChatInput("fixture", "sql"), "retry", key)[1]
+        with database.sessions() as holder:
+            holder.scalar(select(ChatSession).where(ChatSession.id == sid).with_for_update())
+            # A lost POST response must be retryable even during ChatService's
+            # preparation/final-save transaction, without creating another Run.
+            retried, created_again = store.create(uid, sid, AgentChatInput("fixture", "sql"), "retry-locked", key)
+            assert retried.id == run.id and not created_again
+            with pytest.raises(DBAPIError) as busy:
+                store.create(uid, sid, AgentChatInput("new question", "sql"), "new", uuid4())
+            assert getattr(busy.value.orig, "sqlstate", None) == "55P03"
+            with pytest.raises(AppError) as conflict:
+                store.create(uid, sid, AgentChatInput("different", "sql"), "changed", key)
+            assert conflict.value.code == "IDEMPOTENCY_CONFLICT"
+            holder.rollback()
         with database.resource_lock("chat", sid):
             with pytest.raises(AppError) as failure:
                 with database.resource_lock("chat", sid):

@@ -1,0 +1,198 @@
+{
+  "scope": "Real model-center configuration view, catalog probe records, call accounting and admin boundary",
+  "configuration": {
+    "revision": 1,
+    "configuration": {
+      "profiles": {
+        "ollama": {
+          "model_name": "qwen3.5:9b",
+          "context_window": 32768,
+          "enabled": true
+        },
+        "deepseek": {
+          "model_name": "deepseek-chat",
+          "context_window": 64000,
+          "enabled": true
+        }
+      },
+      "default_provider": "deepseek",
+      "allow_fallback": false,
+      "timeout_seconds": 45.0,
+      "max_output_tokens": 2048
+    },
+    "models": [
+      {
+        "provider": "ollama",
+        "model_name": "qwen3.5:9b",
+        "enabled": true,
+        "available": true,
+        "health": "available",
+        "checked_at": "2026-10-16T13:44:01.714172+00:00",
+        "error_code": null,
+        "input_budget_tokens": 24000,
+        "cache_usage_supported": false
+      },
+      {
+        "provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "enabled": true,
+        "available": true,
+        "health": "unavailable",
+        "checked_at": "2026-10-16T13:44:03.407049+00:00",
+        "error_code": "MODEL_NOT_LISTED",
+        "input_budget_tokens": 24000,
+        "cache_usage_supported": true
+      }
+    ],
+    "can_manage": true,
+    "health_ttl_seconds": 300
+  },
+  "global_statistics": {
+    "scope": "all_users",
+    "days": 30,
+    "models": [
+      {
+        "provider": "ollama",
+        "model_name": "qwen3.5:9b",
+        "attempts": 2,
+        "succeeded": 2,
+        "failed": 0,
+        "incomplete": 0,
+        "fallback_attempts": 0,
+        "reported_calls": 2,
+        "reported_input_tokens": 1179,
+        "reported_output_tokens": 256,
+        "reported_total_tokens": 1435,
+        "average_ms": 12587.5,
+        "total_tokens": 1435
+      },
+      {
+        "provider": "deepseek",
+        "model_name": "deepseek-chat",
+        "attempts": 34,
+        "succeeded": 34,
+        "failed": 0,
+        "incomplete": 0,
+        "fallback_attempts": 0,
+        "reported_calls": 34,
+        "reported_input_tokens": 36525,
+        "reported_output_tokens": 2962,
+        "reported_total_tokens": 39487,
+        "average_ms": 1173.9,
+        "total_tokens": 39487
+      }
+    ],
+    "includes": [
+      "agent",
+      "compaction"
+    ],
+    "missing_usage_is_zero": false
+  },
+  "checks": [
+    {
+      "name": "reader-cannot-change-model-configuration",
+      "passed": true
+    },
+    {
+      "name": "reader-cannot-read-global-statistics",
+      "passed": true
+    }
+  ],
+  "note": "DeepSeek generation succeeds but the exact configured name deepseek-chat is not listed by this provider catalog response; MODEL_NOT_LISTED is retained, not converted into successful inference health.",
+  "probe_results": {
+    "ollama": {
+      "revision": 1,
+      "configuration": {
+        "profiles": {
+          "ollama": {
+            "model_name": "qwen3.5:9b",
+            "context_window": 32768,
+            "enabled": true
+          },
+          "deepseek": {
+            "model_name": "deepseek-chat",
+            "context_window": 64000,
+            "enabled": true
+          }
+        },
+        "default_provider": "deepseek",
+        "allow_fallback": false,
+        "timeout_seconds": 45.0,
+        "max_output_tokens": 2048
+      },
+      "models": [
+        {
+          "provider": "ollama",
+          "model_name": "qwen3.5:9b",
+          "enabled": true,
+          "available": true,
+          "health": "available",
+          "checked_at": "2026-10-16T13:44:01.714172+00:00",
+          "error_code": null,
+          "input_budget_tokens": 24000,
+          "cache_usage_supported": false
+        },
+        {
+          "provider": "deepseek",
+          "model_name": "deepseek-chat",
+          "enabled": true,
+          "available": true,
+          "health": "unknown",
+          "checked_at": "2026-10-16T13:37:47.610380+00:00",
+          "error_code": null,
+          "input_budget_tokens": 24000,
+          "cache_usage_supported": true
+        }
+      ],
+      "can_manage": true,
+      "health_ttl_seconds": 300
+    },
+    "deepseek": {
+      "revision": 1,
+      "configuration": {
+        "profiles": {
+          "ollama": {
+            "model_name": "qwen3.5:9b",
+            "context_window": 32768,
+            "enabled": true
+          },
+          "deepseek": {
+            "model_name": "deepseek-chat",
+            "context_window": 64000,
+            "enabled": true
+          }
+        },
+        "default_provider": "deepseek",
+        "allow_fallback": false,
+        "timeout_seconds": 45.0,
+        "max_output_tokens": 2048
+      },
+      "models": [
+        {
+          "provider": "ollama",
+          "model_name": "qwen3.5:9b",
+          "enabled": true,
+          "available": true,
+          "health": "available",
+          "checked_at": "2026-10-16T13:44:01.714172+00:00",
+          "error_code": null,
+          "input_budget_tokens": 24000,
+          "cache_usage_supported": false
+        },
+        {
+          "provider": "deepseek",
+          "model_name": "deepseek-chat",
+          "enabled": true,
+          "available": true,
+          "health": "unavailable",
+          "checked_at": "2026-10-16T13:44:03.407049+00:00",
+          "error_code": "MODEL_NOT_LISTED",
+          "input_budget_tokens": 24000,
+          "cache_usage_supported": true
+        }
+      ],
+      "can_manage": true,
+      "health_ttl_seconds": 300
+    }
+  }
+}

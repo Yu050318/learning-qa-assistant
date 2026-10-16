@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-10-16T13:14:42.694373+00:00",
+  "scope": "Bounded provider smoke only; synthetic inputs; not a complete Supervisor/UI acceptance",
+  "configuration_overrides": {
+    "model_timeout": 30,
+    "model_max_tokens": 128,
+    "ollama_context_window": 4096,
+    "scrapling_timeout": 10,
+    "tavily_timeout": 10
+  },
+  "results": [
+    {
+      "service": "scrapling",
+      "status": "passed",
+      "elapsed_seconds": 0.62,
+      "url": "https://example.com/",
+      "title": "Example Domain",
+      "characters": 156
+    },
+    {
+      "service": "embedding",
+      "status": "passed",
+      "elapsed_seconds": 2.19,
+      "vectors": 1,
+      "dimension": 1024
+    },
+    {
+      "service": "deepseek",
+      "status": "passed",
+      "elapsed_seconds": 2.3,
+      "provider": "deepseek",
+      "model": "deepseek-chat",
+      "answer": "OK",
+      "usage": {
+        "input_tokens": 9,
+        "output_tokens": 1,
+        "total_tokens": 10,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "max_output_tokens": 128
+    },
+    {
+      "service": "tavily",
+      "status": "passed",
+      "elapsed_seconds": 3.61,
+      "results": 5,
+      "credits": 1
+    },
+    {
+      "service": "ollama",
+      "status": "failed",
+      "elapsed_seconds": 17.66,
+      "error_code": "LLM_UNAVAILABLE"
+    }
+  ],
+  "follow_up": [
+    {
+      "service": "ollama",
+      "status": "passed",
+      "provider": "ollama",
+      "model": "qwen3.5:9b",
+      "answer": "OK",
+      "max_output_tokens": 512,
+      "model_timeout": 45,
+      "ollama_context_window": 4096,
+      "usage": {
+        "input_tokens": 15,
+        "output_tokens": 155,
+        "total_tokens": 170
+      },
+      "done_reason": "stop",
+      "note": "The earlier 128-token probe failed. This successful call used a larger output cap; the application default remains 2048. This is a provider smoke, not a tool-calling acceptance."
+    }
+  ]
+}

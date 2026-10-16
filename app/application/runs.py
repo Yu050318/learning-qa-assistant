@@ -63,7 +63,6 @@ class RunStore:
         fingerprint = hashlib.sha256(json.dumps({"session_id": str(session_id), "input": inputs}, sort_keys=True, default=str).encode()).hexdigest()
         try:
             with self.database.sessions() as session:
-                Repository(session).chat_session(user_id, session_id, lock=True)
                 existing = session.scalar(select(ChatRun).where(ChatRun.user_id == user_id, ChatRun.client_key == client_key).with_for_update())
                 if existing:
                     if existing.fingerprint != fingerprint:
@@ -71,6 +70,9 @@ class RunStore:
                     self.expire(session, existing)
                     session.commit()
                     return existing, False
+                # An exact retry needs only the existing Run lock. ChatService may
+                # briefly hold the session row while preparing/saving the answer.
+                Repository(session).chat_session(user_id, session_id, lock=True)
                 active = session.scalar(select(ChatRun).where(ChatRun.session_id == session_id, ChatRun.state == "running").with_for_update())
                 if active:
                     self.expire(session, active)
