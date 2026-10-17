@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | 1 | Alembic 基线与升级、管理员邀请码、持久角色、鉴权与导航 | 已验收并推送 e4d58d1 |
 | 2 | 部署预检、安全启用已有能力、独立入库 Worker、旧文档补建 | 已验收并推送 dd7221c |
-| 3 | Run Worker、检查点、取消/HITL、租约/fencing、outbox | 已验收并应用本地；准备提交与推送 |
+| 3 | Run Worker、检查点、取消/HITL、租约/fencing、outbox | 已验收并推送 a64baed；本地部署就绪 |
 | 4 | 版本化模型 Profile、四种角色、Step-back/HyDE | 未开始 |
 | 5 | 数据集/任务/结果、Evaluation Worker、12 文档/80 题真实 A/B | 未开始 |
 | 6 | 租户与检索范围、候选构建/核验/发布、退休与统一任务 | 未开始 |
