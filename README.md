@@ -45,7 +45,7 @@
 
 第十阶段提供[组织与共享知识库](docs/organization-sharing.md)：组织所有者/管理员管理成员与 viewer/editor 授权，成员可发布自己的就绪文档；聊天可显式选择共享库，检索按真实文档归属分组，保存答案前复核权限。原始文件管理仍归所有者，不复制索引。先显式执行 `python -m app.bootstrap --sharing`，再设置 `SHARING_ENABLED=true`；默认关闭，新增五张关系表。
 
-第十一阶段加入[模型中心](docs/model-center.md)：复用 DeepSeek/Ollama 适配器，提供受管理员控制的版本化配置、目录检测和个人/全局调用统计；每轮冻结配置，失败、降级及未知用量分别记账。先显式执行 `python -m app.bootstrap --model-center`，再设置 `MODEL_CENTER_ENABLED=true` 与已确认账号的 `MODEL_ADMIN_USERNAMES`。连接地址和密钥继续仅由服务端管理。
+第十一阶段加入[模型中心](docs/model-center.md)：复用 DeepSeek/Ollama 适配器，提供受管理员控制的版本化配置、目录检测和个人/全局调用统计；每轮冻结配置，失败、降级及未知用量分别记账。先显式执行 `python -m app.bootstrap --model-center`，再设置 `MODEL_CENTER_ENABLED=true`，并按平台管理说明注册管理员或显式迁移旧白名单。连接地址和密钥继续仅由服务端管理。
 
 第十二阶段提供[三级分块与自动合并](docs/hierarchical-retrieval.md)：新文本递归生成根块、父块和叶子，仅叶子入 Milvus，结构与父级正文存 PostgreSQL；根据本轮叶子命中比例和证据预算补充父级上下文，引用仍只来自真实命中的叶子。先显式执行 `python -m app.bootstrap --hierarchy`，再设置 `HIERARCHY_ENABLED=true` 并同步重启 API/Worker。旧文档可逐个显式补建，保留原叶子 ID 和向量；不自动重切或清库。
 
@@ -366,3 +366,7 @@ $env:RUN_STORAGE_INTEGRATION='1'
 ```
 
 输出包括宏平均 `recall@1/3/6`、`hit_rate@1/3/6` 和 `mrr`。评估集应覆盖真实问题、同义改写、跨段问题和无答案问题；无答案问题应另算误召回率，不要混入 Recall 的分母。
+
+## 功能补齐与平台管理
+
+功能差异按阶段修复，当前状态见 [补齐进度](docs/replication-repair-progress.md)。数据库升级、管理员邀请码注册与旧白名单迁移见 [平台管理](docs/platform-administration.md)。升级已有环境须先执行 `python -m app.migrate`，再启动新版 API/Worker；不会自动修改数据库或开启高级功能。

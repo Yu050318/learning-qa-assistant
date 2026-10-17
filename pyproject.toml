@@ -25,4 +25,5 @@ dependencies = [
     "sqlglot>=30.12,<31",
     "curl-cffi>=0.16.3,<0.17",
     "openpyxl>=3.1.5,<4",
+    "alembic>=1.16,<2",
 ]

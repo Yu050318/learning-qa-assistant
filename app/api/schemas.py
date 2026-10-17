@@ -27,9 +27,14 @@ class CredentialsRequest(BaseModel):
     password: str = Field(min_length=6, max_length=30)
 
 
+class RegisterRequest(CredentialsRequest):
+    admin_code: str | None = Field(default=None, max_length=512, repr=False)
+
+
 class UserResponse(ORMResponse):
     id: UUID
     username: str
+    role: Literal["user", "admin"] = "user"
 
 
 class AuthResponse(BaseModel):

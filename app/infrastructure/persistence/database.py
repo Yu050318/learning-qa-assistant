@@ -72,9 +72,8 @@ class Database:
                 connection.execute(select(table).limit(0))
 
     def initialize(self) -> None:
-        with self.engine.begin() as connection:
-            connection.execute(CreateSchema("rag", if_not_exists=True))
-            Base.metadata.create_all(connection)
+        from app.migrate import upgrade
+        upgrade(self)
 
     def initialize_document_versions(self) -> None:
         with self.engine.begin() as connection:

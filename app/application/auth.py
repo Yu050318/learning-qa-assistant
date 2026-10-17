@@ -31,6 +31,7 @@ class AuthContext:
     user_id: UUID
     username: str
     auth_session_id: UUID
+    role: str = "user"
 
 
 class AuthService:
@@ -93,13 +94,21 @@ class AuthService:
         access, seconds = self._access_token(user.id, session_id)
         return access, refresh, seconds
 
-    def register(self, username: str, password: str):
+    def register(self, username: str, password: str, admin_code: str | None = None, client_ip: str = "unknown"):
         if not self.settings.registration_enabled:
             raise AppError("REGISTRATION_DISABLED", "当前未开放注册", 403)
         username = self.normalize_username(username)
         self.validate_password(password)
+        self._limit("register:ip", client_ip, limit=30, record=True)
+        role = "user"
+        if admin_code:
+            self._limit("register:admin", client_ip, record=True)
+            configured = self.settings.admin_invite_code.get_secret_value()
+            if not configured or not hmac.compare_digest(admin_code.encode(), configured.encode()):
+                raise AppError("INVALID_ADMIN_CODE", "管理员邀请码无效", 403)
+            role = "admin"
         with self.database.sessions() as database:
-            user = User(username=username, password_hash=PASSWORD_HASH.hash(password))
+            user = User(username=username, password_hash=PASSWORD_HASH.hash(password), role=role)
             database.add(user)
             try:
                 database.commit()
@@ -139,7 +148,7 @@ class AuthService:
             if session is None:
                 raise AppError("UNAUTHORIZED", "认证信息无效或已过期", 401)
             user = database.get(User, user_id)
-            return AuthContext(user.id, user.username, session.id)
+            return AuthContext(user.id, user.username, session.id, user.role)
 
     def refresh(self, presented: str):
         try:

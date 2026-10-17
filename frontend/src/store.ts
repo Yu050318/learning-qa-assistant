@@ -14,10 +14,12 @@ export const useAppStore=defineStore('app',()=>{
   function notify(message:string){error.value=message;window.clearTimeout(errorTimer);errorTimer=window.setTimeout(()=>{if(error.value===message)error.value=''},8000)}
   const uploads=createUploadQueue(()=>loadDocuments(),notify,()=>({allowed:capabilities.value?.upload.allowed_extensions||['.txt','.md'],max:capabilities.value?.upload.max_file_bytes||20*1024*1024,warning:capabilities.value?.upload.long_running_warning_seconds||900}))
   async function guard<T>(job:()=>Promise<T>){try{error.value='';return await job()}catch(e:any){error.value=e.message;throw e}}
-  async function bootstrap(){try{const auth=await api.refresh();user.value=auth.user;await initialize()}catch{user.value=null}finally{bootstrapped.value=true}}
+  let bootstrapPromise:Promise<void>|undefined
+  function bootstrap(){return bootstrapPromise ||= restoreAuthentication()}
+  async function restoreAuthentication(){try{const auth=await api.refresh();user.value=auth.user;await initialize()}catch{user.value=null}finally{bootstrapped.value=true}}
   async function initialize(){capabilities.value=await api.capabilities();await Promise.all([loadSessions(),loadDocuments(),loadMemories(),loadKnowledgeBases()])}
   async function login(username:string,password:string){const result=await guard(()=>api.login(username,password));user.value=result.user;await initialize()}
-  async function register(username:string,password:string){const result=await guard(()=>api.register(username,password));user.value=result.user;await initialize()}
+  async function register(username:string,password:string,code?:string){const result=await guard(()=>api.register(username,password,code));user.value=result.user;await initialize()}
   async function logout(){await api.logout().catch(()=>{});user.value=null;sessions.value=[];documents.value=[];memories.value=[];messagesBySession.value={};runsBySession.value={};knowledgeBases.value=[];selectedBases.value=[]}
   function messagesFor(id:string){return messagesBySession.value[id]||(messagesBySession.value[id]=[])}
   function runFor(id:string){return runsBySession.value[id]||(runsBySession.value[id]={busy:false,status:'',error:'',attempt:0})}

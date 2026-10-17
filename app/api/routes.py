@@ -11,9 +11,9 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.concurrency import run_in_threadpool
 from sqlalchemy import select
 
-from app.api.dependencies import AuthDependency, ServiceDependency, UserDependency
+from app.api.dependencies import AdminDependency, AuthDependency, ServiceDependency, UserDependency
 from app.api.schemas import (
-    AuthResponse, CredentialsRequest, DocumentResponse, MemoryResponse, MemoryWrite, SessionCreate, SessionResponse, SessionRename, UserResponse,
+    AuthResponse, CredentialsRequest, RegisterRequest, DocumentResponse, MemoryResponse, MemoryWrite, SessionCreate, SessionResponse, SessionRename, UserResponse,
     V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
     CompactRequest, ContextEstimateRequest, DocumentPage, ActivateDocumentVersion,
 )
@@ -33,7 +33,7 @@ REFRESH_COOKIE = "rag_refresh"
 
 def auth_payload(user, access: str, seconds: int) -> dict:
     return {"access_token": access, "token_type": "bearer", "expires_in": seconds,
-            "user": {"id": user.id, "username": user.username}}
+            "user": {"id": user.id, "username": user.username, "role": user.role}}
 
 
 def set_refresh_cookie(response: Response, services, value: str) -> None:
@@ -51,8 +51,9 @@ def verify_cookie_origin(request: Request, services, origin: str | None, sec_fet
 
 
 @v2_router.post("/auth/register", response_model=AuthResponse, status_code=201, tags=["auth"])
-def register(payload: CredentialsRequest, response: Response, services: ServiceDependency):
-    user, access, refresh, seconds = services.auth.register(payload.username, payload.password)
+def register(payload: RegisterRequest, request: Request, response: Response, services: ServiceDependency):
+    user, access, refresh, seconds = services.auth.register(payload.username, payload.password, payload.admin_code,
+        request.client.host if request.client else "unknown")
     set_refresh_cookie(response, services, refresh)
     return auth_payload(user, access, seconds)
 
@@ -79,7 +80,7 @@ def refresh_auth(request: Request, response: Response, services: ServiceDependen
 
 @v2_router.get("/auth/me", response_model=UserResponse, tags=["auth"])
 def me(context: AuthDependency):
-    return {"id": context.user_id, "username": context.username}
+    return {"id": context.user_id, "username": context.username, "role": context.role}
 
 
 @v2_router.post("/auth/logout", status_code=204, tags=["auth"])
@@ -89,6 +90,22 @@ def logout(response: Response, services: ServiceDependency, context: AuthDepende
     response.headers["Cache-Control"] = "no-store"
     response.status_code = 204
     return response
+
+
+@v2_router.get("/admin/overview", tags=["administration"])
+def admin_overview(services: ServiceDependency, user_id: AdminDependency, response: Response):
+    response.headers["Cache-Control"] = "no-store"
+    settings = services.settings
+    return {"features": {
+        "model_center": settings.model_center_enabled,
+        "sharing": settings.sharing_enabled,
+        "document_versions": settings.document_versions_enabled,
+        "durable_runs": settings.chat_runs_enabled,
+        "hierarchy": settings.hierarchy_enabled,
+        "knowledge_quality": settings.knowledge_quality_enabled,
+        "rerank": settings.rerank_enabled,
+    }, "ingestion_mode": settings.ingestion_mode,
+        "notice": "此处显示配置状态，服务可用性需通过部署预检与实际运行确认。"}
 
 
 @v2_router.post("/auth/logout-all", status_code=204, tags=["auth"])

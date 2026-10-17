@@ -37,3 +37,12 @@ def current_user(context: AuthDependency) -> UUID:
 
 
 UserDependency = Annotated[UUID, Depends(current_user)]
+
+
+def platform_admin(services: ServiceDependency, user_id: UserDependency) -> UUID:
+    from app.application.permissions import require_platform_admin
+    require_platform_admin(services.database, user_id)
+    return user_id
+
+
+AdminDependency = Annotated[UUID, Depends(platform_admin)]

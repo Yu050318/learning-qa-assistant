@@ -64,14 +64,13 @@ class ModelCenter:
             raise AppError("MODEL_CENTER_DISABLED", "模型中心尚未启用", 503)
 
     def is_admin(self, uid):
-        with self.database.sessions() as session:
-            user = session.get(User, uid)
-            return bool(user and user.is_active and user.username in self.settings.model_admin_usernames)
+        from app.application.permissions import is_platform_admin
+        return is_platform_admin(self.database, uid)
 
     def admin(self, uid):
+        from app.application.permissions import require_platform_admin
         self.require()
-        if not self.is_admin(uid):
-            raise AppError("FORBIDDEN", "需要服务端配置的模型管理员权限", 403)
+        require_platform_admin(self.database, uid)
 
     def initialize(self):
         """Explicit bootstrap only: never seed or overwrite configuration on startup."""

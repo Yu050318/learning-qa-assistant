@@ -31,7 +31,7 @@ def test_configuration_compare_and_swap_and_metric_lifecycle():
         with db.sessions() as session:
             if session.get(ModelConfiguration,1) is not None:
                 pytest.fail("model-center integration needs a dedicated test DB with no configuration row")
-            session.add(User(id=uid,username=username,password_hash="fixture"));session.flush()
+            session.add(User(id=uid,username=username,password_hash="fixture",role="admin"));session.flush()
             session.add(ChatSession(id=sid,user_id=uid,title="fixture"));session.commit()
         service.initialize();initialized=True
         row = service.row(transaction,lock=True)

@@ -13,7 +13,7 @@ from app.application.model_center import ManagedModels, ModelCenter
 from app.core.errors import AppError, UpstreamError
 from app.domain.contracts import AgentChatInput, ModelAnswer
 from app.infrastructure.llms.providers import DeepSeekProvider, ModelRouter, OllamaProvider
-from app.infrastructure.persistence.models import ModelCall, ModelConfiguration
+from app.infrastructure.persistence.models import ModelCall, ModelConfiguration, User
 from app.workflows.supervisor import SupervisorWorkflow
 from test_agent_v2 import Models, ScriptedModel, Web, call, final, report, SQL
 from test_chat_runs import system
@@ -23,7 +23,9 @@ from test_chat_runs import system
 def center(system):
     s = system
     s.settings.model_center_enabled = True
-    s.settings.model_admin_usernames = ["run-owner"]
+    with s.database.sessions() as session:
+        session.get(User, s.uid).role = "admin"
+        session.commit()
     s.settings.deepseek_api_key = SecretStr("fixture-not-real-key")
     s.center = ModelCenter(s.settings, s.database)
     s.center.initialize()

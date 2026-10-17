@@ -112,6 +112,7 @@ class Settings(BaseSettings):
     access_token_minutes: int = Field(default=15, ge=1, le=60)
     refresh_token_days: int = Field(default=30, ge=1, le=90)
     registration_enabled: bool = False
+    admin_invite_code: SecretStr = Field(default=SecretStr(""), repr=False)
     auth_cookie_secure: bool = True
     frontend_origin: str = "http://localhost:5173"
     memory_collection: str = "rag_user_memories_v1_1024"
