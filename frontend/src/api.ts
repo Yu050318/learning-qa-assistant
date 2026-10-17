@@ -46,9 +46,10 @@ async function streamRequest(path:string,body:any,onEvent:(event:string,data:Str
   return readEventStream(response,onEvent,{sequence:0})
 }
 async function upload(file:File,onProgress:(n:number)=>void,retry=true):Promise<DocumentItem>{return new Promise((resolve,reject)=>{const xhr=new XMLHttpRequest(),data=new FormData();data.append('file',file);xhr.open('POST','/api/v2/documents');xhr.setRequestHeader('Authorization',`Bearer ${accessToken}`);xhr.upload.onprogress=e=>e.lengthComputable&&onProgress(e.loaded/e.total);xhr.onload=async()=>{if(xhr.status===401&&retry){try{await refresh();resolve(await upload(file,onProgress,false))}catch(e){reject(e)}return}let body:any;try{body=JSON.parse(xhr.responseText)}catch{};xhr.status<300?resolve(body):reject(new ApiError(body?.error?.code||'UPLOAD_FAILED',body?.error?.message||'上传失败',xhr.status))};xhr.onerror=()=>reject(new ApiError('NETWORK_ERROR','网络连接失败',0));xhr.send(data)})}
-type RunInfo={run_id:string;session_id:string;state:'running'|'succeeded'|'failed'|'interrupted';sequence:number;message_id:string|null}
-async function resumeRun(runId:string,onEvent:(event:string,data:StreamEvent)=>void){
-  const cursor:StreamCursor={runId,sequence:0}
+export type RunWaiting={question:string;checkpoint_revision:number;resume_token:string;expires_at:string;sequence:number}
+export type RunInfo={run_id:string;session_id:string;state:'queued'|'running'|'waiting'|'cancelling'|'cancelled'|'succeeded'|'failed'|'interrupted';sequence:number;message_id:string|null;waiting:RunWaiting|null}
+async function resumeRun(runId:string,onEvent:(event:string,data:StreamEvent)=>void,after=0){
+  const cursor:StreamCursor={runId,sequence:after}
   for(let attempt=0;;attempt++){
     try{
       let response=await fetch(`/api/v2/runs/${runId}/events`,{headers:{Authorization:`Bearer ${accessToken}`,'Last-Event-ID':`${runId}:${cursor.sequence}`},cache:'no-store'})
@@ -61,12 +62,13 @@ async function resumeRun(runId:string,onEvent:(event:string,data:StreamEvent)=>v
     }
   }
 }
-async function durableChat(id:string,body:any,onEvent:(event:string,data:StreamEvent)=>void){
+async function durableChat(id:string,body:any,onEvent:(event:string,data:StreamEvent)=>void,onRun?:(run:RunInfo)=>void){
   const key=crypto.randomUUID();let run:RunInfo
   for(let attempt=0;;attempt++){
     try{run=await request<RunInfo>(`/api/v2/sessions/${id}/runs`,{method:'POST',headers:{'Idempotency-Key':key},body:JSON.stringify(body)});break}
     catch(error:any){if(attempt>=3||(error.status&&error.status<500&&error.status!==429))throw error;await new Promise(resolve=>setTimeout(resolve,500*2**attempt))}
   }
+  onRun?.(run)
   return resumeRun(run.run_id,onEvent)
 }
 export const api={
@@ -79,12 +81,15 @@ export const api={
   grants:(id:string)=>request<Member[]>(`/api/v2/knowledge-bases/${id}/grants`),setGrant:(id:string,user:string,role:string)=>request<void>(`/api/v2/knowledge-bases/${id}/grants/${user}`,{method:'PUT',body:JSON.stringify({role})}),revokeGrant:(id:string,user:string)=>request<void>(`/api/v2/knowledge-bases/${id}/grants/${user}`,{method:'DELETE'}),
   sharedDocuments:(id:string)=>request<SharedDocument[]>(`/api/v2/knowledge-bases/${id}/documents`),publish:(id:string,document:string)=>request<void>(`/api/v2/knowledge-bases/${id}/documents/${document}`,{method:'PUT',body:'{}'}),unpublish:(id:string,document:string)=>request<void>(`/api/v2/knowledge-bases/${id}/documents/${document}`,{method:'DELETE'}),
   resumeRun,runs:(id:string)=>request<RunInfo[]>(`/api/v2/sessions/${id}/runs`),
+  run:(id:string)=>request<RunInfo>(`/api/v2/runs/${id}`),
+  cancelRun:(id:string)=>request<RunInfo>(`/api/v2/runs/${id}/cancel`,{method:'POST'}),
+  continueRun:(id:string,waiting:RunWaiting,supplement:string)=>request<RunInfo>(`/api/v2/runs/${id}/resume`,{method:'POST',body:JSON.stringify({checkpoint_revision:waiting.checkpoint_revision,resume_token:waiting.resume_token,supplement})}),
 
   versions:(id:string,offset=0)=>request<{items:DocumentItem[];total:number}>(`/api/v2/documents/${id}/versions?offset=${offset}&limit=20`),
   uploadVersion:(id:string,file:File)=>{const body=new FormData();body.append('file',file);return request<DocumentItem>(`/api/v2/documents/${id}/versions`,{method:'POST',body})},
   activateVersion:(id:string,expected:string|null)=>request<DocumentItem>(`/api/v2/documents/${id}/activate`,{method:'POST',body:JSON.stringify({expected_current_document_id:expected})}),
   refresh,login:(u:string,p:string)=>authRequest('/api/v2/auth/login',u,p),register:(u:string,p:string,code?:string)=>authRequest('/api/v2/auth/register',u,p,code),me:()=>request<User>('/api/v2/auth/me'),logout:async()=>{try{if(!accessToken||expiresAt<=Date.now())await refresh();await request('/api/v2/auth/logout',{method:'POST'},false)}finally{setToken(null);channel?.postMessage({type:'token',result:null})}},
-  capabilities:()=>request<Capabilities>('/api/v2/capabilities'),sessions:(q='')=>request<Session[]>(`/api/v2/sessions?limit=100&q=${encodeURIComponent(q)}`),createSession:(title:string)=>request<Session>('/api/v2/sessions',{method:'POST',body:JSON.stringify({title})}),session:(id:string)=>request<Session&{messages:Message[]}>(`/api/v2/sessions/${id}?message_limit=100`),renameSession:(id:string,title:string)=>request<Session>(`/api/v2/sessions/${id}`,{method:'PATCH',body:JSON.stringify({title})}),deleteSession:(id:string)=>request<void>(`/api/v2/sessions/${id}`,{method:'DELETE'}),chatStream:(id:string,body:any,onEvent:(event:string,data:StreamEvent)=>void,durable=false)=>durable?durableChat(id,body,onEvent):streamRequest(`/api/v2/sessions/${id}/messages/stream`,body,onEvent),
+  capabilities:()=>request<Capabilities>('/api/v2/capabilities'),sessions:(q='')=>request<Session[]>(`/api/v2/sessions?limit=100&q=${encodeURIComponent(q)}`),createSession:(title:string)=>request<Session>('/api/v2/sessions',{method:'POST',body:JSON.stringify({title})}),session:(id:string)=>request<Session&{messages:Message[]}>(`/api/v2/sessions/${id}?message_limit=100`),renameSession:(id:string,title:string)=>request<Session>(`/api/v2/sessions/${id}`,{method:'PATCH',body:JSON.stringify({title})}),deleteSession:(id:string)=>request<void>(`/api/v2/sessions/${id}`,{method:'DELETE'}),chatStream:(id:string,body:any,onEvent:(event:string,data:StreamEvent)=>void,durable=false,onRun?:(run:RunInfo)=>void)=>durable?durableChat(id,body,onEvent,onRun):streamRequest(`/api/v2/sessions/${id}/messages/stream`,body,onEvent),
   documents:(q='',status='')=>request<{items:DocumentItem[];total:number}>(`/api/v2/documents?limit=100&q=${encodeURIComponent(q)}${status?`&status=${status}`:''}`),document:(id:string)=>request<DocumentItem>(`/api/v2/documents/${id}`),retry:(id:string)=>request<DocumentItem>(`/api/v2/documents/${id}/retry`,{method:'POST',body:'{}'}),deleteDocument:(id:string)=>request<void>(`/api/v2/documents/${id}`,{method:'DELETE'}),estimate:(body:any)=>request<any>('/api/v2/context-estimate',{method:'POST',body:JSON.stringify(body)}),compact:(id:string,version:string,provider:string)=>request<any>(`/api/v2/sessions/${id}/compact`,{method:'POST',body:JSON.stringify({expected_context_version:version,model_provider:provider})}),upload,
   memories:()=>request<MemoryItem[]>('/api/v2/memories'),createMemory:(content:string)=>request<MemoryItem>('/api/v2/memories',{method:'POST',body:JSON.stringify({content})}),updateMemory:(id:string,content:string)=>request<MemoryItem>(`/api/v2/memories/${id}`,{method:'PATCH',body:JSON.stringify({content})}),deleteMemory:(id:string)=>request<void>(`/api/v2/memories/${id}`,{method:'DELETE'}),retryMemory:(id:string)=>request<MemoryItem>(`/api/v2/memories/${id}/retry`,{method:'POST',body:'{}'}),
 }

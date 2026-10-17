@@ -1,0 +1,28 @@
+{
+  "environment": "isolated Docker stack; no model execution",
+  "worker_down_health": {
+    "status": "not_ready",
+    "checks": {
+      "postgresql": "ok",
+      "milvus": "ok",
+      "model_configuration": "ok",
+      "ingestion_worker": "ok",
+      "run_worker": "unavailable"
+    }
+  },
+  "worker_down_http_status": 503,
+  "run_id": "7e2b4840-cc75-481d-a652-4bf94c7752e9",
+  "queued_then_cancelled": true,
+  "worker_restored_http_status": 200,
+  "worker_restored_health": {
+    "status": "ready",
+    "checks": {
+      "postgresql": "ok",
+      "milvus": "ok",
+      "model_configuration": "ok",
+      "ingestion_worker": "ok",
+      "run_worker": "ok"
+    }
+  },
+  "cancelled_run_not_executed": true
+}

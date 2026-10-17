@@ -14,7 +14,7 @@ export async function readEventStream(response:Response,onEvent:(event:string,da
     if(value.sequence!==cursor.sequence+1)throw new Error('流式事件序号不连续')
     onEvent(event,value);cursor.runId=value.run_id;cursor.sequence=value.sequence
     if(event==='error'){cursor.failed=true;throw Object.assign(new Error(value.message||'问答执行失败'),{code:value.code,status:value.status})}
-    return event==='done'?value:undefined
+    return event==='done'||event==='run_cancelled'||event==='run_waiting'&&value.is_current!==false?value:undefined
   }
   try{
     while(true){

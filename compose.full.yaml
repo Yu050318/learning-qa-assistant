@@ -14,3 +14,13 @@ services:
   ingestion-worker:
     environment:
       <<: *full-features
+  run-worker:
+    extends:
+      file: compose.yaml
+      service: ingestion-worker
+    environment:
+      <<: *full-features
+      WORKER_HEARTBEAT_FILE: /tmp/rag-run-worker-id
+    command: ["python", "-m", "app.run_worker"]
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.run_worker", "--healthcheck"]

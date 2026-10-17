@@ -81,6 +81,9 @@ class Settings(BaseSettings):
     model_admin_usernames: list[str] = Field(default_factory=list)
     enabled_model_providers: list[Literal["deepseek", "ollama"]] = Field(default_factory=lambda: ["deepseek", "ollama"])
     chat_run_workers: int = Field(default=4, ge=1, le=16)
+    chat_run_queue_limit: int = Field(default=32, ge=1, le=1000)
+    chat_run_lease_seconds: int = Field(default=45, ge=15, le=3600)
+    chat_run_wait_seconds: int = Field(default=1800, ge=60, le=86400)
     agent_context_token_budget: int = Field(default=24000, ge=4000)
     langsmith_tracing: bool = False
     langsmith_api_key: SecretStr = SecretStr("")

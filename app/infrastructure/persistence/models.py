@@ -220,9 +220,11 @@ class ChatRun(Base):
     __table_args__ = (
         ForeignKeyConstraint(["user_id", "session_id"], ["rag.chat_sessions.user_id", "rag.chat_sessions.id"], ondelete="CASCADE"),
         UniqueConstraint("user_id", "client_key"),
-        CheckConstraint("state IN ('running', 'succeeded', 'failed', 'interrupted')"),
+        Index("ix_chat_runs_claim", "state", "lease_expires_at", "created_at"),
+        CheckConstraint("state IN ('queued', 'running', 'waiting', 'cancelling', 'cancelled', 'succeeded', 'failed', 'interrupted')", name="ck_chat_runs_state"),
         Index("ix_chat_runs_session_active", "session_id", unique=True,
-              postgresql_where=text("state = 'running'"), sqlite_where=text("state = 'running'")),
+              postgresql_where=text("state IN ('queued', 'running', 'waiting', 'cancelling')"),
+              sqlite_where=text("state IN ('queued', 'running', 'waiting', 'cancelling')")),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
@@ -236,6 +238,15 @@ class ChatRun(Base):
     request_id: Mapped[str] = mapped_column(String(100))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     message_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.chat_messages.id", ondelete="SET NULL"))
+    user_message_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.chat_messages.id", ondelete="SET NULL"))
+    payload: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict, server_default="{}")
+    execution_snapshot: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict, server_default="{}")
+    owner_token: Mapped[UUID | None]
+    generation: Mapped[int] = mapped_column(default=0, server_default="0")
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    remaining_seconds: Mapped[float | None]
+    active_since: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    resume_key: Mapped[UUID | None]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -246,6 +257,40 @@ class ChatRunEvent(Base):
     sequence: Mapped[int] = mapped_column(primary_key=True)
     event: Mapped[str] = mapped_column(String(40))
     payload: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+
+
+class ChatRunCheckpoint(Base):
+    __tablename__ = "chat_run_checkpoints"
+    __table_args__ = (CheckConstraint("revision >= 1"),)
+    run_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_runs.id", ondelete="CASCADE"), primary_key=True)
+    revision: Mapped[int] = mapped_column(default=1)
+    payload: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class ChatRunOperation(Base):
+    __tablename__ = "chat_run_operations"
+    __table_args__ = (CheckConstraint("state IN ('started', 'succeeded', 'uncertain')"),)
+    run_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_runs.id", ondelete="CASCADE"), primary_key=True)
+    operation_key: Mapped[str] = mapped_column(String(128), primary_key=True)
+    input_hash: Mapped[str] = mapped_column(String(64))
+    state: Mapped[str] = mapped_column(String(16), default="started")
+    readonly: Mapped[bool] = mapped_column(Boolean)
+    owner_generation: Mapped[int]
+    attempts: Mapped[int] = mapped_column(default=1)
+    result: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class ChatEventOutbox(Base):
+    __tablename__ = "chat_event_outbox"
+    __table_args__ = (
+        ForeignKeyConstraint(["run_id", "sequence"], ["rag.chat_run_events.run_id", "rag.chat_run_events.sequence"], ondelete="CASCADE"),
+        Index("ix_chat_event_outbox_pending", "run_id", "sequence", postgresql_where=text("dispatched_at IS NULL"), sqlite_where=text("dispatched_at IS NULL")),
+    )
+    run_id: Mapped[UUID] = mapped_column(primary_key=True)
+    sequence: Mapped[int] = mapped_column(primary_key=True)
+    dispatched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class ModelConfiguration(Base):

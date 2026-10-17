@@ -58,6 +58,8 @@ class Services:
         self.runs = RunService(settings, self.database, self.chat) if settings.chat_runs_enabled else None
 
     def start(self) -> None:
+        if self.runs is not None:
+            self.runs.notifications.start()
         try:
             recovered = self.ingestion.recover_pending()
             if recovered:
@@ -89,6 +91,12 @@ class Services:
                 checks["ingestion_worker"] = "ok" if WorkerRegistry(self.settings, self.database).healthy_count() else "unavailable"
             except Exception:
                 checks["ingestion_worker"] = "unavailable"
+        if self.settings.chat_runs_enabled:
+            from app.application.workers import WorkerRegistry
+            try:
+                checks["run_worker"] = "ok" if WorkerRegistry(self.settings, self.database, kind="run").healthy_count() else "unavailable"
+            except Exception:
+                checks["run_worker"] = "unavailable"
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 
     def close(self) -> None:

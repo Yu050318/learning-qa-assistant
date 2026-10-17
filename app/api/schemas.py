@@ -260,3 +260,10 @@ class CompactRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     expected_context_version: str = Field(min_length=1, max_length=128)
     model_provider: Literal["deepseek", "ollama"] | None = None
+
+
+class RunResumeRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    checkpoint_revision: int = Field(ge=1)
+    resume_token: UUID
+    supplement: str = Field(min_length=1, max_length=4000)

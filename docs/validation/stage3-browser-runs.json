@@ -1,0 +1,59 @@
+{
+  "environment": "isolated real PostgreSQL / API / independent Run Worker; local scripted model; no paid upstream",
+  "runs": [
+    {
+      "id": "894e57e9-2771-4b9c-a543-f5c2e896f9f3",
+      "state": "succeeded",
+      "generation": 2,
+      "message_id": "c57c560f-5b3b-4f20-84fc-9410dffc08bf",
+      "user_message_id": "839b4c4f-47cd-47f8-be7c-d5edceb09c22",
+      "sequence": 12,
+      "events": [
+        "run_started",
+        "run_claimed",
+        "answer_start",
+        "answer_delta",
+        "run_waiting",
+        "run_resumed",
+        "run_claimed",
+        "answer_start",
+        "answer_delta",
+        "context_usage",
+        "usage",
+        "done"
+      ]
+    },
+    {
+      "id": "a0d3bc18-4b18-4dc4-ab73-d77650679479",
+      "state": "succeeded",
+      "generation": 1,
+      "message_id": "343b9ae3-900e-48f5-a91c-3247beb1b0aa",
+      "user_message_id": "44d9a110-91f9-427f-986b-9ef289b1e609",
+      "sequence": 7,
+      "events": [
+        "run_started",
+        "run_claimed",
+        "answer_start",
+        "answer_delta",
+        "context_usage",
+        "usage",
+        "done"
+      ]
+    },
+    {
+      "id": "93c5d430-f6b0-44c4-91f7-bab52e83c8b9",
+      "state": "cancelled",
+      "generation": 1,
+      "message_id": "fe4e96b7-8632-4581-b19b-4e75f5f99a53",
+      "user_message_id": "b73f24ec-d5fd-4319-85e5-0b19713b1fbf",
+      "sequence": 4,
+      "events": [
+        "run_started",
+        "run_claimed",
+        "cancel_requested",
+        "run_cancelled"
+      ]
+    }
+  ],
+  "message_count": 6
+}

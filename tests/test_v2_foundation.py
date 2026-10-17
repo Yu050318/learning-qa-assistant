@@ -137,8 +137,9 @@ class V2FoundationTests(unittest.TestCase):
         citations = registry.validate("grounded", "内部结论[1]，公开结论[2]。", "auto")
         self.assertEqual(["knowledge", "web"], [citation["type"] for citation in citations])
         json.dumps(citations)
+        self.assertEqual([], registry.validate("clarification", "请补充信息", "auto"))
         with self.assertRaises(AppError):
-            registry.validate("clarification", "请补充信息", "auto")
+            registry.validate("clarification", "请补充信息[1]", "auto")
 
     def test_v2_request_rejects_conflicting_web_scope(self):
         with self.assertRaises(ValueError):

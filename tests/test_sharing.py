@@ -207,9 +207,33 @@ def test_disabled_sharing_does_not_grant_access_or_change_private_sources(sharin
     assert s.ingestion.get(s.uid, s.did).status == "ready"
 
 
-def test_shared_answers_work_with_persistent_runs_without_reexecution(sharing):
+def test_shared_answers_work_with_persistent_runs_without_reexecution(sharing, monkeypatch, tmp_path):
+    import sqlite3
+    from sqlalchemy import create_engine, event
+    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.pool import NullPool
     from app.application.runs import RunService
+    from app.application.run_execution import RunWorker
     s = sharing
+    # Graph checkpoints commit/rollback independently of graph tool sessions.
+    # The version fixture's one externally bound connection cannot model this.
+    original_sessions = s.database.sessions
+    source = original_sessions.kw["bind"]
+    source.commit()
+    path = tmp_path / "shared-run.sqlite"
+    target = sqlite3.connect(path)
+    try:
+        source.connection.driver_connection.backup(target, name="rag")
+    finally:
+        target.close()
+    engine = create_engine("sqlite://", poolclass=NullPool, connect_args={"check_same_thread": False})
+
+    @event.listens_for(engine, "connect")
+    def attach(connection, _):
+        connection.execute("PRAGMA foreign_keys=ON")
+        connection.execute("ATTACH DATABASE ? AS rag", (str(path),))
+
+    s.database.sessions = sessionmaker(bind=engine, expire_on_commit=False)
     s.settings.chat_runs_enabled = True
     s.sharing.set_grant(s.uid, s.kid, s.other, "viewer")
     model = ScriptedModel(responses=[call("delegate_rag", task="查询功率"), call("search_knowledge", query="功率"), report(), final("功率100W[1]")])
@@ -221,16 +245,19 @@ def test_shared_answers_work_with_persistent_runs_without_reexecution(sharing):
     payload = AgentChatInput("功率？","knowledge",knowledge_base_ids=(s.kid,))
     key = uuid4()
     try:
-        # Execute synchronously against this fixture's externally bound SQLite
-        # connection; real multi-connection locks have a separate PG test.
-        with patch.object(runs.executor,"submit",side_effect=lambda func,*args:func(*args)):
-            run = runs.start(s.other,conversation.id,payload,"shared-run",key)
+        monkeypatch.setattr("app.infrastructure.llms.providers.ModelRouter", lambda *args: Models(model))
+        run = runs.start(s.other,conversation.id,payload,"shared-run",key)
+        assert run.state == "queued" and model.position == 0
+        assert RunWorker(runs.store, chat).run_once()
         state, rows = runs.store.read(s.other,run.id)
-        assert state.state == "succeeded" and rows[-1].payload["citations"][0]["document_id"] == str(s.did)
+        assert state.state == "succeeded", rows[-1].payload
+        assert rows[-1].payload["citations"][0]["document_id"] == str(s.did)
         assert runs.start(s.other,conversation.id,payload,"retry",key).id == run.id
         assert len(sessions.get(s.other,conversation.id)[1]) == 2
     finally:
         runs.close()
+        s.database.sessions = original_sessions
+        engine.dispose()
 
 
 def test_additive_sharing_bootstrap():

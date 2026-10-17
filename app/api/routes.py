@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Cookie, File, Header, Query, Request, Response, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.encoders import jsonable_encoder
 from starlette.concurrency import run_in_threadpool
 from sqlalchemy import select
 
@@ -15,11 +16,12 @@ from app.api.dependencies import AdminDependency, AuthDependency, ServiceDepende
 from app.api.schemas import (
     AuthResponse, CredentialsRequest, RegisterRequest, DocumentResponse, MemoryResponse, MemoryWrite, SessionCreate, SessionResponse, SessionRename, UserResponse,
     V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
-    CompactRequest, ContextEstimateRequest, DocumentPage, ActivateDocumentVersion,
+    CompactRequest, ContextEstimateRequest, DocumentPage, ActivateDocumentVersion, RunResumeRequest,
 )
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput
-from app.infrastructure.persistence.models import ChatRun
+from app.application.runs import TERMINAL_STATES
+from app.infrastructure.persistence.models import ChatMessage, ChatRun
 from app.infrastructure.persistence.repository import Repository
 
 v2_router = APIRouter(prefix="/api/v2")
@@ -272,7 +274,22 @@ def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
         web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
-    message = services.chat.answer_v2(user_id, session_id, data, request.state.request_id)
+    if services.settings.chat_runs_enabled:
+        try:
+            key = UUID(request.headers["Idempotency-Key"]) if "Idempotency-Key" in request.headers else uuid4()
+        except ValueError:
+            raise AppError("INVALID_IDEMPOTENCY_KEY", "Idempotency-Key 必须为 UUID", 422) from None
+        run = services.runs.start(user_id, session_id, data, request.state.request_id, key)
+        run, events = services.runs.wait(user_id, run.id)
+        if run.state not in TERMINAL_STATES and run.state != "waiting":
+            return JSONResponse(jsonable_encoder(run_response(run)), status_code=202, headers={"X-Run-ID": str(run.id)})
+        if run.state not in {"waiting", "succeeded"}:
+            error = next((event.payload for event in reversed(events) if event.event == "error"), {})
+            raise AppError(error.get("code", "RUN_CANCELLED"), error.get("message", "本轮问答已取消"), error.get("status", 409))
+        with services.database.sessions() as database:
+            message = database.get(ChatMessage, run.message_id)
+    else:
+        message = services.chat.answer_v2(user_id, session_id, data, request.state.request_id)
     return V2ChatResponse(
         message_id=message.id, answer=message.content, model_provider=message.model_provider,
         model_name=message.model_name, search_mode=message.run_metadata["search_mode"],
@@ -384,6 +401,7 @@ def require_runs(services):
 def run_response(run):
     return {"run_id": run.id, "session_id": run.session_id, "state": run.state,
             "sequence": run.sequence, "message_id": run.message_id, "expires_at": run.expires_at,
+            "waiting": getattr(run, "waiting", None),
             "events_url": f"/api/v2/runs/{run.id}/events"}
 
 
@@ -394,12 +412,14 @@ def start_run(session_id: UUID, payload: V2ChatRequest, request: Request, servic
     data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
                           document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
                           web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids))
-    return run_response(services.runs.start(user_id, session_id, data, request.state.request_id, client_key))
+    run = services.runs.start(user_id, session_id, data, request.state.request_id, client_key)
+    return run_response(services.runs.store.read(user_id, run.id)[0])
 
 
 @v2_router.get("/sessions/{session_id}/runs", tags=["v2 runs"])
-def session_runs(session_id: UUID, services: ServiceDependency, user_id: UserDependency):
+def session_runs(session_id: UUID, response: Response, services: ServiceDependency, user_id: UserDependency):
     require_runs(services)
+    response.headers["Cache-Control"] = "no-store"
     with services.database.sessions() as database:
         Repository(database).chat_session(user_id, session_id)
         ids = list(database.scalars(select(ChatRun.id).where(ChatRun.session_id == session_id, ChatRun.user_id == user_id)
@@ -408,8 +428,23 @@ def session_runs(session_id: UUID, services: ServiceDependency, user_id: UserDep
 
 
 @v2_router.get("/runs/{run_id}", tags=["v2 runs"])
-def get_run(run_id: UUID, services: ServiceDependency, user_id: UserDependency):
+def get_run(run_id: UUID, response: Response, services: ServiceDependency, user_id: UserDependency):
     require_runs(services)
+    response.headers["Cache-Control"] = "no-store"
+    return run_response(services.runs.store.read(user_id, run_id)[0])
+
+
+@v2_router.post("/runs/{run_id}/cancel", tags=["v2 runs"])
+def cancel_run(run_id: UUID, services: ServiceDependency, user_id: UserDependency):
+    require_runs(services)
+    services.runs.store.request_cancel(user_id, run_id)
+    return run_response(services.runs.store.read(user_id, run_id)[0])
+
+
+@v2_router.post("/runs/{run_id}/resume", status_code=202, tags=["v2 runs"])
+def resume_run(run_id: UUID, payload: RunResumeRequest, services: ServiceDependency, user_id: UserDependency):
+    require_runs(services)
+    services.runs.store.resume(user_id, run_id, payload.checkpoint_revision, payload.resume_token, payload.supplement)
     return run_response(services.runs.store.read(user_id, run_id)[0])
 
 
@@ -428,18 +463,26 @@ def durable_stream(run_id, request, services, user_id, after):
     initial = services.runs.store.read(user_id, run_id, after)
 
     async def events():
-        cursor, batch = after, initial
-        while not await request.is_disconnected():
-            run, rows = batch
-            for row in rows:
-                cursor = row.sequence
-                yield sse_event(row.event, row.payload)
-            if run.state != "running" and cursor >= run.sequence:
-                return
-            if not rows:
-                yield ": keep-alive\n\n"
-                await asyncio.sleep(.5)
-            batch = await run_in_threadpool(services.runs.store.read, user_id, run_id, cursor)
+        async with services.runs.notifications.subscribe(run_id) as signal:
+            cursor, batch = after, initial
+            while not await request.is_disconnected():
+                signal.clear()
+                run, rows = batch
+                for row in rows:
+                    cursor = row.sequence
+                    data = row.payload
+                    if row.event == "run_waiting":
+                        data = {**data, "is_current": run.state == "waiting" and row.sequence == run.sequence}
+                    yield sse_event(row.event, data)
+                if (run.state in TERMINAL_STATES or run.state == "waiting") and cursor >= run.sequence:
+                    return
+                if not rows:
+                    yield ": keep-alive\n\n"
+                    try:
+                        await asyncio.wait_for(signal.wait(), timeout=.5)
+                    except TimeoutError:
+                        pass  # Polling remains authoritative when notifications are lost.
+                batch = await run_in_threadpool(services.runs.store.read, user_id, run_id, cursor)
 
     return StreamingResponse(events(), media_type="text/event-stream", headers={
         "Cache-Control": "no-store, no-transform", "X-Accel-Buffering": "no", "X-Run-ID": str(run_id)})

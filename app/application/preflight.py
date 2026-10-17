@@ -82,6 +82,14 @@ def deployment_preflight(settings, database, vectors, *, require_worker=True):
             record("ingestion_worker", "fail", "WORKER_REGISTRY_UNAVAILABLE", "先完成迁移，再启动独立 Worker")
     else:
         record("ingestion_worker", "warn", "IN_PROCESS_INGESTION", "切换 durable 模式并部署独立 Worker")
+    if settings.chat_runs_enabled:
+        try:
+            count = WorkerRegistry(settings, database, kind="run").healthy_count()
+            record("run_worker", "pass" if count else ("fail" if require_worker else "warn"),
+                   "RUN_WORKER_AVAILABLE" if count else "RUN_WORKER_NOT_READY",
+                   "" if count else "启动 python -m app.run_worker；确认 API/Worker 使用相同配置及平台数据库")
+        except Exception:
+            record("run_worker", "fail", "RUN_WORKER_REGISTRY_UNAVAILABLE", "完成迁移并启动独立 Run Worker")
     if not settings.rerank_enabled:
         record("rerank", "disabled", "RERANK_DISABLED", "配置合法 endpoint/model/key 后再启用精排")
     return {"ready": not any(row["status"] == "fail" for row in checks), "checks": checks,

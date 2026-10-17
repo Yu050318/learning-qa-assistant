@@ -7,7 +7,7 @@ from langchain_core.messages import AIMessage, message_chunk_to_message
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.application.evidence import count_tokens
-from app.core.errors import AppError
+from app.core.errors import AppError, UpstreamError
 from app.infrastructure.llms.providers import retryable_model_error
 
 
@@ -91,7 +91,7 @@ class AnswerStreamParser:
 
 class ModelRuntime(AgentMiddleware):
     def __init__(self, models, primary, provider: str, model_name: str, fallback, max_attempts: int,
-                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None, call_observer=None):
+                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None, call_observer=None, checkpoint=None):
         self.models = models
         self.active_model = primary
         self.active_provider = provider
@@ -108,8 +108,11 @@ class ModelRuntime(AgentMiddleware):
         self.context_calls = []
         self.on_chunk = on_chunk
         self.call_observer = call_observer
+        self.checkpoint = checkpoint
 
     def _remaining(self) -> float:
+        if self.checkpoint:
+            self.checkpoint.check()
         value = self.deadline - monotonic()
         if value <= 0:
             raise AppError("AGENT_TIMEOUT", "Agent 生成超时", 504)
@@ -129,7 +132,7 @@ class ModelRuntime(AgentMiddleware):
             tool_descriptions.append(tool if isinstance(tool, dict) else {
                 "name": getattr(tool, "name", ""),
                 "description": getattr(tool, "description", ""),
-                "args": getattr(getattr(tool, "args_schema", None), "model_json_schema", lambda: {})(),
+                "args": getattr(getattr(tool, "tool_call_schema", None) or getattr(tool, "args_schema", None), "model_json_schema", lambda: {})(),
             })
         tokens = count_tokens(
             getattr(system_message, "content", system_message),
@@ -142,6 +145,11 @@ class ModelRuntime(AgentMiddleware):
         return tokens
 
     def _reserve(self, provider: str, model_name: str) -> dict:
+        gap = 0
+        if self.checkpoint:
+            reserved = self.checkpoint.model_attempts() - 1
+            gap = max(0, reserved - self.attempts)
+            self.attempts = max(self.attempts, reserved)
         if self.attempts >= self.max_attempts:
             raise AppError("AGENT_LIMIT_EXCEEDED", "Agent 模型调用超过限制", 502)
         self.attempts += 1
@@ -152,7 +160,73 @@ class ModelRuntime(AgentMiddleware):
             "reported_cache_calls": 0,
         })
         usage["attempts"] += 1
+        if gap:
+            usage["attempts"] += gap
+            usage.update(input_tokens=None, output_tokens=None, total_tokens=None, complete=False)
         return usage
+
+    @staticmethod
+    def message_data(message):
+        value = {"type": message.type, "content": message.content}
+        if isinstance(message, AIMessage):
+            value["tool_calls"] = message.tool_calls
+        if getattr(message, "tool_call_id", None):
+            value["tool_call_id"] = message.tool_call_id
+        return value
+
+    def saved_state(self):
+        return {name: getattr(self, name) for name in ("active_provider", "active_model_name", "attempts", "fallback_used",
+                "usage_by_model", "max_input_tokens", "context_calls")}
+
+    def restore_state(self, state):
+        for name in ("active_provider", "active_model_name", "attempts", "fallback_used", "usage_by_model", "max_input_tokens", "context_calls"):
+            setattr(self, name, state[name])
+
+    def checkpoint_call(self, inputs, call, *, graph=False):
+        from langgraph.config import get_config
+        from app.application.run_checkpoint import CONTROL_ERRORS
+        try:
+            frame = get_config().get("metadata", {}).get("checkpoint_frame")
+        except RuntimeError:
+            frame = None
+        inputs = {**inputs, "provider": self.active_provider, "model": self.active_model_name}
+        key = self.checkpoint.key("model", inputs, frame)
+
+        def execute():
+            try:
+                result = call()
+                message = result.result[0] if graph and result.result else None if graph else result
+                if not isinstance(message, AIMessage):
+                    raise AppError("INVALID_AGENT_OUTPUT", "模型没有返回有效消息", 502)
+                # Persist text/tool calls and usage, never raw headers or private reasoning fields.
+                content = message.content if isinstance(message.content, str) else [
+                    block for block in message.content if isinstance(block, dict) and block.get("type") == "text"]
+                usage = message.response_metadata.get("token_usage") or message.response_metadata.get("usage") or {}
+                encoded = {"content": content, "id": message.id, "tool_calls": message.tool_calls,
+                    "usage_metadata": message.usage_metadata,
+                    "response_metadata": {"token_usage": {name: usage[name] for name in (
+                        "prompt_cache_hit_tokens", "prompt_cache_miss_tokens") if type(usage.get(name)) is int}}}
+                return {"message": encoded, "runtime": self.saved_state(), "error": None}
+            except Exception as error:
+                if isinstance(error, AppError) and error.code in CONTROL_ERRORS:
+                    raise
+                if retryable_model_error(error):
+                    error = UpstreamError("llm", retryable=True)
+                elif not isinstance(error, AppError):
+                    error = AppError("MODEL_CALL_FAILED", "模型调用失败", 502)
+                return {"message": None, "runtime": self.saved_state(), "error": {
+                    "code": error.code, "message": error.message, "status": error.status_code,
+                    "retryable": isinstance(error, UpstreamError) and error.retryable}}
+
+        result = self.checkpoint.invoke(key, inputs, execute, readonly=True)
+        self.restore_state(result["runtime"])
+        if result["error"]:
+            error = result["error"]
+            if error["retryable"]:
+                raise UpstreamError("llm", retryable=True)
+            raise AppError(error["code"], error["message"], error["status"])
+        message = AIMessage(**result["message"])
+        return ModelResponse(result=[message]) if graph else message
 
     def _record(self, usage: dict, message: AIMessage, estimated_tokens: int) -> None:
         metadata = dict(message.usage_metadata or {})
@@ -180,6 +254,15 @@ class ModelRuntime(AgentMiddleware):
         })
 
     def _call(self, request: ModelRequest, handler) -> ModelResponse:
+        if self.checkpoint:
+            inputs = {"messages": [self.message_data(message) for message in request.messages],
+                "system": self.message_data(request.system_message) if request.system_message else None,
+                "tools": [tool if isinstance(tool, dict) else {"name": tool.name, "description": tool.description,
+                    "schema": getattr(tool.tool_call_schema, "model_json_schema", lambda: {})()} for tool in request.tools]}
+            return self.checkpoint_call(inputs, lambda: self._call_once(request, handler), graph=True)
+        return self._call_once(request, handler)
+
+    def _call_once(self, request: ModelRequest, handler) -> ModelResponse:
         estimated = self._check_context(request.messages, request.system_message, request.tools)
         model = self._fresh_model()
         usage = self._reserve(self.active_provider, self.active_model_name)
@@ -199,7 +282,7 @@ class ModelRuntime(AgentMiddleware):
         return response
 
     def invoke(self, messages: list) -> AIMessage:
-        def call_active() -> AIMessage:
+        def call_once() -> AIMessage:
             estimated = self._check_context(messages)
             model = self._fresh_model()
             usage = self._reserve(self.active_provider, self.active_model_name)
@@ -226,6 +309,11 @@ class ModelRuntime(AgentMiddleware):
                 self.call_observer.finish(handle, message=message)
             self._remaining()
             return message
+
+        def call_active():
+            if self.checkpoint:
+                return self.checkpoint_call({"messages": [self.message_data(message) for message in messages]}, call_once)
+            return call_once()
 
         try:
             return call_active()

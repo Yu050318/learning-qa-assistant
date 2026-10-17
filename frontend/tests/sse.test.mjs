@@ -30,6 +30,24 @@ test('terminal error stops reconnection and sequence gaps are rejected',async()=
   await assert.rejects(readEventStream(response(frame(1,'done')),()=>{},{runId:'other',sequence:0}),/标识无效/)
 })
 
+test('current human pause and cancellation finish the stream without reconnect errors',async()=>{
+  for(const event of ['run_waiting','run_cancelled']){
+    const cursor={sequence:0},received=[]
+    const value=await readEventStream(response(frame(1,event,{question:'补充地区',resume_token:'token',checkpoint_revision:2})),(name)=>received.push(name),cursor)
+    assert.equal(value.sequence,1)
+    assert.equal(cursor.failed,undefined)
+    assert.deepEqual(received,[event])
+  }
+})
+
+test('replay passes historical pauses and continues through the resumed round',async()=>{
+  const cursor={sequence:0},received=[]
+  const value=await readEventStream(response(frame(1,'run_waiting',{is_current:false})+frame(2,'run_resumed')+frame(3,'done',{answer:'继续后的回答'})),(event)=>received.push(event),cursor)
+  assert.deepEqual(received,['run_waiting','run_resumed','done'])
+  assert.equal(value.answer,'继续后的回答')
+  assert.equal(cursor.sequence,3)
+})
+
 test('create retry reuses idempotency key; stream reconnect uses the delivered cursor',async()=>{
   const source=await readFile(new URL('../src/api.ts',import.meta.url),'utf8')
   const sseUrl=new URL('../src/sse.ts',import.meta.url).href

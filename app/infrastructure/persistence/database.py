@@ -55,7 +55,7 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
-                if table.name == "worker_heartbeats" and self.settings.ingestion_mode != "durable":
+                if table.name == "worker_heartbeats" and self.settings.ingestion_mode != "durable" and not self.settings.chat_runs_enabled:
                     continue
                 if table.name == "hierarchy_nodes" and not self.settings.hierarchy_enabled:
                     continue
@@ -63,7 +63,7 @@ class Database:
                     continue
                 if table.name in {"organizations", "organization_members", "knowledge_bases", "knowledge_grants", "knowledge_documents"} and not self.settings.sharing_enabled:
                     continue
-                if table.name in {"chat_runs", "chat_run_events"} and not self.settings.chat_runs_enabled:
+                if table.name in {"chat_runs", "chat_run_events", "chat_run_checkpoints", "chat_run_operations", "chat_event_outbox"} and not self.settings.chat_runs_enabled:
                     continue
                 if table.name == "ingestion_jobs" and self.settings.ingestion_mode != "durable":
                     continue

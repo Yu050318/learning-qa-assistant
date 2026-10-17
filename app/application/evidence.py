@@ -54,6 +54,24 @@ class EvidenceRegistry:
         self.keys: dict[tuple[str, str], int] = {}
         self.used_tokens = 0
 
+    def snapshot(self):
+        return {"token_budget": self.token_budget, "entries": self.entries, "sources": list(self.sources.values()),
+            "contexts": self.contexts, "context_tokens": self.context_tokens, "warnings": sorted(self.warnings),
+            "rerank_events": self.rerank_events, "hierarchy_events": self.hierarchy_events,
+            "excluded_numbers": sorted(self.excluded_numbers), "keys": [[*key, number] for key, number in self.keys.items()],
+            "used_tokens": self.used_tokens}
+
+    def restore(self, state):
+        if state["token_budget"] != self.token_budget:
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "证据预算与检查点不一致", 409)
+        self.entries = state["entries"]
+        self.sources = {source["number"]: source for source in state["sources"]}
+        self.contexts, self.context_tokens = state["contexts"], state["context_tokens"]
+        self.warnings, self.excluded_numbers = set(state["warnings"]), set(state["excluded_numbers"])
+        self.rerank_events, self.hierarchy_events = state["rerank_events"], state["hierarchy_events"]
+        self.keys = {(kind, identity): number for kind, identity, number in state["keys"]}
+        self.used_tokens = state["used_tokens"]
+
     def _add(self, key: tuple[str, str], citation: dict, title: str, content: str) -> tuple[dict | None, bool]:
         if key in self.keys:
             return None, True
@@ -196,6 +214,10 @@ class EvidenceRegistry:
 
     def validate(self, kind: str, answer: str, search_mode: str = "auto") -> list[dict]:
         numbers = sorted({int(value) for value in re.findall(r"\[(\d+)\]", answer)})
+        if kind == "clarification":
+            if numbers:
+                raise AppError("INVALID_CITATION", "澄清问题不能声明事实引用", 502)
+            return []
         by_number = {entry["number"]: entry for entry in self.entries if entry["number"] not in self.excluded_numbers}
         non_memory_entries = [entry for entry in by_number.values() if entry["type"] != "memory"]
         if non_memory_entries and kind != "grounded":

@@ -40,6 +40,25 @@ def deny(function, *args, code=None, **kwargs):
     return result.value
 
 
+def test_queued_run_freezes_managed_configuration_in_its_creation_transaction(center):
+    s = center
+    s.chat.model_center = s.center
+    key = uuid4()
+    run, created = s.store.create(s.uid, s.sid, AgentChatInput("fixture", "sql"), "queued-model-snapshot", key,
+                                 queued=True, prepare=s.chat.prepare_run)
+    assert created and run.execution_snapshot["model_center"]["revision"] == 1
+    previous = run.execution_snapshot["model_center"]["configuration"]["profiles"]["deepseek"]["model_name"]
+    config = s.center.snapshot().configuration.model_copy(deep=True)
+    config.profiles["deepseek"].model_name = "changed-after-queue"
+    s.center.update(s.uid, 1, config)
+    again, created = s.store.create(s.uid, s.sid, AgentChatInput("fixture", "sql"), "same-request", key,
+                                   queued=True, prepare=s.chat.prepare_run)
+    assert not created and again.message_id == run.message_id and again.user_message_id == run.user_message_id
+    assert again.execution_snapshot["model_center"]["revision"] == 1
+    assert again.execution_snapshot["model_center"]["configuration"]["profiles"]["deepseek"]["model_name"] == previous
+    assert "fixture-not-real-key" not in str(again.execution_snapshot)
+
+
 def test_configuration_is_versioned_admin_only_and_old_snapshots_stay_frozen(center):
     s = center
     snapshot = s.center.snapshot()

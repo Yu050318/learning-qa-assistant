@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { api, type KnowledgeBase, type Capabilities, type DocumentItem, type MemoryItem, type Message, type Session, type User } from './api'
+import { api, type RunWaiting, type KnowledgeBase, type Capabilities, type DocumentItem, type MemoryItem, type Message, type Session, type User } from './api'
 import { createUploadQueue } from './uploads'
 import { agentLabel,statusLabel } from './agents'
 
 export const useAppStore=defineStore('app',()=>{
   const user=ref<User|null>(null),bootstrapped=ref(false)
   const sessions=ref<Session[]>([]),documents=ref<DocumentItem[]>([]),memories=ref<MemoryItem[]>([]),capabilities=ref<Capabilities|null>(null),documentTotal=ref(0)
-  const messagesBySession=ref<Record<string,Message[]>>({}),runsBySession=ref<Record<string,{busy:boolean;status:string;error:string;attempt:number}>>({})
+  const messagesBySession=ref<Record<string,Message[]>>({}),runsBySession=ref<Record<string,{busy:boolean;status:string;error:string;attempt:number;runId:string|null;waiting:RunWaiting|null;cancelPending:boolean}>>({})
   const knowledgeBases=ref<KnowledgeBase[]>([]),selectedBases=ref<string[]>([])
   const error=ref(''),selectedDocuments=ref<string[]>([]),loadAttempts:Record<string,number>={}
   let errorTimer:number|undefined
@@ -22,7 +22,7 @@ export const useAppStore=defineStore('app',()=>{
   async function register(username:string,password:string,code?:string){const result=await guard(()=>api.register(username,password,code));user.value=result.user;await initialize()}
   async function logout(){await api.logout().catch(()=>{});user.value=null;sessions.value=[];documents.value=[];memories.value=[];messagesBySession.value={};runsBySession.value={};knowledgeBases.value=[];selectedBases.value=[]}
   function messagesFor(id:string){return messagesBySession.value[id]||(messagesBySession.value[id]=[])}
-  function runFor(id:string){return runsBySession.value[id]||(runsBySession.value[id]={busy:false,status:'',error:'',attempt:0})}
+  function runFor(id:string){return runsBySession.value[id]||(runsBySession.value[id]={busy:false,status:'',error:'',attempt:0,runId:null,waiting:null,cancelPending:false})}
   async function loadSessions(q=''){const value=await api.sessions(q);sessions.value=value;return value}
   async function loadSession(id:string,replaceWhileBusy=false){
     const attempt=loadAttempts[id]=(loadAttempts[id]||0)+1,value=await guard(()=>api.session(id))
@@ -31,10 +31,12 @@ export const useAppStore=defineStore('app',()=>{
       const recent=await api.runs(id)
       if(loadAttempts[id]===attempt&&!runFor(id).busy){
         const latest=recent[0]
-        if(latest?.state==='running')void recoverRun(id,latest.run_id)
+        if(latest){runFor(id).runId=latest.run_id;runFor(id).waiting=latest.waiting}
+        if(latest&&['queued','running','cancelling'].includes(latest.state))void recoverRun(id,latest.run_id)
         else if(latest?.state==='succeeded'&&latest.message_id&&!messagesFor(id).some(message=>message.id===latest.message_id))messagesBySession.value[id]=(await api.session(id)).messages
         else if(latest?.state==='interrupted')runFor(id).error='上次问答已中断，请查看历史后重新提问'
         else if(latest?.state==='failed')runFor(id).error='上次问答失败，请检查配置或重新提问'
+        else if(latest?.state==='cancelled')runFor(id).error='本轮问答已取消'
       }
     }
     return value
@@ -42,35 +44,63 @@ export const useAppStore=defineStore('app',()=>{
   async function createSession(title='新对话'){const value=await guard(()=>api.createSession(title));sessions.value.unshift(value);messagesBySession.value[value.id]=[];runFor(value.id);return value}
   function streamInto(id:string,assistantId:string,attempt:number){return(event:string,data:any)=>{
     const run=runFor(id);if(run.attempt!==attempt)return
+    run.runId=data.run_id
     const assistant=messagesFor(id).find(message=>message.id===assistantId);if(!assistant)return
     if(event==='answer_start')assistant.content=''
     else if(event==='answer_delta')assistant.content+=data.delta||''
     else if(['agent_started','agent_finished','agent_failed'].includes(event)){
-      const metadata=assistant.run_metadata||(assistant.run_metadata={agent_events:[]})
+      const metadata=assistant.run_metadata||(assistant.run_metadata={})
+      metadata.agent_events||=[]
       metadata.agent_events.push({agent:data.agent,status:data.status,error_code:data.error_code})
       run.status=`${agentLabel(data.agent)} · ${statusLabel(data.status)}`
-    }else if(event==='done')Object.assign(assistant,{content:data.answer,model_provider:data.model_provider,model_name:data.model_name,citations:data.citations||[],token_usage:data.token_usage,run_metadata:data.run_metadata})
+    }else if(event==='done'){run.waiting=null;Object.assign(assistant,{content:data.answer,model_provider:data.model_provider,model_name:data.model_name,citations:data.citations||[],token_usage:data.token_usage,run_metadata:data.run_metadata})}
+    else if(event==='run_waiting'&&data.is_current!==false){run.waiting=data;assistant.content=data.question;run.status='等待补充信息'}
+    else if(event==='run_cancelled'){run.waiting=null;run.error='本轮问答已取消'}
+    else if(event==='cancel_requested'){run.status='正在停止执行';run.waiting=null}
+    else if(event==='run_claimed')run.status='正在执行任务'
     run.status=event==='run_started'?'Supervisor 正在识别与分发任务':event==='answer_delta'?'正在生成回答':event==='context_usage'?'正在汇总上下文':event==='usage'?'正在保存回答':run.status
   }}
-  async function recoverRun(id:string,runId:string){
+  async function recoverRun(id:string,runId:string,after=0){
     const run=runFor(id);if(run.busy)return
-    run.busy=true;run.error='';run.status='正在恢复回答';const attempt=++run.attempt,assistantId=`replay-${runId}`
-    messagesFor(id).push({id:assistantId,role:'assistant',content:'',model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:new Date().toISOString()})
-    try{await api.resumeRun(runId,streamInto(id,assistantId,attempt));await loadSession(id,true)}
+    run.busy=true;run.error='';run.runId=runId;run.status='正在恢复回答';const attempt=++run.attempt
+    try{
+      const info=await api.run(runId)
+      if(info.state==='waiting'){run.waiting=info.waiting;await loadSession(id,true);return}
+      const assistantId=messagesFor(id).find(message=>message.id===info.message_id)?.id||`replay-${runId}`
+      if(!messagesFor(id).some(message=>message.id===assistantId))messagesFor(id).push({id:assistantId,role:'assistant',content:'',model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:new Date().toISOString()})
+      run.waiting=null
+      await api.resumeRun(runId,streamInto(id,assistantId,attempt),after);await loadSession(id,true)
+    }
     catch(error:any){run.error=error.message;await loadSession(id,true).catch(()=>{})}
     finally{if(run.attempt===attempt){run.busy=false;run.status=''}}
   }
   async function send(id:string,body:any){
-    const run=runFor(id);if(run.busy)return
-    run.busy=true;run.status='正在连接';run.error=''
+    const run=runFor(id);if(run.busy||run.waiting)return
+    run.busy=true;run.status='正在连接';run.error='';run.runId=null
     const attempt=++run.attempt,now=new Date().toISOString(),key=crypto.randomUUID(),assistantId=`pending-assistant-${key}`
     messagesFor(id).push({id:`pending-user-${key}`,role:'user',content:body.question,model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:now},{id:assistantId,role:'assistant',content:'',model_provider:null,model_name:null,citations:[],token_usage:null,run_metadata:null,created_at:now})
     try{
-      const value=await api.chatStream(id,body,streamInto(id,assistantId,attempt),capabilities.value?.features.durable_runs===true)
+      const value=await api.chatStream(id,body,streamInto(id,assistantId,attempt),capabilities.value?.features.durable_runs===true,info=>{if(run.attempt===attempt){run.runId=info.run_id;run.status='已入队，等待执行'}})
       if(run.attempt===attempt){await loadSession(id,true);await Promise.all([loadSessions(),loadMemories()])}
       return value
     }catch(caught:any){if(run.attempt===attempt){run.error=caught?.message||'请求失败';await loadSession(id,true).catch(()=>{})}throw caught}
     finally{if(run.attempt===attempt){run.busy=false;run.status=''}}
+  }
+  async function cancelRun(id:string){
+    const run=runFor(id);if(!run.runId||run.cancelPending)return
+    run.cancelPending=true
+    try{const info=await api.cancelRun(run.runId);run.waiting=info.waiting;run.status=info.state==='cancelling'?'正在停止执行':'';if(info.state==='cancelled'){run.waiting=null;run.error='本轮问答已取消';await loadSession(id,true)}}
+    catch(error:any){run.error=error.message}
+    finally{run.cancelPending=false}
+  }
+  async function continueRun(id:string,supplement:string){
+    const run=runFor(id);if(run.busy||!run.waiting||!run.runId)return
+    const waiting=run.waiting,runId=run.runId
+    run.busy=true;run.error='';run.status='正在提交补充信息'
+    try{await api.continueRun(runId,waiting,supplement);run.waiting=null}
+    catch(error:any){run.error=error.message;throw error}
+    finally{run.busy=false}
+    await recoverRun(id,runId,waiting.sequence)
   }
   async function loadKnowledgeBases(){knowledgeBases.value=capabilities.value?.features.sharing?await api.knowledgeBases():[];selectedBases.value=selectedBases.value.filter(id=>knowledgeBases.value.some(base=>base.id===id))}
   async function loadDocuments(q='',status=''){const value=await api.documents(q,status);documents.value=value.items;documentTotal.value=value.total;selectedDocuments.value=selectedDocuments.value.filter(id=>value.items.some(d=>d.id===id&&d.can_query));uploads.recover(value.items)}
@@ -83,5 +113,5 @@ export const useAppStore=defineStore('app',()=>{
   async function deleteMemory(id:string){await api.deleteMemory(id);await loadMemories()}
   async function retryMemory(id:string){await api.retryMemory(id);await loadMemories()}
   const readyDocuments=computed(()=>documents.value.filter(x=>x.can_query))
-  return {knowledgeBases,selectedBases,loadKnowledgeBases,user,bootstrapped,sessions,documents,memories,capabilities,documentTotal,error,selectedDocuments,uploads,readyDocuments,bootstrap,initialize,login,register,logout,messagesFor,runFor,loadSessions,loadSession,createSession,send,loadDocuments,removeDocuments,retryDocument,renameSession,loadMemories,createMemory,updateMemory,deleteMemory,retryMemory}
+  return {knowledgeBases,selectedBases,loadKnowledgeBases,user,bootstrapped,sessions,documents,memories,capabilities,documentTotal,error,selectedDocuments,uploads,readyDocuments,bootstrap,initialize,login,register,logout,messagesFor,runFor,loadSessions,loadSession,createSession,send,cancelRun,continueRun,loadDocuments,removeDocuments,retryDocument,renameSession,loadMemories,createMemory,updateMemory,deleteMemory,retryMemory}
 })

@@ -5,6 +5,9 @@ import json
 from time import monotonic, perf_counter
 from uuid import UUID, uuid4
 from copy import copy
+from dataclasses import asdict
+from datetime import datetime, timedelta
+from urllib.parse import urlsplit
 
 from app.application.sessions import SessionService
 from app.application.sharing import SharingService
@@ -14,11 +17,24 @@ from app.core.config import Settings
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput, ChatTurn, RunContext
 from app.infrastructure.persistence.database import Database
-from app.infrastructure.persistence.models import ChatMessage, utcnow
+from app.infrastructure.persistence.models import ChatMessage, User, utcnow
 from app.infrastructure.persistence.repository import Repository
 from app.workflows.agent import SYSTEM_PROMPT as AGENT_SYSTEM_PROMPT
 
 logger = logging.getLogger("rag")
+
+# Credentials and platform connection strings are deliberately not part of a
+# persisted snapshot. Workers resolve credentials from their server environment.
+FROZEN_WORKFLOW_SETTINGS = (
+    "deepseek_base_url", "deepseek_model", "deepseek_context_window", "ollama_base_url", "ollama_model",
+    "ollama_context_window", "default_model_provider", "enabled_model_providers", "allow_model_fallback",
+    "model_timeout", "model_max_tokens", "agent_timeout", "agent_max_model_calls", "agent_max_tool_calls",
+    "agent_max_knowledge_calls", "agent_context_token_budget", "supervisor_max_delegations", "supervisor_max_per_agent",
+    "knowledge_quality_enabled", "document_versions_enabled", "hierarchy_enabled", "hierarchy_merge_threshold",
+    "memory_recent_messages", "embedding_model", "embedding_dimension", "web_search_enabled", "fixed_crawl_urls",
+    "retrieval_top_k", "retrieval_parent_context", "retrieval_parent_group_size",
+    "rerank_enabled", "rerank_endpoint", "rerank_model", "rerank_timeout",
+)
 
 _SENSITIVE_PUBLIC_QUERY = re.compile(
     r"(?i)(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis)://|"
@@ -54,6 +70,159 @@ class ChatService:
         self.sharing = SharingService(settings, database)
         self.model_center = ModelCenter(settings, database) if settings.model_center_enabled else None
 
+    def scope_and_history(self, repository, user_id, session, payload, settings):
+        requested = list(payload.document_ids) if payload.document_ids is not None else None
+        version_options = {"current_only": True} if settings.document_versions_enabled else {}
+        ready_ids = [] if payload.search_mode in {"web", "sql"} or payload.knowledge_base_ids else repository.ready_document_ids(
+            user_id, requested, settings.embedding_model, **version_options)
+        owners = {}
+        if payload.knowledge_base_ids:
+            if payload.search_mode in {"web", "sql"}:
+                raise AppError("INVALID_SCOPE", "此模式不接受共享知识库", 422)
+            owners = self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=repository.database)
+            ready_ids = list(owners)
+        history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
+            user_id, session.id)[-settings.memory_recent_messages:]]
+        return ready_ids, owners, history, session.summary
+
+    def prepare_run(self, database, run, payload):
+        """Run, frozen inputs and one stable message pair share the create transaction."""
+        repository = Repository(database)
+        session = repository.chat_session(run.user_id, run.session_id, lock=True)
+        snapshot = self.model_center.snapshot(payload.model_provider, session=database) if self.model_center else None
+        settings = snapshot.settings if snapshot else self.settings
+        selected = payload.model_provider or settings.default_model_provider
+        if selected not in settings.enabled_model_providers:
+            raise AppError("MODEL_DISABLED", "该模型已停用", 403)
+        for name in ("deepseek_base_url", "ollama_base_url", "rerank_endpoint"):
+            endpoint = urlsplit(getattr(settings, name))
+            if endpoint.username or endpoint.password or endpoint.query or endpoint.fragment:
+                raise AppError("INVALID_MODEL_ENDPOINT", "模型地址不可包含凭据、查询串或片段", 503)
+        public_query, web_enabled, warnings = prepare_public_query(payload, settings.web_search_enabled)
+        if payload.search_mode == "web" and not settings.web_search_enabled and not payload.web_urls:
+            raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
+        ready_ids, owners, history, summary = self.scope_and_history(repository, run.user_id, session, payload, settings)
+        message_time = utcnow()
+        user_message = ChatMessage(user_id=run.user_id, session_id=run.session_id, role="user", content=payload.question,
+                                   created_at=message_time)
+        assistant = ChatMessage(user_id=run.user_id, session_id=run.session_id, role="assistant", content="",
+                                run_metadata={"run_id": str(run.id), "state": "queued"},
+                                created_at=message_time + timedelta(microseconds=1))
+        database.add_all([user_message, assistant])
+        database.flush()
+        run.user_message_id, run.message_id = user_message.id, assistant.id
+        context = RunContext(request_id=run.request_id, user_id=run.user_id, session_id=run.session_id,
+            question=payload.question, search_mode=payload.search_mode, allowed_document_ids=tuple(ready_ids),
+            selected_provider=selected, public_query=public_query, web_enabled=web_enabled, warnings=warnings,
+            web_urls=payload.web_urls, source_message_id=user_message.id, started_at_utc=run.created_at,
+            knowledge_base_ids=payload.knowledge_base_ids, document_owners=tuple(owners.items()))
+        context_data = asdict(context)
+        context_data.pop("deadline_monotonic")
+        run.execution_snapshot = json.loads(json.dumps({"version": 1, "context": context_data,
+            "history": [asdict(turn) for turn in history], "summary": summary,
+            "settings": {name: getattr(settings, name) for name in FROZEN_WORKFLOW_SETTINGS},
+            "model_center": {"revision": snapshot.revision, "configuration": snapshot.configuration.model_dump(mode="json")} if snapshot else None,
+        }, default=str))
+        session.updated_at = utcnow()
+
+    def execute_prepared(self, store, claim, on_answer_event=None, *, flush_answer=None):
+        """Execute a claimed snapshot and update its original assistant message."""
+        from app.application.run_checkpoint import RunCheckpoint
+        from app.infrastructure.llms.providers import DeepSeekProvider, ModelRouter, OllamaProvider
+        from app.application.ingestion_jobs import aware
+
+        with self.database.sessions() as database:
+            run = store.owned(database, claim)
+            snapshot, session_id = run.execution_snapshot, run.session_id
+            message_id, user_message_id = run.message_id, run.user_message_id
+            remaining = (aware(run.expires_at) - store.now(database)).total_seconds()
+        if snapshot.get("version") != 1 or not message_id or not user_message_id:
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "运行快照不完整，无法恢复", 409)
+        settings = self.settings.model_copy(update={name: snapshot["settings"][name] for name in FROZEN_WORKFLOW_SETTINGS})
+        values = dict(snapshot["context"])
+        for name in ("user_id", "session_id", "source_message_id"):
+            values[name] = UUID(values[name])
+        for name in ("allowed_document_ids", "knowledge_base_ids"):
+            values[name] = tuple(UUID(value) for value in values[name])
+        values["document_owners"] = tuple((UUID(did), UUID(uid)) for did, uid in values["document_owners"])
+        values["started_at_utc"] = datetime.fromisoformat(values["started_at_utc"])
+        values["web_urls"], values["warnings"] = tuple(values["web_urls"]), tuple(values["warnings"])
+        values["deadline_monotonic"] = monotonic() + remaining
+        context = RunContext(**values)
+        if (context.user_id != claim.user_id or context.session_id != session_id
+                or context.source_message_id != user_message_id):
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "运行身份与快照不一致", 409)
+        workflow = copy(self.agent_workflow)
+        workflow.settings = settings
+        workflow.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
+        sharing = SharingService(settings, self.database)
+
+        def validate(database=None, *, lock=False):
+            from contextlib import nullcontext
+            with (nullcontext(database) if database is not None else self.database.sessions()) as database:
+                user = database.get(User, claim.user_id)
+                if user is None or not user.is_active:
+                    raise AppError("FORBIDDEN", "账号已停用", 403)
+                repository = Repository(database)
+                repository.chat_session(claim.user_id, session_id, lock=lock)
+                for mid, role in ((user_message_id, "user"), (message_id, "assistant")):
+                    message = database.get(ChatMessage, mid)
+                    if message is None or (message.user_id, message.session_id, message.role) != (claim.user_id, session_id, role):
+                        raise AppError("RUN_CHECKPOINT_DIVERGED", "运行消息已变化", 409)
+                frozen = list(context.allowed_document_ids)
+                if context.knowledge_base_ids:
+                    current = sharing.scope(claim.user_id, context.knowledge_base_ids, frozen, session=database, lock=lock)
+                    if current != dict(context.document_owners):
+                        raise AppError("DOCUMENT_SCOPE_CHANGED", "共享授权或文档范围已变化", 409)
+                else:
+                    current = repository.ready_document_ids(claim.user_id, frozen, settings.embedding_model)
+                    if set(current) != set(frozen):
+                        raise AppError("DOCUMENT_SCOPE_CHANGED", "文档范围已变化", 409)
+
+        checkpoint = RunCheckpoint(store, claim, validate=validate)
+        options = {"checkpoint": checkpoint}
+        if self.model_center and snapshot["model_center"]:
+            revision = snapshot["model_center"]["revision"]
+            options["call_observer"] = self.model_center.observer(claim.user_id, session_id, context.request_id, revision)
+        with self.sessions.exclusive(session_id) as probe:
+            checkpoint.check()
+            result = workflow.run(context, [ChatTurn(**turn) for turn in snapshot["history"]], snapshot["summary"],
+                                  on_answer_event=on_answer_event, **options)
+            if flush_answer:
+                flush_answer()
+            checkpoint.check()
+            if probe:
+                probe()
+            with self.database.sessions() as database:
+                # Creation holds the session before inspecting its active Run.
+                Repository(database).chat_session(claim.user_id, session_id, lock=True)
+                store.owned(database, claim)
+                validate(database, lock=True)
+                cited = {UUID(item["document_id"]) for item in result.citations if item["type"] == "knowledge"}
+                if not cited.issubset(context.allowed_document_ids):
+                    raise AppError("DOCUMENT_SCOPE_CHANGED", "引用超出冻结文档范围", 409)
+                if settings.document_versions_enabled and cited:
+                    versions, owners = {}, dict(context.document_owners)
+                    for owner in {owners.get(did, claim.user_id) for did in cited}:
+                        versions.update(Repository(database).version_sources(owner, [did for did in cited if owners.get(did, claim.user_id) == owner]))
+                    for citation in result.citations:
+                        if citation["type"] == "knowledge":
+                            citation["document_version"] = versions[citation["document_id"]]
+                message = database.get(ChatMessage, message_id)
+                message.content, message.model_provider, message.model_name = result.answer.content, result.answer.provider, result.answer.model
+                message.citations, message.token_usage = result.citations, result.answer.token_usage or None
+                message.run_metadata = {**result.run_metadata, "run_id": str(claim.run_id),
+                                        "state": "waiting" if result.kind == "clarification" else "succeeded"}
+                if snapshot["model_center"]:
+                    message.run_metadata = {**message.run_metadata, "model_configuration_revision": snapshot["model_center"]["revision"]}
+                Repository(database).chat_session(claim.user_id, session_id).updated_at = utcnow()
+                if result.kind == "clarification":
+                    store.pause(claim, checkpoint.state, result.answer.content, session=database)
+                else:
+                    store.complete(database, claim.user_id, claim.run_id, message, claim=claim)
+                database.commit()
+                return message
+
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
         if self.agent_workflow is None:
             raise AppError("NOT_IMPLEMENTED", "V2 Agent 尚未配置", 503)
@@ -77,19 +246,7 @@ class ChatService:
                 session = repository.chat_session(user_id, session_id, lock=True)
                 if run_binding:
                     run_binding[0].guard(database, user_id, run_binding[1])
-                requested = list(payload.document_ids) if payload.document_ids is not None else None
-                version_options = {"current_only": True} if self.settings.document_versions_enabled else {}
-                ready_ids = [] if payload.search_mode in {"web", "sql"} or payload.knowledge_base_ids else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, **version_options)
-                owners = {}
-                if payload.knowledge_base_ids:
-                    if payload.search_mode in {"web", "sql"}:
-                        raise AppError("INVALID_SCOPE", "此模式不接受共享知识库", 422)
-                    owners = self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=database)
-                    ready_ids = list(owners)
-                history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
-                    user_id, session_id
-                )[-self.settings.memory_recent_messages:]]
-                summary = session.summary
+                ready_ids, owners, history, summary = self.scope_and_history(repository, user_id, session, payload, settings)
                 user_message = ChatMessage(user_id=user_id, session_id=session_id, role="user", content=payload.question)
                 database.add(user_message)
                 session.updated_at = utcnow()

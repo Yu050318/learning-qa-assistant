@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from contextlib import nullcontext
 from datetime import timedelta
 from time import perf_counter
 from typing import Literal
@@ -99,9 +100,9 @@ class ModelCenter:
             raise AppError("MODEL_CENTER_NOT_INITIALIZED", "请显式执行 bootstrap --model-center", 503)
         return row
 
-    def snapshot(self, provider=None):
+    def snapshot(self, provider=None, *, session=None):
         self.require()
-        with self.database.sessions() as session:
+        with (nullcontext(session) if session is not None else self.database.sessions()) as session:
             row = self.row(session)
             config = ManagedModels.model_validate(row.configuration)
             updates = {"default_model_provider": config.default_provider, "allow_model_fallback": config.allow_fallback,

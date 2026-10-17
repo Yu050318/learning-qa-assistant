@@ -48,6 +48,26 @@ def test_worker_liveness_requires_matching_configuration_and_recent_heartbeat(du
     assert registry.healthy_count() == 0
 
 
+def test_run_worker_liveness_is_distinct_from_ingestion_and_checks_execution_settings(durable):
+    s = durable
+    ingestion = WorkerRegistry(s.settings, s.database)
+    execution = WorkerRegistry(s.settings, s.database, kind="run")
+    ingestion.beat()
+    assert ingestion.healthy_count() == 1 and execution.healthy_count() == 0
+    execution.beat()
+    assert ingestion.healthy_count() == execution.healthy_count() == 1
+    assert execution.healthy_count(ingestion.worker_id) == 0
+    original = s.settings.agent_max_model_calls
+    s.settings.agent_max_model_calls += 1
+    assert execution.healthy_count() == 0 and ingestion.healthy_count() == 1
+    s.settings.agent_max_model_calls = original
+    assert execution.healthy_count(execution.worker_id) == 1
+    with pytest.raises(ValueError, match="cannot change kind"):
+        WorkerRegistry(s.settings, s.database, worker_id=ingestion.worker_id, kind="run").beat()
+    execution.stop()
+    assert execution.healthy_count() == 0 and ingestion.healthy_count() == 1
+
+
 def test_preflight_is_read_only_requires_worker_and_never_returns_raw_errors(durable):
     s = durable
     s.settings.upload_dir.mkdir(parents=True)

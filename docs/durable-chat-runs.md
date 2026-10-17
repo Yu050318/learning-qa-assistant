@@ -1,5 +1,7 @@
 # 第九阶段：Run/Event 持久化与 SSE 断线重放
 
+> 本文保留最初实现路线的历史说明。后续补齐阶段三正在将 API 线程池改为独立 Run Worker，并加入检查点、取消与同一 Run 的人工恢复；新协议和边界见[持久运行执行说明](durable-run-execution.md)，交付状态以[功能补齐进度](replication-repair-progress.md)为准。
+
 本阶段让流式问答先保存公开事件，再通过 SSE 发送。网络断开后只读取已有事件，复用原 Supervisor、SQL/Web/RAG Agent、预算、引用校验、ChatService 和消息表，不重新执行问题。默认 `CHAT_RUNS_ENABLED=false`，保持旧接口行为。
 
 ## 调用链与复用位置

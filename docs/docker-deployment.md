@@ -2,6 +2,8 @@
 
 本配置部署 FastAPI 单 worker 和 Nginx + Vue 构建产物。PostgreSQL、Milvus 使用已有外部服务；不包含本地模型、数据库和向量库容器。2 GiB 主机只适合轻量试用，实际内存取决于并发与文档大小。默认使用独立持久入库 Worker，与 API 共享上传/解析卷。
 
+启用问答持久执行时，使用 `compose.full.yaml` 的独立 Run Worker，并先完成当前迁移。[完整配置启动与预检](deployment-preflight.md#docker-完整配置)包含首次共享卷初始化顺序；Run Worker 的并行槽数由 `CHAT_RUN_WORKERS` 控制。
+
 ## 1. 检查服务器
 
 SSH 登录 Ubuntu，执行：

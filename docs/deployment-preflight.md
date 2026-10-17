@@ -42,8 +42,12 @@ docker compose -f compose.yaml -f compose.full.yaml build
 docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.migrate
 docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.bootstrap --model-center
 docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.preflight --allow-missing-worker
+# 首次创建共享卷时先启动 API，让卷中的上传/解析目录完成初始化。
+docker compose -f compose.yaml -f compose.full.yaml up -d backend
 docker compose -f compose.yaml -f compose.full.yaml up -d
 docker compose -f compose.yaml -f compose.full.yaml exec backend python -m app.preflight
 ```
 
 已有向量集合不执行 `--milvus`；新环境另行显式初始化。迁移本地历史文件到容器时，还须受控迁移文档记录中的绝对路径；只复制数据库和源码不会自动完成文件迁移。预检会检查记录路径是否位于当前上传根目录且文件存在。
+
+补齐第三阶段后，完整配置还会启动独立 `run-worker`。开启 `CHAT_RUNS_ENABLED` 时，readiness 和部署预检均要求配置匹配的 Run Worker；入库 Worker 的心跳不能替代它。运行/取消/人工恢复协议见[持久 Run 执行](durable-run-execution.md)。

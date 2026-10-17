@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from datetime import timedelta
-from threading import Event
+from threading import Event, Thread
 from time import monotonic, sleep
 from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
@@ -10,9 +10,11 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event, select
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 from app.application.chat import ChatService
 from app.application.runs import RunService, RunStore
+from app.application.run_execution import RunWorker
 from app.application.sessions import SessionService
 from app.core.config import Settings
 from app.core.errors import AppError
@@ -24,7 +26,10 @@ from test_api_v2 import Services
 
 @pytest.fixture
 def system(tmp_path):
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False})
+    # Graph tool threads and HTTP readers need independent connections. SQLite's
+    # default SingletonThreadPool may evict a live connection once graph threads
+    # exceed its pool size, including inside sqlite3's native code on Windows.
+    engine = create_engine("sqlite://", poolclass=NullPool, connect_args={"check_same_thread": False})
 
     @event.listens_for(engine, "connect")
     def attach(connection, _):
@@ -49,7 +54,10 @@ def system(tmp_path):
         entered = Event()
         release = Event()
 
-        def run(self, context, history, summary, on_answer_event=None):
+        def __copy__(self):
+            return self
+
+        def run(self, context, history, summary, on_answer_event=None, **kwargs):
             self.calls += 1
             on_answer_event("agent_started", {"agent": "sql", "status": "running"})
             on_answer_event("answer_start", "")
@@ -68,21 +76,41 @@ def system(tmp_path):
     runs = RunService(settings, database, chat)
     value = SimpleNamespace(settings=settings, database=database, sessions=sessions, chat=chat, runs=runs,
                             store=runs.store, uid=user.id, other=other.id, sid=conversation.id, workflow=workflow)
+    threads = []
+    launched = set()
+
+    def launch(run_id):
+        # SQLite has no SKIP LOCKED. This fixture models one execution slot;
+        # competing claimers are verified against actual PostgreSQL separately.
+        if run_id in launched:
+            return
+        launched.add(run_id)
+        thread = Thread(target=RunWorker(runs.store, chat).run_once)
+        thread.start()
+        threads.append(thread)
+
+    value.launch = launch
     try:
         yield value
     finally:
-        workflow.release.set();runs.close();engine.dispose()
+        workflow.release.set()
+        for thread in threads:
+            thread.join(timeout=6)
+            assert not thread.is_alive()
+        runs.close();engine.dispose()
 
 
 def start(system, key=None):
-    return system.runs.start(system.uid, system.sid, AgentChatInput("你好", "sql"), "fixture-request", key or uuid4())
+    run = system.runs.start(system.uid, system.sid, AgentChatInput("你好", "sql"), "fixture-request", key or uuid4())
+    system.launch(run.id)
+    return run
 
 
 def terminal(system, run):
     end = monotonic() + 5
     while monotonic() < end:
         result, rows = system.store.read(system.uid, run.id)
-        if result.state != "running":
+        if result.state not in {"queued", "running", "cancelling"}:
             return result, rows
         sleep(.02)
     pytest.fail("run did not terminate")
@@ -92,7 +120,7 @@ def test_events_persist_before_delivery_and_terminal_message_is_atomic(system):
     run = start(system)
     assert system.workflow.entered.wait(3)
     active, rows = system.store.read(system.uid, run.id)
-    assert active.state == "running" and [row.event for row in rows] == ["run_started", "agent_started", "answer_start", "answer_delta"]
+    assert active.state == "running" and [row.event for row in rows] == ["run_started", "run_claimed", "agent_started", "answer_start", "answer_delta"]
     assert rows[-1].payload["delta"] == "草稿"
     system.workflow.release.set()
     finished, rows = terminal(system, run)
@@ -139,12 +167,15 @@ def test_expiry_is_persisted_and_late_completion_cannot_save_assistant(system):
         session.get(ChatRun, run.id).expires_at = system.store.now(session) - timedelta(seconds=1)
         session.commit()
     interrupted, rows = system.store.read(system.uid, run.id)
-    assert interrupted.state == "interrupted" and rows[-1].payload["code"] == "RUN_INTERRUPTED"
-    system.workflow.release.set();system.runs.close()
+    assert interrupted.state == "running"  # A live owner settles its elapsed budget.
+    system.workflow.release.set()
+    failed, rows = terminal(system, run)
+    assert failed.state == "failed" and rows[-1].payload["code"] == "AGENT_TIMEOUT"
     _, messages = system.sessions.get(system.uid, system.sid)
-    assert [message.role for message in messages] == ["user"]
+    assert [message.role for message in messages] == ["user", "assistant"]
+    assert messages[-1].content == "" and messages[-1].run_metadata["state"] == "failed"
     again, replay = system.store.read(system.uid, run.id)
-    assert again.sequence == interrupted.sequence and replay[-1].event == "error"
+    assert again.sequence == failed.sequence and replay[-1].event == "error"
 
 
 def test_terminal_events_failure_rolls_back_assistant_then_saves_error(system):
@@ -164,21 +195,19 @@ def test_terminal_events_failure_rolls_back_assistant_then_saves_error(system):
     assert "usage" not in [row.event for row in rows] and "context_usage" not in [row.event for row in rows]
     assert "private secret" not in str(rows[-1].payload)
     _, messages = system.sessions.get(system.uid, system.sid)
-    assert [message.role for message in messages] == ["user"]
+    assert [message.role for message in messages] == ["user", "assistant"] and messages[-1].content == ""
 
 
 def test_capacity_is_bounded_but_idempotent_lookup_still_works(system):
     key = uuid4()
-    run = start(system, key)
-    assert system.workflow.entered.wait(3)
-    assert system.runs.slots.acquire(blocking=False)
-    try:
-        assert start(system, key).id == run.id
-        with pytest.raises(AppError) as failure:
-            start(system)
-        assert failure.value.code == "RUN_CAPACITY_EXCEEDED"
-    finally:
-        system.runs.slots.release()
+    system.settings.chat_run_queue_limit = 1
+    run = system.runs.start(system.uid, system.sid, AgentChatInput("你好", "sql"), "fixture", key)
+    assert run.state == "queued" and system.workflow.calls == 0
+    assert system.runs.start(system.uid, system.sid, AgentChatInput("你好", "sql"), "fixture", key).id == run.id
+    another = system.sessions.create(system.uid, "another session")
+    with pytest.raises(AppError) as failure:
+        system.runs.start(system.uid, another.id, AgentChatInput("你好", "sql"), "fixture", uuid4())
+    assert failure.value.code == "RUN_CAPACITY_EXCEEDED"
 
 
 def test_cross_user_cursor_and_cascade_boundaries(system):
@@ -214,7 +243,14 @@ def test_http_replay_uses_cursor_and_does_not_run_again(system):
         setattr(services, name, getattr(system, name))
     services.current_user = system.uid
     headers = {"Authorization": "Bearer fixture", "Idempotency-Key": str(uuid4())}
-    with TestClient(create_app(system.settings, services)) as client:
+    original_start = system.runs.start
+
+    def enqueue(*args, **kwargs):
+        run = original_start(*args, **kwargs)
+        system.launch(run.id)
+        return run
+
+    with patch.object(system.runs, "start", side_effect=enqueue), TestClient(create_app(system.settings, services)) as client:
         response = client.post(f"/api/v2/sessions/{system.sid}/runs", headers=headers, json={"question": "你好", "search_mode": "sql"})
         assert response.status_code == 202
         rid = UUID(response.json()["run_id"])
@@ -226,6 +262,8 @@ def test_http_replay_uses_cursor_and_does_not_run_again(system):
         assert client.get(f"/api/v2/runs/{rid}/events?after=9999", headers=headers).status_code == 422
         assert client.get(f"/api/v2/runs/{rid}/events", headers={**headers,"Last-Event-ID":f"{uuid4()}:1"}).status_code == 422
         assert client.post(f"/api/v2/sessions/{system.sid}/runs", headers=headers, json={"question": "你好", "search_mode": "sql"}).json()["run_id"] == str(rid)
+        synchronous = client.post(f"/api/v2/sessions/{system.sid}/messages", headers=headers, json={"question": "你好", "search_mode": "sql"})
+        assert synchronous.status_code == 200 and synchronous.json()["run_metadata"]["run_id"] == str(rid)
         legacy_url = f"/api/v2/sessions/{system.sid}/messages/stream"
         assert "event: done" in client.post(legacy_url, headers=headers, json={"question": "你好", "search_mode": "sql"}).text
         assert client.post(legacy_url, headers={**headers,"Idempotency-Key":"invalid"}, json={"question":"你好"}).status_code == 422
@@ -238,13 +276,14 @@ def test_http_replay_uses_cursor_and_does_not_run_again(system):
     assert system.workflow.calls == 1
 
 
-def test_real_supervisor_sql_citations_survive_event_replay(system):
+def test_real_supervisor_sql_citations_survive_event_replay(system, monkeypatch):
     from app.workflows.supervisor import SupervisorWorkflow
     from test_agent_v2 import Models, ScriptedModel, SQL, Web, call, final, report
 
     model = ScriptedModel(responses=[call("delegate_sql", task="统计销量"), call("describe_sql_schema"),
                                     call("execute_sql", query="SELECT SUM(amount) FROM sales.orders"), report(), final("销量42[1]")])
     system.chat.agent_workflow = SupervisorWorkflow(system.settings, None, Models(model), Web(), sql=SQL())
+    monkeypatch.setattr("app.infrastructure.llms.providers.ModelRouter", lambda *args: Models(model))
     run = start(system)
     state, rows = terminal(system, run)
     assert state.state == "succeeded"
@@ -258,7 +297,7 @@ def test_real_supervisor_sql_citations_survive_event_replay(system):
 
 
 def test_small_model_chunks_are_coalesced_without_losing_the_tail(system):
-    def generate(context, history, summary, on_answer_event):
+    def generate(context, history, summary, on_answer_event, **kwargs):
         on_answer_event("answer_start", "")
         for _ in range(1001):
             on_answer_event("answer_delta", "x")

@@ -20,9 +20,23 @@ def ingestion_configuration_hash(settings):
 
 
 class WorkerRegistry:
-    def __init__(self, settings, database, worker_id=None):
+    def __init__(self, settings, database, worker_id=None, *, kind="ingestion"):
+        if kind not in {"ingestion", "run"}:
+            raise ValueError("Unsupported worker kind")
         self.settings, self.database = settings, database
         self.worker_id = worker_id or uuid4()
+        self.kind = kind
+
+    def configuration_hash(self):
+        if self.kind == "ingestion":
+            return ingestion_configuration_hash(self.settings)
+        from app.application.chat import FROZEN_WORKFLOW_SETTINGS
+        payload = {name: getattr(self.settings, name) for name in FROZEN_WORKFLOW_SETTINGS}
+        payload.update(kind="run", snapshot_version=1, model_center_enabled=self.settings.model_center_enabled,
+                       sharing_enabled=self.settings.sharing_enabled, sql_allowed_tables=self.settings.sql_allowed_tables,
+                       milvus_uri=self.settings.milvus_uri, milvus_database=self.settings.milvus_database,
+                       milvus_collection=self.settings.milvus_collection)
+        return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
     @staticmethod
     def now(session):
@@ -33,9 +47,11 @@ class WorkerRegistry:
         with self.database.sessions() as session:
             row = session.get(WorkerHeartbeat, self.worker_id)
             if row is None:
-                row = WorkerHeartbeat(id=self.worker_id, kind="ingestion")
+                row = WorkerHeartbeat(id=self.worker_id, kind=self.kind)
                 session.add(row)
-            row.configuration_hash = ingestion_configuration_hash(self.settings)
+            if row.kind != self.kind:
+                raise ValueError("Worker identity cannot change kind")
+            row.configuration_hash = self.configuration_hash()
             row.seen_at = self.now(session)
             # Expired rows are diagnostic-free liveness records, not job history.
             session.execute(delete(WorkerHeartbeat).where(WorkerHeartbeat.seen_at < self.now(session) - timedelta(days=1)))
@@ -44,8 +60,8 @@ class WorkerRegistry:
     def healthy_count(self, worker_id=None):
         with self.database.sessions() as session:
             query = select(func.count()).select_from(WorkerHeartbeat).where(
-                WorkerHeartbeat.kind == "ingestion",
-                WorkerHeartbeat.configuration_hash == ingestion_configuration_hash(self.settings),
+                WorkerHeartbeat.kind == self.kind,
+                WorkerHeartbeat.configuration_hash == self.configuration_hash(),
                 WorkerHeartbeat.seen_at >= self.now(session) - timedelta(seconds=45))
             if worker_id is not None:
                 query = query.where(WorkerHeartbeat.id == worker_id)
