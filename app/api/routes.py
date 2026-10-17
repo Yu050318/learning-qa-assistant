@@ -108,6 +108,13 @@ def admin_overview(services: ServiceDependency, user_id: AdminDependency, respon
         "notice": "此处显示配置状态，服务可用性需通过部署预检与实际运行确认。"}
 
 
+@v2_router.get("/admin/preflight", tags=["administration"])
+def admin_preflight(services: ServiceDependency, user_id: AdminDependency, response: Response):
+    from app.application.preflight import deployment_preflight
+    response.headers["Cache-Control"] = "no-store"
+    return deployment_preflight(services.settings, services.database, services.vectors)
+
+
 @v2_router.post("/auth/logout-all", status_code=204, tags=["auth"])
 def logout_all(response: Response, services: ServiceDependency, context: AuthDependency):
     services.auth.logout_all(context)

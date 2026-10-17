@@ -8,6 +8,7 @@ export type ModelConfiguration = {profiles:Record<'deepseek'|'ollama',ModelProfi
 export type ModelCenterInfo = {revision:number;configuration:ModelConfiguration;can_manage:boolean;models:{provider:'deepseek'|'ollama';model_name:string;enabled:boolean;available:boolean;health:string;checked_at:string|null;error_code:string|null;input_budget_tokens:number}[]}
 export type ModelStatistics = {scope:string;days:number;models:{provider:string;model_name:string;attempts:number;succeeded:number;failed:number;incomplete:number;fallback_attempts:number;reported_calls:number;reported_total_tokens:number|null;total_tokens:number|null;average_ms:number|null}[]}
 export type User = { id:string; username:string; role:'user'|'admin' }
+export type PreflightReport = {ready:boolean;checks:{name:string;status:'pass'|'fail'|'warn'|'disabled';code:string;action:string}[];features:Record<string,boolean>}
 export type DocumentVersionInfo = {series_id:string;version_number:number;current_document_id:string|null;is_current:boolean;content_hash:string}
 export type AuthResult = { access_token:string; token_type:'bearer'; expires_in:number; user:User }
 export type Session = { id:string; title:string; summary:string; summarized_through:string|null; created_at:string; updated_at:string }
@@ -71,6 +72,7 @@ async function durableChat(id:string,body:any,onEvent:(event:string,data:StreamE
 export const api={
   modelCenter:()=>request<ModelCenterInfo>('/api/v2/model-center'),saveModelConfiguration:(expected_revision:number,configuration:ModelConfiguration)=>request<ModelCenterInfo>('/api/v2/model-center',{method:'PUT',body:JSON.stringify({expected_revision,configuration})}),probeModel:(provider:string)=>request<ModelCenterInfo>(`/api/v2/model-center/probe/${provider}`,{method:'POST',body:'{}'}),modelStatistics:(days:number,globalScope=false)=>request<ModelStatistics>(`/api/v2/model-center/statistics?days=${days}&global_scope=${globalScope}`),
   adminOverview:()=>request<{features:Record<string,boolean>;ingestion_mode:string;notice:string}>('/api/v2/admin/overview'),
+  adminPreflight:()=>request<PreflightReport>('/api/v2/admin/preflight'),
   organizations:()=>request<Organization[]>('/api/v2/organizations'),createOrganization:(name:string)=>request<Organization>('/api/v2/organizations',{method:'POST',body:JSON.stringify({name})}),deleteOrganization:(id:string)=>request<void>(`/api/v2/organizations/${id}`,{method:'DELETE'}),
   members:(id:string)=>request<Member[]>(`/api/v2/organizations/${id}/members`),setMember:(id:string,username:string,role:string)=>request<void>(`/api/v2/organizations/${id}/members`,{method:'PUT',body:JSON.stringify({username,role})}),removeMember:(id:string,user:string)=>request<void>(`/api/v2/organizations/${id}/members/${user}`,{method:'DELETE'}),
   knowledgeBases:()=>request<KnowledgeBase[]>('/api/v2/knowledge-bases'),createBase:(id:string,name:string)=>request<KnowledgeBase>(`/api/v2/organizations/${id}/knowledge-bases`,{method:'POST',body:JSON.stringify({name})}),deleteBase:(id:string)=>request<void>(`/api/v2/knowledge-bases/${id}`,{method:'DELETE'}),

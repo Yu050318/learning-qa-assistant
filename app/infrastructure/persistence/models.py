@@ -69,11 +69,13 @@ class IngestionJob(Base):
     __table_args__ = (
         CheckConstraint("state IN ('queued', 'running', 'succeeded', 'failed', 'cancelled')"),
         CheckConstraint("attempts >= 0 AND max_attempts >= 1"),
+        CheckConstraint("kind IN ('ingest', 'hierarchy')", name="ck_ingestion_jobs_kind"),
         Index("ix_ingestion_jobs_claim", "state", "available_at", "lease_expires_at"),
     )
 
     document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    kind: Mapped[str] = mapped_column(String(16), default="ingest", server_default="ingest")
     state: Mapped[str] = mapped_column(String(20), default="queued")
     attempts: Mapped[int] = mapped_column(default=0)
     max_attempts: Mapped[int]
@@ -83,6 +85,14 @@ class IngestionJob(Base):
     last_error_code: Mapped[str | None] = mapped_column(String(100))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class WorkerHeartbeat(Base):
+    __tablename__ = "worker_heartbeats"
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    kind: Mapped[str] = mapped_column(String(20))
+    configuration_hash: Mapped[str] = mapped_column(String(64))
+    seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 class Organization(Base):

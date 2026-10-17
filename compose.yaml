@@ -1,0 +1,66 @@
+services:
+  backend:
+    build: .
+    env_file:
+      - .env
+    environment:
+      INGESTION_WORKERS: "1"
+      INGESTION_MODE: durable
+      UPLOAD_DIR: /app/data/uploads
+      PARSED_DIR: /app/data/parsed
+    volumes:
+      - app_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  ingestion-worker:
+    build: .
+    env_file:
+      - .env
+    environment:
+      INGESTION_MODE: durable
+      UPLOAD_DIR: /app/data/uploads
+      PARSED_DIR: /app/data/parsed
+      WORKER_HEARTBEAT_FILE: /tmp/rag-ingestion-worker-id
+    command: ["python", "-m", "app.worker"]
+    volumes:
+      - app_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.worker", "--healthcheck"]
+      interval: 15s
+      timeout: 15s
+      start_period: 45s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  app_data:

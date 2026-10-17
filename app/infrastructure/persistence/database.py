@@ -55,6 +55,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name == "worker_heartbeats" and self.settings.ingestion_mode != "durable":
+                    continue
                 if table.name == "hierarchy_nodes" and not self.settings.hierarchy_enabled:
                     continue
                 if table.name in {"model_configuration", "model_calls"} and not self.settings.model_center_enabled:

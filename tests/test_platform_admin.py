@@ -81,6 +81,7 @@ def test_admin_api_rechecks_database_role_and_whitelist_is_not_authority(platfor
     s.settings.model_admin_usernames = ["alice"]
     assert s.client.get("/api/v2/admin/overview").status_code == 401
     assert s.client.get("/api/v2/admin/overview", headers=regular_headers).status_code == 403
+    assert s.client.get("/api/v2/admin/preflight", headers=regular_headers).status_code == 403
     response = s.client.get("/api/v2/admin/overview", headers=admin_headers)
     assert response.status_code == 200 and response.headers["Cache-Control"] == "no-store"
     assert not ModelCenter(s.settings, s.database).is_admin(UUID(ordinary["user"]["id"]))

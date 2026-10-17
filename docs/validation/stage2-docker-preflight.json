@@ -1,0 +1,74 @@
+{
+  "ready": true,
+  "checks": [
+    {
+      "name": "database",
+      "status": "pass",
+      "code": "SCHEMA_CURRENT",
+      "action": ""
+    },
+    {
+      "name": "upload_directory",
+      "status": "pass",
+      "code": "DIRECTORY_ACCESSIBLE",
+      "action": ""
+    },
+    {
+      "name": "parsed_directory",
+      "status": "pass",
+      "code": "DIRECTORY_ACCESSIBLE",
+      "action": ""
+    },
+    {
+      "name": "document_files",
+      "status": "pass",
+      "code": "DOCUMENT_FILES_ACCESSIBLE",
+      "action": ""
+    },
+    {
+      "name": "vectors",
+      "status": "pass",
+      "code": "VECTOR_SCHEMA_VALID",
+      "action": ""
+    },
+    {
+      "name": "authentication",
+      "status": "pass",
+      "code": "AUTH_CONFIGURED",
+      "action": ""
+    },
+    {
+      "name": "platform_administrator",
+      "status": "pass",
+      "code": "ADMIN_AVAILABLE",
+      "action": ""
+    },
+    {
+      "name": "model_configuration",
+      "status": "pass",
+      "code": "MODEL_CONFIGURED",
+      "action": "配置状态不代表上游推理连通；使用合成资料单独验证实际调用"
+    },
+    {
+      "name": "ingestion_worker",
+      "status": "pass",
+      "code": "WORKER_AVAILABLE",
+      "action": ""
+    },
+    {
+      "name": "rerank",
+      "status": "disabled",
+      "code": "RERANK_DISABLED",
+      "action": "配置合法 endpoint/model/key 后再启用精排"
+    }
+  ],
+  "features": {
+    "model_center_enabled": true,
+    "sharing_enabled": true,
+    "document_versions_enabled": true,
+    "chat_runs_enabled": true,
+    "hierarchy_enabled": true,
+    "knowledge_quality_enabled": true,
+    "rerank_enabled": false
+  }
+}

@@ -1,0 +1,16 @@
+# Explicit full existing-feature profile; migrate and initialize before starting.
+x-full-features: &full-features
+  MODEL_CENTER_ENABLED: "true"
+  SHARING_ENABLED: "true"
+  DOCUMENT_VERSIONS_ENABLED: "true"
+  CHAT_RUNS_ENABLED: "true"
+  HIERARCHY_ENABLED: "true"
+  KNOWLEDGE_QUALITY_ENABLED: "true"
+
+services:
+  backend:
+    environment:
+      <<: *full-features
+  ingestion-worker:
+    environment:
+      <<: *full-features

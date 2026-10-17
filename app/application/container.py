@@ -83,6 +83,12 @@ class Services:
         except AppError:
             configured = False
         checks["model_configuration"] = "ok" if configured else "missing"
+        if self.settings.ingestion_mode == "durable":
+            from app.application.workers import WorkerRegistry
+            try:
+                checks["ingestion_worker"] = "ok" if WorkerRegistry(self.settings, self.database).healthy_count() else "unavailable"
+            except Exception:
+                checks["ingestion_worker"] = "unavailable"
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 
     def close(self) -> None:

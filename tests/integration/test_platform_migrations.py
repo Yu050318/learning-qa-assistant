@@ -6,6 +6,7 @@ from uuid import uuid4
 import pytest
 from alembic import command
 from alembic.config import Config
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import make_url
 
@@ -39,7 +40,7 @@ def test_empty_upgrade_and_repeat_are_idempotent(database):
     upgrade(database)
     upgrade(database)
     with database.engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0002_platform_roles"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
         assert "role" in {c["name"] for c in inspect(connection).get_columns("users", schema="rag")}
         assert set(inspect(connection).get_table_names(schema="rag")) == {table.name for table in Base.metadata.tables.values()}
 
@@ -86,5 +87,37 @@ def test_role_constraint_and_destructive_downgrade_are_rejected(database):
     config = Config("alembic.ini")
     with database.engine.begin() as connection:
         config.attributes["connection"] = connection
-        with pytest.raises(RuntimeError, match="discard administrator"):
+        with pytest.raises(RuntimeError, match="restore a verified backup"):
             command.downgrade(config, "0001_baseline")
+
+
+def test_worker_heartbeat_expiry_and_recovery_control_http_readiness(database):
+    from datetime import timedelta
+    from fastapi.testclient import TestClient
+    from app.application.container import Services
+    from app.application.workers import WorkerRegistry
+    from app.core.config import Settings
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import WorkerHeartbeat
+    from app.main import create_app
+
+    upgrade(database)
+    settings = Settings(_env_file=None, ingestion_mode="durable", jwt_secret="x" * 32,
+                        deepseek_api_key="fixture", dashscope_api_key="fixture")
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    registry = WorkerRegistry(settings, db)
+    services = SimpleNamespace(settings=settings, database=db, vectors=SimpleNamespace(check=lambda: None),
+                               model_center=None, close=lambda: None)
+    services.readiness = lambda: Services.readiness(services)
+    with TestClient(create_app(settings, services)) as client:
+        assert client.get("/health/ready").status_code == 503
+        registry.beat()
+        assert client.get("/health/ready").status_code == 200
+        with db.sessions() as session:
+            session.get(WorkerHeartbeat, registry.worker_id).seen_at = registry.now(session) - timedelta(seconds=46)
+            session.commit()
+        assert client.get("/health/ready").status_code == 503
+        registry.beat()
+        assert client.get("/health/ready").status_code == 200
+    registry.stop()

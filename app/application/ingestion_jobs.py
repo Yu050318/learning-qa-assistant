@@ -24,6 +24,7 @@ class Claim:
     user_id: UUID
     token: UUID
     exhausted: bool
+    kind: str = "ingest"
 
 
 class IngestionQueue:
@@ -35,7 +36,7 @@ class IngestionQueue:
         clock = func.clock_timestamp() if session.get_bind().dialect.name == "postgresql" else func.current_timestamp()
         return aware(session.scalar(select(clock)))
 
-    def enqueue(self, session, document, *, reset=False):
+    def enqueue(self, session, document, *, reset=False, kind="ingest"):
         job = session.get(IngestionJob, document.id)
         if job is None:
             job = IngestionJob(document_id=document.id, user_id=document.user_id)
@@ -43,6 +44,7 @@ class IngestionQueue:
         elif not reset:
             return
         job.state = "queued"
+        job.kind = kind
         job.attempts = 0
         job.max_attempts = self.settings.ingestion_max_attempts
         job.available_at = self.now(session)
@@ -77,7 +79,7 @@ class IngestionQueue:
             job.state = "running"
             job.claim_token = uuid4()
             job.lease_expires_at = now + timedelta(seconds=self.settings.ingestion_lease_seconds)
-            result = Claim(job.document_id, job.user_id, job.claim_token, exhausted)
+            result = Claim(job.document_id, job.user_id, job.claim_token, exhausted, job.kind)
             session.commit()
             return result
 
@@ -121,7 +123,25 @@ class IngestionQueue:
             document = Repository(session).document(claim.user_id, claim.document_id, lock=True)
             job = self.owned(session, claim, lock=True)
             code = error.code if isinstance(error, AppError) else "INGESTION_FAILED"
-            if document.status == "ready":
+            if claim.kind == "hierarchy":
+                from app.infrastructure.loaders.hierarchy import HierarchyBuilder
+                manifest = (document.parser_metadata or {}).get("hierarchy", {})
+                valid = (manifest.get("fingerprint") == HierarchyBuilder(self.settings).fingerprint
+                         and manifest.get("source_hash") == document.content_hash
+                         and manifest.get("leaf_count") == document.chunk_count
+                         and manifest.get("generation") == (document.parser_metadata or {}).get("generation", 0))
+                if document.status == "deleting":
+                    job.state = "cancelled"
+                elif document.status == "ready" and valid:
+                    job.state, job.last_error_code = "succeeded", None
+                elif error is not None and self.retryable(error) and job.attempts < job.max_attempts:
+                    job.state, job.last_error_code = "queued", code
+                    job.available_at = self.now(session) + timedelta(seconds=min(300, 5 * 2 ** (job.attempts - 1)))
+                else:
+                    job.state = "failed"
+                    job.last_error_code = "INGESTION_ATTEMPTS_EXHAUSTED" if claim.exhausted else code
+                # Backfill failures never invalidate the original document or vectors.
+            elif document.status == "ready":
                 job.state = "succeeded"
                 job.last_error_code = None
             elif document.status == "deleting":
@@ -166,5 +186,5 @@ class IngestionQueue:
                 IngestionJob.document_id == document_id, IngestionJob.user_id == user_id))
             if job is None:
                 return None
-            return {"state": job.state, "attempts": job.attempts, "max_attempts": job.max_attempts,
+            return {"kind": job.kind, "state": job.state, "attempts": job.attempts, "max_attempts": job.max_attempts,
                     "available_at": job.available_at, "last_error_code": job.last_error_code}
