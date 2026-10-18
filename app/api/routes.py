@@ -270,7 +270,7 @@ def rename_v2_session(session_id: UUID, payload: SessionRename, services: Servic
 @v2_router.post("/sessions/{session_id}/messages", response_model=V2ChatResponse, tags=["v2 chat"])
 def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency):
     data = AgentChatInput(
-        question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
+        question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
         web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
@@ -300,7 +300,7 @@ def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services
 @v2_router.post("/sessions/{session_id}/messages/stream", tags=["v2 chat"])
 def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency):
     data = AgentChatInput(
-        question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
+        question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
         web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
@@ -409,7 +409,7 @@ def run_response(run):
 def start_run(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency,
               client_key: Annotated[UUID, Header(alias="Idempotency-Key")]):
     require_runs(services)
-    data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, search_mode=payload.search_mode,
+    data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, search_mode=payload.search_mode,
                           document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
                           web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids))
     run = services.runs.start(user_id, session_id, data, request.state.request_id, client_key)
@@ -523,10 +523,13 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
         {"provider": "deepseek", "model_name": settings.deepseek_model, "available": bool(settings.deepseek_api_key.get_secret_value()) and "deepseek" in settings.enabled_model_providers, "input_budget_tokens": min(settings.agent_context_token_budget, settings.deepseek_context_window - settings.model_max_tokens), "cache_usage_supported": True},
         {"provider": "ollama", "model_name": settings.ollama_model, "available": "ollama" in settings.enabled_model_providers, "input_budget_tokens": min(settings.agent_context_token_budget, settings.ollama_context_window - settings.model_max_tokens), "cache_usage_supported": False},
     ]
+    default_profile_id = None
     if snapshot:
-        models = services.model_center.profiles(snapshot)
+        models, default_profile_id = services.model_center.selectable_profiles(snapshot)
     available = {item["provider"] for item in models if item["available"]}
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"model_center": settings.model_center_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    if default_profile_id not in {item.get("profile_id") for item in models if item["available"]}:
+        default_profile_id = None
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])
@@ -536,4 +539,6 @@ def context_estimate(payload: ContextEstimateRequest, services: ServiceDependenc
 
 @v2_router.post("/sessions/{session_id}/compact", tags=["v2 context"])
 def compact_context(session_id: UUID, payload: CompactRequest, services: ServiceDependency, user_id: UserDependency):
+    if payload.model_profile_id is not None:
+        return services.chat.compact(user_id, session_id, payload.expected_context_version, payload.model_provider, profile_id=payload.model_profile_id)
     return services.chat.compact(user_id, session_id, payload.expected_context_version, payload.model_provider)

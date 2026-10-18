@@ -5,9 +5,16 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.infrastructure.search.tavily import safe_public_url
+from app.domain.model_catalog import ProfileId
+
+
+def validate_model_selection(payload):
+    if payload.model_provider is not None and payload.model_profile_id is not None:
+        raise ValueError("模型 Profile 与旧提供商选择不能同时提交")
 
 
 def validate_web_scope(payload):
+    validate_model_selection(payload)
     if payload.search_mode in {"knowledge", "sql"} and (payload.web_query is not None or payload.web_urls):
         raise ValueError("当前模式不接受联网参数")
     if payload.search_mode in {"web", "sql"} and (payload.document_ids is not None or getattr(payload, "knowledge_base_ids", [])):
@@ -188,6 +195,7 @@ class V2ChatRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     question: str = Field(min_length=1, max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
+    model_profile_id: ProfileId | None = None
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
@@ -242,6 +250,7 @@ class ContextEstimateRequest(BaseModel):
     session_id: UUID | None = None
     question: str = Field(default="", max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
+    model_profile_id: ProfileId | None = None
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
@@ -260,6 +269,12 @@ class CompactRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     expected_context_version: str = Field(min_length=1, max_length=128)
     model_provider: Literal["deepseek", "ollama"] | None = None
+    model_profile_id: ProfileId | None = None
+
+    @model_validator(mode="after")
+    def validate_selection(self):
+        validate_model_selection(self)
+        return self
 
 
 class RunResumeRequest(BaseModel):

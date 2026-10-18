@@ -1,0 +1,13 @@
+{
+  "environment": "stock built Docker API/frontend/ingestion-worker/run-worker with dedicated PostgreSQL test database",
+  "schema": "0005_model_catalog_history",
+  "model_generation_requested": false,
+  "create_revision": 2,
+  "edit_revision": 3,
+  "edited_profile_version": 2,
+  "delete_revision": 4,
+  "stale_write_status": 409,
+  "retired_identity_status": 409,
+  "history_total": 4,
+  "capabilities_model_profiles": true
+}

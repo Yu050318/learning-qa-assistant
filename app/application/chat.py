@@ -89,7 +89,9 @@ class ChatService:
         """Run, frozen inputs and one stable message pair share the create transaction."""
         repository = Repository(database)
         session = repository.chat_session(run.user_id, run.session_id, lock=True)
-        snapshot = self.model_center.snapshot(payload.model_provider, session=database) if self.model_center else None
+        if payload.model_profile_id is not None and self.model_center is None:
+            raise AppError("MODEL_CENTER_DISABLED", "Profile 选择要求启用模型中心", 503)
+        snapshot = self.model_center.snapshot(payload.model_provider, session=database, profile_id=payload.model_profile_id) if self.model_center else None
         settings = snapshot.settings if snapshot else self.settings
         selected = payload.model_provider or settings.default_model_provider
         if selected not in settings.enabled_model_providers:
@@ -121,7 +123,9 @@ class ChatService:
         run.execution_snapshot = json.loads(json.dumps({"version": 1, "context": context_data,
             "history": [asdict(turn) for turn in history], "summary": summary,
             "settings": {name: getattr(settings, name) for name in FROZEN_WORKFLOW_SETTINGS},
-            "model_center": {"revision": snapshot.revision, "configuration": snapshot.configuration.model_dump(mode="json")} if snapshot else None,
+            "model_center": {"revision": snapshot.revision, "configuration": snapshot.configuration.model_dump(mode="json"),
+                "catalog": snapshot.catalog.model_dump(mode="json") if snapshot.catalog else None,
+                "answer_profile_id": snapshot.answer_profile_id} if snapshot else None,
         }, default=str))
         session.updated_at = utcnow()
 
@@ -154,7 +158,14 @@ class ChatService:
             raise AppError("RUN_CHECKPOINT_DIVERGED", "运行身份与快照不一致", 409)
         workflow = copy(self.agent_workflow)
         workflow.settings = settings
-        workflow.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
+        catalog = (snapshot.get("model_center") or {}).get("catalog")
+        if catalog:
+            from app.domain.model_catalog import ModelCatalog
+            from app.infrastructure.llms.catalog import CatalogRouter
+            workflow.models = CatalogRouter(settings, ModelCatalog.model_validate(catalog),
+                profile_id=snapshot["model_center"]["answer_profile_id"])
+        else:
+            workflow.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
         sharing = SharingService(settings, self.database)
 
         def validate(database=None, *, lock=False):
@@ -215,6 +226,11 @@ class ChatService:
                                         "state": "waiting" if result.kind == "clarification" else "succeeded"}
                 if snapshot["model_center"]:
                     message.run_metadata = {**message.run_metadata, "model_configuration_revision": snapshot["model_center"]["revision"]}
+                    if catalog:
+                        roles = {**catalog["assignments"], "answer": snapshot["model_center"]["answer_profile_id"] or catalog["assignments"]["answer"]}
+                        message.run_metadata = {**message.run_metadata, "model_roles": {role: {
+                            "profile_id": key, "profile_version": catalog["profiles"][key]["version"]}
+                            for role, key in roles.items()}}
                 Repository(database).chat_session(claim.user_id, session_id).updated_at = utcnow()
                 if result.kind == "clarification":
                     store.pause(claim, checkpoint.state, result.answer.content, session=database)
@@ -224,11 +240,13 @@ class ChatService:
                 return message
 
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
+        if payload.model_profile_id is not None and self.model_center is None:
+            raise AppError("MODEL_CENTER_DISABLED", "Profile 选择要求启用模型中心", 503)
         if self.agent_workflow is None:
             raise AppError("NOT_IMPLEMENTED", "V2 Agent 尚未配置", 503)
         settings, workflow, options = self.settings, self.agent_workflow, {}
         if self.model_center:
-            snapshot = self.model_center.snapshot(payload.model_provider)
+            snapshot = self.model_center.snapshot(payload.model_provider, profile_id=payload.model_profile_id)
             settings = snapshot.settings
             workflow = copy(self.agent_workflow)
             workflow.settings, workflow.models = settings, snapshot.router()
@@ -306,8 +324,11 @@ class ChatService:
                 logger.info("agent_chat_completed", extra={"resource_id": str(session_id), "model_provider": result.answer.provider, "elapsed_ms": round((perf_counter() - started) * 1000, 2)})
                 return message
 
-    def _model_details(self, provider: str | None) -> tuple[str, str, int]:
-        settings = self.model_center.snapshot(provider).settings if self.model_center else self.settings
+    def _model_details(self, provider: str | None, profile_id=None) -> tuple[str, str, int]:
+        if profile_id is not None and self.model_center is None:
+            raise AppError("MODEL_CENTER_DISABLED", "Profile 选择要求启用模型中心", 503)
+        snapshot = self.model_center.snapshot(provider, profile_id=profile_id) if self.model_center else None
+        settings = snapshot.settings if snapshot else self.settings
         selected = provider or settings.default_model_provider
         names = {"deepseek": settings.deepseek_model, "ollama": settings.ollama_model}
         windows = {"deepseek": settings.deepseek_context_window, "ollama": settings.ollama_context_window}
@@ -315,7 +336,7 @@ class ChatService:
             raise AppError("MODEL_UNAVAILABLE", "所选模型不可用", 503)
         if selected not in settings.enabled_model_providers:
             raise AppError("MODEL_DISABLED", "该模型已停用", 403)
-        return selected, names[selected], min(settings.agent_context_token_budget, windows[selected] - settings.model_max_tokens)
+        return selected, names[selected], snapshot.router().input_budget if snapshot and snapshot.catalog else min(settings.agent_context_token_budget, windows[selected] - settings.model_max_tokens)
 
     @staticmethod
     def _context_version(session, messages) -> str:
@@ -326,7 +347,7 @@ class ChatService:
         return hashlib.sha256(payload.encode()).hexdigest()[:32]
 
     def estimate_context(self, user_id: UUID, payload) -> dict:
-        provider, model_name, budget = self._model_details(payload.model_provider)
+        provider, model_name, budget = self._model_details(payload.model_provider, getattr(payload, "model_profile_id", None))
         summary, history, version, ready = "", [], None, []
         if payload.session_id:
             with self.database.sessions() as database:
@@ -362,7 +383,9 @@ class ChatService:
             "thresholds": {"suggest": .75, "urgent": .9}, "recommendation": recommendation,
         }
 
-    def compact(self, user_id: UUID, session_id: UUID, expected_version: str, provider: str | None):
+    def compact(self, user_id: UUID, session_id: UUID, expected_version: str, provider: str | None, profile_id=None):
+        if profile_id is not None and self.model_center is None:
+            raise AppError("MODEL_CENTER_DISABLED", "Profile 选择要求启用模型中心", 503)
         with self.sessions.exclusive(session_id):
             with self.database.sessions() as database:
                 repository = Repository(database)
@@ -382,9 +405,9 @@ class ChatService:
             source = [{"role": item.role, "content": item.content} for item in prefix]
             models, options, budget = self.agent_workflow.models, {}, self.settings.agent_context_token_budget
             if self.model_center:
-                snapshot = self.model_center.snapshot(provider)
+                snapshot = self.model_center.snapshot(provider, profile_id=profile_id)
                 models = snapshot.router()
-                budget = snapshot.settings.agent_context_token_budget
+                budget = models.input_budget if snapshot.catalog else snapshot.settings.agent_context_token_budget
                 options["call_observer"] = self.model_center.observer(user_id, session_id, uuid4().hex, snapshot.revision, "compaction")
             prompts = [
                 ChatTurn("system", "将对话整理为忠实、简洁的中文摘要。保留用户目标、约束、决定和未解决问题，不添加事实，不输出解释。"),

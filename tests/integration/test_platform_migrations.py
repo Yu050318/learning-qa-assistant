@@ -315,3 +315,93 @@ raise SystemExit(worker.main())
         if process.poll() is None:
             process.terminate()
         process.communicate(timeout=15)
+
+
+def test_model_history_upgrade_preserves_current_legacy_revision_and_configuration(database):
+    import json
+    upgrade(database, "0004_durable_run_control")
+    configuration = {"profiles": {"deepseek": {"model_name": "legacy-answer", "enabled": True}}, "legacy_fixture": True}
+    with database.engine.begin() as connection:
+        connection.execute(text("INSERT INTO rag.model_configuration(id,revision,configuration,health,updated_at) VALUES (1,7,CAST(:value AS jsonb),'{}',now())"),
+                           {"value": json.dumps(configuration)})
+    upgrade(database)
+    upgrade(database)
+    with database.engine.connect() as connection:
+        history = connection.execute(text("SELECT revision,configuration,created_by FROM rag.model_configuration_versions")).one()
+        assert history == (7, configuration, None)
+        assert connection.execute(text("SELECT revision,configuration FROM rag.model_configuration")).one() == (7, configuration)
+
+
+def test_catalog_concurrency_and_retired_identity_use_real_postgresql_history(database):
+    from concurrent.futures import ThreadPoolExecutor
+    from copy import deepcopy
+    from threading import Barrier
+    from app.application.model_center import ModelCenter
+    from app.core.config import Settings
+    from app.core.errors import AppError
+    from app.domain.model_catalog import ModelCatalog
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import User
+
+    upgrade(database)
+    settings = Settings(_env_file=None, model_center_enabled=True)
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    with db.sessions() as session:
+        user = User(username="catalog-admin", password_hash="fixture", role="admin")
+        session.add(user)
+        session.commit()
+    center = ModelCenter(settings, db)
+    center.initialize()
+    base = center.catalog_view(user.id)["catalog"]
+    base["profiles"]["fast-fixture"] = {**base["profiles"]["ollama"], "id": "fast-fixture", "model_name": "fast-fixture"}
+    base["assignments"]["fast"] = "fast-fixture"
+    barrier = Barrier(2)
+
+    def update(label):
+        data = deepcopy(base)
+        data["profiles"]["fast-fixture"]["display_name"] = label
+        barrier.wait(timeout=5)
+        try:
+            return ModelCenter(settings, db).update_catalog(user.id, 1, ModelCatalog.model_validate(data))
+        except AppError as error:
+            return error.code
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        results = list(executor.map(update, ["first", "second"]))
+    assert sum(isinstance(result, dict) for result in results) == 1
+    assert "MODEL_CONFIGURATION_CHANGED" in results
+    assert center.history(user.id)["total"] == 2
+    current = center.catalog_view(user.id)["catalog"]
+    retired = deepcopy(current["profiles"]["fast-fixture"])
+    current["assignments"]["fast"] = "ollama"
+    del current["profiles"]["fast-fixture"]
+    center.update_catalog(user.id, 2, ModelCatalog.model_validate(current))
+    current["profiles"]["fast-fixture"] = retired
+    with pytest.raises(AppError) as error:
+        center.update_catalog(user.id, 3, ModelCatalog.model_validate(current))
+    assert error.value.code == "MODEL_PROFILE_RETIRED" and center.history(user.id)["total"] == 3
+
+
+def test_model_call_upgrade_preserves_legacy_rows_and_enforces_complete_profile_identity(database):
+    from sqlalchemy.exc import IntegrityError
+
+    upgrade(database, "0004_durable_run_control")
+    uid, sid, call_id = uuid4(), uuid4(), uuid4()
+    with database.engine.begin() as connection:
+        connection.execute(text("INSERT INTO rag.users(id,username,password_hash,is_active,role,created_at,updated_at) VALUES (:uid,'ledger-fixture','fixture',true,'user',now(),now())"), {"uid": uid})
+        connection.execute(text("INSERT INTO rag.chat_sessions(id,user_id,title,summary,created_at,updated_at) VALUES (:sid,:uid,'fixture','',now(),now())"), {"sid": sid, "uid": uid})
+        connection.execute(text("""INSERT INTO rag.model_calls
+            (id,user_id,session_id,request_id,operation,attempt_index,configuration_revision,provider,model_name,status,fallback,input_tokens,total_tokens,created_at)
+            VALUES (:id,:uid,:sid,'legacy','agent',1,7,'deepseek','legacy-model','succeeded',false,11,15,now())"""),
+            {"id": call_id, "uid": uid, "sid": sid})
+    upgrade(database)
+    with database.engine.connect() as connection:
+        assert connection.execute(text("SELECT model_name,input_tokens,total_tokens,model_role,model_profile_id,model_profile_version FROM rag.model_calls WHERE id=:id"), {"id": call_id}).one() == ("legacy-model", 11, 15, None, None, None)
+    for role, profile, version in [("fast", None, None), (None, "planner", 1), ("unknown", "planner", 1), ("fast", "planner", 0)]:
+        with pytest.raises(IntegrityError):
+            with database.engine.begin() as connection:
+                connection.execute(text("UPDATE rag.model_calls SET model_role=:role,model_profile_id=:profile,model_profile_version=:version WHERE id=:id"),
+                    {"role": role, "profile": profile, "version": version, "id": call_id})
+    with database.engine.begin() as connection:
+        connection.execute(text("UPDATE rag.model_calls SET model_role='fast',model_profile_id='planner',model_profile_version=2 WHERE id=:id"), {"id": call_id})

@@ -48,7 +48,11 @@ class SupervisorWorkflow:
     def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None, call_observer=None, checkpoint=None):
         started = perf_counter()
         settings = self.settings
-        registry = EvidenceRegistry(evidence_token_budget(settings.agent_context_token_budget))
+        answer_budget = getattr(self.models, "input_budget", settings.agent_context_token_budget)
+        evidence_budget = answer_budget
+        if settings.knowledge_quality_enabled and hasattr(self.models, "for_role"):
+            evidence_budget = min(evidence_budget, self.models.for_role("grader").input_budget)
+        registry = EvidenceRegistry(evidence_token_budget(evidence_budget))
         counters = Counter()
         delegations = Counter()
         tool_events, agent_events, failures = [], [], []
@@ -72,7 +76,7 @@ class SupervisorWorkflow:
         runtime = ModelRuntime(self.models, model, provider, model_name,
                                self.models.agent_fallback(provider, min(remaining(), settings.model_timeout)),
                                settings.agent_max_model_calls, context.deadline_monotonic,
-                               settings.model_timeout, settings.agent_context_token_budget, call_observer=call_observer, checkpoint=checkpoint)
+                               settings.model_timeout, answer_budget, call_observer=call_observer, checkpoint=checkpoint)
 
         def body_state():
             return {"registry": registry.snapshot(), "counters": {name: counters[name] for name in (
@@ -98,6 +102,25 @@ class SupervisorWorkflow:
             failures.extend(previous["failures"])
             knowledge_events.extend(previous["knowledge_events"])
             runtime.restore_state(previous["runtime"])
+        role_runtimes = {"answer": runtime}
+        role_lock = Lock()
+
+        def runtime_for(stage):
+            role = {"rag_planner": "fast", "rag_rewriter": "fast", "rag_grader": "grader"}.get(stage, "answer")
+            if not hasattr(self.models, "for_role") or role == "answer":
+                return runtime
+            with role_lock:
+                if role not in role_runtimes:
+                    router = self.models.for_role(role)
+                    client, selected, name = router.agent_model(None, min(remaining(), router.profile.timeout_seconds))
+                    child = ModelRuntime(router, client, selected, name,
+                        router.agent_fallback(selected, min(remaining(), router.profile.timeout_seconds)),
+                        settings.agent_max_model_calls, context.deadline_monotonic, router.profile.timeout_seconds,
+                        router.input_budget, call_observer=call_observer, checkpoint=checkpoint, shared=runtime)
+                    if previous and role in previous.get("role_runtimes", {}):
+                        child.restore_state(previous["role_runtimes"][role], shared=False)
+                    role_runtimes[role] = child
+                return role_runtimes[role]
 
         def emit(event, data):
             if on_answer_event:
@@ -189,15 +212,15 @@ class SupervisorWorkflow:
                         tool_events.append(event)
             return wrapped
 
-        @instrument
-        def search_knowledge(query: str, runtime: ToolRuntime = None) -> dict:
-            """Search only this user's authorized knowledge documents."""
+        def search_knowledge_body(query, embedding_query=None):
             if not query.strip() or len(query) > 2000:
                 raise AppError("TOOL_NOT_ALLOWED", "知识库查询参数无效", 403)
             if counters["knowledge_searches"] >= settings.agent_max_knowledge_calls:
                 raise AppError("AGENT_LIMIT_EXCEEDED", "知识库检索超过限制", 502)
             counters["knowledge_searches"] += 1
             options = {}
+            if embedding_query is not None:
+                options["embedding_query"] = embedding_query
             if getattr(self.retriever, "hierarchy_expander", None):
                 options["context_token_budget"] = min(registry.token_budget - registry.used_tokens,
                                                       registry.token_budget // 3 - registry.context_tokens)
@@ -211,6 +234,15 @@ class SupervisorWorkflow:
             hits = self.retriever.retrieve(context.user_id, query, list(context.allowed_document_ids),
                                            deadline=context.deadline_monotonic, **options) if context.allowed_document_ids else []
             return registry.add_knowledge(hits)
+
+        @instrument
+        def search_knowledge(query: str, runtime: ToolRuntime = None) -> dict:
+            """Search only this user's authorized knowledge documents."""
+            return search_knowledge_body(query)
+
+        @instrument
+        def search_rewritten_knowledge(query, embedding_query=None):
+            return search_knowledge_body(query, embedding_query)
 
         @instrument
         def search_web(runtime: ToolRuntime = None) -> dict:
@@ -280,7 +312,8 @@ class SupervisorWorkflow:
             return registry.add_sql(self.sql.query(query, remaining()))
 
         def invoke_agent(role, tools, prompt, messages, streaming=False):
-            graph = create_agent(model, tools, system_prompt=prompt, middleware=[runtime])
+            selected_runtime = runtime_for(role)
+            graph = create_agent(selected_runtime.active_model, tools, system_prompt=prompt, middleware=[selected_runtime])
             config = {"recursion_limit": settings.agent_max_model_calls * 2 + 2,
                 "metadata": {"agent_role": role, "checkpoint_frame": f"{checkpoint.frame.get()}/{role}" if checkpoint else role}}
             try:
@@ -348,7 +381,8 @@ class SupervisorWorkflow:
                             counters["knowledge_rewrites"] += 1
                             return None
 
-                        quality = KnowledgeWorkflow(ask, search_knowledge, registry, reserve_rewrite, knowledge_events)
+                        quality = KnowledgeWorkflow(ask, search_knowledge, registry, reserve_rewrite, knowledge_events,
+                                                    rewritten_search=search_rewritten_knowledge)
                         report = SpecialistReport.model_validate(quality.run(task, context.question))
                     else:
                         response = invoke_agent(role, tools, SPECIALIST_PROMPT.format(role=role, rules=rules), [HumanMessage(content=task)])
@@ -502,7 +536,7 @@ class SupervisorWorkflow:
             "schema_version": 3, "search_mode": context.search_mode, "kind": final.kind,
             **{key: counters[key] for key in ("tool_requests", "knowledge_searches", "web_attempts", "web_reads", "sql_queries")},
             "delegations": dict(delegations), "agent_events": agent_events, "failures": failures,
-            "model_attempts": runtime.attempts, "fallback_used": runtime.fallback_used, "repair_used": repair_used,
+            "model_attempts": runtime.attempts, "fallback_used": any(item.fallback_used for item in role_runtimes.values()), "repair_used": repair_used,
             "registered_sources": dict(Counter(item["type"] for item in registry.entries)),
             "cited_sources": dict(Counter(item["type"] for item in citations)),
             "elapsed_ms": round((perf_counter() - started) * 1000, 2), "tavily_credits": tavily_credits,
@@ -523,6 +557,7 @@ class SupervisorWorkflow:
                          for entry in registry.entries if entry["number"] not in registry.excluded_numbers])
         if checkpoint:
             checkpoint.state["workflow"] = {"body": body_state(), "runtime": runtime.saved_state(),
+                "role_runtimes": {role: item.saved_state() for role, item in role_runtimes.items() if role != "answer"},
                 "counters": dict(counters), "delegations": dict(delegations), "tool_events": tool_events,
                 "agent_events": agent_events, "failures": failures, "knowledge_events": knowledge_events,
                 "memory_sources": memory_sources, "messages": [runtime.message_data(message) for message in supervisor_messages]}

@@ -1,0 +1,44 @@
+{
+  "environment": "isolated PostgreSQL + API + independent Run Worker + local scripted model; directory uses MockTransport",
+  "business_database_modified": false,
+  "paid_model_calls": false,
+  "catalog_revision": 3,
+  "history_revisions": [
+    3,
+    2,
+    1
+  ],
+  "profile_count": 3,
+  "run": {
+    "id": "71e76efd-0868-440d-81f9-9f69e5b1432d",
+    "state": "succeeded",
+    "configuration_revision": 3,
+    "answer_profile_id": "model-5d867cfa53b74b2aa9a7de8ab0c5a7eb",
+    "message_count": 2
+  },
+  "calls": [
+    {
+      "role": "answer",
+      "profile_id": "model-5d867cfa53b74b2aa9a7de8ab0c5a7eb",
+      "profile_version": 2,
+      "provider": "ollama",
+      "model": "fixture-fast",
+      "status": "succeeded"
+    }
+  ],
+  "ordinary_user_http_status": {
+    "update": 403,
+    "probe": 403,
+    "history": 403,
+    "global_statistics": 403
+  },
+  "browser_checks": [
+    "add profile",
+    "independent Fast assignment",
+    "profile version increment",
+    "history refresh after save",
+    "explicit profile directory probe",
+    "chat chooses third profile",
+    "ordinary user readonly"
+  ]
+}

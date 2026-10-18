@@ -99,6 +99,8 @@ class RunStore:
         if queued and prepare is None:
             raise ValueError("Queued runs require an atomic preparation callback")
         inputs = asdict(payload)
+        if inputs.get("model_profile_id") is None:
+            inputs.pop("model_profile_id", None)
         if not inputs.get("knowledge_base_ids"):
             inputs.pop("knowledge_base_ids", None)  # Preserve phase-nine keys across this additive request field.
         fingerprint = hashlib.sha256(json.dumps({"session_id": str(session_id), "input": inputs}, sort_keys=True, default=str).encode()).hexdigest()

@@ -1,6 +1,8 @@
 import json
 import re
 from time import monotonic
+from threading import RLock
+from types import SimpleNamespace
 
 from langchain.agents.middleware import AgentMiddleware, ModelRequest, ModelResponse
 from langchain_core.messages import AIMessage, message_chunk_to_message
@@ -91,7 +93,7 @@ class AnswerStreamParser:
 
 class ModelRuntime(AgentMiddleware):
     def __init__(self, models, primary, provider: str, model_name: str, fallback, max_attempts: int,
-                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None, call_observer=None, checkpoint=None):
+                 deadline: float, model_timeout: float, context_budget: int, on_chunk=None, call_observer=None, checkpoint=None, shared=None):
         self.models = models
         self.active_model = primary
         self.active_provider = provider
@@ -101,14 +103,43 @@ class ModelRuntime(AgentMiddleware):
         self.deadline = deadline
         self.model_timeout = model_timeout
         self.context_budget = context_budget
-        self.attempts = 0
+        self.shared = shared.shared if shared else SimpleNamespace(attempts=0, usage_by_model={}, max_input_tokens=0, context_calls=[], lock=RLock())
         self.fallback_used = False
-        self.usage_by_model = {}
-        self.max_input_tokens = 0
-        self.context_calls = []
         self.on_chunk = on_chunk
         self.call_observer = call_observer
         self.checkpoint = checkpoint
+
+    @property
+    def attempts(self):
+        return self.shared.attempts
+
+    @attempts.setter
+    def attempts(self, value):
+        self.shared.attempts = value
+
+    @property
+    def usage_by_model(self):
+        return self.shared.usage_by_model
+
+    @usage_by_model.setter
+    def usage_by_model(self, value):
+        self.shared.usage_by_model = value
+
+    @property
+    def max_input_tokens(self):
+        return self.shared.max_input_tokens
+
+    @max_input_tokens.setter
+    def max_input_tokens(self, value):
+        self.shared.max_input_tokens = value
+
+    @property
+    def context_calls(self):
+        return self.shared.context_calls
+
+    @context_calls.setter
+    def context_calls(self, value):
+        self.shared.context_calls = value
 
     def _remaining(self) -> float:
         if self.checkpoint:
@@ -119,9 +150,9 @@ class ModelRuntime(AgentMiddleware):
         return value
 
     def _fresh_model(self):
-        model, _, model_name = self.models.agent_model(
-            self.active_provider, min(self._remaining(), self.model_timeout)
-        )
+        timeout = min(self._remaining(), self.model_timeout)
+        model, _, model_name = (self.models.fallback_model(timeout) if self.fallback_used and hasattr(self.models, "fallback_model")
+                               else self.models.agent_model(self.active_provider, timeout))
         self.active_model = model
         self.active_model_name = model_name
         return model
@@ -139,12 +170,17 @@ class ModelRuntime(AgentMiddleware):
             *(getattr(message, "content", message) for message in messages),
             json.dumps(tool_descriptions, ensure_ascii=False, default=str),
         )
-        self.max_input_tokens = max(self.max_input_tokens, tokens)
+        with self.shared.lock:
+            self.max_input_tokens = max(self.max_input_tokens, tokens)
         if tokens > self.context_budget:
             raise AppError("CONTEXT_LIMIT_EXCEEDED", "当前上下文超过模型预算，请压缩会话后重试", 409)
         return tokens
 
     def _reserve(self, provider: str, model_name: str) -> dict:
+        with self.shared.lock:
+            return self._reserve_locked(provider, model_name)
+
+    def _reserve_locked(self, provider, model_name):
         gap = 0
         if self.checkpoint:
             reserved = self.checkpoint.model_attempts() - 1
@@ -178,8 +214,11 @@ class ModelRuntime(AgentMiddleware):
         return {name: getattr(self, name) for name in ("active_provider", "active_model_name", "attempts", "fallback_used",
                 "usage_by_model", "max_input_tokens", "context_calls")}
 
-    def restore_state(self, state):
-        for name in ("active_provider", "active_model_name", "attempts", "fallback_used", "usage_by_model", "max_input_tokens", "context_calls"):
+    def restore_state(self, state, *, shared=True):
+        names = ("active_provider", "active_model_name", "fallback_used")
+        if shared:
+            names += ("attempts", "usage_by_model", "max_input_tokens", "context_calls")
+        for name in names:
             setattr(self, name, state[name])
 
     def checkpoint_call(self, inputs, call, *, graph=False):
@@ -190,6 +229,9 @@ class ModelRuntime(AgentMiddleware):
         except RuntimeError:
             frame = None
         inputs = {**inputs, "provider": self.active_provider, "model": self.active_model_name}
+        if hasattr(self.models, "profile"):
+            profile = self.models.fallback_profile if self.fallback_used else self.models.profile
+            inputs.update(model_role=self.models.role, profile_id=profile.id, profile_version=profile.version)
         key = self.checkpoint.key("model", inputs, frame)
 
         def execute():
@@ -229,6 +271,10 @@ class ModelRuntime(AgentMiddleware):
         return ModelResponse(result=[message]) if graph else message
 
     def _record(self, usage: dict, message: AIMessage, estimated_tokens: int) -> None:
+        with self.shared.lock:
+            self._record_locked(usage, message, estimated_tokens)
+
+    def _record_locked(self, usage, message, estimated_tokens):
         metadata = dict(message.usage_metadata or {})
         actual_input = metadata.get("input_tokens")
         for name in ("input_tokens", "output_tokens", "total_tokens"):
@@ -252,6 +298,16 @@ class ModelRuntime(AgentMiddleware):
             "usage_ratio": round((actual_input if isinstance(actual_input, int) else estimated_tokens) / self.context_budget, 6),
             "measurement": "reported" if isinstance(actual_input, int) else "estimated",
         })
+        if hasattr(self.models, "profile"):
+            profile = self.models.fallback_profile if self.fallback_used else self.models.profile
+            self.context_calls[-1].update(model_role=self.models.role, profile_id=profile.id, profile_version=profile.version)
+
+    def _observer(self):
+        observer = self.call_observer
+        if observer and hasattr(observer, "with_profile") and hasattr(self.models, "profile"):
+            profile = self.models.fallback_profile if self.fallback_used else self.models.profile
+            return observer.with_profile(self.models.role, profile.id, profile.version)
+        return observer
 
     def _call(self, request: ModelRequest, handler) -> ModelResponse:
         if self.checkpoint:
@@ -266,18 +322,19 @@ class ModelRuntime(AgentMiddleware):
         estimated = self._check_context(request.messages, request.system_message, request.tools)
         model = self._fresh_model()
         usage = self._reserve(self.active_provider, self.active_model_name)
-        handle = self.call_observer.start(self.active_provider, self.active_model_name, self.attempts, self.fallback_used) if self.call_observer else None
+        observer = self._observer()
+        handle = observer.start(self.active_provider, self.active_model_name, self.attempts, self.fallback_used) if observer else None
         try:
             response = handler(request.override(model=model))
         except Exception as error:
             usage.update(input_tokens=None, output_tokens=None, total_tokens=None, complete=False)
-            if self.call_observer:
-                self.call_observer.finish(handle, error=error)
+            if observer:
+                observer.finish(handle, error=error)
             raise
         if response.result:
             self._record(usage, response.result[0], estimated)
-        if self.call_observer:
-            self.call_observer.finish(handle, message=response.result[0] if response.result else None)
+        if observer:
+            observer.finish(handle, message=response.result[0] if response.result else None)
         self._remaining()
         return response
 
@@ -286,7 +343,8 @@ class ModelRuntime(AgentMiddleware):
             estimated = self._check_context(messages)
             model = self._fresh_model()
             usage = self._reserve(self.active_provider, self.active_model_name)
-            handle = self.call_observer.start(self.active_provider, self.active_model_name, self.attempts, self.fallback_used) if self.call_observer else None
+            observer = self._observer()
+            handle = observer.start(self.active_provider, self.active_model_name, self.attempts, self.fallback_used) if observer else None
             try:
                 if self.on_chunk is None:
                     message = model.invoke(messages)
@@ -301,12 +359,12 @@ class ModelRuntime(AgentMiddleware):
                     message = message_chunk_to_message(combined)
             except Exception as error:
                 usage.update(input_tokens=None, output_tokens=None, total_tokens=None, complete=False)
-                if self.call_observer:
-                    self.call_observer.finish(handle, error=error)
+                if observer:
+                    observer.finish(handle, error=error)
                 raise
             self._record(usage, message, estimated)
-            if self.call_observer:
-                self.call_observer.finish(handle, message=message)
+            if observer:
+                observer.finish(handle, message=message)
             self._remaining()
             return message
 

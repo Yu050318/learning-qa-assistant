@@ -59,7 +59,7 @@ class Database:
                     continue
                 if table.name == "hierarchy_nodes" and not self.settings.hierarchy_enabled:
                     continue
-                if table.name in {"model_configuration", "model_calls"} and not self.settings.model_center_enabled:
+                if table.name in {"model_configuration", "model_configuration_versions", "model_calls"} and not self.settings.model_center_enabled:
                     continue
                 if table.name in {"organizations", "organization_members", "knowledge_bases", "knowledge_grants", "knowledge_documents"} and not self.settings.sharing_enabled:
                     continue
@@ -111,10 +111,11 @@ class Database:
             Base.metadata.create_all(connection, tables=[Organization.__table__, OrganizationMember.__table__, KnowledgeBase.__table__, KnowledgeGrant.__table__, KnowledgeDocument.__table__])
 
     def initialize_model_center(self):
-        with self.engine.begin() as connection:
-            if not inspect(connection).has_table("chat_messages", schema="rag"):
-                raise AppError("DATABASE_NOT_INITIALIZED", "请先初始化平台 PostgreSQL schema", 503)
-            Base.metadata.create_all(connection, tables=[ModelConfiguration.__table__, ModelCall.__table__])
+        with self.engine.connect() as connection:
+            if not inspect(connection).has_table("model_configuration_versions", schema="rag"):
+                raise AppError("MODEL_CENTER_MIGRATION_REQUIRED", "请先执行 python -m app.migrate，再初始化模型中心", 503)
+            connection.execute(select(ModelConfiguration).limit(0))
+            connection.execute(select(ModelCall).limit(0))
 
     def initialize_hierarchy(self):
         with self.engine.begin() as connection:

@@ -7,7 +7,7 @@
 | 1 | Alembic 基线与升级、管理员邀请码、持久角色、鉴权与导航 | 已验收并推送 e4d58d1 |
 | 2 | 部署预检、安全启用已有能力、独立入库 Worker、旧文档补建 | 已验收并推送 dd7221c |
 | 3 | Run Worker、检查点、取消/HITL、租约/fencing、outbox | 已验收并推送 a64baed；本地部署就绪 |
-| 4 | 版本化模型 Profile、四种角色、Step-back/HyDE | 未开始 |
+| 4 | 版本化模型 Profile、四种角色、Step-back/HyDE | 已验收并部署；待推送 |
 | 5 | 数据集/任务/结果、Evaluation Worker、12 文档/80 题真实 A/B | 未开始 |
 | 6 | 租户与检索范围、候选构建/核验/发布、退休与统一任务 | 未开始 |
 | 7 | Skill/Tool 注册与版本、能力中心、命令面板 | 未开始 |
@@ -54,3 +54,15 @@
 - 前端已提供停止执行、人工补充、刷新后恢复等待状态；复用原助手气泡。SSE 将历史暂停标为非当前，避免恢复后的重放误停。类型检查/Vite 构建及 **13 项 Node 测试**通过。浏览器实际验证等待→刷新→补充→同一 Run 完成，以及运行中点击停止→cancelled；[消息和事件证据](validation/stage3-browser-runs.json)确认恢复后仍为原消息对。[等待界面](screenshots/run-hitl-stage3.png)、[恢复完成](screenshots/run-hitl-resumed-stage3.png)、[取消结果](screenshots/run-cancelled-stage3.png)均为独立真实 PostgreSQL/API/Run Worker 配合本地脚本模型的截图，不冒充真实上游生成。
 - Docker 后端和前端镜像实际构建；独立测试栈运行 API、Nginx 前端及两个 Worker，[预检](validation/stage3-docker-preflight.json)全通过。[Worker 停启与排队取消](validation/stage3-docker-worker-cycle.json)验证 Worker 停止后 readiness=503、恢复后=200，停机时入队后取消的任务不被执行。测试容器、共享测试卷、临时进程和专属数据库已清理，当前业务服务保留运行。
 - 修正两处测试隔离缺陷：图执行不能共享版本测试中外部绑定的单条 SQLite Connection；多图线程也不能依赖会回收其他线程连接的 SingletonThreadPool。相关执行测试使用独立连接与持久临时文件，真实锁语义由 PostgreSQL 单独验证。保留知识澄清不携带事实引用的约束，允许检索后继续询问用户。
+
+## 阶段四验收（2026-10-18，待推送）
+
+- 已接通模型目录读写 API：支持同一服务端连接下多个 Profile、增删改、四角色分配与每个 Profile 的版本递增。回答角色要求流式与工具能力，规划/评判/评测角色要求结构化输出；旧两槽位接口不能覆盖新目录，已删除的标识不能重用，客户端不能提交端点或凭据。真实 PostgreSQL 已覆盖目录并发修订冲突和退休标识拒绝重用。
+- 已新增待迁移的配置历史表与管理员历史查询；当前配置更新和历史修订在同一事务保存。迁移会保留升级前配置及其原修订号，不伪造已经丢失的更早历史。契约/模型中心/部署预检组合 36 passed；真实 PostgreSQL 迁移专项 13 passed，包含旧修订 7 升级后原样保留及重复升级验证。
+- 工作流已将回答、规划、评判路由到各自 Profile；所有角色共用总调用预算、用量及检查点，并按角色单独约束上下文。Run 在创建时冻结完整目录和 Profile 版本，后续编辑不改变已入队任务；覆盖多角色接管、HITL 后累计预算、同提供商不同模型降级。评测角色已可独立分配并由角色路由器解析，评测 Worker 的完整消费链仍属第五阶段。
+- 已实现 Step-back/HyDE 的结构化策略选择及 Fast 模型改写，保留原问题约束，沿用一次补检索和总模型调用预算。HyDE 文本仅进入 dense embedding，sparse 查询和授权文档范围不改变；引用和 Grader 输入仍为真实切片。两策略接管均复用已确认的改写/检索，不重复付费调用。最近一次后端全量 402 passed、28 skipped、38 subtests；后续新增接管专项组合 29 passed，最终仍需全量复验。
+- 前端已完成动态 Profile 管理、四角色分配、按 Profile 的目录检测、配置历史和完整聊天选模；调用统计按角色、Profile/版本区分。浏览器在独立 PostgreSQL/API/Run Worker 和本地脚本模型环境验证新增第三个模型、独立规划角色、修改后版本递增、保存后历史即时刷新、检测、聊天选模及普通用户只读。[数据库与 HTTP 证据](validation/stage4-browser-models.json)确认实际 Run 冻结选定 Profile、两条原消息和精确版本的调用账本；普通账号保存、检测、历史及全局统计均返回 403。目录检测使用 HTTP 替身，不冒充真实上游推理质量。
+- 最终后端离线全量 **413 passed、30 skipped、38 subtests passed**，线程异常视为失败。真实 PostgreSQL 迁移/并发专项 14 passed，另新增的旧调用记录迁移与 Profile 身份完整性约束专项 1 passed；旧模型/Token 保留，新增未知身份保持 null，不允许部分身份、未知角色和无效版本。前端类型检查/Vite 构建及 **16 项 Node 测试**通过。
+- 后端与前端 Docker 镜像实际构建，独立测试栈的 API、Nginx 和两个 Worker [部署预检](validation/stage4-docker-preflight.json)通过；[目录增改删与并发检查](validation/stage4-docker-catalog.json)通过，包括历史、版本递增、过期修订拒绝和退休标识禁止重用。临时原生 API/Worker、浏览器标签、Compose 容器/测试卷及两个测试库均已清理。
+- 当前业务环境先备份至忽略目录 `data/backups/20261018-142345-stage4`，pg_dump 归档通过 pg_restore 目录核验，另保存环境、文件与 SHA256；随后迁移至 `0005_model_catalog_history`，保留原模型配置和用户，重启隐藏后台 API、前端及两个独立 Worker。[本地部署](validation/stage4-deployment.json)的 readiness、预检和前端 HTTP 均为 200/就绪，仍保留 1 个用户、2 份文档和 1478 个层级节点，没有改写向量或请求收费生成。新目录首次保存前兼容旧配置，聊天可按转换出的 Profile ID 选择并冻结运行目录。
+- 使用与升级见[模型目录与检索改写](model-catalog.md)。本阶段验收已完成，按约定先提交推送，再开始第五阶段。

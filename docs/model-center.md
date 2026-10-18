@@ -1,5 +1,7 @@
 # 第十一阶段：模型配置、检测和调用账本
 
+> 本文保留早期两槽位模型中心的实现记录。第四阶段的新目录、角色、配置历史与升级流程见[模型目录与检索改写](model-catalog.md)；当前修复和验收状态见[补齐进度](replication-repair-progress.md)。
+
 模型中心复用已有 DeepSeek/Ollama 适配器和 ModelRuntime。新增两张 PostgreSQL 表：一张保存当前配置及修订号，一张保存模型调用尝试。默认关闭，原 .env 模型选择和降级行为继续可用，不新增多 Agent 框架或依赖。
 
 ![模型配置界面（隔离预览）](screenshots/model-center.jpg)

@@ -17,7 +17,9 @@ class RetrieverService:
         self.reranker = reranker
         self.hierarchy_expander = hierarchy_expander
 
-    def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID], *, deadline=None, document_owners=None, context_token_budget=None) -> list[SearchHit]:
+    def retrieve(self, user_id: UUID, query: str, document_ids: list[UUID], *, deadline=None, document_owners=None, context_token_budget=None, embedding_query=None) -> list[SearchHit]:
+        if embedding_query is not None and (not isinstance(embedding_query, str) or not embedding_query.strip() or len(embedding_query) > 6000):
+            raise AppError("RAG_REWRITE_INVALID", "假设匹配文本无效或超长", 422)
         owners = document_owners or {did: user_id for did in document_ids}
         if set(owners) != set(document_ids):
             raise AppError("VECTOR_SCOPE_MISMATCH", "检索范围与文档归属不一致", 503)
@@ -30,7 +32,7 @@ class RetrieverService:
                 raise AppError("AGENT_TIMEOUT", "检索时间预算耗尽", 504)
 
         check_deadline()
-        vector = self.embeddings.embed_query(query)
+        vector = self.embeddings.embed_query(embedding_query if embedding_query is not None else query)
         hits = []
         for owner, ids in groups.items():
             check_deadline()

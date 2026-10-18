@@ -169,6 +169,7 @@ class AgentChatInput:
     model_provider: str | None = None
     web_urls: tuple[str, ...] = ()
     knowledge_base_ids: tuple[UUID, ...] = ()
+    model_profile_id: str | None = None
 
 
 @dataclass(frozen=True)

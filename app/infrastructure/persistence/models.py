@@ -303,12 +303,25 @@ class ModelConfiguration(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
 
+class ModelConfigurationVersion(Base):
+    __tablename__ = "model_configuration_versions"
+    __table_args__ = (CheckConstraint("revision >= 1", name="ck_model_configuration_versions_revision"),)
+    revision: Mapped[int] = mapped_column(primary_key=True)
+    configuration: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    created_by: Mapped[UUID | None]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class ModelCall(Base):
     __tablename__ = "model_calls"
     __table_args__ = (
         ForeignKeyConstraint(["user_id", "session_id"], ["rag.chat_sessions.user_id", "rag.chat_sessions.id"], ondelete="CASCADE"),
         UniqueConstraint("user_id", "request_id", "operation", "attempt_index"),
         CheckConstraint("status IN ('started', 'succeeded', 'failed')"),
+        CheckConstraint("(model_role IS NULL AND model_profile_id IS NULL AND model_profile_version IS NULL) OR "
+                        "(model_role IS NOT NULL AND model_role IN ('answer','fast','grader','evaluator') AND "
+                        "model_profile_id IS NOT NULL AND model_profile_version IS NOT NULL AND model_profile_version >= 1)",
+                        name="ck_model_calls_profile"),
         Index("ix_model_calls_user_created", "user_id", "created_at"),
     )
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
@@ -320,6 +333,9 @@ class ModelCall(Base):
     configuration_revision: Mapped[int]
     provider: Mapped[str] = mapped_column(String(30))
     model_name: Mapped[str] = mapped_column(String(200))
+    model_role: Mapped[str | None] = mapped_column(String(20))
+    model_profile_id: Mapped[str | None] = mapped_column(String(64))
+    model_profile_version: Mapped[int | None]
     status: Mapped[str] = mapped_column(String(12), default="started")
     fallback: Mapped[bool] = mapped_column(Boolean, default=False)
     input_tokens: Mapped[int | None]

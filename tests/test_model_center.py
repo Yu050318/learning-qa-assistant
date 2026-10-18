@@ -13,7 +13,7 @@ from app.application.model_center import ManagedModels, ModelCenter
 from app.core.errors import AppError, UpstreamError
 from app.domain.contracts import AgentChatInput, ModelAnswer
 from app.infrastructure.llms.providers import DeepSeekProvider, ModelRouter, OllamaProvider
-from app.infrastructure.persistence.models import ModelCall, ModelConfiguration, User
+from app.infrastructure.persistence.models import ModelCall, ModelConfiguration, ModelConfigurationVersion, User
 from app.workflows.supervisor import SupervisorWorkflow
 from test_agent_v2 import Models, ScriptedModel, Web, call, final, report, SQL
 from test_chat_runs import system
@@ -73,6 +73,24 @@ def test_configuration_is_versioned_admin_only_and_old_snapshots_stay_frozen(cen
     assert not s.center.view(s.other)["can_manage"]
     s.center.initialize()
     assert s.center.snapshot().revision == 2
+
+
+def test_configuration_history_is_atomic_persistent_and_admin_only(center):
+    s = center
+    first = s.center.snapshot()
+    changed = first.configuration.model_copy(deep=True)
+    changed.profiles["deepseek"].model_name = "historical-second-model"
+    s.center.update(s.uid, first.revision, changed)
+    history = s.center.history(s.uid)
+    assert history["total"] == 2 and [item["revision"] for item in history["items"]] == [2, 1]
+    assert history["items"][1]["configuration"] == first.configuration.model_dump(mode="json")
+    assert history["items"][0]["created_by"] == s.uid
+    assert "fixture-not-real-key" not in str(history)
+    deny(s.center.history, s.other, code="FORBIDDEN")
+    deny(s.center.update, s.uid, first.revision, changed, code="MODEL_CONFIGURATION_CHANGED")
+    assert s.center.history(s.uid)["total"] == 2
+    with s.database.sessions() as session:
+        assert session.get(ModelConfigurationVersion, 1).configuration["profiles"]["deepseek"]["model_name"] == "deepseek-chat"
 
 
 @pytest.mark.parametrize("change", ["disable_default", "fallback_disabled", "context", "credentials", "unknown_field"])
@@ -232,7 +250,12 @@ def test_http_configuration_and_stats_never_expose_credentials(center):
         assert client.put("/api/v2/model-center",headers=headers,json=data).status_code == 403
         assert client.get("/api/v2/model-center/statistics?global_scope=true",headers=headers).status_code == 403
         assert client.post("/api/v2/model-center/probe/ollama",headers=headers).status_code == 403
+        assert client.get("/api/v2/model-center/versions",headers=headers).status_code == 403
         assert client.get("/api/v2/capabilities",headers=headers).json()["features"]["model_center"] is True
         services.current_user = s.uid
         assert client.put("/api/v2/model-center",headers=headers,json=data).status_code == 200
         assert client.put("/api/v2/model-center",headers=headers,json=data).status_code == 409
+        history = client.get("/api/v2/model-center/versions?limit=1",headers=headers)
+        assert history.status_code == 200 and history.headers["Cache-Control"] == "no-store"
+        assert history.json()["total"] == 2 and len(history.json()["items"]) == 1
+        assert history.json()["items"][0]["revision"] == 2 and "fixture-not-real-key" not in history.text

@@ -12,7 +12,7 @@ from app.application.model_center import ModelCenter
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.persistence.database import Database
-from app.infrastructure.persistence.models import ChatSession, ModelConfiguration, User
+from app.infrastructure.persistence.models import ChatSession, ModelConfiguration, ModelConfigurationVersion, User
 
 
 @pytest.mark.skipif(os.getenv("RUN_MODEL_CENTER_INTEGRATION") != "1", reason="requires isolated PostgreSQL model-center test DB")
@@ -60,5 +60,6 @@ def test_configuration_compare_and_swap_and_metric_lifecycle():
             session.execute(delete(User).where(User.id == uid))
             if initialized:
                 session.execute(delete(ModelConfiguration).where(ModelConfiguration.id == 1))
+                session.execute(delete(ModelConfigurationVersion))
             session.commit()
         db.close()
