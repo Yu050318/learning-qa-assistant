@@ -43,7 +43,7 @@ class SessionService:
 
     def rename(self, user_id: UUID, session_id: UUID, title: str):
         with self.exclusive(session_id), self.database.sessions() as database:
-            session = Repository(database).chat_session(user_id, session_id, lock=True)
+            session = Repository(database).chat_session(user_id, session_id, lock=True, kind="chat")
             session.title = title
             database.commit()
             return session
@@ -51,15 +51,15 @@ class SessionService:
     def get(self, user_id: UUID, session_id: UUID, message_limit: int = 100, message_offset: int = 0):
         with self.database.sessions() as database:
             repository = Repository(database)
-            session = repository.chat_session(user_id, session_id)
+            session = repository.chat_session(user_id, session_id, kind="chat")
             messages = repository.messages(user_id, session_id, message_limit, message_offset)
             return session, messages
 
     def delete(self, user_id: UUID, session_id: UUID):
         with self.database.sessions() as database:
             repository = Repository(database)
-            repository.chat_session(user_id, session_id)
+            repository.chat_session(user_id, session_id, kind="chat")
             with self.exclusive(session_id):
-                session = repository.chat_session(user_id, session_id, lock=True)
+                session = repository.chat_session(user_id, session_id, lock=True, kind="chat")
                 database.delete(session)
                 database.commit()

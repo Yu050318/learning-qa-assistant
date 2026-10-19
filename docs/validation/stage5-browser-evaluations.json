@@ -1,0 +1,1770 @@
+{
+  "environment": "isolated local PostgreSQL/API/independent evaluation process; scripted UI-only fixture, not live quality benchmark",
+  "cases_per_job": 12,
+  "jobs": [
+    {
+      "id": "5d8809e0-8270-4a78-b2db-d085acf81c4c",
+      "dataset_id": "f092f563-ecc7-4b96-a21b-a899de653ecd",
+      "dataset_fingerprint": "fb03d609c99499df3956100b9cb8d0ccae354924acf51ad54f80fda2a38bdc1f",
+      "baseline_job_id": null,
+      "split": "all",
+      "profile": "current",
+      "state": "cancelled",
+      "gate_policy": {
+        "metric_gates": [
+          {
+            "metric": "kind_correct",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "faithfulness",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "fact_coverage",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "citations_valid",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "citation_support",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "source_types_correct",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "claim_citation_coverage",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          }
+        ],
+        "schema_version": 1,
+        "max_failed_cases": 0,
+        "require_comparison": false,
+        "require_model_review": true
+      },
+      "completed_cases": 12,
+      "total_cases": 12,
+      "generation": 1,
+      "attempts": 1,
+      "max_attempts": 3,
+      "error_code": "EVALUATION_CANCEL_REQUESTED",
+      "report": null,
+      "started_at": "2026-10-18T09:22:49.037743+00:00",
+      "finished_at": "2026-10-18T09:22:53.019476+00:00",
+      "created_at": "2026-10-18T09:22:48.729413+00:00",
+      "model_configuration_revision": 2,
+      "models": {
+        "fast": {
+          "id": "fast-model",
+          "version": 1,
+          "display_name": "快速规划",
+          "provider": "deepseek",
+          "model_name": "fast-model"
+        },
+        "answer": {
+          "id": "answer-model",
+          "version": 1,
+          "display_name": "回答模型",
+          "provider": "deepseek",
+          "model_name": "answer-model"
+        },
+        "grader": {
+          "id": "grader-model",
+          "version": 1,
+          "display_name": "证据判断",
+          "provider": "deepseek",
+          "model_name": "grader-model"
+        },
+        "evaluator": {
+          "id": "evaluator-model",
+          "version": 1,
+          "display_name": "质量评测",
+          "provider": "deepseek",
+          "model_name": "evaluator-model"
+        }
+      },
+      "document_ids": [
+        "ffa1e3e8-31da-4efa-a8f5-e25bf89b47ae"
+      ]
+    },
+    {
+      "id": "d3b28876-a8fc-48c2-b33d-a86e434d3a0b",
+      "dataset_id": "f092f563-ecc7-4b96-a21b-a899de653ecd",
+      "dataset_fingerprint": "fb03d609c99499df3956100b9cb8d0ccae354924acf51ad54f80fda2a38bdc1f",
+      "baseline_job_id": "bd80169b-c63f-43b8-b734-1d751f90edfe",
+      "split": "all",
+      "profile": "current",
+      "state": "succeeded",
+      "gate_policy": {
+        "metric_gates": [
+          {
+            "metric": "kind_correct",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "faithfulness",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "fact_coverage",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "citations_valid",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "citation_support",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "source_types_correct",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "claim_citation_coverage",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          }
+        ],
+        "schema_version": 1,
+        "max_failed_cases": 0,
+        "require_comparison": true,
+        "require_model_review": true
+      },
+      "completed_cases": 12,
+      "total_cases": 12,
+      "generation": 1,
+      "attempts": 1,
+      "max_attempts": 3,
+      "error_code": null,
+      "report": {
+        "cases": [
+          {
+            "id": "ui-01",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1975.11,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-02",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1902.84,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-03",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1935.52,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-04",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1940.89,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-05",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1946.39,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-06",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1946.09,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-07",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1924.25,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-08",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 2001.41,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-09",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1933.38,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-10",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1980.83,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-11",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1964.97,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-12",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1948.0,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          }
+        ],
+        "usage": {
+          "total_tokens": null,
+          "model_attempts": 60,
+          "reported_calls": 0,
+          "reported_total_tokens": null
+        },
+        "timing": {
+          "p95_ms": 2366,
+          "median_ms": 2201.0,
+          "definition": "case wall time, including lease recovery waits; excludes job queue wait"
+        },
+        "summary": {
+          "cases": 12,
+          "metrics": {
+            "faithfulness": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "kind_correct": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "fact_coverage": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "citations_valid": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "citation_support": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "citation_validity": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "source_types_correct": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "claim_citation_coverage": {
+              "value": 1.0,
+              "scored_cases": 12
+            }
+          },
+          "failed_runs": 0,
+          "invalid_reviews": 0,
+          "successful_runs": 12
+        },
+        "comparison": {
+          "metric_deltas": {
+            "faithfulness": 0.0,
+            "kind_correct": 0.0,
+            "fact_coverage": 0.0,
+            "citations_valid": 0.0,
+            "citation_support": 0.0,
+            "citation_validity": 0.0,
+            "source_types_correct": 0.0,
+            "claim_citation_coverage": 0.0
+          },
+          "review_policy_changed": false,
+          "baseline_predictions_sha256": "6c2825d0adfc56a833c452ffc54ceb9e249ef334e465c191fc869b9d4f7fef28"
+        },
+        "by_category": {
+          "scripted_ui_fixture": {
+            "cases": 12,
+            "metrics": {
+              "faithfulness": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "kind_correct": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "fact_coverage": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "citations_valid": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "citation_support": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "citation_validity": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "source_types_correct": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "claim_citation_coverage": {
+                "value": 1.0,
+                "scored_cases": 12
+              }
+            },
+            "failed_runs": 0,
+            "invalid_reviews": 0,
+            "successful_runs": 12
+          }
+        },
+        "gate_checks": [
+          {
+            "name": "execution_failures",
+            "value": 0,
+            "passed": true,
+            "maximum": 0
+          },
+          {
+            "name": "model_review",
+            "passed": true,
+            "scored_cases": 12,
+            "eligible_cases": 12
+          },
+          {
+            "name": "comparison",
+            "passed": true
+          },
+          {
+            "name": "kind_correct",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "faithfulness",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "fact_coverage",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "citations_valid",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "citation_support",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "source_types_correct",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "claim_citation_coverage",
+            "delta": 0.0,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          }
+        ],
+        "gate_passed": true,
+        "gate_policy": {
+          "metric_gates": [
+            {
+              "metric": "kind_correct",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "faithfulness",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "fact_coverage",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "citations_valid",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "citation_support",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "source_types_correct",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "claim_citation_coverage",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            }
+          ],
+          "schema_version": 1,
+          "max_failed_cases": 0,
+          "require_comparison": true,
+          "require_model_review": true
+        },
+        "scope_sha256": "2095cae0fb4cb60c6ef6ed23e2a7db6896477e836ad44c1ad996e2c9226bc116",
+        "dataset_sha256": "3952a2ba4487dd493921d5057cda623c12c14f181ae3ce3e29984cb82ad8e6a8",
+        "reviews_sha256": "2c87ee21a90722808eeedc0dbf9f3dd3986990f70c281a4995b37a7c062b410a",
+        "schema_version": 1,
+        "predictions_sha256": "8e75f7f9956b13e0d3dd54afa551a3871da5381a967011cecd9231d72587d2db",
+        "model_snapshot_sha256": "759dbcf4e06a7f102f7433e27e670fcad8516607e5a74415d9e9a23fffe9fad5",
+        "execution_failed_cases": 0
+      },
+      "started_at": "2026-10-18T09:05:41.799072+00:00",
+      "finished_at": "2026-10-18T09:06:11.915518+00:00",
+      "created_at": "2026-10-18T09:05:41.461607+00:00",
+      "model_configuration_revision": 2,
+      "models": {
+        "fast": {
+          "id": "fast-model",
+          "version": 1,
+          "display_name": "快速规划",
+          "provider": "deepseek",
+          "model_name": "fast-model"
+        },
+        "answer": {
+          "id": "answer-model",
+          "version": 1,
+          "display_name": "回答模型",
+          "provider": "deepseek",
+          "model_name": "answer-model"
+        },
+        "grader": {
+          "id": "grader-model",
+          "version": 1,
+          "display_name": "证据判断",
+          "provider": "deepseek",
+          "model_name": "grader-model"
+        },
+        "evaluator": {
+          "id": "evaluator-model",
+          "version": 1,
+          "display_name": "质量评测",
+          "provider": "deepseek",
+          "model_name": "evaluator-model"
+        }
+      },
+      "document_ids": [
+        "ffa1e3e8-31da-4efa-a8f5-e25bf89b47ae"
+      ]
+    },
+    {
+      "id": "bd80169b-c63f-43b8-b734-1d751f90edfe",
+      "dataset_id": "f092f563-ecc7-4b96-a21b-a899de653ecd",
+      "dataset_fingerprint": "fb03d609c99499df3956100b9cb8d0ccae354924acf51ad54f80fda2a38bdc1f",
+      "baseline_job_id": null,
+      "split": "all",
+      "profile": "baseline",
+      "state": "succeeded",
+      "gate_policy": {
+        "metric_gates": [
+          {
+            "metric": "kind_correct",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "faithfulness",
+            "maximum": null,
+            "minimum": 0.95,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "fact_coverage",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "citations_valid",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "citation_support",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "source_types_correct",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          },
+          {
+            "metric": "claim_citation_coverage",
+            "maximum": null,
+            "minimum": 1.0,
+            "required": true,
+            "direction": "higher",
+            "max_regression": 0.0
+          }
+        ],
+        "schema_version": 1,
+        "max_failed_cases": 0,
+        "require_comparison": false,
+        "require_model_review": true
+      },
+      "completed_cases": 12,
+      "total_cases": 12,
+      "generation": 1,
+      "attempts": 1,
+      "max_attempts": 3,
+      "error_code": null,
+      "report": {
+        "cases": [
+          {
+            "id": "ui-01",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 2174.45,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-02",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1810.09,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-03",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1802.16,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-04",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1799.81,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-05",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1891.45,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-06",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1778.34,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-07",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1787.97,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-08",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1784.57,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-09",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1821.0,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-10",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1810.35,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-11",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1790.12,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          },
+          {
+            "id": "ui-12",
+            "model": "answer-model",
+            "trace": {
+              "warnings": [],
+              "elapsed_ms": 1808.14,
+              "model_attempts": 4,
+              "knowledge_rewrites": 0,
+              "knowledge_searches": 1
+            },
+            "status": "ok",
+            "metrics": {
+              "faithfulness": 1.0,
+              "kind_correct": 1.0,
+              "fact_coverage": 1.0,
+              "citations_valid": 1.0,
+              "citation_support": 1.0,
+              "citation_validity": 1.0,
+              "source_types_correct": 1.0,
+              "claim_citation_coverage": 1.0
+            },
+            "category": "scripted_ui_fixture",
+            "provider": "deepseek",
+            "reviewer": "model",
+            "judge_policy": {
+              "judge_model": "evaluator-model",
+              "judge_provider": "deepseek",
+              "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+              "configuration_sha256": "ebdc5714e3a2d1e7604c43da5eae8ae7b59e6025bad679e138bc7e80aa0f885c"
+            },
+            "review_error": null,
+            "reviewed_claims": 1,
+            "invalid_citation_cards": 0,
+            "unknown_reference_numbers": []
+          }
+        ],
+        "usage": {
+          "total_tokens": null,
+          "model_attempts": 60,
+          "reported_calls": 0,
+          "reported_total_tokens": null
+        },
+        "timing": {
+          "p95_ms": 2494,
+          "median_ms": 2051.0,
+          "definition": "case wall time, including lease recovery waits; excludes job queue wait"
+        },
+        "summary": {
+          "cases": 12,
+          "metrics": {
+            "faithfulness": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "kind_correct": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "fact_coverage": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "citations_valid": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "citation_support": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "citation_validity": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "source_types_correct": {
+              "value": 1.0,
+              "scored_cases": 12
+            },
+            "claim_citation_coverage": {
+              "value": 1.0,
+              "scored_cases": 12
+            }
+          },
+          "failed_runs": 0,
+          "invalid_reviews": 0,
+          "successful_runs": 12
+        },
+        "by_category": {
+          "scripted_ui_fixture": {
+            "cases": 12,
+            "metrics": {
+              "faithfulness": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "kind_correct": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "fact_coverage": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "citations_valid": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "citation_support": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "citation_validity": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "source_types_correct": {
+                "value": 1.0,
+                "scored_cases": 12
+              },
+              "claim_citation_coverage": {
+                "value": 1.0,
+                "scored_cases": 12
+              }
+            },
+            "failed_runs": 0,
+            "invalid_reviews": 0,
+            "successful_runs": 12
+          }
+        },
+        "gate_checks": [
+          {
+            "name": "execution_failures",
+            "value": 0,
+            "passed": true,
+            "maximum": 0
+          },
+          {
+            "name": "model_review",
+            "passed": true,
+            "scored_cases": 12,
+            "eligible_cases": 12
+          },
+          {
+            "name": "comparison",
+            "passed": true
+          },
+          {
+            "name": "kind_correct",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "faithfulness",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 0.95,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "fact_coverage",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "citations_valid",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "citation_support",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "source_types_correct",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          },
+          {
+            "name": "claim_citation_coverage",
+            "delta": null,
+            "value": 1.0,
+            "passed": true,
+            "reason": "checked",
+            "maximum": null,
+            "minimum": 1.0,
+            "scored_cases": 12,
+            "eligible_cases": 12,
+            "max_regression": 0.0
+          }
+        ],
+        "gate_passed": true,
+        "gate_policy": {
+          "metric_gates": [
+            {
+              "metric": "kind_correct",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "faithfulness",
+              "maximum": null,
+              "minimum": 0.95,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "fact_coverage",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "citations_valid",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "citation_support",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "source_types_correct",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            },
+            {
+              "metric": "claim_citation_coverage",
+              "maximum": null,
+              "minimum": 1.0,
+              "required": true,
+              "direction": "higher",
+              "max_regression": 0.0
+            }
+          ],
+          "schema_version": 1,
+          "max_failed_cases": 0,
+          "require_comparison": false,
+          "require_model_review": true
+        },
+        "scope_sha256": "2095cae0fb4cb60c6ef6ed23e2a7db6896477e836ad44c1ad996e2c9226bc116",
+        "dataset_sha256": "3952a2ba4487dd493921d5057cda623c12c14f181ae3ce3e29984cb82ad8e6a8",
+        "reviews_sha256": "2c87ee21a90722808eeedc0dbf9f3dd3986990f70c281a4995b37a7c062b410a",
+        "schema_version": 1,
+        "predictions_sha256": "6c2825d0adfc56a833c452ffc54ceb9e249ef334e465c191fc869b9d4f7fef28",
+        "model_snapshot_sha256": "4cb61eff103e7987e284c423545475b2ce443ab8a5b6a3a73bded09cbd2fe065",
+        "execution_failed_cases": 0
+      },
+      "started_at": "2026-10-18T09:00:09.523550+00:00",
+      "finished_at": "2026-10-18T09:00:38.004696+00:00",
+      "created_at": "2026-10-18T09:00:09.335968+00:00",
+      "model_configuration_revision": 2,
+      "models": {
+        "fast": {
+          "id": "fast-model",
+          "version": 1,
+          "display_name": "快速规划",
+          "provider": "deepseek",
+          "model_name": "fast-model"
+        },
+        "answer": {
+          "id": "answer-model",
+          "version": 1,
+          "display_name": "回答模型",
+          "provider": "deepseek",
+          "model_name": "answer-model"
+        },
+        "grader": {
+          "id": "grader-model",
+          "version": 1,
+          "display_name": "证据判断",
+          "provider": "deepseek",
+          "model_name": "grader-model"
+        },
+        "evaluator": {
+          "id": "evaluator-model",
+          "version": 1,
+          "display_name": "质量评测",
+          "provider": "deepseek",
+          "model_name": "evaluator-model"
+        }
+      },
+      "document_ids": [
+        "ffa1e3e8-31da-4efa-a8f5-e25bf89b47ae"
+      ]
+    }
+  ],
+  "case_pagination_offset_10_ids": [
+    "ui-11",
+    "ui-12"
+  ],
+  "reader_api_status": 403,
+  "browser_observations": [
+    "import dataset through file chooser",
+    "select docs and create baseline with 95 percent faithfulness threshold",
+    "reload restores tasks",
+    "candidate has matched baseline and zero metric deltas",
+    "click citation opens real eligible fixture evidence",
+    "cancel running job reaches cancelled",
+    "reader has no evaluation nav and direct evaluation route redirects to chat"
+  ],
+  "screenshots": [
+    "evaluation-workbench-stage5.png",
+    "evaluation-cancelled-stage5.png",
+    "evaluation-reader-guard-stage5.png"
+  ]
+}

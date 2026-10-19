@@ -13,6 +13,7 @@ from app.api.middleware import BodyLimitMiddleware
 from app.api.routes import health_router, v2_router
 from app.api.sharing import router as sharing_router
 from app.api.model_center import router as model_center_router
+from app.api.evaluations import router as evaluation_router
 from app.application.container import Services
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
@@ -92,6 +93,7 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
         logger.error("unexpected_error", extra={"request_id": request.state.request_id, "error_type": type(error).__name__})
         return error_response(request, "INTERNAL_ERROR", "服务内部错误，请根据 request_id 检查日志", 500)
 
+    application.include_router(evaluation_router)
     application.include_router(health_router)
     application.include_router(v2_router)
     return application

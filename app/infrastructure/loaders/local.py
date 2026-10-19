@@ -2,6 +2,7 @@ import re
 import subprocess
 import tempfile
 import zipfile
+from html.parser import HTMLParser
 from pathlib import Path
 from uuid import UUID, uuid5
 
@@ -18,6 +19,8 @@ from app.infrastructure.loaders.excel import load_excel, PARSER_VERSION
 MIME_TYPES = {
     ".txt": {"text/plain"},
     ".md": {"text/plain", "text/markdown", "text/x-markdown"},
+    ".html": {"text/html"},
+    ".htm": {"text/html"},
     ".pdf": {"application/pdf"},
     ".doc": {"application/msword"},
     ".docx": {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
@@ -34,7 +37,7 @@ def validate_upload(filename: str, content_type: str | None) -> tuple[str, str]:
     if not name or len(name.encode("utf-8")) > 255 or any(ord(character) < 32 for character in name):
         raise AppError("INVALID_FILENAME", "文件名无效")
     if extension not in MIME_TYPES:
-        raise AppError("UNSUPPORTED_FILE_TYPE", "仅支持 PDF、MD、TXT、Word、PowerPoint 和 Excel", 415)
+        raise AppError("UNSUPPORTED_FILE_TYPE", "仅支持 PDF、MD、TXT、HTML、Word、PowerPoint 和 Excel", 415)
     mime = (content_type or "application/octet-stream").split(";", 1)[0].lower()
     if mime not in MIME_TYPES[extension] | {"application/octet-stream"}:
         raise AppError("INVALID_MIME_TYPE", "文件扩展名与 MIME 类型不匹配", 415)
@@ -81,6 +84,37 @@ def validate_document_container(path: Path, extension: str) -> None:
         raise AppError("INVALID_DOCUMENT", "Office 文件容器损坏") from None
 
 
+class HTMLTextParser(HTMLParser):
+    """Extract local visible text only; never execute code or fetch linked assets."""
+    excluded = {"head", "script", "style", "template", "noscript", "iframe", "object"}
+    blocks = {"p", "div", "section", "article", "main", "li", "tr", "br", "hr", "h1", "h2", "h3", "h4", "h5", "h6"}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.ignored = []
+        self.parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self.excluded:
+            self.ignored.append(tag)
+        if not self.ignored:
+            if tag in self.blocks:
+                self.parts.append("\n")
+            elif tag in {"td", "th"}:
+                self.parts.append(" | ")
+
+    def handle_endtag(self, tag):
+        if self.ignored:
+            if tag in self.ignored:
+                self.ignored = self.ignored[:self.ignored.index(tag)]
+        elif tag in self.blocks:
+            self.parts.append("\n")
+
+    def handle_data(self, data):
+        if not self.ignored:
+            self.parts.append(data)
+
+
 class LocalDocumentLoader:
     def __init__(self, settings: Settings):
         self.settings = settings
@@ -100,6 +134,15 @@ class LocalDocumentLoader:
             raise AppError("INVALID_DOCUMENT", "文件损坏、编码不支持或无法解析") from None
 
     def _load(self, path: Path, extension: str) -> list[Document]:
+        if extension in {".html", ".htm"}:
+            content = path.read_text(encoding="utf-8-sig")
+            if "\x00" in content:
+                raise AppError("INVALID_DOCUMENT", "HTML 包含无效二进制内容")
+            parser = HTMLTextParser()
+            parser.feed(content)
+            parser.close()
+            text = "\n".join(line.strip() for line in "".join(parser.parts).splitlines() if line.strip())
+            return [Document(page_content=text)]
         if extension == ".xlsx":
             validate_document_container(path, extension)
             return load_excel(path, self.settings)

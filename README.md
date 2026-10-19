@@ -10,6 +10,12 @@
 
 一个面向多用户私有知识库的全栈 RAG Agent。系统将文档解析、向量检索、联网搜索、证据引用、模型降级、会话持久化和 SSE 事件流整合为一条可追踪、可测试的问答链路，而不是只演示一次模型调用。
 
+## 评测工作台
+
+平台管理员可导入不可变标注集、创建和取消评测任务、查看逐题答案与审阅、比较同范围基线。独立 Evaluation Worker 沿用持久 Run 检查点，回答、规划、证据评判与评测模型按角色记账；报告区分执行完成、评分覆盖和质量门禁。
+
+[部署与使用](docs/evaluation-workbench.md) · [12 文档 / 80 题合成企业语料](evals/rag/synthetic_enterprise/README.md) · [真实 A/B 报告](docs/validation/stage5-enterprise-live-ab.md)。本轮两组质量门禁均未通过，不能将功能交付或单项指标变化表述为质量提升。完整功能补齐状态见[阶段进度](docs/replication-repair-progress.md)。
+
 ## Supervisor 多 Agent（首期）
 
 聊天入口现由 Supervisor 识别意图，委派 RAG、SQL、Web 三个专职 Agent，并统一汇总引用。

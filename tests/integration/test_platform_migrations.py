@@ -405,3 +405,108 @@ def test_model_call_upgrade_preserves_legacy_rows_and_enforces_complete_profile_
                     {"role": role, "profile": profile, "version": version, "id": call_id})
     with database.engine.begin() as connection:
         connection.execute(text("UPDATE rag.model_calls SET model_role='fast',model_profile_id='planner',model_profile_version=2 WHERE id=:id"), {"id": call_id})
+
+
+def test_evaluation_job_admission_claim_and_takeover_are_fenced_across_postgres_instances(database):
+    from concurrent.futures import ThreadPoolExecutor
+    from datetime import timedelta
+    from threading import Barrier
+    from app.application.evaluation_dataset import WorkbenchDataset
+    from app.application.evaluation_jobs import EvaluationJobCreate, EvaluationService
+    from app.application.model_center import ModelCenter
+    from app.core.config import Settings
+    from app.core.errors import AppError
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import DocumentRecord, EvaluationJob, User
+
+    upgrade(database)
+    settings = Settings(_env_file=None, evaluation_enabled=True, model_center_enabled=True, chat_runs_enabled=True, deepseek_api_key="fixture")
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    with db.sessions() as session:
+        user = User(username="evaluation-admin", role="admin", password_hash="fixture")
+        session.add(user)
+        session.flush()
+        doc = DocumentRecord(user_id=user.id, original_name="fixture.txt", file_type=".txt", file_path="fixture",
+            content_hash="f" * 64, status="ready", embedding_model=settings.embedding_model, chunk_count=1)
+        session.add(doc)
+        session.commit()
+    ModelCenter(settings, db).initialize()
+    service = EvaluationService(settings, db)
+    dataset = service.create_dataset(user.id, WorkbenchDataset.model_validate({"name": "fixture", "cases": [
+        {"id": "one", "category": "fixture", "question": "fixture?", "expected_kinds": ["insufficient"]}]}))
+    payload = EvaluationJobCreate(dataset_id=dataset.id, document_ids=[doc.id])
+    key, barrier = uuid4(), Barrier(2)
+
+    def enqueue(_):
+        barrier.wait(timeout=5)
+        return EvaluationService(settings, db).create_job(user.id, payload, key)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        jobs = list(pool.map(enqueue, [0, 1]))
+    assert jobs[0].id == jobs[1].id
+    barrier = Barrier(2)
+
+    def claim(_):
+        barrier.wait(timeout=5)
+        return EvaluationService(settings, db).claim_next()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        claims = list(pool.map(claim, [0, 1]))
+    assert sum(item is not None for item in claims) == 1
+    owner = next(item for item in claims if item is not None)
+    with db.sessions() as session:
+        session.get(EvaluationJob, owner.job_id).lease_expires_at = service.now(session) - timedelta(seconds=1)
+        session.commit()
+    takeover = service.claim_next()
+    assert takeover.generation == owner.generation + 1 and takeover.token != owner.token
+    with pytest.raises(AppError) as failure:
+        service.heartbeat(owner)
+    assert failure.value.code == "EVALUATION_LEASE_LOST"
+    service.cancel(user.id, owner.job_id)
+    with pytest.raises(AppError) as failure:
+        service.check_owned(takeover)
+    assert failure.value.code == "EVALUATION_CANCEL_REQUESTED"
+
+
+def test_independent_evaluation_process_heartbeat_cannot_impersonate_another_worker(database, tmp_path):
+    import subprocess
+    import sys
+    from time import monotonic, sleep
+    from app.application.workers import WorkerRegistry
+    from app.core.config import PROJECT_ROOT, Settings
+    from app.infrastructure.persistence.database import Database
+
+    upgrade(database)
+    settings = Settings(_env_file=None, evaluation_enabled=True, model_center_enabled=True, chat_runs_enabled=True)
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    marker = tmp_path / "evaluation-worker-id"
+    code = """import os,sys
+from app.core.config import Settings
+import app.evaluation_worker as worker
+worker.get_settings=lambda:Settings(_env_file=None,database_url=os.environ['ISOLATED_EVALUATION_URL'],database_require_tls=False,evaluation_enabled=True,model_center_enabled=True,chat_runs_enabled=True)
+sys.argv=['evaluation-worker',*sys.argv[1:]]
+raise SystemExit(worker.main())
+"""
+    environment = {**os.environ, "ISOLATED_EVALUATION_URL": database.engine.url.update_query_dict({"sslmode": "disable"}).render_as_string(hide_password=False),
+        "WORKER_HEARTBEAT_FILE": str(marker), "PYTHON_DOTENV_DISABLED": "1", "PYTHONIOENCODING": "utf-8"}
+    process = subprocess.Popen([sys.executable, "-c", code], cwd=PROJECT_ROOT, env=environment,
+        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, encoding="utf-8")
+    try:
+        deadline = monotonic() + 20
+        while process.poll() is None and not marker.exists() and monotonic() < deadline:
+            sleep(.1)
+        assert process.poll() is None and marker.exists(), process.communicate(timeout=5)[1] if process.poll() is not None else "evaluation heartbeat not created"
+        assert WorkerRegistry(settings, db, kind="evaluation").healthy_count() == 1
+        health = subprocess.run([sys.executable, "-c", code, "--healthcheck"], cwd=PROJECT_ROOT, env=environment,
+            capture_output=True, text=True, encoding="utf-8", timeout=20)
+        assert health.returncode == 0, health.stderr
+        marker.write_text(str(uuid4()))
+        wrong = subprocess.run([sys.executable, "-c", code, "--healthcheck"], cwd=PROJECT_ROOT, env=environment,
+            capture_output=True, text=True, encoding="utf-8", timeout=20)
+        assert wrong.returncode == 1
+    finally:
+        if process.poll() is None:
+            process.terminate()
+        process.communicate(timeout=15)

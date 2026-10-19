@@ -7,10 +7,10 @@ import { api, type PreflightReport } from '../api'
 const overview = ref<Awaited<ReturnType<typeof api.adminOverview>> | null>(null)
 const error = ref(''), loading = ref(false)
 const preflight = ref<PreflightReport | null>(null), checking = ref(false)
-const checkNames: Record<string, string> = {database:'数据库迁移',document_files:'历史文档文件',upload_directory:'上传目录',parsed_directory:'解析目录',vectors:'向量存储',authentication:'认证配置',platform_administrator:'平台管理员',model_configuration:'模型配置',ingestion_worker:'入库 Worker',rerank:'检索精排'}
+const checkNames: Record<string, string> = {database:'数据库迁移',document_files:'历史文档文件',upload_directory:'上传目录',parsed_directory:'解析目录',vectors:'向量存储',authentication:'认证配置',platform_administrator:'平台管理员',model_configuration:'模型配置',ingestion_worker:'入库 Worker',run_worker:'Run Worker',evaluation_worker:'评测 Worker',rerank:'检索精排'}
 const checkStatuses = {pass:'通过',fail:'需处理',warn:'待确认',disabled:'未启用'}
 const labels: Record<string, string> = {
-  model_center: '模型中心', sharing: '组织与共享知识库', document_versions: '文档版本',
+  evaluation:'RAG 评测工作台', model_center: '模型中心', sharing: '组织与共享知识库', document_versions: '文档版本',
   durable_runs: 'Run / Event 持久化', hierarchy: '三级分块', knowledge_quality: '知识规划与证据判断', rerank: '检索精排',
 }
 async function load() {
@@ -45,8 +45,9 @@ async function checkDeployment() {
       </section>
       <section class="admin-section"><h2>管理入口</h2><div class="admin-links">
         <RouterLink v-if="overview.features.model_center" to="/models"><span><strong>模型中心</strong><small>模型配置、目录检测与调用统计</small></span><ArrowUpRight :size="20" /></RouterLink>
+        <RouterLink v-if="overview.features.evaluation" to="/evaluations"><span><strong>评测工作台</strong><small>固定数据集、独立任务与逐题结果对比</small></span><ArrowUpRight :size="20" /></RouterLink>
         <RouterLink v-if="overview.features.sharing" to="/documents"><span><strong>组织与共享知识库</strong><small>在资料页面切换至“组织与共享库”管理成员与授权</small></span><ArrowUpRight :size="20" /></RouterLink>
-        <p v-if="!overview.features.model_center && !overview.features.sharing" class="muted">管理能力尚未启用。完成数据库迁移与部署预检后，再由服务端配置开启。</p>
+        <p v-if="!overview.features.model_center && !overview.features.sharing && !overview.features.evaluation" class="muted">管理能力尚未启用。完成数据库迁移与部署预检后，再由服务端配置开启。</p>
       </div></section>
     </template>
   </section>

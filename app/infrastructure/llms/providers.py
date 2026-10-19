@@ -71,6 +71,8 @@ class DeepSeekProvider(LangChainProvider):
             api_base=self.settings.deepseek_base_url, temperature=0,
             timeout=timeout_seconds, max_retries=0,
             max_tokens=self.settings.model_max_tokens,
+            # Preserve the non-thinking chat contract when replacing the retired alias.
+            **({"extra_body": {"thinking": {"type": "disabled"}}} if self.model_name == "deepseek-flash" else {}),
         )
 
 

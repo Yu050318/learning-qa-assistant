@@ -23,6 +23,7 @@ from test_chat_runs import system
 def center(system):
     s = system
     s.settings.model_center_enabled = True
+    s.settings.deepseek_model = "deepseek-chat"  # Exercise legacy configuration explicitly.
     with s.database.sessions() as session:
         session.get(User, s.uid).role = "admin"
         session.commit()
@@ -38,6 +39,48 @@ def deny(function, *args, code=None, **kwargs):
     if code:
         assert result.value.code == code
     return result.value
+
+
+@pytest.mark.parametrize("canonical", [False, True])
+def test_explicit_retired_model_migration_preserves_history_and_roles(center, canonical):
+    from app.application.model_center import catalog_from_legacy
+    s = center
+    if canonical:
+        catalog = catalog_from_legacy(s.center.snapshot().configuration)
+        s.center.update_catalog(s.uid, 1, catalog)
+    before = s.center.snapshot()
+    with s.database.sessions() as session:
+        previous = dict(session.get(ModelConfiguration, 1).configuration)
+    result = s.center.migrate_retired_deepseek_chat()
+    assert result == {"revision": before.revision + 1, "migrated_profiles": 1}
+    after = s.center.snapshot()
+    assert before.settings.deepseek_model == "deepseek-chat"
+    assert after.settings.deepseek_model == "deepseek-flash"
+    if canonical:
+        assert after.catalog.assignments == before.catalog.assignments
+        assert after.catalog.provider_defaults == before.catalog.provider_defaults
+        assert after.catalog.profiles["deepseek"].version == before.catalog.profiles["deepseek"].version + 1
+        assert after.catalog.profiles["ollama"] == before.catalog.profiles["ollama"]
+    with s.database.sessions() as session:
+        assert session.get(ModelConfigurationVersion, before.revision).configuration == previous
+        assert session.get(User, s.other).role == "user"
+    assert s.center.migrate_retired_deepseek_chat() == {"revision": after.revision, "migrated_profiles": 0}
+    s.settings.deepseek_base_url = "https://custom.example/v1"
+    deny(s.center.migrate_retired_deepseek_chat, code="MODEL_MIGRATION_CUSTOM_ENDPOINT")
+    assert s.center.snapshot().revision == after.revision
+
+
+@pytest.mark.parametrize("model", ["deepseek-flash", "deepseek-chat", "custom-model"])
+def test_flash_adapter_preserves_non_thinking_chat_semantics(center, model):
+    center.settings.deepseek_model = model
+    with patch("app.infrastructure.llms.providers.ChatDeepSeek") as client:
+        DeepSeekProvider(center.settings).agent_client(12)
+    kwargs = client.call_args.kwargs
+    assert kwargs["max_retries"] == 0 and kwargs["timeout"] == 12
+    if model == "deepseek-flash":
+        assert kwargs["extra_body"] == {"thinking": {"type": "disabled"}}
+    else:
+        assert "extra_body" not in kwargs
 
 
 def test_queued_run_freezes_managed_configuration_in_its_creation_transaction(center):

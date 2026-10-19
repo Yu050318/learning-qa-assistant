@@ -11,7 +11,8 @@ from app.infrastructure.persistence.models import ChatRunOperation
 
 
 CONTROL_ERRORS = frozenset({"RUN_LEASE_LOST", "RUN_CANCEL_REQUESTED", "AGENT_TIMEOUT", "RUN_CHECKPOINT_DIVERGED",
-                           "RUN_CHECKPOINT_LIMIT", "TOOL_OUTCOME_UNCERTAIN", "RUN_RECOVERY_LIMIT"})
+                           "RUN_CHECKPOINT_LIMIT", "TOOL_OUTCOME_UNCERTAIN", "RUN_RECOVERY_LIMIT",
+                           "EVALUATION_LEASE_LOST", "EVALUATION_CANCEL_REQUESTED"})
 
 
 class RunCheckpoint:

@@ -172,8 +172,10 @@ class Repository:
             self.database.delete(binding)
             self.database.flush()
 
-    def chat_session(self, user_id: UUID, session_id: UUID, lock: bool = False) -> ChatSession:
+    def chat_session(self, user_id: UUID, session_id: UUID, lock: bool = False, *, kind=None) -> ChatSession:
         statement = select(ChatSession).where(ChatSession.id == session_id, ChatSession.user_id == user_id)
+        if kind is not None:
+            statement = statement.where(ChatSession.kind == kind)
         if lock:
             statement = statement.with_for_update(nowait=True)
         session = self.database.scalar(statement)
@@ -182,7 +184,7 @@ class Repository:
         return session
 
     def chat_sessions(self, user_id: UUID, offset: int = 0, limit: int = 50, *, query: str = "") -> list[ChatSession]:
-        statement = select(ChatSession).where(ChatSession.user_id == user_id)
+        statement = select(ChatSession).where(ChatSession.user_id == user_id, ChatSession.kind == "chat")
         if query:
             escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
             statement = statement.where(ChatSession.title.ilike(f"%{escaped}%", escape="\\"))

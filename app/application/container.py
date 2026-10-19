@@ -25,6 +25,7 @@ from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 from app.workflows.supervisor import SupervisorWorkflow
 from app.infrastructure.sql import ReadOnlySQL
 from app.infrastructure.rerank import TextReranker
+from app.application.evaluation_jobs import EvaluationService
 
 
 class Services:
@@ -36,6 +37,7 @@ class Services:
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
         self.model_center = ModelCenter(settings, self.database) if settings.model_center_enabled else None
+        self.evaluations = EvaluationService(settings, self.database)
         self.reranker = TextReranker(settings) if settings.rerank_enabled else None
         self.hierarchy = HierarchyService(settings, self.database,
                                           legacy_expander=self.vectors.expand_context if settings.retrieval_parent_context else None) if settings.hierarchy_enabled else None
@@ -97,6 +99,15 @@ class Services:
                 checks["run_worker"] = "ok" if WorkerRegistry(self.settings, self.database, kind="run").healthy_count() else "unavailable"
             except Exception:
                 checks["run_worker"] = "unavailable"
+        if self.settings.evaluation_enabled:
+            from app.application.workers import WorkerRegistry
+            if not self.settings.model_center_enabled or not self.settings.chat_runs_enabled:
+                checks["evaluation_worker"] = "configuration_required"
+            else:
+                try:
+                    checks["evaluation_worker"] = "ok" if WorkerRegistry(self.settings, self.database, kind="evaluation").healthy_count() else "unavailable"
+                except Exception:
+                    checks["evaluation_worker"] = "unavailable"
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 
     def close(self) -> None:

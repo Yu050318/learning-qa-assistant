@@ -90,9 +90,18 @@ def deployment_preflight(settings, database, vectors, *, require_worker=True):
                    "" if count else "启动 python -m app.run_worker；确认 API/Worker 使用相同配置及平台数据库")
         except Exception:
             record("run_worker", "fail", "RUN_WORKER_REGISTRY_UNAVAILABLE", "完成迁移并启动独立 Run Worker")
+    if settings.evaluation_enabled:
+        try:
+            configured = settings.model_center_enabled and settings.chat_runs_enabled
+            count = WorkerRegistry(settings, database, kind="evaluation").healthy_count() if configured else 0
+            record("evaluation_worker", "pass" if count else ("fail" if require_worker or not configured else "warn"),
+                   "EVALUATION_WORKER_AVAILABLE" if count else "EVALUATION_WORKER_NOT_READY",
+                   "" if count else "先迁移，再启用模型中心/持久 Run 并启动 python -m app.evaluation_worker")
+        except Exception:
+            record("evaluation_worker", "fail", "EVALUATION_WORKER_REGISTRY_UNAVAILABLE", "核对评测表迁移和独立 Worker 配置")
     if not settings.rerank_enabled:
         record("rerank", "disabled", "RERANK_DISABLED", "配置合法 endpoint/model/key 后再启用精排")
     return {"ready": not any(row["status"] == "fail" for row in checks), "checks": checks,
             "features": {name: getattr(settings, name) for name in (
                 "model_center_enabled", "sharing_enabled", "document_versions_enabled", "chat_runs_enabled",
-                "hierarchy_enabled", "knowledge_quality_enabled", "rerank_enabled")}}
+                "hierarchy_enabled", "knowledge_quality_enabled", "rerank_enabled", "evaluation_enabled")}}

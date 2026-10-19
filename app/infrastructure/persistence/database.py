@@ -55,6 +55,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name in {"evaluation_datasets", "evaluation_jobs", "evaluation_cases"} and not self.settings.evaluation_enabled:
+                    continue
                 if table.name == "worker_heartbeats" and self.settings.ingestion_mode != "durable" and not self.settings.chat_runs_enabled:
                     continue
                 if table.name == "hierarchy_nodes" and not self.settings.hierarchy_enabled:

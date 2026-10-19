@@ -183,11 +183,13 @@ class ChatSession(Base):
     __table_args__ = (
         Index("ix_sessions_user_updated", "user_id", "updated_at"),
         UniqueConstraint("user_id", "id"),
+        CheckConstraint("kind IN ('chat','evaluation')", name="ck_chat_sessions_kind"),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
     title: Mapped[str] = mapped_column(String(200))
+    kind: Mapped[str] = mapped_column(String(12), default="chat", server_default="chat")
     summary: Mapped[str] = mapped_column(Text, default="")
     summarized_through: Mapped[UUID | None]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
@@ -222,6 +224,7 @@ class ChatRun(Base):
         UniqueConstraint("user_id", "client_key"),
         Index("ix_chat_runs_claim", "state", "lease_expires_at", "created_at"),
         CheckConstraint("state IN ('queued', 'running', 'waiting', 'cancelling', 'cancelled', 'succeeded', 'failed', 'interrupted')", name="ck_chat_runs_state"),
+        CheckConstraint("execution_kind IN ('chat','evaluation')", name="ck_chat_runs_kind"),
         Index("ix_chat_runs_session_active", "session_id", unique=True,
               postgresql_where=text("state IN ('queued', 'running', 'waiting', 'cancelling')"),
               sqlite_where=text("state IN ('queued', 'running', 'waiting', 'cancelling')")),
@@ -233,6 +236,8 @@ class ChatRun(Base):
     client_key: Mapped[UUID]
     fingerprint: Mapped[str] = mapped_column(String(64))
     state: Mapped[str] = mapped_column(String(20), default="running")
+    execution_kind: Mapped[str] = mapped_column(String(12), default="chat", server_default="chat")
+    result_snapshot: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict, server_default="{}")
     sequence: Mapped[int] = mapped_column(default=0)
     event_bytes: Mapped[int] = mapped_column(default=0)
     request_id: Mapped[str] = mapped_column(String(100))
@@ -344,6 +349,80 @@ class ModelCall(Base):
     elapsed_ms: Mapped[int | None]
     error_code: Mapped[str | None] = mapped_column(String(80))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class EvaluationDataset(Base):
+    __tablename__ = "evaluation_datasets"
+    __table_args__ = (UniqueConstraint("created_by", "fingerprint"), CheckConstraint("case_count >= 1 AND case_count <= 1000"))
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    created_by: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    name: Mapped[str] = mapped_column(String(120))
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    case_count: Mapped[int]
+    content: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class EvaluationJob(Base):
+    __tablename__ = "evaluation_jobs"
+    __table_args__ = (
+        UniqueConstraint("created_by", "client_key"),
+        CheckConstraint("state IN ('queued','running','cancelling','cancelled','succeeded','failed')", name="ck_evaluation_jobs_state"),
+        CheckConstraint("completed_cases >= 0 AND completed_cases <= total_cases AND total_cases >= 1", name="ck_evaluation_jobs_progress"),
+        CheckConstraint("attempts >= 0 AND max_attempts >= 1 AND generation >= 0", name="ck_evaluation_jobs_attempts"),
+        Index("ix_evaluation_jobs_claim", "state", "available_at", "lease_expires_at"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    created_by: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    dataset_id: Mapped[UUID] = mapped_column(ForeignKey("rag.evaluation_datasets.id"))
+    baseline_job_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.evaluation_jobs.id"))
+    client_key: Mapped[UUID]
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    dataset_fingerprint: Mapped[str] = mapped_column(String(64))
+    gate_policy: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict)
+    split: Mapped[str] = mapped_column(String(12))
+    profile: Mapped[str] = mapped_column(String(12))
+    model_snapshot: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    scope_snapshot: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    state: Mapped[str] = mapped_column(String(12), default="queued")
+    completed_cases: Mapped[int] = mapped_column(default=0)
+    total_cases: Mapped[int]
+    owner_token: Mapped[UUID | None]
+    generation: Mapped[int] = mapped_column(default=0)
+    attempts: Mapped[int] = mapped_column(default=0)
+    max_attempts: Mapped[int] = mapped_column(default=3)
+    available_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    lease_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error_code: Mapped[str | None] = mapped_column(String(100))
+    report: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class EvaluationCaseResult(Base):
+    __tablename__ = "evaluation_cases"
+    __table_args__ = (
+        UniqueConstraint("job_id", "case_id"), UniqueConstraint("job_id", "position"),
+        CheckConstraint("state IN ('queued','running','succeeded','failed','cancelled')", name="ck_evaluation_cases_state"),
+        CheckConstraint("position >= 0", name="ck_evaluation_cases_position"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    job_id: Mapped[UUID] = mapped_column(ForeignKey("rag.evaluation_jobs.id", ondelete="CASCADE"))
+    case_id: Mapped[str] = mapped_column(String(100))
+    position: Mapped[int]
+    state: Mapped[str] = mapped_column(String(12), default="queued")
+    label: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    session_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.chat_sessions.id"))
+    run_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.chat_runs.id"), unique=True)
+    prediction: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    review: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    judge_receipt: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    result: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    error_code: Mapped[str | None] = mapped_column(String(100))
+    duration_ms: Mapped[int | None]
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class UserMemory(Base):

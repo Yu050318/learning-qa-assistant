@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     embedding_batch_size: int = Field(default=10, ge=1, le=10)
     deepseek_api_key: SecretStr = SecretStr("")
     deepseek_base_url: str = "https://api.deepseek.com"
-    deepseek_model: str = "deepseek-chat"
+    deepseek_model: str = "deepseek-flash"
     deepseek_context_window: int = Field(default=64000, ge=4096)
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen3.5:9b"
@@ -76,6 +76,9 @@ class Settings(BaseSettings):
     chat_runs_enabled: bool = False
     sharing_enabled: bool = False
     model_center_enabled: bool = False
+    evaluation_enabled: bool = False
+    evaluation_queue_limit: int = Field(default=8, ge=1, le=100)
+    evaluation_lease_seconds: int = Field(default=45, ge=15, le=3600)
     hierarchy_enabled: bool = False
     hierarchy_merge_threshold: float = Field(default=.6, ge=.5, le=1)
     model_admin_usernames: list[str] = Field(default_factory=list)

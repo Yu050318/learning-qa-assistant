@@ -5,6 +5,7 @@ import AuthView from './views/AuthView.vue'
 import MemoriesView from './views/MemoriesView.vue'
 import ModelsView from './views/ModelsView.vue'
 import AdminView from './views/AdminView.vue'
+import EvaluationsView from './views/EvaluationsView.vue'
 import { useAppStore } from './store'
 
 const router = createRouter({ history: createWebHistory(), routes: [
@@ -14,6 +15,7 @@ const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/memories', component: MemoriesView },
   { path: '/models', component: ModelsView },
   { path: '/admin', component: AdminView, meta: { admin: true } },
+  { path: '/evaluations', component: EvaluationsView, meta: { admin: true } },
   { path: '/login', component: AuthView },
 ] })
 

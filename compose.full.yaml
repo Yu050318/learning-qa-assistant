@@ -6,6 +6,7 @@ x-full-features: &full-features
   CHAT_RUNS_ENABLED: "true"
   HIERARCHY_ENABLED: "true"
   KNOWLEDGE_QUALITY_ENABLED: "true"
+  EVALUATION_ENABLED: "true"
 
 services:
   backend:
@@ -24,3 +25,13 @@ services:
     command: ["python", "-m", "app.run_worker"]
     healthcheck:
       test: ["CMD", "python", "-m", "app.run_worker", "--healthcheck"]
+  evaluation-worker:
+    extends:
+      file: compose.yaml
+      service: ingestion-worker
+    environment:
+      <<: *full-features
+      WORKER_HEARTBEAT_FILE: /tmp/rag-evaluation-worker-id
+    command: ["python", "-m", "app.evaluation_worker"]
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.evaluation_worker", "--healthcheck"]

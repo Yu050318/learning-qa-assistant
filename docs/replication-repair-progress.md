@@ -8,7 +8,7 @@
 | 2 | 部署预检、安全启用已有能力、独立入库 Worker、旧文档补建 | 已验收并推送 dd7221c |
 | 3 | Run Worker、检查点、取消/HITL、租约/fencing、outbox | 已验收并推送 a64baed；本地部署就绪 |
 | 4 | 版本化模型 Profile、四种角色、Step-back/HyDE | 已验收并推送 0a3bb3b；本地部署就绪 |
-| 5 | 数据集/任务/结果、Evaluation Worker、12 文档/80 题真实 A/B | 未开始 |
+| 5 | 数据集/任务/结果、Evaluation Worker、12 文档/80 题真实 A/B | 功能验收完成，待推送；真实质量门禁未通过 |
 | 6 | 租户与检索范围、候选构建/核验/发布、退休与统一任务 | 未开始 |
 | 7 | Skill/Tool 注册与版本、能力中心、命令面板 | 未开始 |
 | 8 | Run-bound 审批、独立 Sandbox、产物、完整追踪界面 | 未开始 |
@@ -66,3 +66,19 @@
 - 后端与前端 Docker 镜像实际构建，独立测试栈的 API、Nginx 和两个 Worker [部署预检](validation/stage4-docker-preflight.json)通过；[目录增改删与并发检查](validation/stage4-docker-catalog.json)通过，包括历史、版本递增、过期修订拒绝和退休标识禁止重用。临时原生 API/Worker、浏览器标签、Compose 容器/测试卷及两个测试库均已清理。
 - 当前业务环境先备份至忽略目录 `data/backups/20261018-142345-stage4`，pg_dump 归档通过 pg_restore 目录核验，另保存环境、文件与 SHA256；随后迁移至 `0005_model_catalog_history`，保留原模型配置和用户，重启隐藏后台 API、前端及两个独立 Worker。[本地部署](validation/stage4-deployment.json)的 readiness、预检和前端 HTTP 均为 200/就绪，仍保留 1 个用户、2 份文档和 1478 个层级节点，没有改写向量或请求收费生成。新目录首次保存前兼容旧配置，聊天可按转换出的 Profile ID 选择并冻结运行目录。
 - 使用与升级见[模型目录与检索改写](model-catalog.md)。本阶段验收与本地部署已完成，功能提交 `0a3bb3b` 已推送 GitHub；随后开始第五阶段。
+
+## 阶段五功能验收（2026-10-19）
+
+- 新增不可变数据集、幂等任务、逐题结果和管理员工作台，支持显式个人/共享库范围、分组、基础/增强配置、基线、冻结门禁、分页、取消和刷新观察。各管理员仅访问自己创建的数据；普通用户没有导航且 API 返回 403。共享库模式不会混入未选择的个人文档。
+- 迁移 `0006_evaluation_workbench` 保存数据集、任务、逐题结果、评测会话种类和 Run 结果快照。任务冻结模型目录、参数、资料身份、索引身份、审阅策略及门禁；凭据不入快照。语料或权限失效、取消与租约丢失会阻止后续调用和旧 owner 发布结果。
+- 独立 `python -m app.evaluation_worker` 与 Compose 服务使用独立队列、实例心跳和租约，复用 Run 检查点与原消息对。评测会话不出现在普通聊天列表；已确认的生成及审阅接管时复用，未知外部调用有界恢复，不承诺外部请求恰好一次。
+- 逐事实审阅使用 `evaluator` 角色与真实合格叶子证据，标准答案不进入生成提示或检索索引。报告展示评分群组、不可比较差值、门禁细节、耗时与真实 Token 覆盖，不将未知值补零。
+- 固定参考项目 CC0 合成语料 **4 XLSX + 8 HTML、80 题（20 开发/60 冻结）**，SHA256、唯一上传白名单及真实 Excel Sheet/物理行专项通过。补齐本地 HTML 上传、正文/表格文本提取与客户端能力白名单，脚本和外部资源不执行。实际 12 份文档入库，共 **778** 个叶子片段。
+- 最新后端离线全量 **457 passed、32 skipped、38 subtests passed**；真实 PostgreSQL 迁移/并发/独立进程专项 **17 passed**；前端类型检查/Vite 构建和 **16 项 Node 测试**通过。覆盖多个角色实际运行 Supervisor、确认结果接管复用、取消、配置冻结、错误审阅、权限与索引变化、标签隔离及门禁覆盖。[离线记录](validation/stage5-offline-regression.json)。
+- 浏览器验证 JSON 导入、两组 12 题脚本样例对比、来源打开、结果分页、运行中取消、刷新恢复和普通用户拦截；替身仅证明功能。[浏览器证据](validation/stage5-browser-evaluations.json)、[真实结果截图](screenshots/evaluation-live-report-stage5.png)。
+- 完整 Compose 构建、API/前端及三个独立 Worker 通过 readiness/preflight；单独停止评测 Worker 返回 **503**，其他 Worker 仍健康，重启后恢复 **200**。使用专用持久化测试库、索引与文件卷，四个服务的测试 env_file 都显式覆盖。[Docker 证据](validation/stage5-docker-preflight.json)。跨夜旧 tmpfs 测试库丢失后已重新完整入库，没有沿用失效进度。
+- 当前官方模型目录不再包含 `deepseek-chat`，补显式迁移及 Flash 非思考调用约定，保留配置历史、角色和已冻结 Run；自定义端点不自动改写，迁移可幂等执行。[兼容维护](model-provider-compatibility.md)。
+- 业务升级前备份至忽略目录 `data/backups/20261019-101846-stage5`，pg_dump 归档通过 pg_restore 目录检查，并保存 SHA256、配置及上传/解析文件。迁移至 `0006`、启用评测并启动 API/前端及三个 Worker，readiness/preflight 通过；升级前后仍为用户 **1**、文档 **2**、层级节点 **1478**、Run **0**，未改写业务向量。[部署证据](validation/stage5-deployment.json)。
+- **真实 A/B 的两组任务均已结束，质量门禁均未通过。** 基础组执行失败 **13/80**（引用无效 10、预算超限 3）；增强组失败 **11/80**（预算超限 10、审阅无效 1）。回答类型正确率 **83.75% → 76.25%**；实际语义评分群组不同的指标不计算差值。调用 **394/390** 次，全部有 Token 用量；四个角色调用分别记账。运行前冻结阈值，未放宽门禁或按冻结题调参，不能宣称增强配置提高整体质量。[完整报告](validation/stage5-enterprise-live-ab.md)包含逐题答案、审阅、来源、源码/依赖身份及开发/冻结分组，没有伪造 Gold Chunk 或 MRR。
+
+本阶段交付的是可运行、可验证的评测体系及真实质量基线。质量问题保留在报告中，不将功能验收表述为质量达标；后续整体验收必须继续披露这些限制。[部署与使用](evaluation-workbench.md)。提交并推送后才进入第六阶段。

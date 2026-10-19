@@ -106,6 +106,7 @@ def admin_overview(services: ServiceDependency, user_id: AdminDependency, respon
         "hierarchy": settings.hierarchy_enabled,
         "knowledge_quality": settings.knowledge_quality_enabled,
         "rerank": settings.rerank_enabled,
+        "evaluation": settings.evaluation_enabled,
     }, "ingestion_mode": settings.ingestion_mode,
         "notice": "此处显示配置状态，服务可用性需通过部署预检与实际运行确认。"}
 
@@ -421,7 +422,7 @@ def session_runs(session_id: UUID, response: Response, services: ServiceDependen
     require_runs(services)
     response.headers["Cache-Control"] = "no-store"
     with services.database.sessions() as database:
-        Repository(database).chat_session(user_id, session_id)
+        Repository(database).chat_session(user_id, session_id, kind="chat")
         ids = list(database.scalars(select(ChatRun.id).where(ChatRun.session_id == session_id, ChatRun.user_id == user_id)
                                    .order_by(ChatRun.created_at.desc(), ChatRun.id.desc()).limit(20)))
     return [run_response(services.runs.store.read(user_id, run_id)[0]) for run_id in ids]
@@ -529,7 +530,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
     available = {item["provider"] for item in models if item["available"]}
     if default_profile_id not in {item.get("profile_id") for item in models if item["available"]}:
         default_profile_id = None
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".html", ".htm", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "evaluation": settings.evaluation_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

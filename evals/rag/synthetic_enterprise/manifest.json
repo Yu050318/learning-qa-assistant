@@ -1,0 +1,42 @@
+{
+  "license": "CC0-1.0 (data assets only)",
+  "reference_repository_commit": "eb0495e",
+  "seed": 20261010,
+  "document_count": 12,
+  "case_count": 80,
+  "dataset_fingerprint": "ac1144d4e7148d29008e5004cbb8fe025b084fc8e20e3a3574522de087b497f1",
+  "ingestion_allowlist": [
+    "upload_corpus/aftersales_policy.html",
+    "upload_corpus/inventory.xlsx",
+    "upload_corpus/product_faq.html",
+    "upload_corpus/product_manual.html",
+    "upload_corpus/product_prices.xlsx",
+    "upload_corpus/product_specs.xlsx",
+    "upload_corpus/release_notes.html",
+    "upload_corpus/repair_records.xlsx",
+    "upload_corpus/selection_guide.html",
+    "upload_corpus/technical_specs.html",
+    "upload_corpus/troubleshooting.html",
+    "upload_corpus/warranty_rules.html"
+  ],
+  "files": {
+    "dataset.json": "fbd76074b09035d0d0a27d1b0473ed7ae2efc94043d55c6b2e5189018a5c4a1b",
+    "ground_truth.jsonl": "4a2c27a74e4c591ad53102dd7900bf45823f2f45da565699e5eaef953de5d271",
+    "source_records.json": "5ae692c025f1e2c781c30725ce406a9da0c8d3c3a2116a56d18b9a32e44d91b0",
+    "splits.json": "5be67865982a6b8ad85fd29dec3f3d6911351b124f46cc2c1c3e8fca168d2e57",
+    "upload_corpus/aftersales_policy.html": "440f4956496adc0bad92217b44191963def6113276b8bc2b2ad2bc647e3a9898",
+    "upload_corpus/inventory.xlsx": "1ae07deb049a1fa2a0133049977c75e60b17ec5c5448546b884fe8a80306b6ed",
+    "upload_corpus/product_faq.html": "6e24153ed9d119d432bedc54c8bb6c6247b31035550767ab9e72ee73883a712a",
+    "upload_corpus/product_manual.html": "237a142d2c36c212e314e6be01d052ad6a04e6c8d90e6d805dfdd1035feda120",
+    "upload_corpus/product_prices.xlsx": "c7974d6ff6255f1d09af492d57f15591cc29c3b0cdf49eba53e41d3016ac1cbe",
+    "upload_corpus/product_specs.xlsx": "3640920832df7c3cdfbfd9cfaea21b2ae8167b2cc598f0766a20ad46c5b19437",
+    "upload_corpus/release_notes.html": "e3f19002d1d54cd87cb72a629d04607776be3f5e7ed95586012343737abfa1a2",
+    "upload_corpus/repair_records.xlsx": "5754c8c4ba1968d141f06feee9f62190e356acfffe3c87248031bf4fbf63829a",
+    "upload_corpus/selection_guide.html": "04596ad7adb501a3cf97dfa0b087fe788cdc8f73919bc0983b3a6b74844b6c49",
+    "upload_corpus/technical_specs.html": "58ed44c00234aea3e188ca31b2671ea054ba7a701cc8977b9f702af1f1af2c7a",
+    "upload_corpus/troubleshooting.html": "3d1055f549bce4d90c89eff9819364ad6173f19f9f37328389ebabb7e99dd938",
+    "upload_corpus/warranty_rules.html": "c5a1637a0bca7e090b4cd648d83e55399a717b6519e9718bdb694c368b6961f6",
+    "upstream-dataset.json": "206b002d0f71e2560bef86bce967be9266027481addfcf45f2098c0c120b2a2a",
+    "upstream-manifest.json": "cf24ccbfe94f7b9e9b6ab5d537fa0918ee0d02d467c01f3b3b7e1e434b4e9a83"
+  }
+}

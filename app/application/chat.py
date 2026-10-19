@@ -44,6 +44,14 @@ _SENSITIVE_PUBLIC_QUERY = re.compile(
 )
 
 
+def workflow_settings_snapshot(settings):
+    for name in ("deepseek_base_url", "ollama_base_url", "rerank_endpoint"):
+        endpoint = urlsplit(getattr(settings, name))
+        if endpoint.username or endpoint.password or endpoint.query or endpoint.fragment:
+            raise AppError("INVALID_MODEL_ENDPOINT", "模型地址不可包含凭据、查询串或片段", 503)
+    return {name: getattr(settings, name) for name in FROZEN_WORKFLOW_SETTINGS}
+
+
 def prepare_public_query(payload: AgentChatInput, web_enabled: bool) -> tuple[str | None, bool, tuple[str, ...]]:
     if payload.search_mode in {"knowledge", "sql"}:
         return None, False, ()
@@ -85,21 +93,18 @@ class ChatService:
             user_id, session.id)[-settings.memory_recent_messages:]]
         return ready_ids, owners, history, session.summary
 
-    def prepare_run(self, database, run, payload):
+    def prepare_run(self, database, run, payload, *, frozen_snapshot=None):
         """Run, frozen inputs and one stable message pair share the create transaction."""
         repository = Repository(database)
         session = repository.chat_session(run.user_id, run.session_id, lock=True)
         if payload.model_profile_id is not None and self.model_center is None:
             raise AppError("MODEL_CENTER_DISABLED", "Profile 选择要求启用模型中心", 503)
-        snapshot = self.model_center.snapshot(payload.model_provider, session=database, profile_id=payload.model_profile_id) if self.model_center else None
+        snapshot = frozen_snapshot or (self.model_center.snapshot(payload.model_provider, session=database, profile_id=payload.model_profile_id) if self.model_center else None)
         settings = snapshot.settings if snapshot else self.settings
         selected = payload.model_provider or settings.default_model_provider
         if selected not in settings.enabled_model_providers:
             raise AppError("MODEL_DISABLED", "该模型已停用", 403)
-        for name in ("deepseek_base_url", "ollama_base_url", "rerank_endpoint"):
-            endpoint = urlsplit(getattr(settings, name))
-            if endpoint.username or endpoint.password or endpoint.query or endpoint.fragment:
-                raise AppError("INVALID_MODEL_ENDPOINT", "模型地址不可包含凭据、查询串或片段", 503)
+        frozen_settings = workflow_settings_snapshot(settings)
         public_query, web_enabled, warnings = prepare_public_query(payload, settings.web_search_enabled)
         if payload.search_mode == "web" and not settings.web_search_enabled and not payload.web_urls:
             raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
@@ -122,14 +127,14 @@ class ChatService:
         context_data.pop("deadline_monotonic")
         run.execution_snapshot = json.loads(json.dumps({"version": 1, "context": context_data,
             "history": [asdict(turn) for turn in history], "summary": summary,
-            "settings": {name: getattr(settings, name) for name in FROZEN_WORKFLOW_SETTINGS},
+            "settings": frozen_settings,
             "model_center": {"revision": snapshot.revision, "configuration": snapshot.configuration.model_dump(mode="json"),
                 "catalog": snapshot.catalog.model_dump(mode="json") if snapshot.catalog else None,
                 "answer_profile_id": snapshot.answer_profile_id} if snapshot else None,
         }, default=str))
         session.updated_at = utcnow()
 
-    def execute_prepared(self, store, claim, on_answer_event=None, *, flush_answer=None):
+    def execute_prepared(self, store, claim, on_answer_event=None, *, flush_answer=None, validate_external=None):
         """Execute a claimed snapshot and update its original assistant message."""
         from app.application.run_checkpoint import RunCheckpoint
         from app.infrastructure.llms.providers import DeepSeekProvider, ModelRouter, OllamaProvider
@@ -138,6 +143,7 @@ class ChatService:
         with self.database.sessions() as database:
             run = store.owned(database, claim)
             snapshot, session_id = run.execution_snapshot, run.session_id
+            evaluation = run.execution_kind == "evaluation"
             message_id, user_message_id = run.message_id, run.user_message_id
             remaining = (aware(run.expires_at) - store.now(database)).total_seconds()
         if snapshot.get("version") != 1 or not message_id or not user_message_id:
@@ -169,6 +175,8 @@ class ChatService:
         sharing = SharingService(settings, self.database)
 
         def validate(database=None, *, lock=False):
+            if validate_external is not None:
+                validate_external()
             from contextlib import nullcontext
             with (nullcontext(database) if database is not None else self.database.sessions()) as database:
                 user = database.get(User, claim.user_id)
@@ -192,6 +200,9 @@ class ChatService:
 
         checkpoint = RunCheckpoint(store, claim, validate=validate)
         options = {"checkpoint": checkpoint}
+        captured = []
+        if evaluation:
+            options["on_evidence"] = captured.extend
         if self.model_center and snapshot["model_center"]:
             revision = snapshot["model_center"]["revision"]
             options["call_observer"] = self.model_center.observer(claim.user_id, session_id, context.request_id, revision)
@@ -207,7 +218,7 @@ class ChatService:
             with self.database.sessions() as database:
                 # Creation holds the session before inspecting its active Run.
                 Repository(database).chat_session(claim.user_id, session_id, lock=True)
-                store.owned(database, claim)
+                current_run = store.owned(database, claim)
                 validate(database, lock=True)
                 cited = {UUID(item["document_id"]) for item in result.citations if item["type"] == "knowledge"}
                 if not cited.issubset(context.allowed_document_ids):
@@ -219,6 +230,12 @@ class ChatService:
                     for citation in result.citations:
                         if citation["type"] == "knowledge":
                             citation["document_version"] = versions[citation["document_id"]]
+                    for item in captured:
+                        if item["citation"]["type"] == "knowledge" and item["citation"]["document_id"] in versions:
+                            item["citation"]["document_version"] = versions[item["citation"]["document_id"]]
+                if evaluation:
+                    from app.application.runs import bounded_json
+                    current_run.result_snapshot = bounded_json({"kind": result.kind, "evidence": captured}, 4_000_000)
                 message = database.get(ChatMessage, message_id)
                 message.content, message.model_provider, message.model_name = result.answer.content, result.answer.provider, result.answer.model
                 message.citations, message.token_usage = result.citations, result.answer.token_usage or None
@@ -261,7 +278,7 @@ class ChatService:
         with self.sessions.exclusive(session_id) as probe:
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True)
+                session = repository.chat_session(user_id, session_id, lock=True, kind="chat")
                 if run_binding:
                     run_binding[0].guard(database, user_id, run_binding[1])
                 ready_ids, owners, history, summary = self.scope_and_history(repository, user_id, session, payload, settings)
@@ -287,7 +304,7 @@ class ChatService:
                 probe()
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True)
+                session = repository.chat_session(user_id, session_id, lock=True, kind="chat")
                 if payload.knowledge_base_ids:
                     final_owners = self.sharing.scope(user_id, payload.knowledge_base_ids, ready_ids, session=database, lock=True)
                     if final_owners != owners:
@@ -352,7 +369,7 @@ class ChatService:
         if payload.session_id:
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, payload.session_id)
+                session = repository.chat_session(user_id, payload.session_id, kind="chat")
                 messages = repository.context_messages(user_id, payload.session_id)
                 summary = session.summary
                 history = [ChatTurn(item.role, item.content) for item in messages[-self.settings.memory_recent_messages:]]
@@ -389,7 +406,7 @@ class ChatService:
         with self.sessions.exclusive(session_id):
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id)
+                session = repository.chat_session(user_id, session_id, kind="chat")
                 messages = repository.context_messages(user_id, session_id)
                 if self._context_version(session, messages) != expected_version:
                     raise AppError("CONTEXT_CHANGED", "会话内容已变化，请刷新后重试", 409)
@@ -418,7 +435,7 @@ class ChatService:
             answer = models.generate(prompts, provider, **options)
             with self.database.sessions() as database:
                 repository = Repository(database)
-                session = repository.chat_session(user_id, session_id, lock=True)
+                session = repository.chat_session(user_id, session_id, lock=True, kind="chat")
                 current = repository.context_messages(user_id, session_id)
                 if self._context_version(session, current) != expected_version:
                     raise AppError("CONTEXT_CHANGED", "会话内容已变化，请刷新后重试", 409)

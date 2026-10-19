@@ -4,6 +4,7 @@ from datetime import timedelta
 from time import perf_counter
 from typing import Literal
 from uuid import uuid4
+from urllib.parse import urlsplit
 
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -142,6 +143,36 @@ class ModelCenter:
         if row is None:
             raise AppError("MODEL_CENTER_NOT_INITIALIZED", "请显式执行 bootstrap --model-center", 503)
         return row
+
+    def migrate_retired_deepseek_chat(self):
+        """Explicit operator maintenance; preserve roles, revisions and frozen runs."""
+        if urlsplit(self.settings.deepseek_base_url).hostname != "api.deepseek.com":
+            raise AppError("MODEL_MIGRATION_CUSTOM_ENDPOINT", "自定义端点请通过模型中心确认可用模型后修改", 409)
+        with self.database.sessions() as session:
+            row = self.row(session, lock=True)
+            configuration = dict(row.configuration)
+            canonical = configuration.get("schema_version") == 2
+            parsed = ModelCatalog.model_validate(configuration) if canonical else ManagedModels.model_validate(configuration)
+            migrated = 0
+            profiles = {}
+            for key, profile in parsed.profiles.items():
+                provider = profile.provider if canonical else key
+                if provider == "deepseek" and profile.model_name == "deepseek-chat":
+                    updates = {"model_name": "deepseek-flash"}
+                    if canonical:
+                        updates["version"] = profile.version + 1
+                    profile = profile.model_copy(update=updates)
+                    migrated += 1
+                profiles[key] = profile
+            if migrated:
+                saved = parsed.model_copy(update={"profiles": profiles}).model_dump(mode="json")
+                row.configuration = saved
+                row.revision += 1
+                row.updated_at = utcnow()
+                row.health = {}
+                session.add(ModelConfigurationVersion(revision=row.revision, configuration=saved))
+                session.commit()
+            return {"revision": row.revision, "migrated_profiles": migrated}
 
     def snapshot(self, provider=None, *, session=None, profile_id=None):
         self.require()

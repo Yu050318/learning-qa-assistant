@@ -46,15 +46,18 @@ def bounded_json(value, max_bytes):
 
 
 class RunStore:
-    def __init__(self, settings, database):
+    def __init__(self, settings, database, *, kind="chat"):
+        if kind not in {"chat", "evaluation"}:
+            raise ValueError("Unsupported execution queue")
         self.settings, self.database = settings, database
+        self.kind = kind
 
     def now(self, session):
         clock = func.clock_timestamp() if session.get_bind().dialect.name == "postgresql" else func.current_timestamp()
         return aware(session.scalar(select(clock)))
 
     def get_row(self, session, user_id, run_id, *, lock=False):
-        query = select(ChatRun).where(ChatRun.id == run_id, ChatRun.user_id == user_id)
+        query = select(ChatRun).where(ChatRun.id == run_id, ChatRun.user_id == user_id, ChatRun.execution_kind == self.kind)
         run = session.scalar(query.with_for_update() if lock else query)
         if run is None:
             raise not_found()
@@ -114,14 +117,14 @@ class RunStore:
                         raise AppError("FORBIDDEN", "账号已停用", 403)
                 existing = session.scalar(select(ChatRun).where(ChatRun.user_id == user_id, ChatRun.client_key == client_key).with_for_update())
                 if existing:
-                    if existing.fingerprint != fingerprint:
+                    if existing.fingerprint != fingerprint or existing.execution_kind != self.kind:
                         raise AppError("IDEMPOTENCY_CONFLICT", "同一请求标识不能用于不同的问题或会话", 409)
                     self.expire(session, existing)
                     session.commit()
                     return existing, False
                 # An exact retry needs only the existing Run lock. ChatService may
                 # briefly hold the session row while preparing/saving the answer.
-                Repository(session).chat_session(user_id, session_id, lock=True)
+                Repository(session).chat_session(user_id, session_id, lock=True, kind=self.kind)
                 active = session.scalar(select(ChatRun).where(ChatRun.session_id == session_id, ChatRun.state.in_(ACTIVE_STATES)).with_for_update())
                 if active:
                     self.expire(session, active)
@@ -130,11 +133,11 @@ class RunStore:
                     session.flush()
                 if queued:
                     count = session.scalar(select(func.count()).select_from(ChatRun).where(
-                        ChatRun.user_id == user_id, ChatRun.state.in_(ACTIVE_STATES)))
+                        ChatRun.user_id == user_id, ChatRun.execution_kind == self.kind, ChatRun.state.in_(ACTIVE_STATES)))
                     if count >= self.settings.chat_run_queue_limit:
                         raise AppError("RUN_CAPACITY_EXCEEDED", "待处理问答已达上限，请稍后用原请求标识重试", 429)
                 run = ChatRun(id=uuid4(), user_id=user_id, session_id=session_id, client_key=client_key,
-                              fingerprint=fingerprint, request_id=request_id, state="queued" if queued else "running", sequence=0, event_bytes=0,
+                              fingerprint=fingerprint, request_id=request_id, state="queued" if queued else "running", execution_kind=self.kind, sequence=0, event_bytes=0,
                               payload=bounded_json(inputs, 100_000), remaining_seconds=self.settings.agent_timeout if queued else None,
                               expires_at=self.now(session) + timedelta(seconds=self.settings.agent_timeout + 30))
                 session.add(run);session.flush()
@@ -223,22 +226,27 @@ class RunStore:
             raise AppError("AGENT_TIMEOUT", "运行预算已耗尽", 504)
         return run
 
-    def claim_next(self):
+    def settle_cancellations(self, session):
+        now = self.now(session)
+        cancelled = session.scalars(select(ChatRun).where(ChatRun.execution_kind == self.kind, ChatRun.state == "cancelling", or_(
+            ChatRun.lease_expires_at <= now, ChatRun.owner_token.is_(None)))
+            .limit(10).with_for_update(skip_locked=True)).all()
+        for abandoned in cancelled:
+            abandoned.state = "cancelled"
+            self.message_state(session, abandoned)
+            abandoned.owner_token = abandoned.lease_expires_at = abandoned.active_since = None
+            self._event(session, abandoned, "run_cancelled", {}, terminal=True)
+
+    def claim_next(self, run_id=None):
         with self.database.sessions() as session:
             now = self.now(session)
-            expired = session.scalars(select(ChatRun).where(ChatRun.state == "waiting", ChatRun.expires_at <= now)
+            expired = session.scalars(select(ChatRun).where(ChatRun.execution_kind == self.kind, ChatRun.state == "waiting", ChatRun.expires_at <= now)
                 .limit(10).with_for_update(skip_locked=True)).all()
             for waiting in expired:
                 self.expire(session, waiting)
-            cancelled = session.scalars(select(ChatRun).where(ChatRun.state == "cancelling", or_(
-                ChatRun.lease_expires_at <= now, ChatRun.owner_token.is_(None)))
-                .limit(10).with_for_update(skip_locked=True)).all()
-            for abandoned in cancelled:
-                abandoned.state = "cancelled"
-                self.message_state(session, abandoned)
-                abandoned.owner_token = abandoned.lease_expires_at = abandoned.active_since = None
-                self._event(session, abandoned, "run_cancelled", {}, terminal=True)
-            run = session.scalar(select(ChatRun).where(or_(and_(ChatRun.state == "queued", or_(
+            self.settle_cancellations(session)
+            run = session.scalar(select(ChatRun).where(ChatRun.execution_kind == self.kind,
+                ChatRun.id == run_id if run_id is not None else True, or_(and_(ChatRun.state == "queued", or_(
                 ChatRun.lease_expires_at.is_(None), ChatRun.lease_expires_at <= now)), and_(
                 ChatRun.state == "running", ChatRun.generation > 0, ChatRun.lease_expires_at <= now)))
                 .order_by(ChatRun.created_at, ChatRun.id).limit(1).with_for_update(skip_locked=True))
@@ -317,7 +325,8 @@ class RunStore:
         with self.database.sessions() as session:
             run = self.get_row(session, user_id, run_id, lock=True)
             if run.state not in TERMINAL_STATES and run.state != "cancelling":
-                queued = run.state in {"queued", "waiting"}
+                queued = run.state in {"queued", "waiting"} or run.owner_token is None or (
+                    run.lease_expires_at is not None and aware(run.lease_expires_at) <= self.now(session))
                 run.state, run.resume_key = ("cancelled" if queued else "cancelling"), None
                 self.message_state(session, run)
                 self._event(session, run, "run_cancelled" if queued else "cancel_requested", {}, terminal=queued)

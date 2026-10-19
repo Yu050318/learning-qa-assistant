@@ -1,0 +1,135 @@
+{
+  "case_count": 80,
+  "dataset_fingerprint": "1543b9da09bcdd810548eedb912a0e5505bc8793ff05b9c25a7a935aeafdbc0d",
+  "document_count": 12,
+  "documents": [
+    {
+      "canonical_name": "aftersales_policy.html",
+      "source_file": "corpus/aftersales_policy.md",
+      "source_id": "nebula:aftersales_policy",
+      "upload_file": "upload_corpus/aftersales_policy.html"
+    },
+    {
+      "canonical_name": "inventory.xlsx",
+      "source_file": "corpus/inventory.xlsx",
+      "source_id": "nebula:inventory",
+      "upload_file": "upload_corpus/inventory.xlsx"
+    },
+    {
+      "canonical_name": "product_faq.html",
+      "source_file": "corpus/product_faq.md",
+      "source_id": "nebula:product_faq",
+      "upload_file": "upload_corpus/product_faq.html"
+    },
+    {
+      "canonical_name": "product_manual.html",
+      "source_file": "corpus/product_manual.md",
+      "source_id": "nebula:product_manual",
+      "upload_file": "upload_corpus/product_manual.html"
+    },
+    {
+      "canonical_name": "product_prices.xlsx",
+      "source_file": "corpus/product_prices.xlsx",
+      "source_id": "nebula:product_prices",
+      "upload_file": "upload_corpus/product_prices.xlsx"
+    },
+    {
+      "canonical_name": "product_specs.xlsx",
+      "source_file": "corpus/product_specs.xlsx",
+      "source_id": "nebula:product_specs",
+      "upload_file": "upload_corpus/product_specs.xlsx"
+    },
+    {
+      "canonical_name": "release_notes.html",
+      "source_file": "corpus/release_notes.md",
+      "source_id": "nebula:release_notes",
+      "upload_file": "upload_corpus/release_notes.html"
+    },
+    {
+      "canonical_name": "repair_records.xlsx",
+      "source_file": "corpus/repair_records.xlsx",
+      "source_id": "nebula:repair_records",
+      "upload_file": "upload_corpus/repair_records.xlsx"
+    },
+    {
+      "canonical_name": "selection_guide.html",
+      "source_file": "corpus/selection_guide.md",
+      "source_id": "nebula:selection_guide",
+      "upload_file": "upload_corpus/selection_guide.html"
+    },
+    {
+      "canonical_name": "technical_specs.html",
+      "source_file": "corpus/technical_specs.md",
+      "source_id": "nebula:technical_specs",
+      "upload_file": "upload_corpus/technical_specs.html"
+    },
+    {
+      "canonical_name": "troubleshooting.html",
+      "source_file": "corpus/troubleshooting.md",
+      "source_id": "nebula:troubleshooting",
+      "upload_file": "upload_corpus/troubleshooting.html"
+    },
+    {
+      "canonical_name": "warranty_rules.html",
+      "source_file": "corpus/warranty_rules.md",
+      "source_id": "nebula:warranty_rules",
+      "upload_file": "upload_corpus/warranty_rules.html"
+    }
+  ],
+  "files": {
+    "corpus/aftersales_policy.md": "116f3e222d586ce1b8abb55dbdf69c30c82fceb30a364e2e08126b0d9969d128",
+    "corpus/inventory.xlsx": "1ae07deb049a1fa2a0133049977c75e60b17ec5c5448546b884fe8a80306b6ed",
+    "corpus/product_faq.md": "6bc7ed6602c037bab4fd460bee7f9044facc40e02b0a12c2472b5722be5f3d2c",
+    "corpus/product_manual.md": "ebfc1a04bc4e0bf012a0edf587ac24075849110c867dd087fe1254a81155701a",
+    "corpus/product_prices.xlsx": "c7974d6ff6255f1d09af492d57f15591cc29c3b0cdf49eba53e41d3016ac1cbe",
+    "corpus/product_specs.xlsx": "3640920832df7c3cdfbfd9cfaea21b2ae8167b2cc598f0766a20ad46c5b19437",
+    "corpus/release_notes.md": "6981961a47269267d771a4085cf81190415a3101bff2d5b7dc784923baff89e8",
+    "corpus/repair_records.xlsx": "5754c8c4ba1968d141f06feee9f62190e356acfffe3c87248031bf4fbf63829a",
+    "corpus/selection_guide.md": "6de8e13b7aefdeb57746db1ca8f6892db27b73978a020b4a4e4511a4b82d77f6",
+    "corpus/technical_specs.md": "bac31a6bd5a06a4cb20716e95b8dd7969f24acc254ecb079f841f6b0ae04d873",
+    "corpus/troubleshooting.md": "b4870d912ffa4f7585ca3ad139d2f3283ad1b4a0fe2fe9192b0a948d3e81d34d",
+    "corpus/warranty_rules.md": "3fa4d63368003f5416d78851b0ac08db8fd8a0eb5f8046f354818af7996e6916",
+    "dataset_dev_v1.json": "d7e7811a747a78a4de7380818e1384786b2cca2e102fdda696b886ef12a03d57",
+    "dataset_frozen_v1.json": "514e1bc0a9b31802fe45600b1d84a9bb5ee95ca37c72f3655a118c840484ff8c",
+    "dataset_v1.json": "206b002d0f71e2560bef86bce967be9266027481addfcf45f2098c0c120b2a2a",
+    "ground_truth.jsonl": "4a2c27a74e4c591ad53102dd7900bf45823f2f45da565699e5eaef953de5d271",
+    "manual_review.md": "d5b0e7f01f88e56d8871cc6579cef9c303ae2c107ab0c04d7573dc10f7164948",
+    "source_records.json": "5ae692c025f1e2c781c30725ce406a9da0c8d3c3a2116a56d18b9a32e44d91b0",
+    "splits.json": "5be67865982a6b8ad85fd29dec3f3d6911351b124f46cc2c1c3e8fca168d2e57",
+    "upload_corpus/aftersales_policy.html": "440f4956496adc0bad92217b44191963def6113276b8bc2b2ad2bc647e3a9898",
+    "upload_corpus/inventory.xlsx": "1ae07deb049a1fa2a0133049977c75e60b17ec5c5448546b884fe8a80306b6ed",
+    "upload_corpus/product_faq.html": "6e24153ed9d119d432bedc54c8bb6c6247b31035550767ab9e72ee73883a712a",
+    "upload_corpus/product_manual.html": "237a142d2c36c212e314e6be01d052ad6a04e6c8d90e6d805dfdd1035feda120",
+    "upload_corpus/product_prices.xlsx": "c7974d6ff6255f1d09af492d57f15591cc29c3b0cdf49eba53e41d3016ac1cbe",
+    "upload_corpus/product_specs.xlsx": "3640920832df7c3cdfbfd9cfaea21b2ae8167b2cc598f0766a20ad46c5b19437",
+    "upload_corpus/release_notes.html": "e3f19002d1d54cd87cb72a629d04607776be3f5e7ed95586012343737abfa1a2",
+    "upload_corpus/repair_records.xlsx": "5754c8c4ba1968d141f06feee9f62190e356acfffe3c87248031bf4fbf63829a",
+    "upload_corpus/selection_guide.html": "04596ad7adb501a3cf97dfa0b087fe788cdc8f73919bc0983b3a6b74844b6c49",
+    "upload_corpus/technical_specs.html": "58ed44c00234aea3e188ca31b2671ea054ba7a701cc8977b9f702af1f1af2c7a",
+    "upload_corpus/troubleshooting.html": "3d1055f549bce4d90c89eff9819364ad6173f19f9f37328389ebabb7e99dd938",
+    "upload_corpus/warranty_rules.html": "c5a1637a0bca7e090b4cd648d83e55399a717b6519e9718bdb694c368b6961f6"
+  },
+  "generator_version": "nebula-v1",
+  "ingestion_allowlist": [
+    "upload_corpus/aftersales_policy.html",
+    "upload_corpus/inventory.xlsx",
+    "upload_corpus/product_faq.html",
+    "upload_corpus/product_manual.html",
+    "upload_corpus/product_prices.xlsx",
+    "upload_corpus/product_specs.xlsx",
+    "upload_corpus/release_notes.html",
+    "upload_corpus/repair_records.xlsx",
+    "upload_corpus/selection_guide.html",
+    "upload_corpus/technical_specs.html",
+    "upload_corpus/troubleshooting.html",
+    "upload_corpus/warranty_rules.html"
+  ],
+  "license": "Synthetic fixture data: CC0-1.0; generator follows repository code license.",
+  "product_count": 200,
+  "repair_count": 100,
+  "seed": 20261010,
+  "split_counts": {
+    "dev": 20,
+    "frozen": 60
+  }
+}

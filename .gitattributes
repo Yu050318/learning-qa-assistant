@@ -1,0 +1,2 @@
+# Frozen benchmark hashes identify exact source bytes on every platform.
+evals/rag/synthetic_enterprise/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

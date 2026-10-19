@@ -21,7 +21,7 @@ def ingestion_configuration_hash(settings):
 
 class WorkerRegistry:
     def __init__(self, settings, database, worker_id=None, *, kind="ingestion"):
-        if kind not in {"ingestion", "run"}:
+        if kind not in {"ingestion", "run", "evaluation"}:
             raise ValueError("Unsupported worker kind")
         self.settings, self.database = settings, database
         self.worker_id = worker_id or uuid4()
@@ -32,10 +32,12 @@ class WorkerRegistry:
             return ingestion_configuration_hash(self.settings)
         from app.application.chat import FROZEN_WORKFLOW_SETTINGS
         payload = {name: getattr(self.settings, name) for name in FROZEN_WORKFLOW_SETTINGS}
-        payload.update(kind="run", snapshot_version=1, model_center_enabled=self.settings.model_center_enabled,
+        payload.update(kind=self.kind, snapshot_version=1, model_center_enabled=self.settings.model_center_enabled,
                        sharing_enabled=self.settings.sharing_enabled, sql_allowed_tables=self.settings.sql_allowed_tables,
                        milvus_uri=self.settings.milvus_uri, milvus_database=self.settings.milvus_database,
                        milvus_collection=self.settings.milvus_collection)
+        if self.kind == "evaluation":
+            payload.update(evaluation_protocol=1, evaluation_enabled=self.settings.evaluation_enabled)
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
     @staticmethod

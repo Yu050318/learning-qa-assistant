@@ -1,0 +1,2646 @@
+{
+  "schema_version": 1,
+  "name": "Nebula Industrial synthetic enterprise v1",
+  "cases": [
+    {
+      "id": "simple_fact_001",
+      "category": "simple_fact",
+      "question": "NX-041 的安装要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-041 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-041 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-041"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_002",
+      "category": "simple_fact",
+      "question": "NX-042 的使用环境是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-042 的使用环境：室内干燥环境，禁止浸水。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-042 的使用环境：室内干燥环境，禁止浸水。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_faq.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-042"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_003",
+      "category": "simple_fact",
+      "question": "NX-043 的供电要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-043 的供电要求：24 V DC。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-043 的供电要求：24 V DC。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "technical_specs.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-043"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_004",
+      "category": "simple_fact",
+      "question": "NX-044 的复位方法是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-044 的复位方法：断电 30 秒后重新上电。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-044 的复位方法：断电 30 秒后重新上电。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "troubleshooting.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-044"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_005",
+      "category": "simple_fact",
+      "question": "NX-045 的安装要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-045 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-045 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-045"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_006",
+      "category": "simple_fact",
+      "question": "NX-046 的使用环境是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-046 的使用环境：室内干燥环境，禁止浸水。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-046 的使用环境：室内干燥环境，禁止浸水。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_faq.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-046"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_007",
+      "category": "simple_fact",
+      "question": "NX-047 的供电要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-047 的供电要求：24 V DC。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-047 的供电要求：24 V DC。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "technical_specs.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-047"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_008",
+      "category": "simple_fact",
+      "question": "NX-048 的复位方法是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-048 的复位方法：断电 30 秒后重新上电。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-048 的复位方法：断电 30 秒后重新上电。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "troubleshooting.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-048"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_009",
+      "category": "simple_fact",
+      "question": "NX-049 的安装要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-049 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-049 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-049"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_010",
+      "category": "simple_fact",
+      "question": "NX-050 的使用环境是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-050 的使用环境：室内干燥环境，禁止浸水。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-050 的使用环境：室内干燥环境，禁止浸水。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_faq.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-050"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_011",
+      "category": "simple_fact",
+      "question": "NX-051 的供电要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-051 的供电要求：24 V DC。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-051 的供电要求：24 V DC。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "technical_specs.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-051"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_012",
+      "category": "simple_fact",
+      "question": "NX-052 的复位方法是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-052 的复位方法：断电 30 秒后重新上电。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-052 的复位方法：断电 30 秒后重新上电。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "troubleshooting.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-052"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_013",
+      "category": "simple_fact",
+      "question": "NX-053 的安装要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-053 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-053 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-053"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_014",
+      "category": "simple_fact",
+      "question": "NX-054 的使用环境是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-054 的使用环境：室内干燥环境，禁止浸水。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-054 的使用环境：室内干燥环境，禁止浸水。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_faq.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-054"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_015",
+      "category": "simple_fact",
+      "question": "NX-055 的供电要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-055 的供电要求：24 V DC。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-055 的供电要求：24 V DC。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "technical_specs.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-055"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_016",
+      "category": "simple_fact",
+      "question": "NX-056 的复位方法是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-056 的复位方法：断电 30 秒后重新上电。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-056 的复位方法：断电 30 秒后重新上电。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "troubleshooting.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-056"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_017",
+      "category": "simple_fact",
+      "question": "NX-057 的安装要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-057 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-057 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-057"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_018",
+      "category": "simple_fact",
+      "question": "NX-058 的使用环境是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-058 的使用环境：室内干燥环境，禁止浸水。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-058 的使用环境：室内干燥环境，禁止浸水。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_faq.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-058"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_019",
+      "category": "simple_fact",
+      "question": "NX-059 的供电要求是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-059 的供电要求：24 V DC。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-059 的供电要求：24 V DC。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "technical_specs.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-059"
+        }
+      ]
+    },
+    {
+      "id": "simple_fact_020",
+      "category": "simple_fact",
+      "question": "NX-060 的复位方法是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-060 的复位方法：断电 30 秒后重新上电。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-060 的复位方法：断电 30 秒后重新上电。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "troubleshooting.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-060"
+        }
+      ]
+    },
+    {
+      "id": "table_query_001",
+      "category": "table_query",
+      "question": "NX-001 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-001 的额定功率为 120 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-001 的额定功率为 120 W。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 2,
+          "row_end": 2,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_002",
+      "category": "table_query",
+      "question": "NX-002 的单价是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-002 的单价为 2850 CNY。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-002 的单价为 2850 CNY。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_prices.xlsx",
+          "sheet": "价格",
+          "row_start": 3,
+          "row_end": 3,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_003",
+      "category": "table_query",
+      "question": "NX-003 的库存是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-003 在上海测试仓的可用库存为 88 台（2026-10-01）。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-003 在上海测试仓的可用库存为 88 台（2026-10-01）。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "inventory.xlsx",
+          "sheet": "库存",
+          "row_start": 4,
+          "row_end": 4,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_004",
+      "category": "table_query",
+      "question": "NX-004 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-004 的额定功率为 60 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-004 的额定功率为 60 W。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 5,
+          "row_end": 5,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_005",
+      "category": "table_query",
+      "question": "NX-005 的单价是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-005 的单价为 3550 CNY。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-005 的单价为 3550 CNY。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_prices.xlsx",
+          "sheet": "价格",
+          "row_start": 6,
+          "row_end": 6,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_006",
+      "category": "table_query",
+      "question": "NX-006 的库存是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-006 在上海测试仓的可用库存为 87 台（2026-10-01）。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-006 在上海测试仓的可用库存为 87 台（2026-10-01）。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "inventory.xlsx",
+          "sheet": "库存",
+          "row_start": 7,
+          "row_end": 7,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_007",
+      "category": "table_query",
+      "question": "NX-007 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-007 的额定功率为 70 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-007 的额定功率为 70 W。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 8,
+          "row_end": 8,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_008",
+      "category": "table_query",
+      "question": "NX-008 的单价是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-008 的单价为 4600 CNY。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-008 的单价为 4600 CNY。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_prices.xlsx",
+          "sheet": "价格",
+          "row_start": 9,
+          "row_end": 9,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_009",
+      "category": "table_query",
+      "question": "NX-009 的库存是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-009 在上海测试仓的可用库存为 201 台（2026-10-01）。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-009 在上海测试仓的可用库存为 201 台（2026-10-01）。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "inventory.xlsx",
+          "sheet": "库存",
+          "row_start": 10,
+          "row_end": 10,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_010",
+      "category": "table_query",
+      "question": "NX-010 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-010 的额定功率为 100 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-010 的额定功率为 100 W。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 11,
+          "row_end": 11,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_011",
+      "category": "table_query",
+      "question": "NX-011 和 NX-031 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-011 的额定功率为 50 W。",
+        "NX-031 的额定功率为 55 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-011 的额定功率为 50 W。 NX-031 的额定功率为 55 W。 NX-011 的功率小于 NX-031。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 12,
+          "row_end": 12,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 32,
+          "row_end": 32,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_012",
+      "category": "table_query",
+      "question": "NX-012 和 NX-032 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-012 的额定功率为 20 W。",
+        "NX-032 的额定功率为 15 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-012 的额定功率为 20 W。 NX-032 的额定功率为 15 W。 NX-012 的功率大于 NX-032。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 13,
+          "row_end": 13,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 33,
+          "row_end": 33,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_013",
+      "category": "table_query",
+      "question": "NX-013 和 NX-033 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-013 的额定功率为 200 W。",
+        "NX-033 的额定功率为 185 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-013 的额定功率为 200 W。 NX-033 的额定功率为 185 W。 NX-013 的功率大于 NX-033。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 14,
+          "row_end": 14,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 34,
+          "row_end": 34,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_014",
+      "category": "table_query",
+      "question": "NX-014 和 NX-034 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-014 的额定功率为 185 W。",
+        "NX-034 的额定功率为 10 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-014 的额定功率为 185 W。 NX-034 的额定功率为 10 W。 NX-014 的功率大于 NX-034。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 15,
+          "row_end": 15,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 35,
+          "row_end": 35,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_015",
+      "category": "table_query",
+      "question": "NX-015 和 NX-035 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-015 的额定功率为 200 W。",
+        "NX-035 的额定功率为 10 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-015 的额定功率为 200 W。 NX-035 的额定功率为 10 W。 NX-015 的功率大于 NX-035。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 16,
+          "row_end": 16,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 36,
+          "row_end": 36,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_016",
+      "category": "table_query",
+      "question": "NX-016 和 NX-036 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-016 的额定功率为 175 W。",
+        "NX-036 的额定功率为 140 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-016 的额定功率为 175 W。 NX-036 的额定功率为 140 W。 NX-016 的功率大于 NX-036。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 17,
+          "row_end": 17,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 37,
+          "row_end": 37,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_017",
+      "category": "table_query",
+      "question": "NX-017 和 NX-037 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-017 的额定功率为 135 W。",
+        "NX-037 的额定功率为 200 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-017 的额定功率为 135 W。 NX-037 的额定功率为 200 W。 NX-017 的功率小于 NX-037。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 18,
+          "row_end": 18,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 38,
+          "row_end": 38,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_018",
+      "category": "table_query",
+      "question": "NX-018 和 NX-038 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-018 的额定功率为 10 W。",
+        "NX-038 的额定功率为 155 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-018 的额定功率为 10 W。 NX-038 的额定功率为 155 W。 NX-018 的功率小于 NX-038。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 19,
+          "row_end": 19,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 39,
+          "row_end": 39,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_019",
+      "category": "table_query",
+      "question": "NX-019 和 NX-039 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-019 的额定功率为 95 W。",
+        "NX-039 的额定功率为 120 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-019 的额定功率为 95 W。 NX-039 的额定功率为 120 W。 NX-019 的功率小于 NX-039。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 20,
+          "row_end": 20,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 40,
+          "row_end": 40,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "table_query_020",
+      "category": "table_query",
+      "question": "NX-020 和 NX-040 的额定功率各是多少，谁更大？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-020 的额定功率为 35 W。",
+        "NX-040 的额定功率为 175 W。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-020 的额定功率为 35 W。 NX-040 的额定功率为 175 W。 NX-020 的功率小于 NX-040。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 21,
+          "row_end": 21,
+          "section": null
+        },
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 41,
+          "row_end": 41,
+          "section": null
+        }
+      ]
+    },
+    {
+      "id": "cross_document_001",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-081 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-081 的额定功率为 155 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-081 的额定功率为 155 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 82,
+          "row_end": 82,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_002",
+      "category": "cross_document",
+      "question": "NX-082 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-082 的通信协议为 Modbus RTU。",
+        "NX-082 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-082 的通信协议为 Modbus RTU。 NX-082 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 83,
+          "row_end": 83,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-082"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_003",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-083 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-083 的额定功率为 165 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-083 的额定功率为 165 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 84,
+          "row_end": 84,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_004",
+      "category": "cross_document",
+      "question": "NX-084 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-084 的通信协议为 MQTT。",
+        "NX-084 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-084 的通信协议为 MQTT。 NX-084 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 85,
+          "row_end": 85,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-084"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_005",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-085 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-085 的额定功率为 10 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-085 的额定功率为 10 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 86,
+          "row_end": 86,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_006",
+      "category": "cross_document",
+      "question": "NX-086 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-086 的通信协议为 EtherCAT。",
+        "NX-086 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-086 的通信协议为 EtherCAT。 NX-086 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 87,
+          "row_end": 87,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-086"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_007",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-087 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-087 的额定功率为 105 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-087 的额定功率为 105 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 88,
+          "row_end": 88,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_008",
+      "category": "cross_document",
+      "question": "NX-088 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-088 的通信协议为 Modbus RTU。",
+        "NX-088 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-088 的通信协议为 Modbus RTU。 NX-088 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 89,
+          "row_end": 89,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-088"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_009",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-089 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-089 的额定功率为 110 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-089 的额定功率为 110 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 90,
+          "row_end": 90,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_010",
+      "category": "cross_document",
+      "question": "NX-090 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-090 的通信协议为 MQTT。",
+        "NX-090 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-090 的通信协议为 MQTT。 NX-090 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 91,
+          "row_end": 91,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-090"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_011",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-091 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-091 的额定功率为 60 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-091 的额定功率为 60 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 92,
+          "row_end": 92,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_012",
+      "category": "cross_document",
+      "question": "NX-092 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-092 的通信协议为 EtherCAT。",
+        "NX-092 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-092 的通信协议为 EtherCAT。 NX-092 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 93,
+          "row_end": 93,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-092"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_013",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-093 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-093 的额定功率为 190 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-093 的额定功率为 190 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 94,
+          "row_end": 94,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_014",
+      "category": "cross_document",
+      "question": "NX-094 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-094 的通信协议为 Modbus RTU。",
+        "NX-094 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-094 的通信协议为 Modbus RTU。 NX-094 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 95,
+          "row_end": 95,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-094"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_015",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-095 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-095 的额定功率为 185 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-095 的额定功率为 185 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 96,
+          "row_end": 96,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_016",
+      "category": "cross_document",
+      "question": "NX-096 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-096 的通信协议为 MQTT。",
+        "NX-096 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-096 的通信协议为 MQTT。 NX-096 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 97,
+          "row_end": 97,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-096"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_017",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-097 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-097 的额定功率为 45 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-097 的额定功率为 45 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 98,
+          "row_end": 98,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_018",
+      "category": "cross_document",
+      "question": "NX-098 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-098 的通信协议为 EtherCAT。",
+        "NX-098 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-098 的通信协议为 EtherCAT。 NX-098 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 99,
+          "row_end": 99,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-098"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_019",
+      "category": "cross_document",
+      "question": "2026-02-01 购买的 NX-099 额定功率和保修期分别是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-099 的额定功率为 185 W。",
+        "2026-01-01 起购买的设备保修 24 个月。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-099 的额定功率为 185 W。 2026-01-01 起购买的设备保修 24 个月。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 100,
+          "row_end": 100,
+          "section": null
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        }
+      ]
+    },
+    {
+      "id": "cross_document_020",
+      "category": "cross_document",
+      "question": "NX-100 的通信协议和安装要求分别是什么？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-100 的通信协议为 Modbus RTU。",
+        "NX-100 的安装要求：断电后接线并固定在 DIN 导轨上。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-100 的通信协议为 Modbus RTU。 NX-100 的安装要求：断电后接线并固定在 DIN 导轨上。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 101,
+          "row_end": 101,
+          "section": null
+        },
+        {
+          "canonical_name": "product_manual.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-100"
+        }
+      ]
+    },
+    {
+      "id": "no_answer_001",
+      "category": "no_answer",
+      "question": "NX-901 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "dev",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_002",
+      "category": "no_answer",
+      "question": "NX-902 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "dev",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_003",
+      "category": "no_answer",
+      "question": "NX-903 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "dev",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_004",
+      "category": "no_answer",
+      "question": "NX-904 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_005",
+      "category": "no_answer",
+      "question": "NX-905 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_006",
+      "category": "no_answer",
+      "question": "NX-906 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_007",
+      "category": "no_answer",
+      "question": "NX-907 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_008",
+      "category": "no_answer",
+      "question": "NX-908 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_009",
+      "category": "no_answer",
+      "question": "NX-909 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "no_answer_010",
+      "category": "no_answer",
+      "question": "NX-910 的额定功率是多少？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "insufficient"
+      ],
+      "expected_source_types": [],
+      "expected_facts": [],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "知识库未提供该型号信息，无法确认额定功率。",
+      "split": "frozen",
+      "gold_anchors": []
+    },
+    {
+      "id": "version_policy_001",
+      "category": "version_policy",
+      "question": "NX-001 的公告与参数表功率不同；硬件 2.0 应使用哪个数值，如何解释差异？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-001 的额定功率为 120 W。",
+        "NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-001 的额定功率为 120 W。 NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 2,
+          "row_end": 2,
+          "section": null
+        },
+        {
+          "canonical_name": "release_notes.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-001"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_002",
+      "category": "version_policy",
+      "question": "NX-002 的公告与参数表功率不同；硬件 2.0 应使用哪个数值，如何解释差异？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-002 的额定功率为 90 W。",
+        "NX-002 硬件 1.0 的额定功率为 100 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-002 的额定功率为 90 W。 NX-002 硬件 1.0 的额定功率为 100 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。",
+      "split": "dev",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 3,
+          "row_end": 3,
+          "section": null
+        },
+        {
+          "canonical_name": "release_notes.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-002"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_003",
+      "category": "version_policy",
+      "question": "NX-003 的公告与参数表功率不同；硬件 2.0 应使用哪个数值，如何解释差异？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-003 的额定功率为 120 W。",
+        "NX-003 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-003 的额定功率为 120 W。 NX-003 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 4,
+          "row_end": 4,
+          "section": null
+        },
+        {
+          "canonical_name": "release_notes.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-003"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_004",
+      "category": "version_policy",
+      "question": "NX-004 的公告与参数表功率不同；硬件 2.0 应使用哪个数值，如何解释差异？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-004 的额定功率为 60 W。",
+        "NX-004 硬件 1.0 的额定功率为 70 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-004 的额定功率为 60 W。 NX-004 硬件 1.0 的额定功率为 70 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 5,
+          "row_end": 5,
+          "section": null
+        },
+        {
+          "canonical_name": "release_notes.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-004"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_005",
+      "category": "version_policy",
+      "question": "NX-005 的公告与参数表功率不同；硬件 2.0 应使用哪个数值，如何解释差异？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "NX-005 的额定功率为 10 W。",
+        "NX-005 硬件 1.0 的额定功率为 20 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "NX-005 的额定功率为 10 W。 NX-005 硬件 1.0 的额定功率为 20 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "product_specs.xlsx",
+          "sheet": "产品参数",
+          "row_start": 6,
+          "row_end": 6,
+          "section": null
+        },
+        {
+          "canonical_name": "release_notes.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "NX-005"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_006",
+      "category": "version_policy",
+      "question": "售后说明同时写了 12 和 24 个月；2026-06-01 购买适用哪个保修期，旧政策为何不同？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。",
+        "2026-01-01 起购买的设备保修 24 个月。",
+        "按购买日期适用，2026-01-01 起购买适用新政策。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。 2026-01-01 起购买的设备保修 24 个月。 按购买日期适用，2026-01-01 起购买适用新政策。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2025政策"
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        },
+        {
+          "canonical_name": "warranty_rules.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "适用规则"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_007",
+      "category": "version_policy",
+      "question": "售后说明同时写了 12 和 24 个月；2026-07-01 购买适用哪个保修期，旧政策为何不同？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。",
+        "2026-01-01 起购买的设备保修 24 个月。",
+        "按购买日期适用，2026-01-01 起购买适用新政策。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。 2026-01-01 起购买的设备保修 24 个月。 按购买日期适用，2026-01-01 起购买适用新政策。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2025政策"
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        },
+        {
+          "canonical_name": "warranty_rules.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "适用规则"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_008",
+      "category": "version_policy",
+      "question": "售后说明同时写了 12 和 24 个月；2026-08-01 购买适用哪个保修期，旧政策为何不同？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。",
+        "2026-01-01 起购买的设备保修 24 个月。",
+        "按购买日期适用，2026-01-01 起购买适用新政策。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。 2026-01-01 起购买的设备保修 24 个月。 按购买日期适用，2026-01-01 起购买适用新政策。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2025政策"
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        },
+        {
+          "canonical_name": "warranty_rules.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "适用规则"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_009",
+      "category": "version_policy",
+      "question": "售后说明同时写了 12 和 24 个月；2026-09-01 购买适用哪个保修期，旧政策为何不同？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。",
+        "2026-01-01 起购买的设备保修 24 个月。",
+        "按购买日期适用，2026-01-01 起购买适用新政策。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。 2026-01-01 起购买的设备保修 24 个月。 按购买日期适用，2026-01-01 起购买适用新政策。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2025政策"
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        },
+        {
+          "canonical_name": "warranty_rules.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "适用规则"
+        }
+      ]
+    },
+    {
+      "id": "version_policy_010",
+      "category": "version_policy",
+      "question": "售后说明同时写了 12 和 24 个月；2026-10-01 购买适用哪个保修期，旧政策为何不同？",
+      "search_mode": "knowledge",
+      "expected_kinds": [
+        "grounded"
+      ],
+      "expected_source_types": [
+        "knowledge"
+      ],
+      "expected_facts": [
+        "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。",
+        "2026-01-01 起购买的设备保修 24 个月。",
+        "按购买日期适用，2026-01-01 起购买适用新政策。"
+      ],
+      "user_id": null,
+      "document_ids": [],
+      "web_query": null,
+      "web_urls": [],
+      "reference_answer": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。 2026-01-01 起购买的设备保修 24 个月。 按购买日期适用，2026-01-01 起购买适用新政策。",
+      "split": "frozen",
+      "gold_anchors": [
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2025政策"
+        },
+        {
+          "canonical_name": "aftersales_policy.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "2026政策"
+        },
+        {
+          "canonical_name": "warranty_rules.html",
+          "sheet": null,
+          "row_start": null,
+          "row_end": null,
+          "section": "适用规则"
+        }
+      ]
+    }
+  ]
+}

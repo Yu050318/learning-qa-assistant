@@ -97,3 +97,5 @@
   .modal{width:calc(100% - 24px);max-height:82vh;margin:9vh auto;padding:20px}
   .global-error{top:10px;right:10px;left:10px;max-width:none}
 }
+
+@media(max-height:800px){.rail nav{margin-top:20px;gap:6px;min-height:0;overflow-y:auto;padding-bottom:12px}.rail .brand,.rail .identity{flex-shrink:0}}

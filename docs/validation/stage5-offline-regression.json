@@ -1,0 +1,31 @@
+{
+  "command": ".venv/Scripts/python.exe -m pytest -q --junitxml=data/validation/stage5-tests.xml",
+  "pytest_summary": {
+    "passed": 457,
+    "skipped": 32,
+    "subtests_passed": 38
+  },
+  "junit_suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "32",
+      "tests": "527",
+      "time": "104.613",
+      "timestamp": "2026-10-19T10:05:52.327019+08:00",
+      "hostname": "LAPTOP-POUL226S"
+    }
+  ],
+  "frontend": {
+    "build": "vue-tsc --noEmit && vite build",
+    "result": "passed",
+    "node_tests": 16,
+    "built_assets": [
+      "index-BEgFPWKy.css",
+      "index-Bq0ZI-V6.js"
+    ]
+  },
+  "scope": "offline regression; optional external integration tests skipped. PostgreSQL migration/concurrency separately passed 17 tests on 2026-10-18; not a live quality result.",
+  "frozen_asset_git_index_hashes_verified": 18
+}
