@@ -1,0 +1,31 @@
+{
+  "ui_only": true,
+  "database": "parity_test_stage6_ui_5073c7f660cf",
+  "migration": "0008_series_retirement",
+  "parent_task": "3f691207-803a-4134-b858-0228cc3ac21d",
+  "state": "succeeded",
+  "processed_versions": 2,
+  "total_versions": 2,
+  "current_document": null,
+  "pin_run_state": "cancelled",
+  "versions": [
+    {
+      "id": "b21019b9-fce9-4701-ba81-1ec5a8ffc5b7",
+      "name": "整组退休验收-v1.md",
+      "state": "retired",
+      "index_state": "cleaned",
+      "source_file_exists": false,
+      "vector_leaf_count": 0,
+      "shared_bindings": 0
+    },
+    {
+      "id": "a891068c-7ba9-4d3d-a316-d2875d793d72",
+      "name": "整组退休验收-v2.md",
+      "state": "retired",
+      "index_state": "cleaned",
+      "source_file_exists": false,
+      "vector_leaf_count": 0,
+      "shared_bindings": 0
+    }
+  ]
+}

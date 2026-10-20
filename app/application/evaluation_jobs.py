@@ -1,5 +1,5 @@
 """Owner-scoped, durable evaluation control plane. No inference in API methods."""
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import timedelta
 from typing import Literal
 from uuid import UUID, uuid4
@@ -17,7 +17,9 @@ from app.application.model_center import ModelCenter, catalog_from_legacy
 from app.application.runs import RunStore, bounded_json
 from app.application.sharing import SharingService
 from app.core.errors import AppError, not_found
-from app.infrastructure.persistence.models import ChatRun, DocumentRecord, EvaluationCaseResult, EvaluationDataset, EvaluationJob, KnowledgeDocument, User
+from app.domain.retrieval_scope import RetrievalIndex, retrieval_index_identity
+from app.application.document_publication import DocumentPublication
+from app.infrastructure.persistence.models import ChatRun, DocumentRecord, EvaluationCaseResult, EvaluationDataset, EvaluationJob, User
 from app.infrastructure.persistence.repository import Repository
 
 ACTIVE = ("queued", "running", "cancelling")
@@ -25,8 +27,7 @@ TERMINAL = ("succeeded", "failed", "cancelled")
 
 
 def index_identity(settings):
-    return digest({name: getattr(settings, name) for name in (
-        "milvus_uri", "milvus_database", "milvus_collection", "embedding_model", "embedding_dimension")})
+    return retrieval_index_identity(settings)
 
 
 class EvaluationJobCreate(StrictModel):
@@ -163,12 +164,10 @@ class EvaluationService:
                 settings.update(retrieval_parent_context=False, hierarchy_enabled=False, knowledge_quality_enabled=False, rerank_enabled=False)
             settings["web_search_enabled"] = False
             if payload.knowledge_base_ids:
-                owners = SharingService(self.settings, self.database).scope(uid, payload.knowledge_base_ids, payload.document_ids or None, session=session, lock=True)
-                if not payload.document_ids:
-                    shared = set(session.scalars(select(KnowledgeDocument.document_id).where(KnowledgeDocument.knowledge_base_id.in_(payload.knowledge_base_ids))))
-                    owners = {did: owner for did, owner in owners.items() if did in shared}
+                owners = SharingService(self.settings, self.database).scope(uid, payload.knowledge_base_ids,
+                    payload.document_ids or None, session=session, lock=True, include_owned=False)
             else:
-                ids = Repository(session).ready_document_ids(uid, payload.document_ids, self.settings.embedding_model,
+                ids = Repository(session).ready_document_ids(uid, payload.document_ids, self.settings.embedding_model, require_index=self.settings.document_publication_enabled,
                     **({"current_only": True} if self.settings.document_versions_enabled else {}))
                 if set(ids) != set(payload.document_ids):
                     raise AppError("DOCUMENT_SCOPE_CHANGED", "评测资料未就绪或无权访问", 409)
@@ -186,9 +185,12 @@ class EvaluationService:
             scope = bounded_json({"document_ids": sorted(map(str, owners)), "document_owners": {str(key): str(value) for key, value in owners.items()},
                 "knowledge_base_ids": list(map(str, payload.knowledge_base_ids)), "documents": [{"id": str(doc.id), "owner_id": str(doc.user_id),
                 "canonical_name": doc.original_name, "content_hash": doc.content_hash, "embedding_model": doc.embedding_model} for doc in documents]}, 200_000)
+            if self.settings.document_publication_enabled:
+                targets = DocumentPublication(self.settings, None).freeze(session, owners)
+                scope = bounded_json({**scope, "indexes": [asdict(target) for target in targets]}, 200_000)
             frozen = bounded_json({"version": 1, "revision": snapshot.revision, "catalog": catalog.model_dump(mode="json"),
                 "answer_profile_id": snapshot.answer_profile_id or catalog.assignments["answer"], "settings": settings,
-                "judge_prompt_sha256": digest(judge_prompt()), "index_sha256": index_identity(self.settings)}, 200_000)
+                "judge_prompt_sha256": digest(judge_prompt()), "index_sha256": digest(scope["indexes"]) if "indexes" in scope else index_identity(self.settings)}, 200_000)
             evaluator = catalog.require("evaluator")
             frozen["judge_policy_sha256"] = digest({"profile": evaluator.model_dump(mode="json"),
                 "fallback": catalog.profiles[evaluator.fallback_profile_id].model_dump(mode="json") if evaluator.fallback_profile_id else None,
@@ -226,9 +228,22 @@ class EvaluationService:
             self.validate_scope(session, row)
 
     def validate_scope(self, session, job):
-        if job.model_snapshot["index_sha256"] != index_identity(self.settings):
-            raise AppError("DOCUMENT_SCOPE_CHANGED", "评测索引连接、集合或向量模型已变化", 409)
         expected = job.scope_snapshot
+        if "indexes" in expected:
+            try:
+                targets = tuple(RetrievalIndex.from_payload(value) for value in expected["indexes"])
+            except (ValueError, TypeError):
+                raise AppError("DOCUMENT_SCOPE_CHANGED", "评测冻结索引记录无效", 409) from None
+            if (len(targets) != len(expected["document_ids"])
+                    or {str(target.document_id) for target in targets} != set(expected["document_ids"])):
+                raise AppError("DOCUMENT_SCOPE_CHANGED", "评测冻结索引未覆盖原资料范围", 409)
+            if job.model_snapshot["index_sha256"] != digest(expected["indexes"]):
+                raise AppError("DOCUMENT_SCOPE_CHANGED", "评测冻结索引摘要已变化", 409)
+            DocumentPublication(self.settings, None).validate_targets(session, targets)
+        elif self.settings.document_publication_enabled:
+            raise AppError("DOCUMENT_SCOPE_CHANGED", "旧评测未冻结版本索引，请在原配置下完成或取消后重新创建评测", 409)
+        elif job.model_snapshot["index_sha256"] != index_identity(self.settings):
+            raise AppError("DOCUMENT_SCOPE_CHANGED", "评测索引连接、集合或向量模型已变化", 409)
         ids = [UUID(value) for value in expected["document_ids"]]
         documents = session.scalars(select(DocumentRecord).where(DocumentRecord.id.in_(ids))).all()
         observed = {str(doc.id): {"id": str(doc.id), "owner_id": str(doc.user_id), "canonical_name": doc.original_name,
@@ -238,7 +253,7 @@ class EvaluationService:
         if expected["knowledge_base_ids"]:
             try:
                 owners = SharingService(self.settings, self.database).scope(job.created_by,
-                    [UUID(value) for value in expected["knowledge_base_ids"]], ids, session=session)
+                    [UUID(value) for value in expected["knowledge_base_ids"]], ids, session=session, include_owned=False)
             except AppError as error:
                 if error.status_code in {403, 404}:
                     raise AppError("DOCUMENT_SCOPE_CHANGED", "评测共享授权已变化", 409) from None

@@ -9,7 +9,7 @@ const source=await readFile(new URL('../src/store.ts',import.meta.url),'utf8')
 const rewritten=source.replace("from 'pinia'",`from '${import.meta.resolve('pinia')}'`)
   .replace("from 'vue'",`from '${import.meta.resolve('vue')}'`)
   .replace("from './api'",`from '${uri('export const api=new Proxy({}, {get:(_,key)=>globalThis.__runApiMock[key]})')}'`)
-  .replace("from './uploads'",`from '${uri('export const createUploadQueue=()=>({recover(){}})')}'`)
+  .replace("from './uploads'",`from '${uri('export const createUploadQueue=()=>({recover(){},reset(){}})')}'`)
   .replace("from './agents'",`from '${new URL('../src/agents.ts',import.meta.url).href}'`)
 const {useAppStore}=await import(uri(ts.transpileModule(rewritten,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText))
 
@@ -87,4 +87,51 @@ test('queued run can be cancelled before the first SSE frame arrives',async()=>{
   assert.equal(cancelled,'run')
   assert.equal(store.runFor('session').busy,false)
   assert.equal(store.runFor('session').error,'本轮问答已取消')
+})
+
+const spaces=[{id:null,name:'个人空间',kind:'personal',role:'owner',session_count:1},{id:'team',name:'研发团队',kind:'team',role:'member',session_count:1}]
+function enableSpaces(store){store.capabilities={features:{workspaces:true,sharing:true,durable_runs:true}};store.workspaces=spaces.map(space=>({...space}))}
+
+test('space switch drops late document and session responses and clears old selections',async()=>{
+  let oldDocuments,oldSession
+  const store=setup({
+    documents:async(q,status,organization)=>organization?{items:[{id:'team-doc',can_query:true}],total:1}:new Promise(resolve=>oldDocuments=resolve),
+    session:async()=>new Promise(resolve=>oldSession=resolve),
+    sessions:async(q,organization)=>{assert.equal(organization,'team');return [{id:'team-thread',organization_id:'team'}]},
+    knowledgeBases:async()=>[{id:'kb-team',organization_id:'team'},{id:'kb-other',organization_id:'other'}],
+  })
+  enableSpaces(store)
+  store.selectedDocuments=['private-doc'];store.selectedBases=['old-kb'];store.messagesFor('private').push({id:'secret',content:'private'})
+  const documents=store.loadDocuments(),session=store.loadSession('private')
+  await store.switchWorkspace('team')
+  oldDocuments({items:[{id:'private-doc',can_query:true}],total:1});oldSession({organization_id:null,messages:[{id:'secret',content:'private'}]})
+  await Promise.all([documents,session])
+  assert.deepEqual(store.documents.map(item=>item.id),['team-doc'])
+  assert.deepEqual(store.sessions.map(item=>item.id),['team-thread'])
+  assert.deepEqual(store.knowledgeBases.map(item=>item.id),['kb-team'])
+  assert.deepEqual(store.selectedDocuments,[]);assert.deepEqual(store.selectedBases,[])
+  assert.deepEqual(store.messagesFor('private'),[])
+})
+
+test('space switch ignores old SSE callbacks and completion cannot reload the old thread',async()=>{
+  let emit,finish
+  const store=setup({
+    chatStream:async(id,body,onEvent)=>{emit=onEvent;await new Promise(resolve=>finish=resolve)},
+    session:async()=>assert.fail('old thread must not reload after a space change'),
+    sessions:async()=>[],documents:async()=>({items:[],total:0}),knowledgeBases:async()=>[],
+  })
+  enableSpaces(store)
+  const pending=store.send('private',{question:'private question'})
+  await store.switchWorkspace('team')
+  emit('answer_delta',{run_id:'old',delta:'must remain in old space'})
+  finish();await pending
+  assert.deepEqual(store.messagesFor('private'),[])
+  assert.equal(store.organizationId,'team')
+})
+
+test('a thread response for another space cannot populate the active message panel',async()=>{
+  const store=setup({session:async()=>({organization_id:'team',messages:[{id:'hidden',content:'team data'}]})})
+  enableSpaces(store)
+  await assert.rejects(()=>store.loadSession('team-thread'),/其他空间/)
+  assert.deepEqual(store.messagesFor('team-thread'),[])
 })

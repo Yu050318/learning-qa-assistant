@@ -108,12 +108,56 @@ def test_version_sharing_is_explicit_and_default_uses_only_published_current(sha
     newer = s.ingestion.upload(s.uid, "new.md", "text/markdown", BytesIO(b"NX-1 200W"), base_document_id=s.did)
     s.ingestion.process(s.uid, newer.id)
     s.ingestion.activate_version(s.uid, newer.id, s.did)
-    assert s.sharing.scope(s.other, [s.kid]) == {}
+    assert s.sharing.scope(s.other, [s.kid]) == {s.did:s.uid}
     assert s.sharing.scope(s.other, [s.kid], [s.did]) == {s.did:s.uid}
     denied(s.sharing.scope, s.other, [s.kid], [newer.id])
-    s.sharing.bind(s.uid, s.kid, newer.id)
+    s.sharing.bind(s.uid, s.kid, newer.id, expected_current=s.did)
     s.settings.document_versions_enabled = False
     assert s.sharing.scope(s.other, [s.kid]) == {newer.id:s.uid}
+    assert s.sharing.scope(s.other, [s.kid], [s.did]) == {s.did:s.uid}
+    rows = {row["id"]: row for row in s.sharing.documents(s.other, s.kid)}
+    assert rows[newer.id]["is_current"] and not rows[s.did]["is_current"]
+    assert rows[s.did]["current_document_id"] == newer.id
+    # Withdrawing the current publication never silently restores history.
+    s.sharing.bind(s.uid, s.kid, newer.id, remove=True)
+    assert s.sharing.scope(s.other, [s.kid]) == {}
+    assert s.sharing.scope(s.other, [s.kid], [s.did]) == {s.did:s.uid}
+
+
+def test_shared_publish_requires_expected_version_and_is_independent_per_library(sharing):
+    s = sharing
+    s.sharing.set_grant(s.uid, s.kid, s.other, "viewer")
+    newer = s.ingestion.upload(s.uid, "new.md", "text/markdown", BytesIO(b"private v2"), base_document_id=s.did)
+    s.ingestion.process(s.uid, newer.id)
+    second = s.sharing.create_base(s.uid, s.oid, "independent publication")["id"]
+    s.sharing.set_grant(s.uid, second, s.other, "viewer")
+    s.sharing.bind(s.uid, second, newer.id)
+    assert s.sharing.scope(s.other, [second]) == {newer.id:s.uid}
+    assert s.sharing.scope(s.other, [s.kid]) == {s.did:s.uid}
+    with pytest.raises(AppError) as failure:
+        s.sharing.bind(s.uid, s.kid, newer.id)
+    assert failure.value.code == "KNOWLEDGE_VERSION_CONFLICT"
+    assert len(s.sharing.documents(s.uid, s.kid)) == 1
+    s.sharing.bind(s.uid, s.kid, newer.id, expected_current=s.did)
+    with pytest.raises(AppError) as failure:
+        s.sharing.bind(s.uid, s.kid, s.did, expected_current=s.did)
+    assert failure.value.code == "KNOWLEDGE_VERSION_CONFLICT"
+    assert s.sharing.scope(s.other, [s.kid]) == {newer.id:s.uid}
+
+
+def test_personal_version_switch_after_editor_revocation_never_republishes_team_data(sharing):
+    s = sharing
+    s.sharing.set_grant(s.uid, s.kid, s.other, "editor")
+    own = s.ingestion.upload(s.other, "member.md", "text/markdown", BytesIO(b"shared member v1"))
+    s.ingestion.process(s.other, own.id)
+    s.sharing.bind(s.other, s.kid, own.id)
+    s.sharing.set_grant(s.uid, s.kid, s.other, "viewer")
+    newer = s.ingestion.upload(s.other, "member-new.md", "text/markdown", BytesIO(b"private member v2"), base_document_id=own.id)
+    s.ingestion.process(s.other, newer.id)
+    s.ingestion.activate_version(s.other, newer.id, own.id)
+    denied(s.sharing.bind, s.other, s.kid, newer.id, expected_current=own.id, status=403)
+    assert s.sharing.scope(s.uid, [s.kid], [own.id]) == {own.id:s.other}
+    assert newer.id not in {row["id"] for row in s.sharing.documents(s.uid, s.kid)}
 
 
 def test_full_supervisor_shared_rag_preserves_owner_filters_and_version_citations(sharing):
@@ -164,6 +208,10 @@ def test_http_scope_and_role_validation(sharing):
     with TestClient(create_app(s.settings, services)) as client:
         assert client.get("/api/v2/organizations", headers=headers).json()[0]["id"] == str(s.oid)
         assert client.put(f"/api/v2/knowledge-bases/{s.kid}/grants/{s.other}", headers=headers, json={"role":"admin"}).status_code == 422
+        url = f"/api/v2/knowledge-bases/{s.kid}/documents/{s.did}"
+        assert client.put(url, headers=headers, json={}).status_code == 422
+        assert client.put(url, headers=headers, json={"expected_current_document_id":None}).status_code == 409
+        assert client.put(url, headers=headers, json={"expected_current_document_id":str(s.did)}).status_code == 204
         services.current_user = s.outsider
         assert client.get(f"/api/v2/knowledge-bases/{s.kid}/documents", headers=headers).status_code == 404
         assert client.post(f"/api/v2/sessions/{uuid4()}/messages", headers=headers, json={"question":"q","search_mode":"sql","knowledge_base_ids":[str(s.kid)]}).status_code == 422
@@ -248,6 +296,12 @@ def test_shared_answers_work_with_persistent_runs_without_reexecution(sharing, m
         monkeypatch.setattr("app.infrastructure.llms.providers.ModelRouter", lambda *args: Models(model))
         run = runs.start(s.other,conversation.id,payload,"shared-run",key)
         assert run.state == "queued" and model.position == 0
+        # A team publication change affects new runs, not an already frozen V1.
+        newer = s.ingestion.upload(s.uid, "new-shared.md", "text/markdown", BytesIO(b"NX-1 200W"), base_document_id=s.did)
+        s.ingestion.process(s.uid, newer.id)
+        s.ingestion.activate_version(s.uid, newer.id, s.did)
+        s.sharing.bind(s.uid, s.kid, newer.id, expected_current=s.did)
+        assert s.sharing.scope(s.other, [s.kid]) == {newer.id:s.uid}
         assert RunWorker(runs.store, chat).run_once()
         state, rows = runs.store.read(s.other,run.id)
         assert state.state == "succeeded", rows[-1].payload
@@ -258,16 +312,3 @@ def test_shared_answers_work_with_persistent_runs_without_reexecution(sharing, m
         runs.close()
         s.database.sessions = original_sessions
         engine.dispose()
-
-
-def test_additive_sharing_bootstrap():
-    from unittest.mock import MagicMock
-    from app.core.config import Settings
-    from app.infrastructure.persistence.database import Database
-    from app.infrastructure.persistence.models import Base, Organization, OrganizationMember, KnowledgeBase, KnowledgeGrant, KnowledgeDocument
-    db = Database(Settings(_env_file=None))
-    db.__dict__["engine"] = MagicMock()
-    with patch("app.infrastructure.persistence.database.inspect") as inspector, patch.object(Base.metadata,"create_all") as create:
-        inspector.return_value.has_table.return_value = True
-        db.initialize_sharing()
-    assert create.call_args.kwargs["tables"] == [Organization.__table__,OrganizationMember.__table__,KnowledgeBase.__table__,KnowledgeGrant.__table__,KnowledgeDocument.__table__]

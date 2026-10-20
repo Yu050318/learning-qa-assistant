@@ -45,6 +45,204 @@ def test_empty_upgrade_and_repeat_are_idempotent(database):
         assert set(inspect(connection).get_table_names(schema="rag")) == {table.name for table in Base.metadata.tables.values()}
 
 
+@pytest.mark.parametrize("method", ["initialize_document_versions", "initialize_ingestion_jobs", "initialize_chat_runs", "initialize_sharing", "initialize_hierarchy"])
+def test_legacy_bootstrap_entry_upgrades_existing_tables_and_preserves_rows(database, method):
+    from app.core.config import Settings
+    from app.infrastructure.persistence.database import Database
+    upgrade(database, "0006_evaluation_workbench")
+    uid, did = uuid4(), uuid4()
+    with database.engine.begin() as connection:
+        connection.execute(text("INSERT INTO rag.users(id,username,password_hash,is_active,created_at,updated_at) VALUES (:id,'bootstrap-owner','preserved-password',true,now(),now())"), {"id": uid})
+        connection.execute(text("""INSERT INTO rag.documents(id,user_id,original_name,file_type,file_path,content_hash,status,chunk_count,embedding_model,parser_metadata,created_at,updated_at)
+            VALUES (:id,:uid,'preserved.md','.md','preserved-file',:hash,'ready',2,'fixture',jsonb_build_object('generation',4),now(),now())"""),
+            {"id": did, "uid": uid, "hash": "a" * 64})
+    db = Database(Settings(_env_file=None, document_versions_enabled=True, document_publication_enabled=True,
+        ingestion_mode="durable", chat_runs_enabled=True))
+    db.__dict__["engine"] = database.engine
+    getattr(db, method)()
+    getattr(db, method)()
+    db.check()
+    with database.engine.connect() as connection:
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
+        assert connection.execute(text("SELECT id,password_hash,role FROM rag.users")).one() == (uid, "preserved-password", "user")
+        assert connection.execute(text("SELECT id,file_path,content_hash,status,chunk_count,parser_metadata,build_fingerprint,organization_id FROM rag.documents")).one() == (
+            did, "preserved-file", "a" * 64, "ready", 2, {"generation": 4}, "legacy", None)
+        assert connection.scalar(text("SELECT count(*) FROM rag.document_indexes")) == 0
+        assert "retirement_task_id" in {row["name"] for row in inspect(connection).get_columns("document_series", schema="rag")}
+        assert "parent_task_id" in {row["name"] for row in inspect(connection).get_columns("document_tasks", schema="rag")}
+
+
+def test_publication_upgrade_preserves_sources_and_deduplicates_per_build(database):
+    from sqlalchemy.exc import IntegrityError
+    upgrade(database, "0006_evaluation_workbench")
+    uid, did, sid = uuid4(), uuid4(), uuid4()
+    with database.engine.begin() as connection:
+        connection.execute(text("INSERT INTO rag.users (id,username,password_hash,is_active,created_at,updated_at) VALUES (:id,'source-owner','preserved',true,now(),now())"), {"id": uid})
+        connection.execute(text("INSERT INTO rag.chat_sessions(id,user_id,title,summary,created_at,updated_at) VALUES (:id,:uid,'legacy personal','',now(),now())"), {"id": sid, "uid": uid})
+        connection.execute(text("INSERT INTO rag.documents (id,user_id,original_name,file_type,file_path,content_hash,status,chunk_count,embedding_model,created_at,updated_at) VALUES (:id,:uid,'source.txt','.txt','preserved-source',:hash,'ready',3,'fixture-model',now(),now())"), {"id": did,"uid": uid,"hash": "a" * 64})
+        connection.execute(text("""INSERT INTO rag.ingestion_jobs
+            (document_id,user_id,kind,state,attempts,max_attempts,available_at,last_error_code,created_at,updated_at)
+            VALUES (:id,:uid,'ingest','failed',2,3,now(),'FIXTURE_ERROR',now(),now())"""), {"id": did, "uid": uid})
+    upgrade(database)
+    with database.engine.connect() as connection:
+        assert connection.execute(text("SELECT file_path,content_hash,build_fingerprint,status FROM rag.documents WHERE id=:id"), {"id": did}).one() == ("preserved-source", "a" * 64, "legacy", "ready")
+        assert connection.scalar(text("SELECT count(*) FROM rag.document_indexes")) == 0
+        assert connection.execute(text("SELECT id,document_id,user_id,kind,state,attempts,max_attempts,error_code,details FROM rag.document_tasks")).one() == (
+            did, did, uid, "ingest", "failed", 2, 3, "FIXTURE_ERROR", {"imported_legacy": True})
+        assert connection.scalar(text("SELECT task_id FROM rag.ingestion_jobs")) == did
+        assert connection.execute(text("SELECT organization_id,title FROM rag.chat_sessions WHERE id=:id"), {"id": sid}).one() == (None, "legacy personal")
+    statement = text("INSERT INTO rag.documents (id,user_id,original_name,file_type,file_path,content_hash,status,chunk_count,embedding_model,build_fingerprint,created_at,updated_at) VALUES (:id,:uid,'new-build.txt','.txt','new-build',:hash,'processing',0,'fixture-model',:build,now(),now())")
+    with database.engine.begin() as connection:
+        connection.execute(statement, {"id": uuid4(), "uid": uid, "hash": "a" * 64, "build": "b" * 64})
+    with pytest.raises(IntegrityError), database.engine.begin() as connection:
+        connection.execute(statement, {"id": uuid4(), "uid": uid, "hash": "a" * 64, "build": "legacy"})
+    with database.engine.begin() as connection:
+        connection.execute(text("UPDATE rag.documents SET status='retired' WHERE id=:id"), {"id": did})
+        connection.execute(statement, {"id": uuid4(), "uid": uid, "hash": "a" * 64, "build": "legacy"})
+    # The same source can belong to distinct workspaces, with uniqueness still
+    # enforced inside each team and the nullable personal workspace.
+    team_insert = text("""INSERT INTO rag.documents(id,user_id,organization_id,original_name,file_type,file_path,content_hash,status,chunk_count,embedding_model,created_at,updated_at)
+        VALUES (:id,:uid,:oid,'team.txt','.txt','preserved-team',:hash,'ready',1,'fixture-model',now(),now())""")
+    first_org, second_org = uuid4(), uuid4()
+    with database.engine.begin() as connection:
+        for oid in (first_org, second_org):
+            connection.execute(text("INSERT INTO rag.organizations(id,name,owner_id) VALUES (:id,'scope fixture',:uid)"), {"id": oid, "uid": uid})
+            connection.execute(team_insert, {"id": uuid4(), "uid": uid, "oid": oid, "hash": "a" * 64})
+    with pytest.raises(IntegrityError), database.engine.begin() as connection:
+        connection.execute(team_insert, {"id": uuid4(), "uid": uid, "oid": first_org, "hash": "a" * 64})
+
+
+def test_retirement_takeover_fences_old_worker_before_deleting_files_or_vectors(database, tmp_path):
+    from datetime import timedelta
+    from app.application.ingestion import IngestionService
+    from app.core.config import Settings
+    from app.core.errors import AppError
+    from app.domain.retrieval_scope import index_connection_identity
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import DocumentIndex, DocumentRecord, DocumentSeries, DocumentVersion, IngestionJob, User, utcnow
+    upgrade(database)
+    settings = Settings(_env_file=None, ingestion_mode="durable", document_versions_enabled=True,
+        document_publication_enabled=True, upload_dir=tmp_path / "uploads", parsed_dir=tmp_path / "parsed")
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    deleted = []
+    ingestion = IngestionService(settings, db, None, None, None,
+        SimpleNamespace(delete_document=lambda uid, did: deleted.append((uid, did))))
+    uid, did = uuid4(), uuid4()
+    path = settings.upload_dir / str(uid) / f"{did}.txt"
+    path.parent.mkdir(parents=True)
+    path.write_text("original immutable source")
+    with db.sessions() as session:
+        session.add(User(id=uid, username="retirement-owner", password_hash="fixture"))
+        session.flush()
+        session.add(DocumentRecord(id=did, user_id=uid, original_name="source.txt", file_type=".txt", file_path=str(path),
+            content_hash="a" * 64, build_fingerprint="legacy", status="ready", chunk_count=1, embedding_model=settings.embedding_model))
+        session.flush()
+        session.add(DocumentSeries(id=did, user_id=uid, current_document_id=did, next_version=2))
+        session.flush()
+        session.add(DocumentVersion(document_id=did, series_id=did, version_number=1))
+        session.add(DocumentIndex(document_id=did, collection_name=settings.milvus_collection,
+            database_name=settings.milvus_database, embedding_model=settings.embedding_model,
+            embedding_dimension=settings.embedding_dimension, connection_sha256=index_connection_identity(settings),
+            build_fingerprint="legacy", source_sha256="a" * 64, leaf_sha256="b" * 64, leaf_count=1,
+            state="published", verified_at=utcnow()))
+        session.commit()
+    task = ingestion.delete(uid, did)
+    old = ingestion.queue.claim()
+    with db.sessions() as session:
+        session.get(IngestionJob, did).lease_expires_at = ingestion.queue.now(session) - timedelta(seconds=1)
+        session.commit()
+    current = ingestion.queue.claim()
+    assert current.token != old.token
+    with pytest.raises(AppError) as failure:
+        ingestion.tasks.process_retirement(uid, did, guard=lambda: ingestion.queue.assert_owned(old))
+    assert failure.value.code == "INGESTION_LEASE_LOST"
+    assert not deleted and path.is_file()
+    ingestion.tasks.process_retirement(uid, did, guard=lambda: ingestion.queue.assert_owned(current))
+    ingestion.queue.finish(current)
+    assert deleted == [(uid, did)] and not path.exists()
+    assert ingestion.tasks.detail(uid, task.id)["state"] == "succeeded"
+    with db.sessions() as session:
+        assert session.get(DocumentRecord, did).status == "retired"
+        assert session.get(DocumentIndex, did).state == "cleaned"
+def test_family_retirement_serializes_with_version_creation_and_parallel_cleanup(database, tmp_path):
+    from sqlalchemy import select
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    from sqlalchemy.exc import DBAPIError
+    from app.application.ingestion import IngestionService
+    from app.core.config import Settings
+    from app.domain.retrieval_scope import index_connection_identity
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import DocumentIndex, DocumentRecord, DocumentSeries, DocumentTask, DocumentVersion, User, utcnow
+    from app.infrastructure.persistence.repository import Repository
+    from app.worker import IngestionWorker
+    upgrade(database)
+    settings = Settings(_env_file=None, ingestion_mode="durable", document_versions_enabled=True,
+        document_publication_enabled=True, upload_dir=tmp_path / "uploads", parsed_dir=tmp_path / "parsed")
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    barrier = Barrier(2)
+    cleaned = []
+    def remove(uid, did):
+        barrier.wait(timeout=10)
+        cleaned.append(did)
+    ingestion = IngestionService(settings, db, None, None, None, SimpleNamespace(delete_document=remove))
+    uid, ids = uuid4(), [uuid4(), uuid4()]
+    def source(did):
+        path = settings.upload_dir / str(uid) / f"{did}.txt"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("synthetic family source")
+        return DocumentRecord(id=did, user_id=uid, original_name="family.txt", file_type=".txt", file_path=str(path),
+            content_hash=did.hex.ljust(64, "0"), build_fingerprint="legacy", status="ready", chunk_count=1, embedding_model=settings.embedding_model)
+    with db.sessions() as session:
+        session.add(User(id=uid, username="family-concurrency", password_hash="fixture"))
+        session.flush()
+        session.add_all([source(did) for did in ids])
+        session.flush()
+        session.add(DocumentSeries(id=ids[0], user_id=uid, current_document_id=ids[0], next_version=3))
+        session.flush()
+        session.add_all([DocumentVersion(document_id=did, series_id=ids[0], version_number=n) for n, did in enumerate(ids, 1)])
+        for did in ids:
+            session.add(DocumentIndex(document_id=did, collection_name=settings.milvus_collection, database_name=settings.milvus_database,
+                embedding_model=settings.embedding_model, embedding_dimension=settings.embedding_dimension,
+                connection_sha256=index_connection_identity(settings), build_fingerprint="legacy", source_sha256=did.hex.ljust(64, "0"),
+                leaf_sha256="b" * 64, leaf_count=1, state="published", verified_at=utcnow()))
+        session.commit()
+    with db.sessions() as writer:
+        writer.get(DocumentSeries, ids[0], with_for_update=True)
+        candidate = source(uuid4())
+        writer.add(candidate)
+        writer.flush()
+        Repository(writer).bind_document_version(uid, candidate, ids[0])
+        with pytest.raises(DBAPIError) as failure:
+            ingestion.tasks.retire_series(uid, ids[1])
+        assert failure.value.orig.sqlstate == "55P03"
+        # A failed attempt cannot partially revoke one of the versions.
+        with db.sessions() as check:
+            assert all(check.get(DocumentRecord, did).status == "ready" for did in ids)
+            assert not check.scalar(select(DocumentTask.id).where(DocumentTask.kind == "delete_series"))
+        writer.rollback()
+    parent = ingestion.tasks.retire_series(uid, ids[0])
+    with db.sessions() as writer:
+        late = source(uuid4())
+        writer.add(late)
+        writer.flush()
+        from app.core.errors import AppError
+        with pytest.raises(AppError):
+            Repository(writer).bind_document_version(uid, late, ids[1])
+        writer.rollback()
+    # Both workers reach vector cleanup together; parent totals must survive
+    # concurrent acknowledgments, rather than whichever update commits last.
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: IngestionWorker(ingestion).run_once(), range(2)))
+    assert all(results) and set(cleaned) == set(ids)
+    summary = ingestion.tasks.detail(uid, parent.id)
+    assert (summary["state"], summary["processed_units"], summary["total_units"]) == ("succeeded", 2, 2)
+    assert ingestion.tasks.retire_series(uid, ids[1]).id == parent.id
+    ingestion.close()
+
+
 def test_unversioned_legacy_adoption_preserves_accounts_and_adds_optional_tables(database):
     upgrade(database, "0001_baseline")
     user_id = uuid4()
@@ -58,6 +256,135 @@ def test_unversioned_legacy_adoption_preserves_accounts_and_adds_optional_tables
         row = connection.execute(text("SELECT id,password_hash,role FROM rag.users")).one()
         assert row == (user_id, "unchanged-hash", "user")
         assert inspect(connection).has_table("model_configuration", schema="rag")
+
+
+def test_shared_version_migration_preserves_explicit_bindings_without_guessing_private_versions(database):
+    upgrade(database, "0006_evaluation_workbench")
+    uid, oid, kid = uuid4(), uuid4(), uuid4()
+    expected = {}
+    with database.engine.begin() as connection:
+        connection.execute(text("INSERT INTO rag.users(id,username,password_hash,is_active,created_at,updated_at) VALUES (:id,'shared-migration','fixture',true,now(),now())"), {"id": uid})
+        connection.execute(text("INSERT INTO rag.organizations(id,name,owner_id) VALUES (:id,'fixture',:uid)"), {"id": oid, "uid": uid})
+        connection.execute(text("INSERT INTO rag.knowledge_bases(id,organization_id,name) VALUES (:id,:oid,'fixture')"), {"id": kid, "oid": oid})
+        # (version count, explicitly shared positions, private current position).
+        for count, shared, current in [(2, (0,), 1), (2, (0, 1), 1), (3, (0, 1), 2), (1, (0,), None)]:
+            ids = [uuid4() for _ in range(count)]
+            for did in ids:
+                connection.execute(text("""INSERT INTO rag.documents(id,user_id,original_name,file_type,file_path,content_hash,status,chunk_count,embedding_model,created_at,updated_at)
+                    VALUES (:id,:uid,'fixture.txt','.txt','fixture',:hash,'ready',1,'fixture',now(),now())"""),
+                    {"id": did, "uid": uid, "hash": did.hex.ljust(64, "0")})
+            if current is not None:
+                connection.execute(text("INSERT INTO rag.document_series(id,user_id,current_document_id,next_version) VALUES (:id,:uid,:current,:next)"),
+                    {"id": ids[0], "uid": uid, "current": ids[current], "next": count + 1})
+                for number, did in enumerate(ids, 1):
+                    connection.execute(text("INSERT INTO rag.document_versions(document_id,series_id,version_number) VALUES (:did,:sid,:version)"),
+                        {"did": did, "sid": ids[0], "version": number})
+            for position in shared:
+                did = ids[position]
+                connection.execute(text("INSERT INTO rag.knowledge_documents(knowledge_base_id,document_id) VALUES (:kid,:did)"), {"kid": kid, "did": did})
+                expected[did] = (ids[0], len(shared) == 1 or position == current)
+    upgrade(database)
+    with database.engine.connect() as connection:
+        actual = {row.document_id: (row.series_id, row.is_current) for row in connection.execute(text(
+            "SELECT document_id,series_id,is_current FROM rag.knowledge_documents WHERE knowledge_base_id=:kid"), {"kid": kid})}
+        assert actual == expected
+
+
+def test_concurrent_shared_version_publications_have_one_cas_winner(database):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    from sqlalchemy.exc import IntegrityError
+    from app.application.sharing import SharingService
+    from app.core.config import Settings
+    from app.core.errors import AppError
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import DocumentRecord, DocumentSeries, DocumentVersion, KnowledgeDocument, User
+    upgrade(database)
+    settings = Settings(_env_file=None, sharing_enabled=True, document_versions_enabled=True)
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    service = SharingService(settings, db)
+    uid, ids = uuid4(), [uuid4() for _ in range(3)]
+    with db.sessions() as session:
+        session.add(User(id=uid, username="shared-cas-owner", password_hash="fixture"))
+        session.flush()
+        for did in ids:
+            session.add(DocumentRecord(id=did, user_id=uid, original_name="fixture.md", file_type=".md", file_path="fixture",
+                content_hash=did.hex.ljust(64, "0"), status="ready", embedding_model=settings.embedding_model))
+        session.flush()
+        session.add(DocumentSeries(id=ids[0], user_id=uid, current_document_id=ids[0], next_version=4))
+        session.flush()
+        session.add_all([DocumentVersion(document_id=did, series_id=ids[0], version_number=number) for number, did in enumerate(ids, 1)])
+        session.commit()
+    oid = service.create_organization(uid, "fixture")["id"]
+    kid = service.create_base(uid, oid, "fixture")["id"]
+    service.bind(uid, kid, ids[0])
+    barrier = Barrier(2)
+    def publish(did):
+        barrier.wait(timeout=5)
+        try:
+            service.bind(uid, kid, did, expected_current=ids[0])
+            return (did, "published")
+        except AppError as failure:
+            return (did, failure.code)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(publish, ids[1:]))
+    assert sorted(state for _, state in results) == ["KNOWLEDGE_VERSION_CONFLICT", "published"]
+    winner = next(did for did, state in results if state == "published")
+    assert [row["id"] for row in service.documents(uid, kid) if row["is_current"]] == [winner]
+    with db.sessions() as session:
+        assert session.get(DocumentSeries, ids[0]).current_document_id == ids[0]
+    with pytest.raises(IntegrityError), db.sessions() as session:
+        session.get(KnowledgeDocument, (kid, ids[0])).is_current = True
+        session.commit()
+
+
+def test_workspace_final_authorization_locks_block_archive_and_membership_revocation(database):
+    from contextlib import contextmanager
+    from sqlalchemy.exc import DBAPIError
+    from app.application.sessions import SessionService
+    from app.application.sharing import SharingService
+    from app.core.config import Settings
+    from app.core.errors import AppError
+    from app.infrastructure.persistence.database import Database
+    from app.infrastructure.persistence.models import ChatSession, User
+    from app.infrastructure.persistence.repository import Repository
+    upgrade(database)
+    settings = Settings(_env_file=None, workspaces_enabled=True, sharing_enabled=True, document_versions_enabled=True,
+        document_publication_enabled=True, ingestion_mode="durable", chat_runs_enabled=True)
+    db = Database(settings)
+    db.__dict__["engine"] = database.engine
+    original_sessions = db.sessions
+    @contextmanager
+    def bounded_session():
+        with original_sessions() as session:
+            session.execute(text("SET LOCAL lock_timeout='300ms'"))
+            yield session
+    db.sessions = bounded_session
+    owner, reader = uuid4(), uuid4()
+    with db.sessions() as session:
+        session.add_all([User(id=owner, username="workspace-owner", password_hash="fixture"),
+                         User(id=reader, username="workspace-reader", password_hash="fixture")])
+        session.commit()
+    sharing, sessions = SharingService(settings, db), SessionService(db)
+    oid = sharing.create_organization(owner, "workspace locks")["id"]
+    sharing.set_member(owner, oid, "workspace-reader", "member")
+    team = sessions.create(reader, "private team conversation", organization_id=oid)
+    with original_sessions() as final_answer:
+        Repository(final_answer).chat_session(reader, team.id, lock=True)
+        for revoke in (lambda: sharing.delete_organization(owner, oid),
+                       lambda: sharing.remove_member(owner, oid, reader),
+                       lambda: sharing.set_member(owner, oid, "workspace-reader", "admin")):
+            with pytest.raises(DBAPIError) as failure:
+                revoke()
+            assert getattr(failure.value.orig, "sqlstate", None) == "55P03"
+        final_answer.commit()
+    sharing.remove_member(owner, oid, reader)
+    with pytest.raises(AppError) as failure:
+        sessions.get(reader, team.id)
+    assert failure.value.status_code == 404
+    with db.sessions() as session:
+        assert session.get(ChatSession, team.id).organization_id == oid
 
 
 @pytest.mark.parametrize("change", [

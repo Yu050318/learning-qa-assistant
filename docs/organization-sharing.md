@@ -21,8 +21,8 @@
 ## 使用方式
 
 ```powershell
-# 只添加组织、成员、知识库、授权、发布关系五张表
-.venv/Scripts/python.exe -m app.bootstrap --sharing
+# 备份后执行完整平台版本迁移；旧模块参数也转入同一迁移链
+.venv/Scripts/python.exe -m app.migrate
 
 # 服务端 .env 设置后重启 API：
 # SHARING_ENABLED=true

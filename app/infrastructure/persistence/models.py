@@ -43,17 +43,22 @@ class AuthSession(Base):
 class DocumentRecord(Base):
     __tablename__ = "documents"
     __table_args__ = (
-        UniqueConstraint("user_id", "content_hash"),
-        CheckConstraint("status IN ('processing', 'ready', 'failed', 'deleting')"),
+        Index("uq_documents_source_build", "user_id", "content_hash", "build_fingerprint", unique=True,
+              postgresql_where=text("status != 'retired' AND organization_id IS NULL"), sqlite_where=text("status != 'retired' AND organization_id IS NULL")),
+        Index("uq_documents_workspace_source_build", "user_id", "organization_id", "content_hash", "build_fingerprint", unique=True,
+              postgresql_where=text("status != 'retired' AND organization_id IS NOT NULL"), sqlite_where=text("status != 'retired' AND organization_id IS NOT NULL")),
+        CheckConstraint("status IN ('processing', 'ready', 'failed', 'deleting', 'retired')", name="ck_documents_status"),
         Index("ix_documents_user_status", "user_id", "status"),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
     original_name: Mapped[str] = mapped_column(String(255))
+    organization_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.organizations.id"))
     file_type: Mapped[str] = mapped_column(String(12))
     file_path: Mapped[str] = mapped_column(Text)
     content_hash: Mapped[str] = mapped_column(String(64))
+    build_fingerprint: Mapped[str] = mapped_column(String(64), default="legacy", server_default="legacy")
     size_bytes: Mapped[int | None]
     status: Mapped[str] = mapped_column(String(20), default="processing")
     chunk_count: Mapped[int] = mapped_column(default=0)
@@ -64,16 +69,66 @@ class DocumentRecord(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
 
+class DocumentIndex(Base):
+    __tablename__ = "document_indexes"
+    __table_args__ = (
+        CheckConstraint("state IN ('building','verified','published','superseded','retiring','cleaned','failed')", name="ck_document_indexes_state"),
+        CheckConstraint("leaf_count >= 0 AND embedding_dimension >= 64", name="ck_document_indexes_bounds"),
+    )
+    document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
+    collection_name: Mapped[str] = mapped_column(String(160))
+    database_name: Mapped[str] = mapped_column(String(128))
+    embedding_model: Mapped[str] = mapped_column(String(200))
+    embedding_dimension: Mapped[int]
+    connection_sha256: Mapped[str] = mapped_column(String(64))
+    build_fingerprint: Mapped[str] = mapped_column(String(64))
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    leaf_sha256: Mapped[str | None] = mapped_column(String(64))
+    leaf_count: Mapped[int] = mapped_column(default=0, server_default="0")
+    state: Mapped[str] = mapped_column(String(16), default="building", server_default="building")
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class DocumentTask(Base):
+    __tablename__ = "document_tasks"
+    __table_args__ = (
+        CheckConstraint("kind IN ('ingest','hierarchy','delete','delete_series')", name="ck_document_tasks_kind"),
+        CheckConstraint("state IN ('queued','running','succeeded','failed','cancelled')", name="ck_document_tasks_state"),
+        Index("ix_document_tasks_owner_created", "user_id", "created_at"),
+        Index("ix_document_tasks_parent", "parent_task_id"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    document_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.documents.id", ondelete="SET NULL"))
+    parent_task_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.document_tasks.id"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    original_name: Mapped[str] = mapped_column(String(255))
+    organization_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.organizations.id"))
+    kind: Mapped[str] = mapped_column(String(16))
+    state: Mapped[str] = mapped_column(String(16), default="queued")
+    phase: Mapped[str] = mapped_column(String(40), default="queued")
+    processed_units: Mapped[int] = mapped_column(default=0)
+    total_units: Mapped[int | None]
+    attempts: Mapped[int] = mapped_column(default=0)
+    max_attempts: Mapped[int]
+    error_code: Mapped[str | None] = mapped_column(String(80))
+    details: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"), default=dict, server_default="{}")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
 class IngestionJob(Base):
     __tablename__ = "ingestion_jobs"
     __table_args__ = (
         CheckConstraint("state IN ('queued', 'running', 'succeeded', 'failed', 'cancelled')"),
         CheckConstraint("attempts >= 0 AND max_attempts >= 1"),
-        CheckConstraint("kind IN ('ingest', 'hierarchy')", name="ck_ingestion_jobs_kind"),
+        CheckConstraint("kind IN ('ingest', 'hierarchy', 'delete')", name="ck_ingestion_jobs_kind"),
         Index("ix_ingestion_jobs_claim", "state", "available_at", "lease_expires_at"),
     )
 
     document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
+    task_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.document_tasks.id"))
     user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
     kind: Mapped[str] = mapped_column(String(16), default="ingest", server_default="ingest")
     state: Mapped[str] = mapped_column(String(20), default="queued")
@@ -100,6 +155,7 @@ class Organization(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(100))
     owner_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class OrganizationMember(Base):
@@ -133,8 +189,12 @@ class KnowledgeGrant(Base):
 
 class KnowledgeDocument(Base):
     __tablename__ = "knowledge_documents"
+    __table_args__ = (Index("uq_knowledge_documents_series_current", "knowledge_base_id", "series_id", unique=True,
+                           postgresql_where=text("is_current"), sqlite_where=text("is_current")),)
     knowledge_base_id: Mapped[UUID] = mapped_column(ForeignKey("rag.knowledge_bases.id", ondelete="CASCADE"), primary_key=True)
     document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id", ondelete="CASCADE"), primary_key=True)
+    series_id: Mapped[UUID]
+    is_current: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
 
 
 class HierarchyNode(Base):
@@ -167,6 +227,7 @@ class DocumentSeries(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id", ondelete="CASCADE"))
     current_document_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.documents.id", ondelete="SET NULL"))
     next_version: Mapped[int] = mapped_column(default=2)
+    retirement_task_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.document_tasks.id"))
 
 
 class DocumentVersion(Base):
@@ -188,6 +249,7 @@ class ChatSession(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    organization_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.organizations.id"))
     title: Mapped[str] = mapped_column(String(200))
     kind: Mapped[str] = mapped_column(String(12), default="chat", server_default="chat")
     summary: Mapped[str] = mapped_column(Text, default="")
@@ -253,6 +315,13 @@ class ChatRun(Base):
     active_since: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     resume_key: Mapped[UUID | None]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class RunIndexPin(Base):
+    __tablename__ = "run_index_pins"
+    __table_args__ = (Index("ix_run_index_pins_document", "document_id"),)
+    run_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_runs.id", ondelete="CASCADE"), primary_key=True)
+    document_id: Mapped[UUID] = mapped_column(ForeignKey("rag.documents.id"), primary_key=True)
 
 
 class ChatRunEvent(Base):

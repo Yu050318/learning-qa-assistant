@@ -8,6 +8,7 @@ from urllib.parse import quote
 import hashlib
 import json
 from dataclasses import asdict
+from app.domain.retrieval_scope import RetrievalIndex
 from uuid import uuid5
 
 
@@ -199,6 +200,22 @@ class RunContext:
     deadline_monotonic: float = field(default_factory=lambda: monotonic() + 120)
     knowledge_base_ids: tuple[UUID, ...] = ()
     document_owners: tuple[tuple[UUID, UUID], ...] = ()
+    retrieval_indexes: tuple[RetrievalIndex, ...] = ()
+    organization_id: UUID | None = None
+    shared_only: bool = False
+
+    def __post_init__(self):
+        if self.organization_id is not None and not isinstance(self.organization_id, UUID):
+            raise ValueError("Workspace identity must be a UUID")
+        if type(self.shared_only) is not bool or self.organization_id is not None and not self.shared_only:
+            raise ValueError("Team contexts require a shared-only scope")
+        if not isinstance(self.retrieval_indexes, tuple) or any(not isinstance(target, RetrievalIndex) for target in self.retrieval_indexes):
+            raise ValueError("Retrieval indexes must be an immutable tuple")
+        if self.retrieval_indexes:
+            owners = dict(self.document_owners) or {did: self.user_id for did in self.allowed_document_ids}
+            if (len(self.retrieval_indexes) != len(set(self.allowed_document_ids)) or set(owners) != set(self.allowed_document_ids)
+                    or {target.document_id: target.user_id for target in self.retrieval_indexes} != owners):
+                raise ValueError("Retrieval index scope does not match authorized documents")
 
 
 class EmbeddingProvider(Protocol):

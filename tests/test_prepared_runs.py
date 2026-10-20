@@ -20,6 +20,90 @@ def result(content="finished", kind="smalltalk"):
     return AgentRunResult(ModelAnswer(content, "fixture", "fixture"), kind, [], "sql", {"search_mode": "sql"})
 
 
+def knowledge_prepared(s):
+    from app.infrastructure.persistence.models import DocumentRecord
+    with s.database.sessions() as database:
+        document = DocumentRecord(user_id=s.uid, original_name="scope.txt", file_type=".txt", file_path="scope.txt",
+            content_hash="a" * 64, status="ready", embedding_model=s.settings.embedding_model)
+        database.add(document)
+        database.commit()
+    return s.store.create(s.uid, s.sid, AgentChatInput("fixture", "knowledge"), "frozen-index", uuid4(),
+                          queued=True, prepare=s.chat.prepare_run)[0]
+
+
+@pytest.mark.parametrize("field,value", [("milvus_uri", "http://different-index.invalid:19530"),
+    ("milvus_database", "other_database"), ("milvus_collection", "other_collection"),
+    ("embedding_model", "other-embedding"), ("embedding_dimension", 512)])
+def test_prepared_knowledge_rejects_index_drift_before_execution(system, field, value):
+    s = system
+    run = knowledge_prepared(s)
+    setattr(s.settings, field, value)
+    called = []
+    s.chat.agent_workflow = SimpleNamespace(run=lambda *args, **kwargs: called.append(True) or result())
+    with pytest.raises(AppError) as error:
+        s.chat.execute_prepared(s.store, s.store.claim_next())
+    assert error.value.code == "DOCUMENT_SCOPE_CHANGED"
+    assert not called
+    with s.database.sessions() as database:
+        assert database.get(ChatMessage, run.message_id).content == ""
+
+
+def test_prepared_index_rotation_during_generation_prevents_publication(system):
+    s = system
+    run = knowledge_prepared(s)
+    def rotate(*args, **kwargs):
+        s.settings.milvus_collection = "rotated_collection"
+        return result("must not publish")
+    s.chat.agent_workflow = SimpleNamespace(run=rotate)
+    with pytest.raises(AppError) as error:
+        s.chat.execute_prepared(s.store, s.store.claim_next())
+    assert error.value.code == "DOCUMENT_SCOPE_CHANGED"
+    with s.database.sessions() as database:
+        assert database.get(ChatMessage, run.message_id).content == ""
+    assert not any(event.event == "done" for event in s.store.read(s.uid, run.id)[1])
+
+
+def test_prepared_index_identity_keeps_credentials_out_and_allows_rotation(system):
+    from pydantic import SecretStr
+    s = system
+    s.settings.milvus_uri = "http://private-index.invalid:19530"
+    s.settings.milvus_token = SecretStr("fixture-old-index-token")
+    run = knowledge_prepared(s)
+    fingerprint = run.execution_snapshot["retrieval_index_sha256"]
+    assert len(fingerprint) == 64
+    assert "private-index.invalid" not in str(run.execution_snapshot)
+    assert "fixture-old-index-token" not in str(run.execution_snapshot)
+    s.settings.milvus_token = SecretStr("fixture-rotated-index-token")
+    s.chat.agent_workflow = SimpleNamespace(run=lambda *args, **kwargs: result())
+    assert s.chat.execute_prepared(s.store, s.store.claim_next()).id == run.message_id
+
+
+def test_paused_knowledge_run_cannot_resume_against_a_different_index(system):
+    s = system
+    run, calls = knowledge_prepared(s), []
+    def execute(*args, **kwargs):
+        calls.append(True)
+        return result("请补充地区", "clarification")
+    s.chat.agent_workflow = SimpleNamespace(run=execute)
+    s.chat.execute_prepared(s.store, s.store.claim_next())
+    paused, events = s.store.read(s.uid, run.id)
+    assert paused.state == "waiting"
+    s.settings.milvus_collection = "different_after_human_pause"
+    s.store.resume(s.uid, run.id, events[-1].payload["checkpoint_revision"], paused.resume_key, "境内")
+    with pytest.raises(AppError) as error:
+        s.chat.execute_prepared(s.store, s.store.claim_next())
+    assert error.value.code == "DOCUMENT_SCOPE_CHANGED" and calls == [True]
+
+
+def test_sql_only_run_does_not_depend_on_knowledge_index_configuration(system):
+    s = system
+    run = prepared(s)
+    assert run.execution_snapshot["retrieval_index_sha256"] is None
+    s.settings.milvus_collection = "unrelated_new_collection"
+    s.chat.agent_workflow = SimpleNamespace(run=lambda *args, **kwargs: result())
+    assert s.chat.execute_prepared(s.store, s.store.claim_next()).id == run.message_id
+
+
 def test_prepared_human_resume_updates_same_assistant_and_preserves_frozen_model(system):
     s = system
     run, seen = prepared(s), []

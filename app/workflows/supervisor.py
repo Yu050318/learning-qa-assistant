@@ -219,6 +219,8 @@ class SupervisorWorkflow:
                 raise AppError("AGENT_LIMIT_EXCEEDED", "知识库检索超过限制", 502)
             counters["knowledge_searches"] += 1
             options = {}
+            if context.retrieval_indexes:
+                options["indexes"] = context.retrieval_indexes
             if embedding_query is not None:
                 options["embedding_query"] = embedding_query
             if getattr(self.retriever, "hierarchy_expander", None):
@@ -227,7 +229,8 @@ class SupervisorWorkflow:
             if context.knowledge_base_ids:
                 if self.sharing is None:
                     raise AppError("SHARING_DISABLED", "共享知识库尚未配置", 503)
-                owners = self.sharing.scope(context.user_id, context.knowledge_base_ids, list(context.allowed_document_ids))
+                owners = self.sharing.scope(context.user_id, context.knowledge_base_ids, list(context.allowed_document_ids),
+                    organization_id=context.organization_id, include_owned=not context.shared_only)
                 if owners != dict(context.document_owners):
                     raise AppError("DOCUMENT_SCOPE_CHANGED", "共享权限或文档归属已变化", 409)
                 options["document_owners"] = owners

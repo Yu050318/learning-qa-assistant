@@ -12,7 +12,7 @@ from app.infrastructure.persistence.models import WorkerHeartbeat
 
 def ingestion_configuration_hash(settings):
     fields = ("ingestion_mode", "milvus_database", "milvus_collection", "embedding_model", "embedding_dimension",
-              "chunk_size", "chunk_overlap", "hierarchy_enabled", "document_versions_enabled", "mineru_enabled", "mineru_model_version")
+              "chunk_size", "chunk_overlap", "hierarchy_enabled", "document_versions_enabled", "document_publication_enabled", "workspaces_enabled", "mineru_enabled", "mineru_model_version")
     payload = {name: getattr(settings, name) for name in fields}
     payload.update(upload_dir=str(settings.upload_dir.resolve()), parsed_dir=str(settings.parsed_dir.resolve()),
                    milvus_uri=settings.milvus_uri)
@@ -33,6 +33,8 @@ class WorkerRegistry:
         from app.application.chat import FROZEN_WORKFLOW_SETTINGS
         payload = {name: getattr(self.settings, name) for name in FROZEN_WORKFLOW_SETTINGS}
         payload.update(kind=self.kind, snapshot_version=1, model_center_enabled=self.settings.model_center_enabled,
+                       document_publication_enabled=self.settings.document_publication_enabled,
+                       workspaces_enabled=self.settings.workspaces_enabled,
                        sharing_enabled=self.settings.sharing_enabled, sql_allowed_tables=self.settings.sql_allowed_tables,
                        milvus_uri=self.settings.milvus_uri, milvus_database=self.settings.milvus_database,
                        milvus_collection=self.settings.milvus_collection)

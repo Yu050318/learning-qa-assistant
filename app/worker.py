@@ -59,7 +59,9 @@ class IngestionWorker:
                 error = None
                 if not claim.exhausted:
                     try:
-                        if claim.kind == "hierarchy":
+                        if claim.kind == "delete":
+                            self.ingestion.tasks.process_retirement(claim.user_id, claim.document_id, guard=guard)
+                        elif claim.kind == "hierarchy":
                             from app.hierarchy_backfill import backfill
                             backfill(self.ingestion.settings, self.ingestion.database, self.ingestion.vectors,
                                      claim.user_id, claim.document_id, guard=guard, already_locked=True)

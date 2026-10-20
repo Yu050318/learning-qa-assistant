@@ -56,11 +56,13 @@ class RunStore:
         clock = func.clock_timestamp() if session.get_bind().dialect.name == "postgresql" else func.current_timestamp()
         return aware(session.scalar(select(clock)))
 
-    def get_row(self, session, user_id, run_id, *, lock=False):
+    def get_row(self, session, user_id, run_id, *, lock=False, authorize=True):
         query = select(ChatRun).where(ChatRun.id == run_id, ChatRun.user_id == user_id, ChatRun.execution_kind == self.kind)
         run = session.scalar(query.with_for_update() if lock else query)
         if run is None:
             raise not_found()
+        if authorize:
+            Repository(session).chat_session(user_id, run.session_id)
         return run
 
     def guard(self, session, user_id, run_id):
@@ -215,7 +217,9 @@ class RunStore:
             return run, events
 
     def owned(self, session, claim, *, allow_cancelling=False, check_deadline=True):
-        run = self.get_row(session, claim.user_id, claim.run_id, lock=True)
+        # Workers must still settle a fenced failure after workspace revocation.
+        # Public read/control methods authorize the session via get_row's default.
+        run = self.get_row(session, claim.user_id, claim.run_id, lock=True, authorize=False)
         if (run.owner_token != claim.token or run.generation != claim.generation
                 or run.lease_expires_at is None or aware(run.lease_expires_at) <= self.now(session)
                 or run.state not in {"running", "cancelling"}):

@@ -255,20 +255,6 @@ def test_http_upload_processing_and_retry_share_existing_api(durable):
         assert client.get(f"/api/v2/documents/{did}/processing", headers=headers).json()["task"]["state"] == "succeeded"
 
 
-def test_additive_bootstrap_does_not_recreate_platform_tables():
-    from unittest.mock import MagicMock
-    from app.core.config import Settings
-    from app.infrastructure.persistence.database import Database
-    from app.infrastructure.persistence.models import Base
-
-    database = Database(Settings(_env_file=None))
-    database.__dict__["engine"] = MagicMock()
-    with patch("app.infrastructure.persistence.database.inspect") as inspector, patch.object(Base.metadata, "create_all") as create:
-        inspector.return_value.has_table.return_value = True
-        database.initialize_ingestion_jobs()
-        assert create.call_args.kwargs["tables"] == [IngestionJob.__table__]
-
-
 @pytest.mark.parametrize("status,retryable", [(401, False), (403, False), (429, True), (500, True), (503, True)])
 def test_embedding_http_errors_classify_automatic_retry(status, retryable):
     import httpx

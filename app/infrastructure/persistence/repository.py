@@ -4,12 +4,20 @@ from sqlalchemy import func, select, update, or_, inspect
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError, not_found
-from app.infrastructure.persistence.models import AuthSession, ChatMessage, ChatSession, DocumentRecord, DocumentSeries, DocumentVersion, User, UserMemory, utcnow
+from app.infrastructure.persistence.models import AuthSession, ChatMessage, ChatSession, DocumentRecord, DocumentIndex, DocumentSeries, DocumentVersion, Organization, OrganizationMember, User, UserMemory, utcnow
 
 
 class Repository:
     def __init__(self, database: Session):
         self.database = database
+
+    def workspace_member(self, user_id, organization_id, *, lock=False):
+        query = select(OrganizationMember).join(Organization, Organization.id == OrganizationMember.organization_id).where(
+            OrganizationMember.organization_id == organization_id, OrganizationMember.user_id == user_id, Organization.archived_at.is_(None))
+        member = self.database.scalar(query.with_for_update(read=True) if lock else query)
+        if member is None:
+            raise not_found()
+        return member
 
     def user_by_username(self, username: str) -> User | None:
         return self.database.scalar(select(User).where(User.username == username))
@@ -43,14 +51,19 @@ class Repository:
             raise not_found()
         return document
 
-    def duplicate(self, user_id: UUID, content_hash: str) -> DocumentRecord | None:
-        return self.database.scalar(select(DocumentRecord).where(DocumentRecord.user_id == user_id, DocumentRecord.content_hash == content_hash))
+    def duplicate(self, user_id: UUID, content_hash: str, build_fingerprint="legacy", *, organization_id=None) -> DocumentRecord | None:
+        return self.database.scalar(select(DocumentRecord).where(DocumentRecord.user_id == user_id,
+            DocumentRecord.content_hash == content_hash, DocumentRecord.build_fingerprint == build_fingerprint,
+            DocumentRecord.organization_id == organization_id, DocumentRecord.status != "retired"))
 
-    def documents(self, user_id: UUID, offset: int = 0, limit: int = 50) -> list[DocumentRecord]:
-        return list(self.database.scalars(select(DocumentRecord).where(DocumentRecord.user_id == user_id).order_by(DocumentRecord.created_at.desc(), DocumentRecord.id).offset(offset).limit(limit)))
+    def documents(self, user_id: UUID, offset: int = 0, limit: int = 50, *, organization_id=None) -> list[DocumentRecord]:
+        return list(self.database.scalars(select(DocumentRecord).where(DocumentRecord.user_id == user_id,
+            DocumentRecord.organization_id == organization_id, DocumentRecord.status != "retired").order_by(DocumentRecord.created_at.desc(), DocumentRecord.id).offset(offset).limit(limit)))
 
-    def search_documents(self, user_id: UUID, query: str, status: str | None, offset: int, limit: int):
-        filters = [DocumentRecord.user_id == user_id]
+    def search_documents(self, user_id: UUID, query: str, status: str | None, offset: int, limit: int, *, organization_id=None):
+        filters = [DocumentRecord.user_id == user_id, DocumentRecord.organization_id == organization_id]
+        if status != "retired":
+            filters.append(DocumentRecord.status != "retired")
         if query:
             escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
             filters.append(DocumentRecord.original_name.ilike(f"%{escaped}%", escape="\\"))
@@ -64,8 +77,26 @@ class Repository:
     def processing_documents(self) -> list[DocumentRecord]:
         return list(self.database.scalars(select(DocumentRecord).where(DocumentRecord.status == "processing")))
 
-    def ready_document_ids(self, user_id: UUID, requested: list[UUID] | None, embedding_model: str, *, current_only: bool | None = None) -> list[UUID]:
-        statement = select(DocumentRecord).where(DocumentRecord.user_id == user_id)
+    def readable_index_ids(self, document_ids, *, require_index=False):
+        ids = set(document_ids)
+        if not ids:
+            return set()
+        if not inspect(self.database.connection()).has_table("document_indexes", schema="rag"):
+            return set() if require_index else ids
+        rows = {row.document_id: row for row in self.database.scalars(select(DocumentIndex).where(DocumentIndex.document_id.in_(ids)))}
+        return {did for did in ids if (did not in rows and not require_index)
+                or did in rows and rows[did].state in {"published", "superseded"}
+                and rows[did].verified_at is not None and rows[did].leaf_sha256 and rows[did].leaf_count > 0}
+
+    def document_index_info(self, document_ids):
+        if not document_ids or not inspect(self.database.connection()).has_table("document_indexes", schema="rag"):
+            return {}
+        return {row.document_id: {name: getattr(row, name) for name in
+            ("state", "embedding_model", "leaf_count", "verified_at", "build_fingerprint")}
+            for row in self.database.scalars(select(DocumentIndex).where(DocumentIndex.document_id.in_(document_ids)))}
+
+    def ready_document_ids(self, user_id: UUID, requested: list[UUID] | None, embedding_model: str, *, current_only: bool | None = None, require_index=False, organization_id=None) -> list[UUID]:
+        statement = select(DocumentRecord).where(DocumentRecord.user_id == user_id, DocumentRecord.organization_id == organization_id)
         if requested is not None:
             statement = statement.where(DocumentRecord.id.in_(requested))
         elif current_only or current_only is None and inspect(self.database.connection()).has_table("document_versions", schema="rag"):
@@ -74,14 +105,17 @@ class Repository:
                 DocumentRecord.id.in_(select(DocumentSeries.current_document_id).where(DocumentSeries.user_id == user_id)),
             ))
         documents = list(self.database.scalars(statement))
+        readable = self.readable_index_ids([document.id for document in documents], require_index=require_index)
         if requested is not None:
             if {document.id for document in documents} != set(requested):
                 raise not_found()
             if any(document.status != "ready" for document in documents):
                 raise AppError("DOCUMENT_NOT_READY", "指定文档尚未就绪", 409)
-            if any(document.embedding_model != embedding_model for document in documents):
+            if not require_index and any(document.embedding_model != embedding_model for document in documents):
                 raise AppError("EMBEDDING_MODEL_MISMATCH", "指定文档使用了不同的向量模型，请重新入库", 409)
-        return [document.id for document in documents if document.status == "ready" and document.embedding_model == embedding_model]
+            if any(document.id not in readable for document in documents):
+                raise AppError("DOCUMENT_INDEX_UNPUBLISHED", "指定版本的索引尚未发布或已经退休", 409)
+        return [document.id for document in documents if document.status == "ready" and (require_index or document.embedding_model == embedding_model) and document.id in readable]
 
     def bind_document_version(self, user_id: UUID, document: DocumentRecord, base_id: UUID | None = None):
         if base_id is None:
@@ -91,6 +125,8 @@ class Repository:
             self.database.add(DocumentVersion(document_id=document.id, series_id=series.id, version_number=1))
             return
         base = self.document(user_id, base_id, lock=True)
+        if base.organization_id != document.organization_id:
+            raise AppError("INVALID_WORKSPACE_SCOPE", "新版本必须保留原文档的空间归属", 409)
         if base.status == "deleting":
             raise AppError("DOCUMENT_DELETING", "该版本正在删除，不能基于它上传新版本", 409)
         binding = self.database.get(DocumentVersion, base.id)
@@ -102,6 +138,8 @@ class Repository:
                                                                    DocumentSeries.user_id == user_id).with_for_update(nowait=True))
         if series is None:
             raise not_found()
+        if series.retirement_task_id is not None:
+            raise AppError("DOCUMENT_SERIES_RETIRED", "整份资料已退休，请作为新资料上传", 409)
         number = series.next_version
         series.next_version += 1
         self.database.add(DocumentVersion(document_id=document.id, series_id=series.id, version_number=number))
@@ -117,6 +155,7 @@ class Repository:
                                    "version_number": version.version_number if version else 1,
                                    "current_document_id": series.current_document_id if series else document.id,
                                    "is_current": series.current_document_id == document.id if series else True,
+                                   "retirement_task_id": series.retirement_task_id if series else None,
                                    "content_hash": document.content_hash}
         return result
 
@@ -153,6 +192,8 @@ class Repository:
             raise not_found()
         if series.current_document_id != expected_current:
             raise AppError("DOCUMENT_VERSION_CONFLICT", "当前版本已改变，请刷新版本列表后重试", 409)
+        if series.retirement_task_id is not None:
+            raise AppError("DOCUMENT_SERIES_RETIRED", "整份资料已退休，不能重新发布", 409)
         series.current_document_id = document.id
         return document
 
@@ -181,10 +222,14 @@ class Repository:
         session = self.database.scalar(statement)
         if session is None:
             raise not_found()
+        if session.organization_id is not None:
+            self.workspace_member(user_id, session.organization_id, lock=lock)
         return session
 
-    def chat_sessions(self, user_id: UUID, offset: int = 0, limit: int = 50, *, query: str = "") -> list[ChatSession]:
-        statement = select(ChatSession).where(ChatSession.user_id == user_id, ChatSession.kind == "chat")
+    def chat_sessions(self, user_id: UUID, offset: int = 0, limit: int = 50, *, query: str = "", organization_id=None) -> list[ChatSession]:
+        if organization_id is not None:
+            self.workspace_member(user_id, organization_id)
+        statement = select(ChatSession).where(ChatSession.user_id == user_id, ChatSession.kind == "chat", ChatSession.organization_id == organization_id)
         if query:
             escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
             statement = statement.where(ChatSession.title.ilike(f"%{escaped}%", escape="\\"))

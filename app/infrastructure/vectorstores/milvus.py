@@ -1,4 +1,5 @@
 import json
+import re
 from collections.abc import Sequence
 from contextlib import contextmanager
 from dataclasses import asdict, replace
@@ -44,6 +45,17 @@ class MilvusVectorStore:
         self.signature = f"rag-hybrid:v1:{settings.embedding_model}:{settings.embedding_dimension}:chinese"
         self.memory_collection = settings.memory_collection
         self.memory_signature = f"rag-memory:{settings.embedding_model}:{settings.embedding_dimension}"
+
+    def for_collection(self, name, *, embedding_model=None, embedding_dimension=None):
+        if not isinstance(name, str) or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,159}", name) is None:
+            raise AppError("INVALID_INDEX_TARGET", "索引集合名称无效", 409)
+        model = embedding_model or self.settings.embedding_model
+        dimension = embedding_dimension if embedding_dimension is not None else self.settings.embedding_dimension
+        if (not isinstance(model, str) or re.fullmatch(r"[A-Za-z0-9._:/-]{1,200}", model) is None
+                or type(dimension) is not int or not 64 <= dimension <= 4096):
+            raise AppError("INVALID_INDEX_TARGET", "索引向量模型或维度无效", 409)
+        return MilvusVectorStore(self.settings.model_copy(update={"milvus_collection": name,
+            "embedding_model": model, "embedding_dimension": dimension}))
 
     @contextmanager
     def connection(self, default_database: bool = False):
@@ -209,7 +221,7 @@ class MilvusVectorStore:
             self._validate(client)
             client.delete(self.collection, filter=user_filter(user_id, [document_id]), timeout=self.settings.milvus_timeout)
 
-    def read_document_chunks(self, user_id: UUID, document_id: UUID, expected_count: int) -> list[Chunk]:
+    def read_document_chunks(self, user_id: UUID, document_id: UUID, expected_count: int, *, verify_model=False) -> list[Chunk]:
         """Explicit hierarchy backfill reads source leaves without writing vectors."""
         if not 1 <= expected_count <= self.settings.max_document_chunks:
             raise AppError("HIERARCHY_STALE", "文档切片数量无效", 409)
@@ -218,6 +230,8 @@ class MilvusVectorStore:
         with self.connection() as client:
             fields = self._validate(client)
             output = [name for name in Chunk.__dataclass_fields__ if name != "excel_source"] + (["excel_source"] if "excel_source" in fields else [])
+            if verify_model:
+                output.append("embedding_model")
             for start in range(0, expected_count, 500):
                 remaining = deadline - monotonic()
                 if remaining <= 0:
@@ -225,7 +239,9 @@ class MilvusVectorStore:
                 end = min(start + 500, expected_count)
                 rows = client.query(self.collection, filter=f"{user_filter(user_id, [document_id])} and chunk_index >= {start} and chunk_index < {end}",
                                     output_fields=output, limit=end - start + 1, consistency_level="Strong", timeout=remaining)
-                batch = [decode_chunk(row) for row in rows]
+                if verify_model and any(row.get("embedding_model") != self.settings.embedding_model for row in rows):
+                    raise AppError("INDEX_VERIFICATION_FAILED", "索引包含不同向量模型的片段", 409)
+                batch = [decode_chunk({key: value for key, value in row.items() if key != "embedding_model"}) for row in rows]
                 if (any(c.user_id != str(user_id) or c.document_id != str(document_id) for c in batch)
                         or sorted(c.chunk_index for c in batch) != list(range(start, end))):
                     raise AppError("HIERARCHY_SCOPE_MISMATCH", "补建切片来源、数量或序号不符", 503)

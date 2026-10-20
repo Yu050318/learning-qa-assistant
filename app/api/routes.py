@@ -3,7 +3,7 @@ import logging
 import asyncio
 from queue import Empty, Queue
 from threading import Thread
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Cookie, File, Header, Query, Request, Response, UploadFile
@@ -16,7 +16,7 @@ from app.api.dependencies import AdminDependency, AuthDependency, ServiceDepende
 from app.api.schemas import (
     AuthResponse, CredentialsRequest, RegisterRequest, DocumentResponse, MemoryResponse, MemoryWrite, SessionCreate, SessionResponse, SessionRename, UserResponse,
     V2ChatRequest, V2ChatResponse, V2MessageResponse, V2SessionDetail,
-    CompactRequest, ContextEstimateRequest, DocumentPage, ActivateDocumentVersion, RunResumeRequest,
+    CompactRequest, ContextEstimateRequest, DocumentPage, ActivateDocumentVersion, RetireDocumentSeries, RunResumeRequest, DocumentTaskPage, DocumentTaskResponse,
 )
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput
@@ -31,6 +31,10 @@ Limit = Annotated[int, Query(ge=1, le=100)]
 Search = Annotated[str, Query(max_length=200)]
 logger = logging.getLogger("rag")
 REFRESH_COOKIE = "rag_refresh"
+
+
+def workspace_options(organization_id):
+    return {"organization_id": organization_id} if organization_id is not None else {}
 
 
 def auth_payload(user, access: str, seconds: int) -> dict:
@@ -162,16 +166,20 @@ def document_response(document, embedding_model: str) -> dict:
         reason = "DOCUMENT_DELETING"
     elif document.status != "ready":
         reason = "DOCUMENT_NOT_READY"
-    elif document.embedding_model != embedding_model:
+    elif document.embedding_model != embedding_model and not getattr(document, "index_bound_retrieval", False):
         reason = "EMBEDDING_MODEL_MISMATCH"
+    elif not getattr(document, "index_queryable", True):
+        reason = "DOCUMENT_INDEX_UNPUBLISHED"
     else:
         reason = None
     return {
         "id": document.id, "original_name": document.original_name, "file_type": document.file_type,
+        "organization_id": getattr(document, "organization_id", None),
         "status": document.status, "chunk_count": document.chunk_count, "embedding_model": document.embedding_model,
         "error_message": document.error_message, "size_bytes": document.size_bytes,
         "can_query": reason is None, "unavailable_reason": reason,
         "version_info": getattr(document, "version_info", None),
+        "index_info": getattr(document, "index_info", None),
         "created_at": document.created_at, "updated_at": document.updated_at,
     }
 
@@ -188,9 +196,9 @@ def ready(services: ServiceDependency):
 
 
 @v2_router.post("/documents", response_model=DocumentResponse, status_code=202, tags=["documents"])
-def upload_document(services: ServiceDependency, user_id: UserDependency, file: Annotated[UploadFile, File()]):
+def upload_document(services: ServiceDependency, user_id: UserDependency, file: Annotated[UploadFile, File()], organization_id: UUID | None = None):
     try:
-        document = services.ingestion.upload(user_id, file.filename or "", file.content_type, file.file)
+        document = services.ingestion.upload(user_id, file.filename or "", file.content_type, file.file, **workspace_options(organization_id))
     finally:
         file.file.close()
     services.ingestion.schedule(user_id, document.id)
@@ -198,21 +206,21 @@ def upload_document(services: ServiceDependency, user_id: UserDependency, file: 
 
 
 @v2_router.get("/documents/{document_id}", response_model=DocumentResponse, tags=["documents"])
-def get_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    return document_response(services.ingestion.get(user_id, document_id), services.settings.embedding_model)
+def get_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    return document_response(services.ingestion.get(user_id, document_id, **workspace_options(organization_id)), services.settings.embedding_model)
 
 
 @v2_router.get("/documents/{document_id}/versions", response_model=DocumentPage, tags=["documents"])
-def document_versions(document_id: UUID, services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50):
-    documents, total = services.ingestion.versions(user_id, document_id, offset, limit)
+def document_versions(document_id: UUID, services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50, organization_id: UUID | None = None):
+    documents, total = services.ingestion.versions(user_id, document_id, offset, limit, **workspace_options(organization_id))
     return {"items": [document_response(document, services.settings.embedding_model) for document in documents],
             "total": total, "offset": offset, "limit": limit}
 
 
 @v2_router.post("/documents/{document_id}/versions", response_model=DocumentResponse, status_code=202, tags=["documents"])
-def upload_document_version(document_id: UUID, services: ServiceDependency, user_id: UserDependency, file: Annotated[UploadFile, File()]):
+def upload_document_version(document_id: UUID, services: ServiceDependency, user_id: UserDependency, file: Annotated[UploadFile, File()], organization_id: UUID | None = None):
     try:
-        document = services.ingestion.upload(user_id, file.filename or "", file.content_type, file.file, base_document_id=document_id)
+        document = services.ingestion.upload(user_id, file.filename or "", file.content_type, file.file, base_document_id=document_id, **workspace_options(organization_id))
     finally:
         file.file.close()
     services.ingestion.schedule(user_id, document.id)
@@ -220,31 +228,64 @@ def upload_document_version(document_id: UUID, services: ServiceDependency, user
 
 
 @v2_router.post("/documents/{document_id}/activate", response_model=DocumentResponse, tags=["documents"])
-def activate_document_version(document_id: UUID, payload: ActivateDocumentVersion, services: ServiceDependency, user_id: UserDependency):
-    document = services.ingestion.activate_version(user_id, document_id, payload.expected_current_document_id)
+def activate_document_version(document_id: UUID, payload: ActivateDocumentVersion, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    document = services.ingestion.activate_version(user_id, document_id, payload.expected_current_document_id, **workspace_options(organization_id))
     return document_response(document, services.settings.embedding_model)
 
 
 @v2_router.post("/documents/{document_id}/retry", response_model=DocumentResponse, status_code=202, tags=["documents"])
-def retry_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    document = services.ingestion.retry(user_id, document_id)
+def retry_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    document = services.ingestion.retry(user_id, document_id, **workspace_options(organization_id))
     services.ingestion.schedule(user_id, document.id)
     return document_response(document, services.settings.embedding_model)
 
 
-@v2_router.delete("/documents/{document_id}", status_code=204, tags=["documents"])
-def delete_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    services.ingestion.delete(user_id, document_id)
+@v2_router.delete("/documents/{document_id}", status_code=204,
+                  responses={202: {"model": DocumentTaskResponse, "description": "版本退休清理任务已入队"}}, tags=["documents"])
+def delete_document(document_id: UUID, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    task = services.ingestion.delete(user_id, document_id, **workspace_options(organization_id))
+    if task is not None:
+        from app.application.document_tasks import task_response
+        return JSONResponse(jsonable_encoder(task_response(task)), status_code=202)
     return Response(status_code=204)
+
+
+@v2_router.post("/documents/{document_id}/retire-series", response_model=DocumentTaskResponse, status_code=202, tags=["documents"])
+def retire_document_series(document_id: UUID, body: RetireDocumentSeries, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    from app.application.document_tasks import task_response
+    return task_response(services.ingestion.tasks.retire_series(user_id, document_id, expected_version_count=body.expected_version_count, **workspace_options(organization_id)))
+
+
+@v2_router.get("/document-tasks", response_model=DocumentTaskPage, tags=["documents"])
+def document_tasks(services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50,
+                   organization_id: UUID | None = None, q: Search = "", parent_task_id: UUID | None = None,
+                   state: Literal["queued", "running", "succeeded", "failed", "cancelled"] | None = None,
+                   kind: Literal["ingest", "hierarchy", "delete", "delete_series"] | None = None):
+    return services.ingestion.tasks.list(user_id, offset, limit, task_state=state, kind=kind, search=q.strip(), parent_task_id=parent_task_id, **workspace_options(organization_id))
+
+
+@v2_router.get("/document-tasks/{task_id}", response_model=DocumentTaskResponse, tags=["documents"])
+def document_task(task_id: UUID, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    return services.ingestion.tasks.detail(user_id, task_id, **workspace_options(organization_id))
+
+
+@v2_router.post("/document-tasks/{task_id}/retry", response_model=DocumentTaskResponse, status_code=202, tags=["documents"])
+def retry_document_task(task_id: UUID, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    from app.application.document_tasks import task_response
+    return task_response(services.ingestion.tasks.retry(user_id, task_id, **workspace_options(organization_id)))
 
 
 @v2_router.post("/sessions", response_model=SessionResponse, status_code=201, tags=["v2 sessions"])
 def create_v2_session(payload: SessionCreate, services: ServiceDependency, user_id: UserDependency):
+    if payload.organization_id is not None:
+        return services.sessions.create(user_id, payload.title, organization_id=payload.organization_id)
     return services.sessions.create(user_id, payload.title)
 
 
 @v2_router.get("/sessions", response_model=list[SessionResponse], tags=["v2 sessions"])
-def list_v2_sessions(services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50, q: Search = ""):
+def list_v2_sessions(services: ServiceDependency, user_id: UserDependency, offset: Offset = 0, limit: Limit = 50, q: Search = "", organization_id: UUID | None = None):
+    if organization_id is not None:
+        return services.sessions.list(user_id, offset, limit, query=q.strip(), organization_id=organization_id)
     return services.sessions.list(user_id, offset, limit, query=q.strip())
 
 
@@ -497,8 +538,8 @@ def replay_run(run_id: UUID, request: Request, services: ServiceDependency, user
 
 
 @v2_router.get("/documents/{document_id}/processing", tags=["v2 documents"])
-def processing_v2(document_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    document = services.ingestion.get(user_id, document_id)
+def processing_v2(document_id: UUID, services: ServiceDependency, user_id: UserDependency, organization_id: UUID | None = None):
+    document = services.ingestion.get(user_id, document_id, **workspace_options(organization_id))
     metadata = document.parser_metadata or {}
     return {
         "document_id": document.id, "status": document.status,
@@ -510,8 +551,8 @@ def processing_v2(document_id: UUID, services: ServiceDependency, user_id: UserD
 
 
 @v2_router.get("/documents", response_model=DocumentPage, tags=["v2 documents"])
-def search_v2_documents(services: ServiceDependency, user_id: UserDependency, q: Search = "", status: Annotated[str | None, Query(pattern="^(processing|ready|failed|deleting)$")] = None, offset: Offset = 0, limit: Limit = 50):
-    items, total = services.ingestion.search(user_id, q.strip(), status, offset, limit)
+def search_v2_documents(services: ServiceDependency, user_id: UserDependency, q: Search = "", status: Annotated[str | None, Query(pattern="^(processing|ready|failed|deleting)$")] = None, offset: Offset = 0, limit: Limit = 50, organization_id: UUID | None = None):
+    items, total = services.ingestion.search(user_id, q.strip(), status, offset, limit, **workspace_options(organization_id))
     return {"items": [document_response(item, services.settings.embedding_model) for item in items], "total": total, "offset": offset, "limit": limit}
 
 
@@ -530,7 +571,7 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
     available = {item["provider"] for item in models if item["available"]}
     if default_profile_id not in {item.get("profile_id") for item in models if item["available"]}:
         default_profile_id = None
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".html", ".htm", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "evaluation": settings.evaluation_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".html", ".htm", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_tasks": settings.ingestion_mode == "durable", "document_publication": settings.document_publication_enabled, "workspaces": settings.workspaces_enabled, "model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "evaluation": settings.evaluation_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

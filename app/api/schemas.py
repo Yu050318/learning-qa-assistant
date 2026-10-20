@@ -80,6 +80,7 @@ class DocumentVersionSource(BaseModel):
 class DocumentVersionInfo(DocumentVersionSource):
     current_document_id: UUID | None
     is_current: bool
+    retirement_task_id: UUID | None = None
 
 
 class ActivateDocumentVersion(BaseModel):
@@ -87,9 +88,23 @@ class ActivateDocumentVersion(BaseModel):
     expected_current_document_id: UUID | None
 
 
+class RetireDocumentSeries(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    expected_version_count: int = Field(ge=1)
+
+
+class DocumentIndexInfo(ORMResponse):
+    state: Literal["building", "verified", "published", "superseded", "retiring", "cleaned", "failed"]
+    embedding_model: str
+    leaf_count: int = Field(ge=0)
+    verified_at: datetime | None
+    build_fingerprint: str
+
+
 class DocumentResponse(ORMResponse):
     id: UUID
     original_name: str
+    organization_id: UUID | None = None
     file_type: str
     status: str
     chunk_count: int
@@ -98,14 +113,40 @@ class DocumentResponse(ORMResponse):
     size_bytes: int | None = Field(default=None, ge=0)
     can_query: bool = False
     version_info: DocumentVersionInfo | None = None
-    unavailable_reason: Literal["DOCUMENT_NOT_READY", "EMBEDDING_MODEL_MISMATCH", "DOCUMENT_DELETING"] | None = None
+    index_info: DocumentIndexInfo | None = None
+    unavailable_reason: Literal["DOCUMENT_NOT_READY", "EMBEDDING_MODEL_MISMATCH", "DOCUMENT_DELETING", "DOCUMENT_INDEX_UNPUBLISHED"] | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class DocumentTaskResponse(ORMResponse):
+    id: UUID
+    document_id: UUID | None
+    parent_task_id: UUID | None = None
+    original_name: str
+    organization_id: UUID | None = None
+    can_retry: bool = False
+    kind: Literal["ingest", "hierarchy", "delete", "delete_series"]
+    state: Literal["queued", "running", "succeeded", "failed", "cancelled"]
+    phase: str
+    processed_units: int = Field(ge=0)
+    total_units: int | None = Field(ge=0)
+    attempts: int = Field(ge=0)
+    max_attempts: int = Field(ge=1)
+    error_code: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class DocumentTaskPage(BaseModel):
+    items: list[DocumentTaskResponse]
+    total: int = Field(ge=0)
 
 
 class SessionCreate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     title: str = Field(default="新会话", min_length=1, max_length=200)
+    organization_id: UUID | None = None
 
 
 class SessionRename(BaseModel):
@@ -116,6 +157,7 @@ class SessionRename(BaseModel):
 class SessionResponse(ORMResponse):
     id: UUID
     title: str
+    organization_id: UUID | None = None
     summary: str
     summarized_through: UUID | None
     created_at: datetime
@@ -248,6 +290,7 @@ class DocumentPage(BaseModel):
 class ContextEstimateRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
     session_id: UUID | None = None
+    organization_id: UUID | None = None
     question: str = Field(default="", max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
     model_profile_id: ProfileId | None = None

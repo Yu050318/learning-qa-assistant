@@ -5,12 +5,11 @@ from app.application.auth import AuthService
 from app.application.chat import ChatService
 from app.application.ingestion import IngestionService
 from app.application.memories import MemoryService
-from app.application.retriever import RetrieverService
+from app.application.retrieval_catalog import build_retriever
 from app.application.sessions import SessionService
 from app.application.runs import RunService
 from app.application.sharing import SharingService
 from app.application.model_center import ModelCenter
-from app.application.hierarchy import HierarchyService
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.infrastructure.embeddings.qwen import QwenEmbedding
@@ -24,7 +23,6 @@ from app.infrastructure.search.tavily import TavilySearch
 from app.infrastructure.vectorstores.milvus import MilvusVectorStore
 from app.workflows.supervisor import SupervisorWorkflow
 from app.infrastructure.sql import ReadOnlySQL
-from app.infrastructure.rerank import TextReranker
 from app.application.evaluation_jobs import EvaluationService
 
 
@@ -38,12 +36,7 @@ class Services:
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
         self.model_center = ModelCenter(settings, self.database) if settings.model_center_enabled else None
         self.evaluations = EvaluationService(settings, self.database)
-        self.reranker = TextReranker(settings) if settings.rerank_enabled else None
-        self.hierarchy = HierarchyService(settings, self.database,
-                                          legacy_expander=self.vectors.expand_context if settings.retrieval_parent_context else None) if settings.hierarchy_enabled else None
-        self.retriever = RetrieverService(self.embeddings, self.vectors, settings.retrieval_top_k,
-                                          context_expander=self.vectors.expand_context if settings.retrieval_parent_context else None,
-                                          reranker=self.reranker, hierarchy_expander=self.hierarchy.expand if self.hierarchy else None)
+        self.retriever = build_retriever(settings, self.database, vectors=self.vectors, embeddings=self.embeddings)
         self.memories = MemoryService(settings, self.database, self.embeddings, self.vectors)
         self.web_search = TavilySearch(settings)
         self.web_reader = ScraplingWebReader(settings)
@@ -113,8 +106,7 @@ class Services:
     def close(self) -> None:
         if self.runs is not None:
             self.runs.close()
-        if self.reranker is not None:
-            self.reranker.close()
+        self.retriever.close()
         self.ingestion.close()
         self.web_search.close()
         self.mineru.close()

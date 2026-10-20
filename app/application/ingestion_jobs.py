@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import and_, func, or_, select
 
 from app.core.errors import AppError, UpstreamError
-from app.infrastructure.persistence.models import DocumentRecord, IngestionJob
+from app.infrastructure.persistence.models import DocumentRecord, DocumentTask, IngestionJob
 from app.infrastructure.persistence.repository import Repository
 
 
@@ -36,19 +36,79 @@ class IngestionQueue:
         clock = func.clock_timestamp() if session.get_bind().dialect.name == "postgresql" else func.current_timestamp()
         return aware(session.scalar(select(clock)))
 
-    def enqueue(self, session, document, *, reset=False, kind="ingest"):
+    def enqueue(self, session, document, *, reset=False, kind="ingest", details=None, parent_task_id=None):
         job = session.get(IngestionJob, document.id)
         if job is None:
             job = IngestionJob(document_id=document.id, user_id=document.user_id)
-            session.add(job)
         elif not reset:
             return
+        if job.task_id:
+            previous = session.get(DocumentTask, job.task_id)
+            if previous is not None and previous.state in {"queued", "running"}:
+                previous.state, previous.phase = "cancelled", "cancelled"
+                previous.error_code = "SUPERSEDED_BY_RETIREMENT" if kind == "delete" else "SUPERSEDED_BY_RETRY"
+                previous.updated_at = self.now(session)
+        task = DocumentTask(id=uuid4(), document_id=document.id, user_id=document.user_id,
+            parent_task_id=parent_task_id,
+            organization_id=document.organization_id,
+            original_name=document.original_name, kind=kind, state="queued", phase="queued",
+            max_attempts=self.settings.ingestion_max_attempts, details=details or {})
+        session.add(task)
+        session.flush()
+        session.add(job)
+        job.task_id = task.id
         job.state = "queued"
         job.kind = kind
         job.attempts = 0
         job.max_attempts = self.settings.ingestion_max_attempts
         job.available_at = self.now(session)
         job.claim_token = job.lease_expires_at = job.last_error_code = None
+        self.sync_parent(session, parent_task_id)
+        return task
+
+    def sync_parent(self, session, parent_id):
+        if parent_id is None:
+            return
+        parent = session.get(DocumentTask, parent_id, with_for_update=True)
+        if parent is None or parent.kind != "delete_series":
+            raise AppError("INGESTION_TASK_DIVERGED", "整组退休任务历史不一致", 409)
+        # Follow the current receipt for each version, so failed retry receipts
+        # remain immutable without counting the same version twice.
+        children = session.scalars(select(DocumentTask).join(IngestionJob, IngestionJob.task_id == DocumentTask.id).where(
+            DocumentTask.parent_task_id == parent_id)).all()
+        parent.processed_units = parent.details.get("already_retired", 0) + sum(child.state == "succeeded" for child in children)
+        parent.updated_at = self.now(session)
+        if parent.processed_units == parent.total_units:
+            parent.state, parent.phase, parent.error_code = "succeeded", "done", None
+        elif any(child.state in {"failed", "cancelled"} for child in children):
+            parent.state, parent.phase, parent.error_code = "failed", "failed", "DOCUMENT_SERIES_CLEANUP_INCOMPLETE"
+        elif any(child.phase == "waiting_runs" for child in children):
+            parent.state, parent.phase, parent.error_code = "queued", "waiting_runs", None
+        else:
+            parent.state, parent.phase, parent.error_code = "running", "cleaning_versions", None
+
+    def sync_task(self, session, job, *, phase=None, processed_units=None, total_units=None):
+        if job.task_id is None:
+            return
+        task = session.get(DocumentTask, job.task_id)
+        if task is None:
+            raise AppError("INGESTION_TASK_DIVERGED", "任务历史与执行队列不一致", 409)
+        if (task.document_id, task.user_id, task.kind) != (job.document_id, job.user_id, job.kind):
+            raise AppError("INGESTION_TASK_DIVERGED", "任务历史的归属或种类与执行队列不一致", 409)
+        task.state, task.attempts, task.max_attempts = job.state, job.attempts, job.max_attempts
+        task.error_code, task.updated_at = job.last_error_code, self.now(session)
+        if phase is not None:
+            task.phase = phase
+        if processed_units is not None:
+            task.processed_units = processed_units
+        if total_units is not None:
+            task.total_units = total_units
+        self.sync_parent(session, task.parent_task_id)
+
+    def progress(self, session, document_id, phase, *, processed_units=None, total_units=None):
+        job = session.get(IngestionJob, document_id)
+        if job is not None:
+            self.sync_task(session, job, phase=phase, processed_units=processed_units, total_units=total_units)
 
     def reconcile(self, limit=100):
         with self.database.sessions() as session:
@@ -80,6 +140,9 @@ class IngestionQueue:
             job.claim_token = uuid4()
             job.lease_expires_at = now + timedelta(seconds=self.settings.ingestion_lease_seconds)
             result = Claim(job.document_id, job.user_id, job.claim_token, exhausted, job.kind)
+            receipt = session.get(DocumentTask, job.task_id) if job.task_id else None
+            phase = "waiting_runs" if receipt and job.kind == "delete" and receipt.phase == "waiting_runs" else "running"
+            self.sync_task(session, job, phase=phase)
             session.commit()
             return result
 
@@ -113,6 +176,7 @@ class IngestionQueue:
             if aware(job.lease_expires_at) <= self.now(session):
                 raise lease_lost()
             job.claim_token = job.lease_expires_at = None
+            self.sync_task(session, job, phase="queued")
             session.commit()
 
     def finish(self, claim, error=None):
@@ -123,7 +187,22 @@ class IngestionQueue:
             document = Repository(session).document(claim.user_id, claim.document_id, lock=True)
             job = self.owned(session, claim, lock=True)
             code = error.code if isinstance(error, AppError) else "INGESTION_FAILED"
-            if claim.kind == "hierarchy":
+            phase = None
+            if claim.kind == "delete":
+                if document.status == "retired":
+                    job.state, job.last_error_code, phase = "succeeded", None, "done"
+                elif isinstance(error, AppError) and error.code == "DOCUMENT_INDEX_PINNED":
+                    job.state, job.last_error_code, phase = "queued", None, "waiting_runs"
+                    job.attempts = max(0, job.attempts - 1)
+                    job.available_at = self.now(session) + timedelta(seconds=5)
+                elif error is not None and self.retryable(error) and job.attempts < job.max_attempts:
+                    job.state, job.last_error_code, phase = "queued", code, "retry_wait"
+                    job.available_at = self.now(session) + timedelta(seconds=min(300, 5 * 2 ** (job.attempts - 1)))
+                else:
+                    job.state, phase = "failed", "failed"
+                    job.last_error_code = "INGESTION_ATTEMPTS_EXHAUSTED" if claim.exhausted else code
+                document.error_message = None if job.state == "succeeded" else "等待相关运行结束" if phase == "waiting_runs" else "清理尚未完成，可在任务面板重试"
+            elif claim.kind == "hierarchy":
                 from app.infrastructure.loaders.hierarchy import HierarchyBuilder
                 manifest = (document.parser_metadata or {}).get("hierarchy", {})
                 valid = (manifest.get("fingerprint") == HierarchyBuilder(self.settings).fingerprint
@@ -168,6 +247,7 @@ class IngestionQueue:
             if aware(job.lease_expires_at) <= self.now(session):
                 raise lease_lost()
             job.claim_token = job.lease_expires_at = None
+            self.sync_task(session, job, phase=phase or ("done" if job.state == "succeeded" else "retry_wait" if job.state == "queued" else job.state))
             session.commit()
 
     @staticmethod

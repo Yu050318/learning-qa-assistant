@@ -17,8 +17,8 @@
 先备份配置，确认 API 与 Worker 使用同一个平台 PostgreSQL，并能以**同样的绝对路径**访问上传、解析缓存目录。多台机器需要共享持久卷；当前不提供对象存储。停止旧版入库入口并等待进程内任务结束后再切换，避免旧进程绕过新的跨进程锁。
 
 ```powershell
-# 仅添加任务表；不会清库、重建向量或改写文档
-.venv/Scripts/python.exe -m app.bootstrap --ingestion-jobs
+# 备份后执行完整平台版本迁移，不重建向量或改写源文件
+.venv/Scripts/python.exe -m app.migrate
 
 # 在 API、Worker 共用的服务端 .env 中设置：
 # INGESTION_MODE=durable

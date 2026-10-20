@@ -9,16 +9,16 @@ from app.application.model_center import ModelCenter
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="显式创建 RAG schema 和/或 Milvus 集合")
+    parser = argparse.ArgumentParser(description="显式迁移平台 schema 和/或初始化 Milvus 集合；兼容的模块参数也执行完整平台迁移")
     parser.add_argument("--postgres", action="store_true")
-    parser.add_argument("--ingestion-jobs", action="store_true", help="显式添加持久化入库任务表")
-    parser.add_argument("--chat-runs", action="store_true", help="显式添加问答 Run/Event 表")
-    parser.add_argument("--sharing", action="store_true", help="显式添加组织与知识库共享表")
+    parser.add_argument("--ingestion-jobs", action="store_true", help="兼容入口：执行完整平台迁移，准备持久化任务表")
+    parser.add_argument("--chat-runs", action="store_true", help="兼容入口：执行完整平台迁移，准备 Run/Event 表")
+    parser.add_argument("--sharing", action="store_true", help="兼容入口：执行完整平台迁移，准备组织共享表")
     parser.add_argument("--model-center", action="store_true", help="显式添加模型配置和调用记录表并从服务端配置初始化")
     parser.add_argument("--migrate-retired-deepseek-chat", action="store_true", help="显式将官方端点的旧 chat 模型迁移至 Flash，保留配置历史与角色分配")
-    parser.add_argument("--hierarchy", action="store_true", help="显式添加三级分块节点表；不重建原有文档或向量")
+    parser.add_argument("--hierarchy", action="store_true", help="兼容入口：执行完整平台迁移，不重建文档或向量")
     parser.add_argument("--milvus", action="store_true")
-    parser.add_argument("--document-versions", action="store_true", help="显式为已有平台库添加文档版本表，不更改或删除原文档")
+    parser.add_argument("--document-versions", action="store_true", help="兼容入口：执行完整平台迁移，准备文档版本表")
     parser.add_argument("--excel-provenance", action="store_true", help="显式为已有集合添加可空的 Excel JSON 来源字段（Milvus 2.6+）")
     options = parser.parse_args()
     if not any((options.postgres, options.milvus, options.excel_provenance, options.document_versions, options.ingestion_jobs, options.chat_runs, options.sharing, options.model_center, options.hierarchy, options.migrate_retired_deepseek_chat)):

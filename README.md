@@ -43,9 +43,9 @@
 
 第六阶段提供[答案与引用评估](docs/answer-evaluation.md)：默认离线读取答案和真实叶子证据快照，分别统计引用合法性、审阅主张忠实度、引用支持度及标准事实覆盖度；无语义审阅时保留 null。可显式调用现有 Supervisor 生成答案或调用现有模型作审阅，保存逐题结果、配置、指纹与同标注集的基线差值。仓库中的[合成样例报告](docs/evaluation/answer-smoke-report.json)含故意注入的错误，只验证评估器，不代表线上质量。
 
-第七阶段加入[文档版本管理](docs/document-versions.md)：新版本使用独立文件、文档 ID、缓存和向量，旧版保留；就绪后在资料页的版本面板明确“设为当前”，默认问答只查当前版，指定旧版仍可查。历史引用保存版本号与内容哈希。先显式运行 `python -m app.bootstrap --document-versions` 添加两张表，再设置 `DOCUMENT_VERSIONS_ENABLED=true`；不会自动迁移或清理已有文件。
+第七阶段加入[文档版本管理](docs/document-versions.md)：新版本使用独立文件、文档 ID、缓存和向量，旧版保留；就绪后在资料页的版本面板明确“设为当前”，默认问答只查当前版，指定旧版仍可查。历史引用保存版本号与内容哈希。先显式运行 `python -m app.migrate` 执行平台版本迁移，再设置 `DOCUMENT_VERSIONS_ENABLED=true`；不会自动迁移或清理已有文件。
 
-第八阶段提供[独立入库 Worker](docs/durable-ingestion.md)：复用 PostgreSQL 和原入库流程，任务与文档原子落库，支持跨进程领取、租约心跳、崩溃接管和有限重试。默认关闭；显式运行 `python -m app.bootstrap --ingestion-jobs` 后，在所有 API/Worker 设置 `INGESTION_MODE=durable`，并用 `python -m app.worker` 启动独立进程。所有进程需共享上传/缓存路径，不支持事务级连接池。
+第八阶段提供[独立入库 Worker](docs/durable-ingestion.md)：复用 PostgreSQL 和原入库流程，任务与文档原子落库，支持跨进程领取、租约心跳、崩溃接管和有限重试。默认关闭；显式运行 `python -m app.migrate` 后，在所有 API/Worker 设置 `INGESTION_MODE=durable`，并用 `python -m app.worker` 启动独立进程。所有进程需共享上传/缓存路径，不支持事务级连接池。
 
 第九阶段加入 [Run/Event 持久化与 SSE 断线重放](docs/durable-chat-runs.md)：先保存事件，再发送给客户端；相同请求标识复用原 Run，重连按游标续传，最终助手消息与 done 事件原子提交。显式运行 `python -m app.bootstrap --chat-runs` 后设置 `CHAT_RUNS_ENABLED=true` 并重启 API。进程中断会标记错误，不自动重跑模型或工具；默认关闭，保留原流式入口。
 

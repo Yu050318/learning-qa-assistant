@@ -5,6 +5,7 @@ import json
 from time import monotonic, perf_counter
 from uuid import UUID, uuid4
 from copy import copy
+from contextlib import closing, nullcontext
 from dataclasses import asdict
 from datetime import datetime, timedelta
 from urllib.parse import urlsplit
@@ -16,8 +17,10 @@ from app.application.evidence import count_tokens, evidence_token_budget
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.domain.contracts import AgentChatInput, ChatTurn, RunContext
+from app.domain.retrieval_scope import RetrievalIndex, retrieval_index_identity
+from app.application.document_publication import DocumentPublication
 from app.infrastructure.persistence.database import Database
-from app.infrastructure.persistence.models import ChatMessage, User, utcnow
+from app.infrastructure.persistence.models import ChatMessage, RunIndexPin, User, utcnow
 from app.infrastructure.persistence.repository import Repository
 from app.workflows.agent import SYSTEM_PROMPT as AGENT_SYSTEM_PROMPT
 
@@ -78,20 +81,38 @@ class ChatService:
         self.sharing = SharingService(settings, database)
         self.model_center = ModelCenter(settings, database) if settings.model_center_enabled else None
 
-    def scope_and_history(self, repository, user_id, session, payload, settings):
+    def document_scope(self, repository, user_id, session, payload, settings):
         requested = list(payload.document_ids) if payload.document_ids is not None else None
+        kids = tuple(payload.knowledge_base_ids)
+        team = session.organization_id is not None
+        if team:
+            # The session's immutable workspace, never a client-provided tenant,
+            # determines the eligible libraries. No grants means an empty scope.
+            kids = self.sharing.workspace_libraries(repository.database, user_id, session.organization_id,
+                kids or None) if payload.search_mode not in {"web", "sql"} else ()
+        elif settings.workspaces_enabled and session.kind == "chat" and kids:
+            raise AppError("INVALID_WORKSPACE_SCOPE", "请在团队空间中使用共享知识库", 422)
         version_options = {"current_only": True} if settings.document_versions_enabled else {}
-        ready_ids = [] if payload.search_mode in {"web", "sql"} or payload.knowledge_base_ids else repository.ready_document_ids(
-            user_id, requested, settings.embedding_model, **version_options)
+        ready_ids = [] if payload.search_mode in {"web", "sql"} or kids or team else repository.ready_document_ids(
+            user_id, requested, settings.embedding_model, require_index=settings.document_publication_enabled, **version_options)
         owners = {}
-        if payload.knowledge_base_ids:
+        if kids:
             if payload.search_mode in {"web", "sql"}:
                 raise AppError("INVALID_SCOPE", "此模式不接受共享知识库", 422)
-            owners = self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=repository.database)
+            owners = self.sharing.scope(user_id, kids, requested, session=repository.database,
+                organization_id=session.organization_id, include_owned=not (team or session.kind == "evaluation"))
             ready_ids = list(owners)
+        elif team and requested:
+            raise AppError("DOCUMENT_SCOPE_CHANGED", "团队空间没有授权这些资料", 409)
+        indexes = DocumentPublication(settings, None).freeze(repository.database,
+            owners or {did: user_id for did in ready_ids}) if settings.document_publication_enabled else ()
+        return ready_ids, owners, indexes, kids
+
+    def scope_and_history(self, repository, user_id, session, payload, settings):
+        ready_ids, owners, indexes, kids = self.document_scope(repository, user_id, session, payload, settings)
         history = [ChatTurn(message.role, message.content) for message in repository.context_messages(
             user_id, session.id)[-settings.memory_recent_messages:]]
-        return ready_ids, owners, history, session.summary
+        return ready_ids, owners, history, session.summary, indexes, kids
 
     def prepare_run(self, database, run, payload, *, frozen_snapshot=None):
         """Run, frozen inputs and one stable message pair share the create transaction."""
@@ -108,7 +129,7 @@ class ChatService:
         public_query, web_enabled, warnings = prepare_public_query(payload, settings.web_search_enabled)
         if payload.search_mode == "web" and not settings.web_search_enabled and not payload.web_urls:
             raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
-        ready_ids, owners, history, summary = self.scope_and_history(repository, run.user_id, session, payload, settings)
+        ready_ids, owners, history, summary, indexes, kids = self.scope_and_history(repository, run.user_id, session, payload, settings)
         message_time = utcnow()
         user_message = ChatMessage(user_id=run.user_id, session_id=run.session_id, role="user", content=payload.question,
                                    created_at=message_time)
@@ -122,12 +143,16 @@ class ChatService:
             question=payload.question, search_mode=payload.search_mode, allowed_document_ids=tuple(ready_ids),
             selected_provider=selected, public_query=public_query, web_enabled=web_enabled, warnings=warnings,
             web_urls=payload.web_urls, source_message_id=user_message.id, started_at_utc=run.created_at,
-            knowledge_base_ids=payload.knowledge_base_ids, document_owners=tuple(owners.items()))
+            knowledge_base_ids=kids, document_owners=tuple(owners.items()), retrieval_indexes=indexes,
+            organization_id=session.organization_id, shared_only=session.organization_id is not None or session.kind == "evaluation")
         context_data = asdict(context)
+        for target in indexes:
+            database.add(RunIndexPin(run_id=run.id, document_id=target.document_id))
         context_data.pop("deadline_monotonic")
         run.execution_snapshot = json.loads(json.dumps({"version": 1, "context": context_data,
             "history": [asdict(turn) for turn in history], "summary": summary,
             "settings": frozen_settings,
+            "retrieval_index_sha256": retrieval_index_identity(settings) if ready_ids else None,
             "model_center": {"revision": snapshot.revision, "configuration": snapshot.configuration.model_dump(mode="json"),
                 "catalog": snapshot.catalog.model_dump(mode="json") if snapshot.catalog else None,
                 "answer_profile_id": snapshot.answer_profile_id} if snapshot else None,
@@ -155,15 +180,28 @@ class ChatService:
         for name in ("allowed_document_ids", "knowledge_base_ids"):
             values[name] = tuple(UUID(value) for value in values[name])
         values["document_owners"] = tuple((UUID(did), UUID(uid)) for did, uid in values["document_owners"])
+        try:
+            if values.get("organization_id") is not None:
+                values["organization_id"] = UUID(values["organization_id"])
+            values["retrieval_indexes"] = tuple(RetrievalIndex.from_payload(target) for target in values.get("retrieval_indexes", ()))
+        except (ValueError, TypeError, KeyError):
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "冻结索引快照无效", 409) from None
         values["started_at_utc"] = datetime.fromisoformat(values["started_at_utc"])
         values["web_urls"], values["warnings"] = tuple(values["web_urls"]), tuple(values["warnings"])
         values["deadline_monotonic"] = monotonic() + remaining
-        context = RunContext(**values)
+        try:
+            context = RunContext(**values)
+        except (TypeError, ValueError):
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "运行范围与冻结索引不一致", 409) from None
+        if settings.document_publication_enabled and context.allowed_document_ids and not context.retrieval_indexes:
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "旧运行缺少版本化索引范围，请重新发起问答", 409)
         if (context.user_id != claim.user_id or context.session_id != session_id
                 or context.source_message_id != user_message_id):
             raise AppError("RUN_CHECKPOINT_DIVERGED", "运行身份与快照不一致", 409)
         workflow = copy(self.agent_workflow)
         workflow.settings = settings
+        if getattr(workflow, "retriever", None) is not None and hasattr(workflow.retriever, "for_settings"):
+            workflow.retriever = workflow.retriever.for_settings(settings)
         catalog = (snapshot.get("model_center") or {}).get("catalog")
         if catalog:
             from app.domain.model_catalog import ModelCatalog
@@ -177,24 +215,42 @@ class ChatService:
         def validate(database=None, *, lock=False):
             if validate_external is not None:
                 validate_external()
+            expected_index = snapshot.get("retrieval_index_sha256")
+            if not context.retrieval_indexes and expected_index is not None and expected_index != retrieval_index_identity(self.settings):
+                raise AppError("DOCUMENT_SCOPE_CHANGED", "知识库索引配置已变化，请重新发起问答", 409)
             from contextlib import nullcontext
             with (nullcontext(database) if database is not None else self.database.sessions()) as database:
                 user = database.get(User, claim.user_id)
                 if user is None or not user.is_active:
                     raise AppError("FORBIDDEN", "账号已停用", 403)
                 repository = Repository(database)
-                repository.chat_session(claim.user_id, session_id, lock=lock)
+                if context.retrieval_indexes:
+                    DocumentPublication(self.settings, None).validate_targets(database, context.retrieval_indexes, lock=lock)
+                try:
+                    current_session = repository.chat_session(claim.user_id, session_id, lock=lock)
+                except AppError as error:
+                    if context.organization_id is not None and error.status_code in {403, 404}:
+                        raise AppError("DOCUMENT_SCOPE_CHANGED", "团队空间授权已撤销或已归档", 409) from None
+                    raise
+                if current_session.organization_id != context.organization_id:
+                    raise AppError("DOCUMENT_SCOPE_CHANGED", "会话空间与冻结范围不一致", 409)
                 for mid, role in ((user_message_id, "user"), (message_id, "assistant")):
                     message = database.get(ChatMessage, mid)
                     if message is None or (message.user_id, message.session_id, message.role) != (claim.user_id, session_id, role):
                         raise AppError("RUN_CHECKPOINT_DIVERGED", "运行消息已变化", 409)
                 frozen = list(context.allowed_document_ids)
                 if context.knowledge_base_ids:
-                    current = sharing.scope(claim.user_id, context.knowledge_base_ids, frozen, session=database, lock=lock)
+                    try:
+                        current = sharing.scope(claim.user_id, context.knowledge_base_ids, frozen, session=database, lock=lock,
+                            organization_id=context.organization_id, include_owned=not context.shared_only)
+                    except AppError as error:
+                        if error.status_code in {403, 404}:
+                            raise AppError("DOCUMENT_SCOPE_CHANGED", "共享授权已撤销", 409) from None
+                        raise
                     if current != dict(context.document_owners):
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "共享授权或文档范围已变化", 409)
                 else:
-                    current = repository.ready_document_ids(claim.user_id, frozen, settings.embedding_model)
+                    current = repository.ready_document_ids(claim.user_id, frozen, settings.embedding_model, require_index=settings.document_publication_enabled)
                     if set(current) != set(frozen):
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "文档范围已变化", 409)
 
@@ -206,7 +262,8 @@ class ChatService:
         if self.model_center and snapshot["model_center"]:
             revision = snapshot["model_center"]["revision"]
             options["call_observer"] = self.model_center.observer(claim.user_id, session_id, context.request_id, revision)
-        with self.sessions.exclusive(session_id) as probe:
+        with self.sessions.exclusive(session_id) as probe, (closing(workflow.retriever)
+                if getattr(workflow, "retriever", None) is not getattr(self.agent_workflow, "retriever", None) else nullcontext()):
             checkpoint.check()
             result = workflow.run(context, [ChatTurn(**turn) for turn in snapshot["history"]], snapshot["summary"],
                                   on_answer_event=on_answer_event, **options)
@@ -281,7 +338,7 @@ class ChatService:
                 session = repository.chat_session(user_id, session_id, lock=True, kind="chat")
                 if run_binding:
                     run_binding[0].guard(database, user_id, run_binding[1])
-                ready_ids, owners, history, summary = self.scope_and_history(repository, user_id, session, payload, settings)
+                ready_ids, owners, history, summary, indexes, kids = self.scope_and_history(repository, user_id, session, payload, settings)
                 user_message = ChatMessage(user_id=user_id, session_id=session_id, role="user", content=payload.question)
                 database.add(user_message)
                 session.updated_at = utcnow()
@@ -293,7 +350,8 @@ class ChatService:
                 web_urls=payload.web_urls,
                 source_message_id=user_message.id,
                 deadline_monotonic=monotonic() + self.settings.agent_timeout,
-                knowledge_base_ids=payload.knowledge_base_ids, document_owners=tuple(owners.items()),
+                knowledge_base_ids=kids, document_owners=tuple(owners.items()), retrieval_indexes=indexes,
+                organization_id=session.organization_id, shared_only=session.organization_id is not None or session.kind == "evaluation",
             )
             result = workflow.run(context, history, summary, on_answer_event=on_answer_event, **options)
             if self.model_center:
@@ -305,18 +363,23 @@ class ChatService:
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, session_id, lock=True, kind="chat")
-                if payload.knowledge_base_ids:
-                    final_owners = self.sharing.scope(user_id, payload.knowledge_base_ids, ready_ids, session=database, lock=True)
+                if indexes:
+                    DocumentPublication(self.settings, None).validate_targets(database, indexes, lock=True)
+                if session.organization_id != context.organization_id:
+                    raise AppError("DOCUMENT_SCOPE_CHANGED", "会话空间与冻结范围不一致", 409)
+                if context.knowledge_base_ids:
+                    final_owners = self.sharing.scope(user_id, context.knowledge_base_ids, ready_ids, session=database, lock=True,
+                        organization_id=context.organization_id, include_owned=not context.shared_only)
                     if final_owners != owners:
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "共享权限或文档范围已变化", 409)
                 cited = [UUID(citation["document_id"]) for citation in result.citations if citation["type"] == "knowledge"]
                 if cited:
-                    if payload.knowledge_base_ids:
+                    if context.knowledge_base_ids:
                         if not set(cited).issubset(final_owners):
                             raise AppError("DOCUMENT_SCOPE_CHANGED", "共享文档授权已变化", 409)
                         current = cited
                     else:
-                        current = repository.ready_document_ids(user_id, cited, self.settings.embedding_model)
+                        current = repository.ready_document_ids(user_id, cited, self.settings.embedding_model, require_index=self.settings.document_publication_enabled)
                     if not set(current).issubset(set(ready_ids)):
                         raise AppError("DOCUMENT_SCOPE_CHANGED", "回答期间引用文档已被删除或变更，请重新提问", 409)
                     if self.settings.document_versions_enabled:
@@ -370,19 +433,26 @@ class ChatService:
             with self.database.sessions() as database:
                 repository = Repository(database)
                 session = repository.chat_session(user_id, payload.session_id, kind="chat")
+                if payload.organization_id is not None and payload.organization_id != session.organization_id:
+                    raise AppError("INVALID_WORKSPACE_SCOPE", "上下文估算的空间与会话不一致", 422)
                 messages = repository.context_messages(user_id, payload.session_id)
                 summary = session.summary
                 history = [ChatTurn(item.role, item.content) for item in messages[-self.settings.memory_recent_messages:]]
                 version = self._context_version(session, messages)
                 if payload.search_mode in {"knowledge", "auto"}:
-                    requested = list(payload.document_ids) if payload.document_ids else None
-                    ready = list(self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=database)) if payload.knowledge_base_ids else repository.ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
+                    ready = self.document_scope(repository, user_id, session, payload, self.settings)[0]
         else:
             ready = []
-            if payload.search_mode in {"knowledge", "auto"}:
+            if payload.search_mode in {"knowledge", "auto"} or payload.organization_id is not None:
                 with self.database.sessions() as database:
-                    requested = list(payload.document_ids) if payload.document_ids else None
-                    ready = list(self.sharing.scope(user_id, payload.knowledge_base_ids, requested, session=database)) if payload.knowledge_base_ids else Repository(database).ready_document_ids(user_id, requested, self.settings.embedding_model, current_only=True if self.settings.document_versions_enabled else None)
+                    from types import SimpleNamespace
+                    if payload.organization_id is not None and not self.settings.workspaces_enabled:
+                        raise AppError("WORKSPACES_DISABLED", "团队空间尚未启用", 503)
+                    if payload.organization_id is not None:
+                        Repository(database).workspace_member(user_id, payload.organization_id)
+                    context_session = SimpleNamespace(organization_id=payload.organization_id, kind="chat")
+                    if payload.search_mode in {"knowledge", "auto"}:
+                        ready = self.document_scope(Repository(database), user_id, context_session, payload, self.settings)[0]
         has_evidence = bool(ready) or payload.search_mode in {"web", "auto"} and (self.settings.web_search_enabled or bool(payload.web_urls)) or payload.search_mode in {"sql", "auto"} and bool(self.settings.sql_allowed_tables)
         reserved = evidence_token_budget(budget) if has_evidence else 0
         estimated = count_tokens(

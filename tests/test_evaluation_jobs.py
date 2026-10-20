@@ -77,6 +77,21 @@ def test_job_freezes_models_scope_labels_and_profile_and_retries_without_refreez
     assert [case.case_id for case in cases] == ["fact", "missing"] and all(case.run_id is None for case in cases)
 
 
+def test_enabling_bound_indexes_never_refreezes_an_old_evaluation_scope(evaluation):
+    s = evaluation
+    job = s.evaluation.create_job(s.uid, s.request, uuid4())
+    original_scope, original_models = dict(job.scope_snapshot), dict(job.model_snapshot)
+    assert "indexes" not in original_scope
+    s.settings.document_publication_enabled = True
+    with s.database.sessions() as session:
+        with pytest.raises(AppError) as failure:
+            s.evaluation.validate_scope(session, session.get(EvaluationJob, job.id))
+    assert failure.value.code == "DOCUMENT_SCOPE_CHANGED"
+    with s.database.sessions() as session:
+        row = session.get(EvaluationJob, job.id)
+        assert row.scope_snapshot == original_scope and row.model_snapshot == original_models
+
+
 def test_foreign_documents_invalid_gold_and_empty_splits_never_queue_a_job(evaluation):
     s = evaluation
     denied(s.evaluation.create_job, s.uid, s.request.model_copy(update={"document_ids": [uuid4()]}), uuid4(), code="NOT_FOUND")
@@ -197,3 +212,37 @@ def test_shared_library_scope_excludes_unselected_private_documents_and_rechecks
     s.evaluation.check_owned(claim)
     sharing.set_grant(s.other, library["id"], s.uid, None)
     denied(s.evaluation.check_owned, claim, code="DOCUMENT_SCOPE_CHANGED")
+
+
+def test_evaluation_freezes_library_current_not_owners_private_pointer_or_shared_history(evaluation):
+    from app.infrastructure.persistence.repository import Repository
+    s = evaluation
+    s.settings.sharing_enabled = True
+    sharing = SharingService(s.settings, s.database)
+    organization = sharing.create_organization(s.uid, "version fixture")
+    library = sharing.create_base(s.uid, organization["id"], "version specs")["id"]
+    with s.database.sessions() as session:
+        repo = Repository(session)
+        first = repo.document(s.uid, s.document_id)
+        repo.bind_document_version(s.uid, first)
+        newer = DocumentRecord(user_id=s.uid, original_name="specs.txt", file_type=".txt", file_path="new-fixture",
+            content_hash="e" * 64, status="ready", embedding_model=s.settings.embedding_model, chunk_count=1)
+        session.add(newer)
+        session.flush()
+        repo.bind_document_version(s.uid, newer, first.id)
+        session.commit()
+    sharing.bind(s.uid, library, first.id)
+    sharing.bind(s.uid, library, newer.id, expected_current=first.id)
+    assert sharing.scope(s.uid, [library], include_owned=False) == {newer.id:s.uid}
+    job = s.evaluation.create_job(s.uid, EvaluationJobCreate(dataset_id=s.dataset.id, knowledge_base_ids=[library]), uuid4())
+    assert job.scope_snapshot["document_ids"] == [str(newer.id)]
+    # Changing the library pointer does not revoke historical published access.
+    sharing.bind(s.uid, library, first.id, expected_current=newer.id)
+    with s.database.sessions() as session:
+        s.evaluation.validate_scope(session, job)
+    sharing.bind(s.uid, library, newer.id, remove=True)
+    denied(s.evaluation.create_job, s.uid, EvaluationJobCreate(dataset_id=s.dataset.id,
+        knowledge_base_ids=[library], document_ids=[newer.id]), uuid4(), code="NOT_FOUND")
+    with s.database.sessions() as session, pytest.raises(AppError) as failure:
+        s.evaluation.validate_scope(session, job)
+    assert failure.value.code == "DOCUMENT_SCOPE_CHANGED"

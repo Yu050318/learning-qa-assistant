@@ -24,16 +24,16 @@
 ## 显式升级与配置
 
 ```powershell
-# 已有 PostgreSQL 平台库：仅补建版本表
-.venv/Scripts/python.exe -m app.bootstrap --document-versions
+# 备份后执行完整的平台版本迁移
+.venv/Scripts/python.exe -m app.migrate
 
 # 再在本机 .env 设置并重启后端
 # DOCUMENT_VERSIONS_ENABLED=true
 ```
 
-命令依赖现有 `rag.documents` / `rag.users`，缺失时要求先按原流程初始化平台库。新部署的 `--postgres` 会通过现有 create_all 建立全套表。版本升级命令幂等，不修改旧文档表、不重建索引、不删除或重写已有数据，不自动跑在应用启动阶段。
+迁移负责按版本升级已有表并补齐依赖，不重建向量或改写原文件，也不在应用启动时自动执行。`bootstrap --document-versions` 保留为兼容入口，执行同一完整平台迁移链；它不再只创建两张缺失表。新部署的 `bootstrap --postgres` 也使用该迁移链。旧索引开启发布流程前还需按 [显式核验与绑定](index-adoption.md) 核查。
 
-配置默认关闭，原无版本库仍可运行；启用时需要先升级，readiness 会检查新增表。表已存在时，即便关闭管理入口，默认检索仍识别当前指针，避免把旧版本重新混入“全部资料”；关闭状态不新增版本标签或提供版本管理按钮。迁移与配置均没有在用户真实数据库上执行。
+配置默认关闭，启用前需要升级，readiness 会检查对应结构。表已存在时，即便关闭管理入口，默认检索仍识别当前指针，避免把旧版本重新混入“全部资料”；关闭状态不新增版本标签或提供版本管理按钮。当前业务部署状态以 [功能补齐进度](replication-repair-progress.md) 为准。
 
 ## API
 

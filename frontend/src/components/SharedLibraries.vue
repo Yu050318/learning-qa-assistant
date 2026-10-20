@@ -1,20 +1,29 @@
 <script setup lang="ts">
 import {computed,onMounted,ref,watch} from 'vue'
 import {Plus,Users,Library,RefreshCw,Trash2} from 'lucide-vue-next'
-import {api,type Organization,type Member,type SharedDocument} from '../api'
+import {api,type Organization,type KnowledgeBase,type Member,type SharedDocument} from '../api'
 import {useAppStore} from '../store'
 const store=useAppStore(),orgs=ref<Organization[]>([]),oid=ref(''),kid=ref(''),members=ref<Member[]>([]),grants=ref<Member[]>([]),documents=ref<SharedDocument[]>([])
 const busy=ref(false),loading=ref(false),error=ref(''),orgName=ref(''),baseName=ref(''),username=ref(''),memberRole=ref('member'),grantUser=ref(''),grantRole=ref('viewer'),source=ref('')
-const org=computed(()=>orgs.value.find(row=>row.id===oid.value)),bases=computed(()=>store.knowledgeBases.filter(row=>row.organization_id===oid.value)),base=computed(()=>bases.value.find(row=>row.id===kid.value)),admin=computed(()=>org.value&&org.value.role!=='member'),editable=computed(()=>base.value&&base.value.role!=='viewer')
+const libraries=ref<KnowledgeBase[]>([])
+const org=computed(()=>orgs.value.find(row=>row.id===oid.value)),bases=computed(()=>libraries.value.filter(row=>row.organization_id===oid.value)),base=computed(()=>bases.value.find(row=>row.id===kid.value)),admin=computed(()=>org.value&&org.value.role!=='member'),editable=computed(()=>base.value&&base.value.role!=='viewer')
 let attempt=0
-async function load(){orgs.value=await api.organizations();await store.loadKnowledgeBases();if(!orgs.value.some(row=>row.id===oid.value))oid.value=orgs.value[0]?.id||'';if(!bases.value.some(row=>row.id===kid.value))kid.value=bases.value[0]?.id||'';await detail()}
+async function load(){const [organizations,available]=await Promise.all([api.organizations(),api.knowledgeBases()]);orgs.value=store.capabilities?.features.workspaces&&store.organizationId?organizations.filter(row=>row.id===store.organizationId):organizations;libraries.value=available;await Promise.all([store.loadKnowledgeBases(),store.loadWorkspaces()]);if(!orgs.value.some(row=>row.id===oid.value))oid.value=orgs.value[0]?.id||'';if(!bases.value.some(row=>row.id===kid.value))kid.value=bases.value[0]?.id||'';await detail()}
 async function detail(){const current=++attempt,organization=oid.value,library=kid.value;loading.value=true;members.value=[];grants.value=[];documents.value=[]
   try{const [people,access,docs]=await Promise.all([admin.value&&organization?api.members(organization):Promise.resolve([]),base.value?.role==='admin'?api.grants(library):Promise.resolve([]),library?api.sharedDocuments(library):Promise.resolve([])]);if(current===attempt){members.value=people;grants.value=access;documents.value=docs}}
   catch(e:any){if(current===attempt)error.value=e.message}finally{if(current===attempt)loading.value=false}}
 async function act(job:()=>Promise<unknown>){if(busy.value)return;busy.value=true;error.value='';try{await job();await load()}catch(e:any){error.value=e.message}finally{busy.value=false}}
 async function refresh(){error.value='';try{await load()}catch(e:any){error.value=e.message}}
+function publish(){
+  const document=store.readyDocuments.find(doc=>doc.id===source.value)
+  if(!document||loading.value)return
+  const series=document.version_info?.series_id||document.id
+  const expected=documents.value.find(doc=>doc.series_id===series&&doc.is_current)?.id||null
+  const library=kid.value
+  void act(()=>api.publish(library,document.id,expected))
+}
 watch(oid,()=>{grantUser.value='';memberRole.value='member';kid.value=bases.value[0]?.id||'';void detail()});watch(kid,()=>{void detail()});onMounted(refresh)
-function removeOrg(){if(confirm('删除组织及其授权？原始文档和个人聊天会保留。'))void act(()=>api.deleteOrganization(oid.value))}
+function removeOrg(){if(confirm('归档团队空间后，成员将无法访问此空间、共享库和团队会话。原始文档和历史记录保留。'))void act(()=>api.deleteOrganization(oid.value))}
 function removeBase(){if(confirm('删除这个共享库及其授权？原始文档会保留。'))void act(()=>api.deleteBase(kid.value))}
 </script>
 <template><section class="shared-library" :aria-busy="busy||loading">
@@ -25,12 +34,12 @@ function removeBase(){if(confirm('删除这个共享库及其授权？原始文�
     <form class="inline-form" @submit.prevent="act(async()=>{await api.createOrganization(orgName);orgName=''})"><label class="sr-only" for="new-organization">新组织名称</label><input id="new-organization" v-model="orgName" required maxlength="100" placeholder="创建一个组织"/><button class="icon" :disabled="busy||!orgName.trim()" aria-label="创建组织"><Plus/></button></form>
     <nav aria-label="共享知识库"><button v-for="item in bases" :key="item.id" :aria-current="kid===item.id?'page':undefined" @click="kid=item.id"><Library/><span>{{item.name}}<small>{{item.role==='admin'?'可管理授权':item.role==='editor'?'可发布资料':'只读'}}</small></span></button><p v-if="!bases.length" class="muted">此组织暂无可访问的共享库。</p></nav>
     <form v-if="admin" class="inline-form" @submit.prevent="act(async()=>{await api.createBase(oid,baseName);baseName=''})"><label class="sr-only" for="new-library">共享库名称</label><input id="new-library" v-model="baseName" required maxlength="100" placeholder="新建共享库"/><button class="icon" :disabled="busy||!baseName.trim()" aria-label="创建共享库"><Plus/></button></form>
-    <button v-if="org?.role==='owner'" class="text-danger" :disabled="busy" @click="removeOrg">删除组织</button>
+    <button v-if="org?.role==='owner'" class="text-danger" :disabled="busy" @click="removeOrg">归档团队空间</button>
   </aside><main>
     <section v-if="base" class="shared-block"><div class="block-heading"><h3>{{base.name}}</h3><button v-if="base.role==='admin'" class="icon" :disabled="busy" aria-label="删除共享库" @click="removeBase"><Trash2/></button></div>
-      <p class="muted">在聊天的“选择资料与共享库”中勾选此库后使用。新版本需由所有者明确发布。</p>
-      <form v-if="editable" class="inline-form" @submit.prevent="act(()=>api.publish(kid,source))"><label class="sr-only" for="shared-source">选择要发布的个人资料</label><select id="shared-source" v-model="source" required><option value="" disabled>发布我的已就绪资料</option><option v-for="doc in store.readyDocuments" :key="doc.id" :value="doc.id">{{doc.original_name}}</option></select><button class="secondary" :disabled="busy||!source">发布</button></form>
-      <ul class="shared-rows"><li v-for="doc in documents" :key="doc.id"><span>{{doc.original_name}}<small>{{doc.can_query?'可检索':'暂不可检索'}}</small></span><button v-if="editable" class="secondary" :disabled="busy" @click="act(()=>api.unpublish(kid,doc.id))">取消发布</button></li></ul><p v-if="!documents.length&&!loading" class="muted">还没有发布资料。</p>
+      <p class="muted">团队使用本库明确发布的版本，个人切换版本不会改变团队资料。历史发布版本保留供已有运行使用；取消发布会撤销对该版本的访问。</p>
+      <form v-if="editable" class="inline-form" @submit.prevent="publish"><label class="sr-only" for="shared-source">选择要发布的个人资料</label><select id="shared-source" v-model="source" required :disabled="busy||loading"><option value="" disabled>发布我的已就绪资料</option><option v-for="doc in store.readyDocuments" :key="doc.id" :value="doc.id">{{doc.original_name}} · v{{doc.version_info?.version_number||1}}</option></select><button class="secondary" :disabled="busy||loading||!source">发布为团队当前版本</button></form>
+      <ul class="shared-rows"><li v-for="doc in documents" :key="doc.id"><span>{{doc.original_name}}<small>v{{doc.version_number}} · {{doc.is_current?'团队当前版本':doc.current_document_id?'历史发布版本':'待选择团队当前版本'}} · {{doc.can_query?'可检索':'暂不可检索'}}</small></span><button v-if="editable" class="secondary" :disabled="busy" @click="act(()=>api.unpublish(kid,doc.id))">取消发布</button></li></ul><p v-if="!documents.length&&!loading" class="muted">还没有发布资料。</p>
     </section>
     <section v-if="base?.role==='admin'" class="shared-block"><h3>知识库访问</h3><p class="muted">组织所有者和管理员可访问所有库。其他成员需单独授予只读或编辑权限。</p>
       <form class="inline-form" @submit.prevent="act(()=>api.setGrant(kid,grantUser,grantRole))"><label class="sr-only" for="grant-member">选择成员</label><select id="grant-member" v-model="grantUser" required><option value="" disabled>选择成员</option><option v-for="person in members.filter(row=>row.role==='member')" :key="person.user_id" :value="person.user_id">{{person.username}}</option></select><label class="sr-only" for="grant-role">知识库角色</label><select id="grant-role" v-model="grantRole"><option value="viewer">只读</option><option value="editor">编辑 · 可发布与取消发布</option></select><button class="secondary" :disabled="busy||!grantUser">授权</button></form>

@@ -1,17 +1,18 @@
 # 已有功能启用与 Worker 部署
 
-本阶段启用已有模块，不提供取消/HITL、四角色模型或评测工作台；这些仍按后续阶段实施。完整进度见[修复进度](replication-repair-progress.md)。
+完整配置包含独立入库、Run 与评测 Worker，以及版本索引发布和团队空间。先完成迁移、旧数据核验与预检，再启动新入口。各阶段实际验收和业务部署状态见[修复进度](replication-repair-progress.md)；功能启用不代表问答质量门禁已通过。
 
 ## 启用顺序
 
 1. 停止旧 API/Worker 写入，备份数据库、`.env`、上传与解析目录。Milvus 数据保持原位，不重建或删除集合。
 2. 执行 `python -m app.migrate`。已有库先核验基线，新增模块表、角色、任务类型与 Worker 心跳表。
 3. 执行 `python -m app.bootstrap --model-center`，只初始化缺失模型配置，不覆盖已保存配置。
-4. 在 API/Worker 的相同环境中开启 `MODEL_CENTER_ENABLED`、`SHARING_ENABLED`、`DOCUMENT_VERSIONS_ENABLED`、`CHAT_RUNS_ENABLED`、`HIERARCHY_ENABLED`、`KNOWLEDGE_QUALITY_ENABLED`，设置 `INGESTION_MODE=durable`。规划和证据判断会增加受预算限制的模型调用。
-5. 确认上传/解析目录存在，并运行 `python -m app.preflight --allow-missing-worker`。这一步允许尚未启动的 Worker；其他失败项仍须处理。
-6. 启动 `python -m app.worker` 与 API，再运行 `python -m app.preflight`。缺失、过期或配置不匹配的 Worker 会导致预检失败，readiness 同样返回未就绪。
+4. 在维护配置中先准备版本管理和 durable 入库。旧文档需要层级时，在绑定前使用同步补建命令完成；然后按 [旧索引核验与绑定](index-adoption.md) 逐份预检和提交。不要重建向量或以片段样本伪造绑定。旧 Run／评测没有具体索引快照时，应在原配置下完成或显式取消，不能自动改写检查点。
+5. 在 API/Worker 的相同环境中开启 `MODEL_CENTER_ENABLED`、`SHARING_ENABLED`、`DOCUMENT_VERSIONS_ENABLED`、`DOCUMENT_PUBLICATION_ENABLED`、`WORKSPACES_ENABLED`、`CHAT_RUNS_ENABLED`、`HIERARCHY_ENABLED`、`KNOWLEDGE_QUALITY_ENABLED`，设置 `INGESTION_MODE=durable`。启用评测时还需 `EVALUATION_ENABLED=true` 和独立评测 Worker；规划和证据判断会增加受预算限制的模型调用。
+6. 确认上传/解析目录存在，并运行 `python -m app.preflight --allow-missing-worker`。这里只允许 Worker 暂未启动，旧索引、源文件、冻结范围等失败项仍需处理。共享库没有当前版本会提示核对，但不会自动挑选历史版本。
+7. 启动独立入库、Run、评测 Worker，再执行完整 `python -m app.preflight`；通过后启动 API/前端。缺失、过期或配置不匹配的 Worker 会导致预检失败，readiness 同样返回未就绪。
 
-预检只读数据库、目录和向量结构；不创建文件、不执行迁移、不修改模型配置、不调用付费模型。`pass` 的模型检查只表示本地配置完整，不能代替真实推理验收。未有平台管理员时给出注册提示，保留普通账号权限。
+预检只读数据库、目录、源文件与向量结构；不创建文件、不执行迁移、不修改模型配置、不调用付费模型。版本发布开启时，核查所有就绪版本的绑定及源摘要，包括仍位于原集合/模型的版本。退休清理完成的墓碑不再要求源文件存在。已有未清理绑定时关闭发布开关会被拒绝，避免退回全局集合读取。`pass` 的模型检查只表示本地配置完整，不能代替真实推理验收。未有平台管理员时给出注册提示，保留普通账号权限。
 
 Rerank 仅在提供合法 HTTPS endpoint、model 和 key 后启用；未配置时保留关闭并明确显示。平台管理员通过管理页“部署预检”可查看同一份检查结果。
 
@@ -41,10 +42,12 @@ python -m app.hierarchy_backfill --user-id USER_UUID --document-id DOCUMENT_UUID
 docker compose -f compose.yaml -f compose.full.yaml build
 docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.migrate
 docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.bootstrap --model-center
+# 有历史文档时，在此先补建层级、执行 index_adoption；按其两步流程核验后绑定。
 docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.preflight --allow-missing-worker
-# 首次创建共享卷时先启动 API，让卷中的上传/解析目录完成初始化。
-docker compose -f compose.yaml -f compose.full.yaml up -d backend
-docker compose -f compose.yaml -f compose.full.yaml up -d
+# 镜像已预置上传/解析目录；旧卷仍须核查实际权限和受控路径。
+docker compose -f compose.yaml -f compose.full.yaml up -d ingestion-worker run-worker evaluation-worker
+docker compose -f compose.yaml -f compose.full.yaml run --rm backend python -m app.preflight
+docker compose -f compose.yaml -f compose.full.yaml up -d backend frontend
 docker compose -f compose.yaml -f compose.full.yaml exec backend python -m app.preflight
 ```
 

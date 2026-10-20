@@ -258,16 +258,6 @@ def test_disabling_management_does_not_mix_historical_versions_into_default_scop
         assert Repository(session).ready_document_ids(system.uid, None, system.settings.embedding_model) == [second.id]
 
 
-def test_additive_bootstrap_only_creates_version_tables():
-    database = Database(Settings(_env_file=None))
-    engine = MagicMock()
-    database.__dict__["engine"] = engine
-    with patch("app.infrastructure.persistence.database.inspect") as inspector, patch.object(Base.metadata, "create_all") as create:
-        inspector.return_value.has_table.return_value = True
-        database.initialize_document_versions()
-    assert create.call_args.kwargs["tables"] == [DocumentSeries.__table__, DocumentVersion.__table__]
-
-
 def test_http_version_payload_requires_explicit_compare_and_swap_field():
     from test_api_v2 import Services
     from app.main import create_app

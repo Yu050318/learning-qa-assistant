@@ -1,0 +1,187 @@
+{
+  "checks": [
+    "workspace and per-user conversation isolation",
+    "document and cross-team retrieval scope isolation",
+    "candidate verification, publication CAS and independent shared pointer",
+    "independent ingestion worker waits for queued run without spending attempts",
+    "cancellation releases queued pin and independent workers complete both versions",
+    "membership revocation immediately removes space and session access"
+  ],
+  "team_a": "803179ad-732e-4a0e-a97a-8f19b91d2a8d",
+  "team_b": "d22af5e0-63dd-40b6-bb27-2aeeed4e3025",
+  "library_a": "fdd7d426-da66-44d3-8d06-c940588005df",
+  "library_b": "a66def88-ef3a-45bb-904f-3bca399d8c21",
+  "doc_a_v1": "19f9f5a2-061d-492d-9829-20f1d6fcea66",
+  "doc_a_v2": "d661a1f2-1f86-4e95-8f73-09325dcc6823",
+  "doc_b": "a087c17e-c4ae-45aa-9d21-1c2f1881c231",
+  "retire_v1": "0132c3c7-a878-4a1a-aa03-df6afa46f822",
+  "retire_v2": "797fda20-be91-4709-9f8e-e24af84a5a33",
+  "retire_session": "79570e6f-f9fc-401c-bd80-874593feee5f",
+  "reader_id": "3b4a5148-6e5a-4246-9958-93fcd70ee24c",
+  "admin_session": "3cbedc77-e2d0-451a-99a9-d660074243b7",
+  "reader_session": "d71dbd1e-82c3-4c75-b79a-3eb7aa07a269",
+  "phase": "completed",
+  "preflight": {
+    "ready": true,
+    "checks": [
+      {
+        "name": "database",
+        "status": "pass",
+        "code": "SCHEMA_CURRENT",
+        "action": ""
+      },
+      {
+        "name": "upload_directory",
+        "status": "pass",
+        "code": "DIRECTORY_ACCESSIBLE",
+        "action": ""
+      },
+      {
+        "name": "parsed_directory",
+        "status": "pass",
+        "code": "DIRECTORY_ACCESSIBLE",
+        "action": ""
+      },
+      {
+        "name": "document_files",
+        "status": "pass",
+        "code": "DOCUMENT_FILES_ACCESSIBLE",
+        "action": ""
+      },
+      {
+        "name": "vectors",
+        "status": "pass",
+        "code": "VECTOR_SCHEMA_VALID",
+        "action": ""
+      },
+      {
+        "name": "document_publication",
+        "status": "pass",
+        "code": "DOCUMENT_INDEX_BINDINGS_READY",
+        "action": ""
+      },
+      {
+        "name": "frozen_runs",
+        "status": "pass",
+        "code": "FROZEN_INDEX_SCOPES_READY",
+        "action": ""
+      },
+      {
+        "name": "frozen_evaluations",
+        "status": "pass",
+        "code": "FROZEN_INDEX_SCOPES_READY",
+        "action": ""
+      },
+      {
+        "name": "shared_version_selection",
+        "status": "pass",
+        "code": "SHARED_VERSION_SELECTION_READY",
+        "action": ""
+      },
+      {
+        "name": "authentication",
+        "status": "pass",
+        "code": "AUTH_CONFIGURED",
+        "action": ""
+      },
+      {
+        "name": "platform_administrator",
+        "status": "pass",
+        "code": "ADMIN_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "model_configuration",
+        "status": "pass",
+        "code": "MODEL_CONFIGURED",
+        "action": "配置状态不代表上游推理连通；使用合成资料单独验证实际调用"
+      },
+      {
+        "name": "ingestion_worker",
+        "status": "pass",
+        "code": "WORKER_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "run_worker",
+        "status": "pass",
+        "code": "RUN_WORKER_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "evaluation_worker",
+        "status": "pass",
+        "code": "EVALUATION_WORKER_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "rerank",
+        "status": "disabled",
+        "code": "RERANK_DISABLED",
+        "action": "配置合法 endpoint/model/key 后再启用精排"
+      }
+    ],
+    "features": {
+      "model_center_enabled": true,
+      "sharing_enabled": true,
+      "document_versions_enabled": true,
+      "chat_runs_enabled": true,
+      "hierarchy_enabled": true,
+      "knowledge_quality_enabled": true,
+      "rerank_enabled": false,
+      "evaluation_enabled": true,
+      "document_publication_enabled": true,
+      "workspaces_enabled": true
+    }
+  },
+  "pin_run": "73ae153c-fb11-4828-9830-1f6ef89c513a",
+  "retirement_parent": "f03531b3-b8c8-48db-b22f-95be906ed287",
+  "waiting_parent": {
+    "id": "f03531b3-b8c8-48db-b22f-95be906ed287",
+    "document_id": "0132c3c7-a878-4a1a-aa03-df6afa46f822",
+    "parent_task_id": null,
+    "original_name": "退休验收-v1.md",
+    "organization_id": "803179ad-732e-4a0e-a97a-8f19b91d2a8d",
+    "can_retry": false,
+    "kind": "delete_series",
+    "state": "queued",
+    "phase": "waiting_runs",
+    "processed_units": 1,
+    "total_units": 2,
+    "attempts": 0,
+    "max_attempts": 1,
+    "error_code": null,
+    "created_at": "2026-10-20T08:06:43.867375Z",
+    "updated_at": "2026-10-20T08:06:44.875266Z"
+  },
+  "completed_parent": {
+    "id": "f03531b3-b8c8-48db-b22f-95be906ed287",
+    "document_id": "0132c3c7-a878-4a1a-aa03-df6afa46f822",
+    "parent_task_id": null,
+    "original_name": "退休验收-v1.md",
+    "organization_id": "803179ad-732e-4a0e-a97a-8f19b91d2a8d",
+    "can_retry": false,
+    "kind": "delete_series",
+    "state": "succeeded",
+    "phase": "done",
+    "processed_units": 2,
+    "total_units": 2,
+    "attempts": 0,
+    "max_attempts": 1,
+    "error_code": null,
+    "created_at": "2026-10-20T08:06:43.867375Z",
+    "updated_at": "2026-10-20T08:07:16.256322Z"
+  },
+  "health": {
+    "status": "ready",
+    "checks": {
+      "postgresql": "ok",
+      "milvus": "ok",
+      "model_configuration": "ok",
+      "ingestion_worker": "ok",
+      "run_worker": "ok",
+      "evaluation_worker": "ok"
+    }
+  },
+  "environment": "stock Docker services, isolated PostgreSQL/Milvus and volume, real Qwen ingestion; queued Run cancelled before generation"
+}

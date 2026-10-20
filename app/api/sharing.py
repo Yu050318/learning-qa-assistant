@@ -26,10 +26,21 @@ class GrantWrite(BaseModel):
     role: Literal["viewer", "editor"]
 
 
+class PublishVersion(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    expected_current_document_id: UUID | None
+
+
 def sharing(services):
     if not services.settings.sharing_enabled:
         raise AppError("SHARING_DISABLED", "组织共享尚未启用", 503)
     return services.sharing
+
+
+@router.get("/workspaces")
+def workspaces(services: ServiceDependency, user_id: UserDependency):
+    from app.application.workspaces import list_workspaces
+    return list_workspaces(services.settings, services.database, user_id)
 
 
 @router.get("/organizations")
@@ -104,8 +115,8 @@ def documents(base_id: UUID, services: ServiceDependency, user_id: UserDependenc
 
 
 @router.put("/knowledge-bases/{base_id}/documents/{document_id}", status_code=204)
-def publish(base_id: UUID, document_id: UUID, services: ServiceDependency, user_id: UserDependency):
-    sharing(services).bind(user_id, base_id, document_id)
+def publish(base_id: UUID, document_id: UUID, payload: PublishVersion, services: ServiceDependency, user_id: UserDependency):
+    sharing(services).bind(user_id, base_id, document_id, expected_current=payload.expected_current_document_id)
     return Response(status_code=204)
 
 

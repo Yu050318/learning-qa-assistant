@@ -30,16 +30,20 @@ class SessionService:
         finally:
             lock.release()
 
-    def create(self, user_id: UUID, title: str):
+    def create(self, user_id: UUID, title: str, *, organization_id=None):
         with self.database.sessions() as database:
-            session = ChatSession(user_id=user_id, title=title)
+            if organization_id is not None:
+                if not getattr(getattr(self.database, "settings", None), "workspaces_enabled", False):
+                    raise AppError("WORKSPACES_DISABLED", "团队空间尚未启用", 503)
+                Repository(database).workspace_member(user_id, organization_id, lock=True)
+            session = ChatSession(user_id=user_id, title=title, organization_id=organization_id)
             database.add(session)
             database.commit()
             return session
 
-    def list(self, user_id: UUID, offset: int, limit: int, *, query: str = ""):
+    def list(self, user_id: UUID, offset: int, limit: int, *, query: str = "", organization_id=None):
         with self.database.sessions() as database:
-            return Repository(database).chat_sessions(user_id, offset, limit, query=query)
+            return Repository(database).chat_sessions(user_id, offset, limit, query=query, organization_id=organization_id)
 
     def rename(self, user_id: UUID, session_id: UUID, title: str):
         with self.exclusive(session_id), self.database.sessions() as database:

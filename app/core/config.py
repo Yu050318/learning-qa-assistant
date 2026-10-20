@@ -73,8 +73,10 @@ class Settings(BaseSettings):
     agent_max_knowledge_calls: int = Field(default=3, ge=1, le=20)
     knowledge_quality_enabled: bool = False
     document_versions_enabled: bool = False
+    document_publication_enabled: bool = False
     chat_runs_enabled: bool = False
     sharing_enabled: bool = False
+    workspaces_enabled: bool = False
     model_center_enabled: bool = False
     evaluation_enabled: bool = False
     evaluation_queue_limit: int = Field(default=8, ge=1, le=100)
@@ -127,6 +129,11 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def check_chunk_overlap(self):
+        if self.workspaces_enabled and not (self.sharing_enabled and self.document_publication_enabled
+                and self.chat_runs_enabled and self.ingestion_mode == "durable"):
+            raise ValueError("Workspaces require sharing, document publication, durable ingestion and durable runs")
+        if self.document_publication_enabled and not self.document_versions_enabled:
+            raise ValueError("Document publication requires document versions")
         if self.rerank_enabled:
             endpoint = urlsplit(self.rerank_endpoint)
             if (endpoint.scheme != "https" or not endpoint.hostname or endpoint.username or endpoint.password

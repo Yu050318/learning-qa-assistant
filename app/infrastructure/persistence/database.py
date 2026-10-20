@@ -6,14 +6,10 @@ from functools import cached_property
 from sqlalchemy import create_engine, inspect, select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.schema import CreateSchema
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.infrastructure.persistence.models import Base, DocumentSeries, DocumentVersion, IngestionJob, ChatRun, ChatRunEvent
-from app.infrastructure.persistence.models import Organization, OrganizationMember, KnowledgeBase, KnowledgeGrant, KnowledgeDocument
-from app.infrastructure.persistence.models import ModelConfiguration, ModelCall
-from app.infrastructure.persistence.models import HierarchyNode
+from app.infrastructure.persistence.models import Base, ModelConfiguration, ModelCall
 
 
 class Database:
@@ -55,6 +51,10 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name in {"document_indexes", "run_index_pins"} and not self.settings.document_publication_enabled:
+                    continue
+                if table.name == "document_tasks" and self.settings.ingestion_mode != "durable":
+                    continue
                 if table.name in {"evaluation_datasets", "evaluation_jobs", "evaluation_cases"} and not self.settings.evaluation_enabled:
                     continue
                 if table.name == "worker_heartbeats" and self.settings.ingestion_mode != "durable" and not self.settings.chat_runs_enabled:
@@ -80,20 +80,14 @@ class Database:
         upgrade(self)
 
     def initialize_document_versions(self) -> None:
-        with self.engine.begin() as connection:
-            if not inspect(connection).has_table("documents", schema="rag"):
-                raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
-            Base.metadata.create_all(connection, tables=[DocumentSeries.__table__, DocumentVersion.__table__])
+        self.initialize()
 
     def close(self) -> None:
         if "engine" in self.__dict__:
             self.engine.dispose()
 
     def initialize_ingestion_jobs(self) -> None:
-        with self.engine.begin() as connection:
-            if not inspect(connection).has_table("documents", schema="rag"):
-                raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
-            Base.metadata.create_all(connection, tables=[IngestionJob.__table__])
+        self.initialize()
 
     @contextmanager
     def document_lock(self, document_id):
@@ -101,16 +95,10 @@ class Database:
             yield probe
 
     def initialize_chat_runs(self):
-        with self.engine.begin() as connection:
-            if not inspect(connection).has_table("chat_messages", schema="rag"):
-                raise AppError("DATABASE_NOT_INITIALIZED", "请先显式初始化平台 PostgreSQL schema", 503)
-            Base.metadata.create_all(connection, tables=[ChatRun.__table__, ChatRunEvent.__table__])
+        self.initialize()
 
     def initialize_sharing(self):
-        with self.engine.begin() as connection:
-            if not inspect(connection).has_table("documents", schema="rag"):
-                raise AppError("DATABASE_NOT_INITIALIZED", "请先初始化平台 PostgreSQL schema", 503)
-            Base.metadata.create_all(connection, tables=[Organization.__table__, OrganizationMember.__table__, KnowledgeBase.__table__, KnowledgeGrant.__table__, KnowledgeDocument.__table__])
+        self.initialize()
 
     def initialize_model_center(self):
         with self.engine.connect() as connection:
@@ -120,10 +108,7 @@ class Database:
             connection.execute(select(ModelCall).limit(0))
 
     def initialize_hierarchy(self):
-        with self.engine.begin() as connection:
-            if not inspect(connection).has_table("documents", schema="rag"):
-                raise AppError("DATABASE_NOT_INITIALIZED", "请先初始化平台 PostgreSQL schema", 503)
-            Base.metadata.create_all(connection, tables=[HierarchyNode.__table__])
+        self.initialize()
 
     @contextmanager
     def resource_lock(self, namespace, resource_id):

@@ -308,13 +308,3 @@ def test_small_model_chunks_are_coalesced_without_losing_the_tail(system):
     _, rows = terminal(system, run)
     deltas = [row.payload["delta"] for row in rows if row.event == "answer_delta"]
     assert "".join(deltas) == "x" * 1001 and len(deltas) < 10
-
-
-def test_bootstrap_is_additive():
-    from app.infrastructure.persistence.database import Database
-    database = Database(Settings(_env_file=None))
-    database.__dict__["engine"] = MagicMock()
-    with patch("app.infrastructure.persistence.database.inspect") as inspector, patch.object(Base.metadata, "create_all") as create:
-        inspector.return_value.has_table.return_value = True
-        database.initialize_chat_runs()
-        assert create.call_args.kwargs["tables"] == [ChatRun.__table__, ChatRunEvent.__table__]
