@@ -2,6 +2,8 @@ from uuid import UUID
 import logging
 
 from app.application.auth import AuthService
+from app.application.capabilities import CapabilityService
+from app.infrastructure.http_tools import HttpToolRuntime
 from app.application.chat import ChatService
 from app.application.ingestion import IngestionService
 from app.application.memories import MemoryService
@@ -31,6 +33,8 @@ class Services:
         self.settings = settings
         self.database = Database(settings)
         self.auth = AuthService(settings, self.database)
+        self.capabilities = CapabilityService(settings, self.database)
+        self.http_tools = HttpToolRuntime(settings) if settings.capability_center_enabled else None
         self.vectors = MilvusVectorStore(settings)
         self.embeddings = QwenEmbedding(settings)
         self.models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
@@ -46,6 +50,7 @@ class Services:
         self.agent_workflow = SupervisorWorkflow(
             settings, self.retriever, self.models, self.web_search, self.memories,
             web_reader=self.web_reader, sql=self.sql, sharing=self.sharing,
+            capabilities=self.capabilities if settings.capability_center_enabled else None, http_tools=self.http_tools,
         )
         self.ingestion = IngestionService(settings, self.database, LocalDocumentLoader(settings), self.mineru, self.embeddings, self.vectors)
         self.sessions = SessionService(self.database)
@@ -64,6 +69,12 @@ class Services:
 
     def readiness(self) -> dict:
         checks = {}
+        if self.settings.capability_center_enabled:
+            try:
+                self.capabilities.snapshot()
+                checks["capability_catalog"] = "ok" if self.settings.chat_runs_enabled else "durable_run_required"
+            except Exception:
+                checks["capability_catalog"] = "unavailable"
         for name, check in (("postgresql", self.database.check), ("milvus", self.vectors.check)):
             try:
                 check()
@@ -104,6 +115,8 @@ class Services:
         return {"status": "ready" if all(value == "ok" for value in checks.values()) else "not_ready", "checks": checks}
 
     def close(self) -> None:
+        if self.http_tools is not None:
+            self.http_tools.close()
         if self.runs is not None:
             self.runs.close()
         self.retriever.close()

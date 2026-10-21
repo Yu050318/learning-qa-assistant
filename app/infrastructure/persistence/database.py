@@ -51,6 +51,8 @@ class Database:
         with self.engine.connect() as connection:
             connection.execute(text("SELECT 1"))
             for table in Base.metadata.sorted_tables:
+                if table.name in {"capability_configuration", "capability_configuration_versions"} and not self.settings.capability_center_enabled:
+                    continue
                 if table.name in {"document_indexes", "run_index_pins"} and not self.settings.document_publication_enabled:
                     continue
                 if table.name == "document_tasks" and self.settings.ingestion_mode != "durable":

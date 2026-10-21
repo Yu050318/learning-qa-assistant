@@ -67,6 +67,20 @@ test('stopping a paused run calls cancellation API and removes resume controls',
   assert.equal(store.messagesFor('session').length,2)
 })
 
+test('private supplement and an explicitly entered public query stay separate on resume',async()=>{
+  let state='waiting',captured
+  const store=setup({
+    session:async()=>({messages:messages(state)}),
+    runs:async()=>[{run_id:'run',state,message_id:'assistant',waiting:{...waiting,public_input_allowed:true}}],
+    continueRun:async(id,token,supplement,publicQuery)=>{captured={supplement,publicQuery};state='running'},
+    run:async()=>({state,message_id:'assistant'}),
+    resumeRun:async(id,onEvent)=>{state='succeeded';onEvent('done',{run_id:'run',answer:'public result',run_metadata:{state}})},
+  })
+  await store.loadSession('session')
+  await store.continueRun('session','PRIVATE_SUPPLEMENT','public weather Beijing')
+  assert.deepEqual(captured,{supplement:'PRIVATE_SUPPLEMENT',publicQuery:'public weather Beijing'})
+})
+
 test('queued run can be cancelled before the first SSE frame arrives',async()=>{
   let finish,cancelled
   const store=setup({
@@ -91,6 +105,41 @@ test('queued run can be cancelled before the first SSE frame arrives',async()=>{
 
 const spaces=[{id:null,name:'个人空间',kind:'personal',role:'owner',session_count:1},{id:'team',name:'研发团队',kind:'team',role:'member',session_count:1}]
 function enableSpaces(store){store.capabilities={features:{workspaces:true,sharing:true,durable_runs:true}};store.workspaces=spaces.map(space=>({...space}))}
+
+test('a late capability catalog cannot restore selections from a different workspace',async()=>{
+  let resolveOld,calls=0
+  const catalog=name=>({schema_version:1,revision:1,catalog_hash:'fixture',skills:[{name,available:true}],tools:[]})
+  const store=setup({capabilityDirectory:async()=>++calls===1?await new Promise(resolve=>resolveOld=resolve):catalog('new-skill'),sessions:async()=>[],documents:async()=>({items:[],total:0}),knowledgeBases:async()=>[]})
+  enableSpaces(store);store.capabilities.features.capability_center=true;store.user={id:'fixture-user',role:'user'}
+  const old=store.loadCapabilityDirectory()
+  await store.switchWorkspace('team')
+  resolveOld(catalog('old-skill'));await old
+  assert.deepEqual(store.capabilityDirectory.skills.map(item=>item.name),['new-skill'])
+  assert.equal(store.selectedSkill,null)
+  assert.throws(()=>store.selectSkill('old-skill'))
+  store.selectSkill('new-skill');assert.equal(store.selectedSkill,'new-skill')
+})
+
+test('logging out fences late catalog errors and clears the command palette and selected skill',async()=>{
+  let rejectOld
+  const store=setup({capabilityDirectory:async()=>await new Promise((_,reject)=>rejectOld=reject),logout:async()=>{}})
+  store.user={id:'fixture-user',role:'user'};store.capabilities.features.capability_center=true
+  const old=store.loadCapabilityDirectory()
+  store.paletteOpen=true
+  await store.logout();rejectOld(new Error('old account directory error'))
+  await assert.rejects(old)
+  assert.equal(store.paletteOpen,false);assert.equal(store.selectedSkill,null)
+  assert.equal(store.capabilityDirectory,null);assert.equal(store.capabilityError,'')
+})
+
+test('a refreshed catalog revokes a selection that is no longer available',async()=>{
+  let available=true
+  const store=setup({capabilityDirectory:async()=>({skills:[{name:'research',available}],tools:[]})})
+  store.user={id:'fixture-user',role:'user'};store.capabilities.features.capability_center=true
+  await store.loadCapabilityDirectory();store.selectSkill('research')
+  available=false;await store.loadCapabilityDirectory()
+  assert.equal(store.selectedSkill,null);assert.throws(()=>store.selectSkill('research'))
+})
 
 test('space switch drops late document and session responses and clears old selections',async()=>{
   let oldDocuments,oldSession

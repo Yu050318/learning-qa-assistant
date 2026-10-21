@@ -24,7 +24,7 @@ export type PreflightReport = {ready:boolean;checks:{name:string;status:'pass'|'
 export type DocumentVersionInfo = {series_id:string;version_number:number;current_document_id:string|null;is_current:boolean;content_hash:string;retirement_task_id?:string|null}
 export type AuthResult = { access_token:string; token_type:'bearer'; expires_in:number; user:User }
 export type Session = { id:string; organization_id?:string|null; title:string; summary:string; summarized_through:string|null; created_at:string; updated_at:string }
-export type Citation = { type:'knowledge'|'web'|'memory'|'sql'; number:number; excerpt:string; source_name?:string; title?:string; url?:string; page_number?:number; section?:string; memory_id?:string; query?:string; columns?:string[]; row_count?:number; truncated?:boolean; excel_source?:{sheet_name:string;row_start:number;row_end:number;source_anchor:string}|null;document_version?:Pick<DocumentVersionInfo,'series_id'|'version_number'|'content_hash'>|null }
+export type Citation = { type:'knowledge'|'web'|'memory'|'sql'|'tool'; tool_name?:string;tool_version?:number;retrieved_at?:string; number:number; excerpt:string; source_name?:string; title?:string; url?:string; page_number?:number; section?:string; memory_id?:string; query?:string; columns?:string[]; row_count?:number; truncated?:boolean; excel_source?:{sheet_name:string;row_start:number;row_end:number;source_anchor:string}|null;document_version?:Pick<DocumentVersionInfo,'series_id'|'version_number'|'content_hash'>|null }
 export type Message = { id:string; role:string; content:string; model_provider:string|null; model_name:string|null; citations:Citation[]; token_usage:Record<string,number>|null; run_metadata:any; created_at:string }
 export type DocumentItem = { id:string; organization_id?:string|null; original_name:string; file_type:string; status:'processing'|'ready'|'failed'|'deleting'|'retired'; chunk_count:number; embedding_model:string; error_message:string|null; size_bytes:number|null; can_query:boolean; unavailable_reason:string|null; created_at:string; updated_at:string;version_info?:DocumentVersionInfo|null;index_info?:{state:'building'|'verified'|'published'|'superseded'|'retiring'|'cleaned'|'failed';embedding_model:string;leaf_count:number;verified_at:string|null;build_fingerprint:string}|null }
 export type MemoryItem = { id:string; content:string; status:'processing'|'ready'|'failed'|'deleting'; version:number; created_via:'chat'|'management_ui'; source_session_id:string|null; source_message_id:string|null; vector_updated_at:string|null; last_error:string|null; created_at:string; updated_at:string }
@@ -59,8 +59,19 @@ async function streamRequest(path:string,body:any,onEvent:(event:string,data:Str
 }
 export function inWorkspace(path:string,organizationId:string|null=null){return organizationId?`${path}${path.includes('?')?'&':'?'}organization_id=${encodeURIComponent(organizationId)}`:path}
 async function upload(file:File,onProgress:(n:number)=>void,organizationId:string|null=null,retry=true):Promise<DocumentItem>{return new Promise((resolve,reject)=>{const owner=currentAuth?.user.id,xhr=new XMLHttpRequest(),data=new FormData();data.append('file',file);xhr.open('POST',inWorkspace('/api/v2/documents',organizationId));xhr.setRequestHeader('Authorization',`Bearer ${accessToken}`);xhr.upload.onprogress=e=>e.lengthComputable&&onProgress(e.loaded/e.total);xhr.onload=async()=>{if(xhr.status===401&&retry){try{await refresh();if(currentAuth?.user.id!==owner)throw new ApiError('AUTH_CHANGED','登录账号已改变，请重新选择上传文件',401);resolve(await upload(file,onProgress,organizationId,false))}catch(e){reject(e)}return}let body:any;try{body=JSON.parse(xhr.responseText)}catch{};xhr.status<300?resolve(body):reject(new ApiError(body?.error?.code||'UPLOAD_FAILED',body?.error?.message||'上传失败',xhr.status))};xhr.onerror=()=>reject(new ApiError('NETWORK_ERROR','网络连接失败',0));xhr.send(data)})}
-export type RunWaiting={question:string;checkpoint_revision:number;resume_token:string;expires_at:string;sequence:number}
+export type RunWaiting={public_input_allowed?:boolean;question:string;checkpoint_revision:number;resume_token:string;expires_at:string;sequence:number}
 export type RunInfo={run_id:string;session_id:string;state:'queued'|'running'|'waiting'|'cancelling'|'cancelled'|'succeeded'|'failed'|'interrupted';sequence:number;message_id:string|null;waiting:RunWaiting|null}
+export type CapabilitySkill={name:string;version:number;description:string;activation:string;required_roles:string[];tool_names:string[];available:boolean;availability_reason:string|null;approval_tools:string[]}
+export type CapabilityTool={name:string;version:number;description:string;group:string;available:boolean;availability_reason:string|null;required_roles:string[];requires_approval:boolean;idempotent:boolean;network_policy:string;resource_scope:string;exposure:string}
+export type CapabilityDirectory={schema_version:number;revision:number;catalog_hash:string;skills:CapabilitySkill[];tools:CapabilityTool[]}
+export type SkillDeclaration={name:string;description:string;instructions:string;allowed_tools:string[];required_roles:string[];required_secrets:string[];enabled:boolean}
+export type HttpToolDeclaration={name:string;description:string;group:string;endpoint:string;method:'GET'|'POST';input_schema:Record<string,any>;static_headers:Record<string,string>;secret_headers:Record<string,string>;required_roles:string[];requires_approval:boolean;idempotent:boolean;timeout_seconds:number;max_response_bytes:number;enabled:boolean}
+export type CapabilityState={schema_version:number;skills:Record<string,{version:number;source:'builtin'|'custom';declaration:SkillDeclaration}>;tools:Record<string,{version:number;declaration:HttpToolDeclaration}>;retired_skills:string[];retired_tools:string[]}
+export type CapabilityWriteResult={revision:number;catalog:CapabilityState}
+export type SqlPolicy={enabled:boolean;allowed_tables:string[];source_name:string;timeout_seconds:number;max_rows:number}
+export type CapabilityControl=CapabilityWriteResult&{builtin_tools:Record<string,{description:string;group:string;network_policy:string;resource_scope:string}>;secret_names:string[];runtime:{sql:SqlPolicy;web:{enabled:boolean};sql_connection_configured:boolean;web_search_configured:boolean}}
+export type CapabilityVersion={revision:number;created_at:string;created_by:string|null;change:{operation:string;kind?:string;name?:string};catalog:CapabilityState}
+
 async function resumeRun(runId:string,onEvent:(event:string,data:StreamEvent)=>void,after=0){
   const cursor:StreamCursor={runId,sequence:after}
   for(let attempt=0;;attempt++){
@@ -85,6 +96,13 @@ async function durableChat(id:string,body:any,onEvent:(event:string,data:StreamE
   return resumeRun(run.run_id,onEvent)
 }
 export const api={
+  capabilityDirectory:()=>request<CapabilityDirectory>('/api/v2/capability-center'),
+  capabilityControl:()=>request<CapabilityControl>('/api/v2/capability-center/control-plane'),
+  saveCapabilityRuntime:(component:'sql'|'web',declaration:SqlPolicy|{enabled:boolean},revision:number)=>request<CapabilityWriteResult>(`/api/v2/capability-center/runtime/${component}`,{method:'PUT',body:JSON.stringify({expected_revision:revision,declaration})}),
+  capabilityHistory:(offset=0)=>request<{items:CapabilityVersion[];offset:number;limit:number}>(`/api/v2/capability-center/versions?offset=${offset}&limit=20`),
+  capabilitySkill:(name:string)=>request<{name:string;version:number;description:string;instructions:string;tool_names:string[]}>(`/api/v2/capability-center/skills/${encodeURIComponent(name)}`),
+  saveCapability:(kind:'skills'|'tools',declaration:SkillDeclaration|HttpToolDeclaration,revision:number,create:boolean)=>request<CapabilityWriteResult>(`/api/v2/capability-center/${kind}${create?'':`/${encodeURIComponent(declaration.name)}`}`,{method:create?'POST':'PUT',body:JSON.stringify({expected_revision:revision,declaration})}),
+  deleteCapability:(kind:'skills'|'tools',name:string,revision:number)=>request<CapabilityWriteResult>(`/api/v2/capability-center/${kind}/${encodeURIComponent(name)}`,{method:'DELETE',body:JSON.stringify({expected_revision:revision})}),
   evaluationDatasets:(offset=0)=>request<{items:EvaluationDataset[]}>(`/api/v2/evaluations/datasets?offset=${offset}&limit=100`),
   evaluationDataset:(id:string)=>request<EvaluationDataset>(`/api/v2/evaluations/datasets/${id}`),
   importEvaluationDataset:(dataset:unknown)=>request<EvaluationDataset>('/api/v2/evaluations/datasets',{method:'POST',body:JSON.stringify({dataset})}),
@@ -113,7 +131,7 @@ export const api={
   resumeRun,runs:(id:string)=>request<RunInfo[]>(`/api/v2/sessions/${id}/runs`),
   run:(id:string)=>request<RunInfo>(`/api/v2/runs/${id}`),
   cancelRun:(id:string)=>request<RunInfo>(`/api/v2/runs/${id}/cancel`,{method:'POST'}),
-  continueRun:(id:string,waiting:RunWaiting,supplement:string)=>request<RunInfo>(`/api/v2/runs/${id}/resume`,{method:'POST',body:JSON.stringify({checkpoint_revision:waiting.checkpoint_revision,resume_token:waiting.resume_token,supplement})}),
+  continueRun:(id:string,waiting:RunWaiting,supplement:string,publicQuery?:string)=>request<RunInfo>(`/api/v2/runs/${id}/resume`,{method:'POST',body:JSON.stringify({checkpoint_revision:waiting.checkpoint_revision,resume_token:waiting.resume_token,supplement,public_query:publicQuery})}),
 
   versions:(id:string,offset=0,organizationId:string|null=null)=>request<{items:DocumentItem[];total:number}>(inWorkspace(`/api/v2/documents/${id}/versions?offset=${offset}&limit=20`,organizationId)),
   uploadVersion:(id:string,file:File,organizationId:string|null=null)=>{const body=new FormData();body.append('file',file);return request<DocumentItem>(inWorkspace(`/api/v2/documents/${id}/versions`,organizationId),{method:'POST',body})},

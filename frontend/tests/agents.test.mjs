@@ -15,11 +15,13 @@ test('recognize more than three URLs so the composer can reject instead of silen
 
 test('agent activity has readable labels', () => {
   assert.equal(agentLabel('sql'), 'SQL Agent')
+  assert.equal(agentLabel('public-tool'), '公共工具 Agent')
   assert.equal(statusLabel('partial'), '部分完成')
   assert.equal(statusLabel('failed'), '执行失败')
 })
 
 test('Excel citations display physical rows, legacy citations keep their location', () => {
+  assert.equal(citationLocation({tool_name:'public.lookup',tool_version:2}),'public.lookup · v2')
   assert.equal(citationLocation({excel_source:{sheet_name:'参数',row_start:4,row_end:4}}),'参数 · 第 4 行')
   assert.equal(citationLocation({excel_source:{sheet_name:'参数',row_start:4,row_end:6}}),'参数 · 第 4–6 行')
   assert.equal(citationLocation({section:'正文'}),'正文')

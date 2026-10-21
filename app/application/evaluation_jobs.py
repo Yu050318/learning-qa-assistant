@@ -195,12 +195,19 @@ class EvaluationService:
             frozen["judge_policy_sha256"] = digest({"profile": evaluator.model_dump(mode="json"),
                 "fallback": catalog.profiles[evaluator.fallback_profile_id].model_dump(mode="json") if evaluator.fallback_profile_id else None,
                 "prompt": frozen["judge_prompt_sha256"], "input_budget": settings["agent_context_token_budget"]})
+            if self.settings.capability_center_enabled:
+                from app.application.capabilities import CapabilityService
+                frozen["capabilities"] = CapabilityService(self.settings, self.database).freeze(uid,
+                    search_mode="knowledge", session=session).model_dump(mode="json")
+                frozen = bounded_json(frozen, 4_000_000)
             if payload.baseline_job_id is not None:
                 baseline = self.job(session, uid, payload.baseline_job_id)
                 if baseline.state != "succeeded" or baseline.report is None or baseline.dataset_fingerprint != dataset.fingerprint or baseline.split != payload.split or baseline.scope_snapshot != scope:
                     raise AppError("EVALUATION_BASELINE_INCOMPATIBLE", "基线必须成功且使用同一标注集、分组和资料身份", 409)
                 if baseline.model_snapshot["judge_policy_sha256"] != frozen["judge_policy_sha256"] or baseline.model_snapshot["index_sha256"] != frozen["index_sha256"]:
                     raise AppError("EVALUATION_BASELINE_INCOMPATIBLE", "对比任务必须使用同一评测模型、审阅策略及索引身份", 409)
+                if baseline.model_snapshot.get("capabilities") != frozen.get("capabilities"):
+                    raise AppError("EVALUATION_BASELINE_INCOMPATIBLE", "对比任务必须使用同一能力目录及工具版本", 409)
             job = EvaluationJob(id=uuid4(), created_by=uid, dataset_id=row.id, client_key=client_key,
                 fingerprint=fingerprint, dataset_fingerprint=dataset.fingerprint, baseline_job_id=payload.baseline_job_id,
                 split=payload.split, profile=payload.profile, total_cases=len(labels), model_snapshot=frozen, scope_snapshot=scope,
@@ -228,6 +235,12 @@ class EvaluationService:
             self.validate_scope(session, row)
 
     def validate_scope(self, session, job):
+        frozen_capabilities = job.model_snapshot.get("capabilities")
+        if frozen_capabilities is not None:
+            from app.application.capabilities import CapabilityService
+            CapabilityService(self.settings, self.database).validate_execution(job.created_by, frozen_capabilities, session=session)
+        elif self.settings.capability_center_enabled:
+            raise AppError("CAPABILITY_SCOPE_CHANGED", "旧评测未冻结能力版本，请在原配置下完成或取消后重新创建", 409)
         expected = job.scope_snapshot
         if "indexes" in expected:
             try:

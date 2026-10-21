@@ -35,6 +35,8 @@ class WorkerRegistry:
         payload.update(kind=self.kind, snapshot_version=1, model_center_enabled=self.settings.model_center_enabled,
                        document_publication_enabled=self.settings.document_publication_enabled,
                        workspaces_enabled=self.settings.workspaces_enabled,
+                       capability_center_enabled=self.settings.capability_center_enabled,
+                       capability_secret_names=sorted(self.settings.capability_secret_names),
                        sharing_enabled=self.settings.sharing_enabled, sql_allowed_tables=self.settings.sql_allowed_tables,
                        milvus_uri=self.settings.milvus_uri, milvus_database=self.settings.milvus_database,
                        milvus_collection=self.settings.milvus_collection)

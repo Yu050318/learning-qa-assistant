@@ -171,6 +171,7 @@ class AgentChatInput:
     web_urls: tuple[str, ...] = ()
     knowledge_base_ids: tuple[UUID, ...] = ()
     model_profile_id: str | None = None
+    skill_name: str | None = None
 
 
 @dataclass(frozen=True)
@@ -203,8 +204,15 @@ class RunContext:
     retrieval_indexes: tuple[RetrievalIndex, ...] = ()
     organization_id: UUID | None = None
     shared_only: bool = False
+    capability_snapshot: dict | None = None
 
     def __post_init__(self):
+        if self.capability_snapshot is not None:
+            from app.domain.capabilities import CapabilityExecution
+            import json
+            execution = CapabilityExecution.model_validate_json(json.dumps(self.capability_snapshot))
+            if execution.search_mode != self.search_mode:
+                raise ValueError("Capability mode differs from frozen run")
         if self.organization_id is not None and not isinstance(self.organization_id, UUID):
             raise ValueError("Workspace identity must be a UUID")
         if type(self.shared_only) is not bool or self.organization_id is not None and not self.shared_only:

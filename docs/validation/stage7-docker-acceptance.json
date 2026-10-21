@@ -1,0 +1,330 @@
+{
+  "environment": "isolated stock Docker API and three independent workers; real PostgreSQL/Milvus; real model and public HTTPS echo",
+  "checks": [
+    "catalog_created",
+    "reader_forbidden",
+    "queued_revision3",
+    "updated_after_enqueue",
+    "independent_worker_frozen_http_citation",
+    "revoked_before_execution",
+    "independent_worker_revocation",
+    "frozen_run_cancelled",
+    "delete_dependency_and_retired_identity",
+    "browser_revision_conflict",
+    "browser_skill_disable_and_refresh",
+    "isolated_builtin_restored"
+  ],
+  "preflight": {
+    "ready": true,
+    "checks": [
+      {
+        "name": "database",
+        "status": "pass",
+        "code": "SCHEMA_CURRENT",
+        "action": ""
+      },
+      {
+        "name": "upload_directory",
+        "status": "pass",
+        "code": "DIRECTORY_ACCESSIBLE",
+        "action": ""
+      },
+      {
+        "name": "parsed_directory",
+        "status": "pass",
+        "code": "DIRECTORY_ACCESSIBLE",
+        "action": ""
+      },
+      {
+        "name": "document_files",
+        "status": "pass",
+        "code": "DOCUMENT_FILES_ACCESSIBLE",
+        "action": ""
+      },
+      {
+        "name": "vectors",
+        "status": "pass",
+        "code": "VECTOR_SCHEMA_VALID",
+        "action": ""
+      },
+      {
+        "name": "document_publication",
+        "status": "pass",
+        "code": "DOCUMENT_INDEX_BINDINGS_READY",
+        "action": ""
+      },
+      {
+        "name": "frozen_runs",
+        "status": "pass",
+        "code": "FROZEN_INDEX_SCOPES_READY",
+        "action": ""
+      },
+      {
+        "name": "frozen_evaluations",
+        "status": "pass",
+        "code": "FROZEN_INDEX_SCOPES_READY",
+        "action": ""
+      },
+      {
+        "name": "shared_version_selection",
+        "status": "pass",
+        "code": "SHARED_VERSION_SELECTION_READY",
+        "action": ""
+      },
+      {
+        "name": "capability_catalog",
+        "status": "pass",
+        "code": "CAPABILITY_CATALOG_READY",
+        "action": ""
+      },
+      {
+        "name": "authentication",
+        "status": "pass",
+        "code": "AUTH_CONFIGURED",
+        "action": ""
+      },
+      {
+        "name": "platform_administrator",
+        "status": "pass",
+        "code": "ADMIN_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "model_configuration",
+        "status": "pass",
+        "code": "MODEL_CONFIGURED",
+        "action": "配置状态不代表上游推理连通；使用合成资料单独验证实际调用"
+      },
+      {
+        "name": "ingestion_worker",
+        "status": "pass",
+        "code": "WORKER_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "run_worker",
+        "status": "pass",
+        "code": "RUN_WORKER_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "evaluation_worker",
+        "status": "pass",
+        "code": "EVALUATION_WORKER_AVAILABLE",
+        "action": ""
+      },
+      {
+        "name": "rerank",
+        "status": "disabled",
+        "code": "RERANK_DISABLED",
+        "action": "配置合法 endpoint/model/key 后再启用精排"
+      }
+    ],
+    "features": {
+      "model_center_enabled": true,
+      "sharing_enabled": true,
+      "document_versions_enabled": true,
+      "chat_runs_enabled": true,
+      "hierarchy_enabled": true,
+      "knowledge_quality_enabled": true,
+      "rerank_enabled": false,
+      "evaluation_enabled": true,
+      "document_publication_enabled": true,
+      "workspaces_enabled": true,
+      "capability_center_enabled": true
+    }
+  },
+  "catalog_revision": 12,
+  "frozen_run": {
+    "run_id": "5c04e0ed-b36c-407a-8572-b66b47608856",
+    "session_id": "a137d295-9846-4aef-a3c3-4b8cd1e3ac81",
+    "state": "succeeded",
+    "sequence": 10,
+    "message_id": "b0ca211c-c6ab-4b2b-872e-689e3cc404d0",
+    "expires_at": "2026-10-20T14:32:43.327931+00:00",
+    "waiting": null,
+    "events_url": "/api/v2/runs/5c04e0ed-b36c-407a-8572-b66b47608856/events"
+  },
+  "frozen_answer": {
+    "id": "b0ca211c-c6ab-4b2b-872e-689e3cc404d0",
+    "content": "public.echo 调用成功，回显的 query 为 \"stage7-disposable-public-probe\"，与请求中指定的查询完全一致 [1]。响应中的 args.query 字段即为该值，请求 URL 为 https://postman-echo.com/get?query=stage7-disposable-public-probe [1]。",
+    "model_provider": "deepseek",
+    "model_name": "deepseek-flash",
+    "token_usage": {
+      "input_tokens": 1483,
+      "total_tokens": 1561,
+      "output_tokens": 78,
+      "input_token_details": {
+        "cache_read": 1152
+      },
+      "output_token_details": {}
+    },
+    "run_metadata": {
+      "kind": "grounded",
+      "state": "succeeded",
+      "run_id": "5c04e0ed-b36c-407a-8572-b66b47608856",
+      "metrics": {
+        "cache": {
+          "scope": "reported_calls",
+          "by_model": [
+            {
+              "complete": false,
+              "hit_rate": null,
+              "provider": "deepseek",
+              "hit_tokens": null,
+              "model_name": "deepseek-flash",
+              "miss_tokens": null,
+              "total_calls": 5,
+              "reported_calls": 0
+            }
+          ]
+        },
+        "context": {
+          "calls": [
+            {
+              "provider": "deepseek",
+              "model_name": "deepseek-flash",
+              "measurement": "reported",
+              "usage_ratio": 0.039625,
+              "input_tokens": 951,
+              "attempt_index": 1,
+              "input_budget_tokens": 24000
+            },
+            {
+              "provider": "deepseek",
+              "model_name": "deepseek-flash",
+              "measurement": "reported",
+              "usage_ratio": 0.051,
+              "input_tokens": 1224,
+              "attempt_index": 2,
+              "input_budget_tokens": 24000
+            },
+            {
+              "provider": "deepseek",
+              "model_name": "deepseek-flash",
+              "measurement": "reported",
+              "usage_ratio": 0.018125,
+              "input_tokens": 435,
+              "attempt_index": 3,
+              "input_budget_tokens": 24000
+            },
+            {
+              "provider": "deepseek",
+              "model_name": "deepseek-flash",
+              "measurement": "reported",
+              "usage_ratio": 0.027292,
+              "input_tokens": 655,
+              "attempt_index": 4,
+              "input_budget_tokens": 24000
+            },
+            {
+              "provider": "deepseek",
+              "model_name": "deepseek-flash",
+              "measurement": "reported",
+              "usage_ratio": 0.061792,
+              "input_tokens": 1483,
+              "attempt_index": 5,
+              "input_budget_tokens": 24000
+            }
+          ],
+          "complete": true,
+          "highest_usage_attempt_index": 5
+        }
+      },
+      "failures": [],
+      "warnings": [],
+      "web_reads": 0,
+      "elapsed_ms": 35782.55,
+      "delegations": {},
+      "repair_used": false,
+      "search_mode": "web",
+      "sql_queries": 0,
+      "tool_events": [
+        {
+          "name": "search_tools",
+          "status": "ok",
+          "elapsed_ms": 215.79,
+          "error_code": null,
+          "source_numbers": []
+        },
+        {
+          "name": "describe_skill",
+          "status": "ok",
+          "elapsed_ms": 241.75,
+          "error_code": null,
+          "source_numbers": []
+        },
+        {
+          "name": "public.echo",
+          "status": "ok",
+          "elapsed_ms": 1090.82,
+          "error_code": null,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "agent_events": [
+        {
+          "tool": "public.echo",
+          "agent": "public-tool",
+          "status": "ok",
+          "version": 1,
+          "elapsed_ms": 3542.78,
+          "error_code": null
+        }
+      ],
+      "capabilities": {
+        "skill": {
+          "name": "public-echo",
+          "version": 1
+        },
+        "revision": 3,
+        "catalog_hash": "a945e7294514eb9a669b7d1350a89f40440de7c757bdfa416901fbb3b541a827"
+      },
+      "web_attempts": 0,
+      "cited_sources": {
+        "tool": 1
+      },
+      "fallback_used": false,
+      "rerank_events": [],
+      "tool_requests": 3,
+      "model_attempts": 5,
+      "schema_version": 3,
+      "tavily_credits": null,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "attempts": 5,
+          "complete": true,
+          "hit_tokens": 0,
+          "miss_tokens": 0,
+          "input_tokens": 4748,
+          "total_tokens": 5053,
+          "output_tokens": 305,
+          "reported_cache_calls": 0
+        }
+      },
+      "hierarchy_events": [],
+      "knowledge_events": [],
+      "knowledge_rewrites": 0,
+      "knowledge_searches": 0,
+      "registered_sources": {
+        "tool": 1
+      },
+      "parent_context_count": 0,
+      "excluded_source_numbers": [],
+      "knowledge_quality_enabled": true,
+      "model_configuration_revision": 1
+    }
+  },
+  "revoked_state": "failed",
+  "cancelled_state": "cancelled",
+  "business_data_changed": false,
+  "citation": {
+    "type": "tool",
+    "tool_name": "public.echo",
+    "tool_version": 1,
+    "actual_echo_verified": true
+  },
+  "revoked_error_code": "CAPABILITY_SCOPE_CHANGED"
+}

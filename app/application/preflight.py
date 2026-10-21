@@ -17,6 +17,46 @@ from app.domain.retrieval_scope import RetrievalIndex, index_connection_identity
 from app.infrastructure.persistence.models import ChatRun, DocumentIndex, DocumentRecord, EvaluationJob, KnowledgeDocument, User
 
 
+def capability_preflight(settings, database):
+    """Check immutable versions without upgrading, seeding or refreezing jobs."""
+    from app.application.capabilities import CapabilityService
+    from app.domain.capabilities import CapabilityCatalog, catalog_digest
+    from app.infrastructure.persistence.models import CapabilityConfigurationVersion
+    import json
+    if settings.capability_center_enabled and not settings.chat_runs_enabled:
+        return "fail", "CAPABILITY_DURABLE_RUN_REQUIRED", "能力执行要求启用持久 Run 并部署匹配的 Run Worker"
+    with database.sessions() as session:
+        tables = inspect(session.connection())
+        if settings.capability_center_enabled:
+            service = CapabilityService(settings, database)
+            revision, catalog = service.snapshot(session)
+            history = session.get(CapabilityConfigurationVersion, revision)
+            if history is None or catalog_digest(CapabilityCatalog.model_validate_json(json.dumps(history.configuration))) != catalog_digest(catalog):
+                return "fail", "CAPABILITY_HISTORY_INVALID", "核对目录当前修订与不可变历史；不要重写历史来绕过校验"
+        if tables.has_table("chat_runs", schema="rag"):
+            runs = session.scalars(select(ChatRun).where(ChatRun.state.in_(("queued", "running", "waiting", "cancelling")),
+                ChatRun.expires_at > WorkerRegistry.now(session)))
+            for run in runs:
+                frozen = (run.execution_snapshot or {}).get("context", {}).get("capability_snapshot")
+                if settings.capability_center_enabled:
+                    if frozen is None:
+                        return "fail", "CAPABILITY_RUN_SNAPSHOT_REQUIRED", "先在原配置下完成或取消旧运行；不自动重写检查点"
+                    service.validate_execution(run.user_id, frozen, session=session)
+                elif frozen is not None:
+                    return "fail", "CAPABILITY_FEATURE_DISABLED", "仍有冻结能力的活动运行，恢复原开关或明确取消后再关闭"
+        if tables.has_table("evaluation_jobs", schema="rag"):
+            jobs = session.scalars(select(EvaluationJob).where(EvaluationJob.state.in_(("queued", "running", "cancelling"))))
+            for job in jobs:
+                frozen = (job.model_snapshot or {}).get("capabilities")
+                if settings.capability_center_enabled:
+                    if frozen is None:
+                        return "fail", "CAPABILITY_EVALUATION_SNAPSHOT_REQUIRED", "先在原配置下完成或取消旧评测，不按当前目录补成新版本"
+                    service.validate_execution(job.created_by, frozen, session=session)
+                elif frozen is not None:
+                    return "fail", "CAPABILITY_FEATURE_DISABLED", "仍有冻结能力的活动评测，恢复原开关或明确取消后再关闭"
+    return ("pass", "CAPABILITY_CATALOG_READY", "") if settings.capability_center_enabled else ("disabled", "CAPABILITIES_DISABLED", "")
+
+
 def frozen_scope_valid(settings, scope, ids_key, indexes_key):
     """Check stored inputs without rewriting or re-freezing an older run."""
     if not isinstance(scope, dict) or not isinstance(scope.get(ids_key), list):
@@ -142,6 +182,12 @@ def deployment_preflight(settings, database, vectors, *, require_worker=True):
             record("shared_version_selection", "fail", "SHARED_VERSION_CHECK_UNAVAILABLE", "先迁移并核查共享版本关系")
 
     try:
+        record("capability_catalog", *capability_preflight(settings, database))
+    except Exception as error:
+        record("capability_catalog", "fail", error.code if isinstance(error, AppError) else "CAPABILITY_CATALOG_INVALID",
+            "先迁移并核验目录历史、活动 Run/评测的冻结范围，再启用 API 与 Worker")
+
+    try:
         settings.require_auth_configuration()
         record("authentication", "pass", "AUTH_CONFIGURED")
     except ValueError:
@@ -195,4 +241,4 @@ def deployment_preflight(settings, database, vectors, *, require_worker=True):
             "features": {name: getattr(settings, name) for name in (
                 "model_center_enabled", "sharing_enabled", "document_versions_enabled", "chat_runs_enabled",
                 "hierarchy_enabled", "knowledge_quality_enabled", "rerank_enabled", "evaluation_enabled",
-                "document_publication_enabled", "workspaces_enabled")}}
+                "document_publication_enabled", "workspaces_enabled", "capability_center_enabled")}}

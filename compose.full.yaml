@@ -9,6 +9,7 @@ x-full-features: &full-features
   HIERARCHY_ENABLED: "true"
   KNOWLEDGE_QUALITY_ENABLED: "true"
   EVALUATION_ENABLED: "true"
+  CAPABILITY_CENTER_ENABLED: "true"
 
 services:
   backend:

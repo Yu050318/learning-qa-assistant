@@ -16,6 +16,8 @@
 
 Rerank 仅在提供合法 HTTPS endpoint、model 和 key 后启用；未配置时保留关闭并明确显示。平台管理员通过管理页“部署预检”可查看同一份检查结果。
 
+完整配置也启用[能力中心](capability-center.md)。必须先迁移至 `0009_capability_control` 并处理旧活动 Run／评测，再对所有实例开启 `CAPABILITY_CENTER_ENABLED`。能力目录和历史摘要、活动任务冻结版本会进入预检；不会自动给旧任务补上当前目录。Secret 仅通过所有执行实例的服务端环境提供，允许名称通过 `CAPABILITY_SECRET_NAMES` 设置。
+
 ## 独立 Worker
 
 Worker 每 10 秒写一次数据库心跳，超过 45 秒视为不可用。API/Worker 必须匹配上传、解析目录、向量库和集合、embedding 模型/维度、分块配置及相关功能开关。Docker 中两者挂载同一个 app_data 卷并使用同样路径。

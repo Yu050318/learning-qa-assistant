@@ -12,13 +12,18 @@ from app.infrastructure.persistence.models import ChatRunOperation
 
 CONTROL_ERRORS = frozenset({"RUN_LEASE_LOST", "RUN_CANCEL_REQUESTED", "AGENT_TIMEOUT", "RUN_CHECKPOINT_DIVERGED",
                            "RUN_CHECKPOINT_LIMIT", "TOOL_OUTCOME_UNCERTAIN", "RUN_RECOVERY_LIMIT",
-                           "EVALUATION_LEASE_LOST", "EVALUATION_CANCEL_REQUESTED", "DOCUMENT_SCOPE_CHANGED"})
+                           "EVALUATION_LEASE_LOST", "EVALUATION_CANCEL_REQUESTED", "DOCUMENT_SCOPE_CHANGED", "CAPABILITY_SCOPE_CHANGED"})
 
 
 class RunCheckpoint:
     def __init__(self, store, claim, state=None, validate=None):
         self.store, self.claim = store, claim
         self.state = store.load_checkpoint(claim)[1] if state is None else state
+        if "public_inputs" in self.state:
+            inputs = self.state["public_inputs"]
+            if (not isinstance(inputs, list) or len(inputs) != len(self.state.get("human_inputs", []))
+                    or any(value is not None and (not isinstance(value, str) or not 1 <= len(value.strip()) <= 400) for value in inputs)):
+                raise AppError("RUN_CHECKPOINT_DIVERGED", "公开补充输入与运行轮次不一致", 409)
         self.frame = ContextVar(f"run-frame-{claim.run_id}", default=f"round/{len(self.state.get('human_inputs', []))}")
         self.validate = validate
         self.ordering = Condition()

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-20",
+  "environment": "disposable PostgreSQL, actual FastAPI/Vue/Run persistence; scripted model and HTTP transport double",
+  "schema_revision": "0009_capability_control",
+  "catalog_revision": 4,
+  "skills": 4,
+  "tools": 4,
+  "history_revisions": 4,
+  "selected_skill": {
+    "name": "public-research",
+    "version": 2
+  },
+  "tool_citation": {
+    "name": "public.preview_lookup",
+    "version": 1
+  },
+  "run_state": "succeeded",
+  "message_count": 2,
+  "ordinary_user_admin_endpoints": {
+    "control-plane": 403,
+    "versions": 403
+  },
+  "ui_checks": [
+    "create HTTP Tool and Skill",
+    "edit increments version and preserves history",
+    "Ctrl+K search and Enter activation",
+    "selected Skill survives initial conversation creation",
+    "actual Run returns tool citation",
+    "ordinary user has no management navigation and direct route redirects",
+    "team switch clears selection",
+    "narrow layout keeps navigation and edit actions accessible"
+  ],
+  "paid_model_calls": false,
+  "business_data_modified": false
+}

@@ -16,6 +16,15 @@ from app.infrastructure.search.tavily import safe_public_url
 _MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 
 
+def pinned_public_session(url, addresses):
+    """Preserve the vetted destination and TLS hostname; ignore proxy env vars."""
+    parsed = urlsplit(url)
+    address = min(addresses, key=lambda value: (value.version, str(value)))
+    ip = f"[{address}]" if address.version == 6 else str(address)
+    resolve = f"{parsed.hostname}:{parsed.port or (443 if parsed.scheme == 'https' else 80)}:{ip}"
+    return Session(curl_options={CurlOpt.RESOLVE: [resolve.encode()], CurlOpt.PROXY: b""}, trust_env=False)
+
+
 class ScraplingWebReader:
     def __init__(self, settings: Settings, fetch=None, resolve=None):
         self.settings = settings
@@ -47,10 +56,6 @@ class ScraplingWebReader:
     @staticmethod
     def _fetch_pinned(url, addresses, timeout):
         """Keep Scrapling parsing, pin its curl transport to the vetted DNS answer."""
-        parsed = urlsplit(url)
-        address = min(addresses, key=lambda value: (value.version, str(value)))
-        ip = f"[{address}]" if address.version == 6 else str(address)
-        resolve = f"{parsed.hostname}:{parsed.port or (443 if parsed.scheme == 'https' else 80)}:{ip}"
         chunks, size, too_large = [], 0, False
 
         def receive(chunk):
@@ -64,7 +69,7 @@ class ScraplingWebReader:
 
         try:
             # Disable environment proxies: they would bypass the vetted destination.
-            with Session(curl_options={CurlOpt.RESOLVE: [resolve.encode()], CurlOpt.PROXY: b""}, trust_env=False) as session:
+            with pinned_public_session(url, addresses) as session:
                 response = session.get(url, timeout=timeout, allow_redirects=False, verify=True,
                                        impersonate="chrome", content_callback=receive)
         except Exception:

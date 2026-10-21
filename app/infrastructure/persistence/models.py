@@ -386,6 +386,25 @@ class ModelConfigurationVersion(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class CapabilityConfiguration(Base):
+    __tablename__ = "capability_configuration"
+    __table_args__ = (CheckConstraint("id = 1 AND revision >= 1", name="ck_capability_configuration_revision"),)
+    id: Mapped[int] = mapped_column(primary_key=True, default=1)
+    revision: Mapped[int] = mapped_column(default=1)
+    configuration: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class CapabilityConfigurationVersion(Base):
+    __tablename__ = "capability_configuration_versions"
+    __table_args__ = (CheckConstraint("revision >= 1", name="ck_capability_configuration_versions_revision"),)
+    revision: Mapped[int] = mapped_column(primary_key=True)
+    configuration: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    created_by: Mapped[UUID | None]
+    change: Mapped[dict] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class ModelCall(Base):
     __tablename__ = "model_calls"
     __table_args__ = (

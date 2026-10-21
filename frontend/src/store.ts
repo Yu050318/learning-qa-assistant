@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { api, type Workspace, type RunWaiting, type KnowledgeBase, type Capabilities, type DocumentItem, type MemoryItem, type Message, type Session, type User } from './api'
 import { createUploadQueue } from './uploads'
 import { agentLabel,statusLabel } from './agents'
+import type {CapabilityDirectory} from './api'
 
 export const useAppStore=defineStore('app',()=>{
   const user=ref<User|null>(null),bootstrapped=ref(false)
@@ -10,6 +11,22 @@ export const useAppStore=defineStore('app',()=>{
   const messagesBySession=ref<Record<string,Message[]>>({}),runsBySession=ref<Record<string,{busy:boolean;status:string;error:string;attempt:number;runId:string|null;waiting:RunWaiting|null;cancelPending:boolean}>>({})
   const knowledgeBases=ref<KnowledgeBase[]>([]),selectedBases=ref<string[]>([])
   const workspaces=ref<Workspace[]>([]),organizationId=ref<string|null>(null),workspaceChanging=ref(false)
+  const capabilityDirectory=ref<CapabilityDirectory|null>(null),capabilityLoading=ref(false),capabilityError=ref(''),selectedSkill=ref<string|null>(null),paletteOpen=ref(false)
+  let capabilityAttempt=0
+  const chatMode=ref<'auto'|'knowledge'|'web'|'sql'>('auto')
+  async function loadCapabilityDirectory(){
+    const epoch=workspaceEpoch,attempt=++capabilityAttempt,uid=user.value?.id
+    if(!uid||!capabilities.value?.features.capability_center){capabilityDirectory.value=null;selectedSkill.value=null;return}
+    capabilityLoading.value=true;capabilityError.value=''
+    try{const value=await api.capabilityDirectory();if(epoch!==workspaceEpoch||attempt!==capabilityAttempt||uid!==user.value?.id)return
+      capabilityDirectory.value=value;if(selectedSkill.value&&!value.skills.some(item=>item.name===selectedSkill.value&&item.available))selectedSkill.value=null
+    }catch(e:any){if(epoch===workspaceEpoch&&attempt===capabilityAttempt){capabilityDirectory.value=null;selectedSkill.value=null;capabilityError.value=e.message}throw e}
+    finally{if(epoch===workspaceEpoch&&attempt===capabilityAttempt)capabilityLoading.value=false}
+  }
+  function selectSkill(name:string|null){
+    if(name&&!capabilityDirectory.value?.skills.some(item=>item.name===name&&item.available))throw new Error('能力不可用，请刷新目录')
+    selectedSkill.value=name
+  }
   const activeWorkspace=computed(()=>workspaces.value.find(item=>item.id===organizationId.value)||{id:null,kind:'personal',name:'个人空间',role:'owner',session_count:0})
   let workspaceEpoch=0,documentsAttempt=0,sessionsAttempt=0
   const error=ref(''),selectedDocuments=ref<string[]>([]),loadAttempts:Record<string,number>={}
@@ -20,7 +37,7 @@ export const useAppStore=defineStore('app',()=>{
   let bootstrapPromise:Promise<void>|undefined
   function bootstrap(){return bootstrapPromise ||= restoreAuthentication()}
   async function restoreAuthentication(){try{const auth=await api.refresh();user.value=auth.user;await initialize()}catch{user.value=null}finally{bootstrapped.value=true}}
-  function clearWorkspace(){sessions.value=[];documents.value=[];documentTotal.value=0;messagesBySession.value={};runsBySession.value={};knowledgeBases.value=[];selectedBases.value=[];selectedDocuments.value=[]}
+  function clearWorkspace(){++capabilityAttempt;capabilityDirectory.value=null;capabilityLoading.value=false;capabilityError.value='';selectedSkill.value=null;paletteOpen.value=false;chatMode.value='auto';sessions.value=[];documents.value=[];documentTotal.value=0;messagesBySession.value={};runsBySession.value={};knowledgeBases.value=[];selectedBases.value=[];selectedDocuments.value=[]}
   function rememberWorkspace(){try{if(user.value)sessionStorage.setItem(`rag-workspace:${user.value.id}`,organizationId.value||'')}catch{}}
   async function loadWorkspaces(){
     if(!capabilities.value?.features.workspaces){workspaces.value=[];return}
@@ -32,7 +49,7 @@ export const useAppStore=defineStore('app',()=>{
     if(id===organizationId.value&&!workspaceChanging.value)return
     if(id!==null&&!workspaces.value.some(item=>item.id===id))throw new Error('空间不可访问，请刷新空间列表')
     const epoch=++workspaceEpoch;workspaceChanging.value=true;organizationId.value=id;clearWorkspace();error.value='';rememberWorkspace()
-    try{await Promise.all([loadSessions(),loadDocuments(),loadKnowledgeBases()])}
+    try{await Promise.all([loadSessions(),loadDocuments(),loadKnowledgeBases(),loadCapabilityDirectory().catch(()=>{})])}
     catch(e:any){if(epoch===workspaceEpoch){clearWorkspace();error.value=e.message}throw e}
     finally{if(epoch===workspaceEpoch)workspaceChanging.value=false}
   }
@@ -124,12 +141,12 @@ export const useAppStore=defineStore('app',()=>{
     catch(error:any){run.error=error.message}
     finally{run.cancelPending=false}
   }
-  async function continueRun(id:string,supplement:string){
+  async function continueRun(id:string,supplement:string,publicQuery?:string){
     const epoch=workspaceEpoch
     const run=runFor(id);if(run.busy||!run.waiting||!run.runId)return
     const waiting=run.waiting,runId=run.runId
     run.busy=true;run.error='';run.status='正在提交补充信息'
-    try{await api.continueRun(runId,waiting,supplement);run.waiting=null}
+    try{await (publicQuery?api.continueRun(runId,waiting,supplement,publicQuery):api.continueRun(runId,waiting,supplement));run.waiting=null}
     catch(error:any){run.error=error.message;throw error}
     finally{run.busy=false}
     if(epoch===workspaceEpoch)await recoverRun(id,runId,waiting.sequence)
@@ -145,5 +162,5 @@ export const useAppStore=defineStore('app',()=>{
   async function deleteMemory(id:string){await api.deleteMemory(id);await loadMemories()}
   async function retryMemory(id:string){await api.retryMemory(id);await loadMemories()}
   const readyDocuments=computed(()=>documents.value.filter(x=>x.can_query))
-  return {workspaces,organizationId,activeWorkspace,workspaceChanging,loadWorkspaces,switchWorkspace,knowledgeBases,selectedBases,loadKnowledgeBases,user,bootstrapped,sessions,documents,memories,capabilities,documentTotal,error,selectedDocuments,uploads,readyDocuments,bootstrap,initialize,login,register,logout,messagesFor,runFor,loadSessions,loadSession,createSession,send,cancelRun,continueRun,loadDocuments,removeDocuments,retryDocument,renameSession,loadMemories,createMemory,updateMemory,deleteMemory,retryMemory}
+  return {chatMode,capabilityDirectory,capabilityLoading,capabilityError,selectedSkill,paletteOpen,loadCapabilityDirectory,selectSkill,workspaces,organizationId,activeWorkspace,workspaceChanging,loadWorkspaces,switchWorkspace,knowledgeBases,selectedBases,loadKnowledgeBases,user,bootstrapped,sessions,documents,memories,capabilities,documentTotal,error,selectedDocuments,uploads,readyDocuments,bootstrap,initialize,login,register,logout,messagesFor,runFor,loadSessions,loadSession,createSession,send,cancelRun,continueRun,loadDocuments,removeDocuments,retryDocument,renameSession,loadMemories,createMemory,updateMemory,deleteMemory,retryMemory}
 })

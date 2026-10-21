@@ -77,6 +77,10 @@ class Settings(BaseSettings):
     chat_runs_enabled: bool = False
     sharing_enabled: bool = False
     workspaces_enabled: bool = False
+    capability_center_enabled: bool = False
+    # Explicit Secret names only. Never expose arbitrary process environment
+    # variables to a browser-defined HTTP endpoint.
+    capability_secret_names: list[str] = Field(default_factory=list)
     model_center_enabled: bool = False
     evaluation_enabled: bool = False
     evaluation_queue_limit: int = Field(default=8, ge=1, le=100)

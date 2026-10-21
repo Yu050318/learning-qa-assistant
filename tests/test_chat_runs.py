@@ -152,7 +152,7 @@ def test_empty_shared_scope_preserves_pre_sharing_idempotency_fingerprint(system
     from dataclasses import asdict
     key = uuid4()
     payload = AgentChatInput("你好", "sql")
-    legacy = asdict(payload);legacy.pop("knowledge_base_ids");legacy.pop("model_profile_id")
+    legacy = asdict(payload);legacy.pop("knowledge_base_ids");legacy.pop("model_profile_id");legacy.pop("skill_name")
     expected = hashlib.sha256(json.dumps({"session_id":str(system.sid),"input":legacy},sort_keys=True,default=str).encode()).hexdigest()
     run = start(system, key)
     with system.database.sessions() as session:

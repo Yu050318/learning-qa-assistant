@@ -85,6 +85,60 @@ def test_worker_executes_frozen_generation_and_independent_evaluator_with_real_l
     assert all(row.id != cases[0].session_id for row in s.sessions.list(s.uid, 0, 20))
 
 
+def enable_capabilities(s):
+    from app.application.capabilities import CapabilityService
+    from app.domain.capabilities import CapabilityCatalog
+    from app.infrastructure.persistence.models import CapabilityConfiguration, CapabilityConfigurationVersion
+    s.settings.capability_center_enabled = True
+    raw = CapabilityCatalog().model_dump(mode="json")
+    with s.database.sessions() as session:
+        session.add(CapabilityConfiguration(id=1, revision=1, configuration=raw))
+        session.add(CapabilityConfigurationVersion(revision=1, configuration=raw, change={"operation": "initialize"}))
+        session.commit()
+    return CapabilityService(s.settings, s.database)
+
+
+def test_evaluation_cases_share_creation_time_capability_catalog(runtime):
+    from app.domain.capabilities import SkillDeclaration
+    from app.core.errors import AppError
+    s = runtime
+    capabilities = enable_capabilities(s)
+    original_factory = s.worker.services_factory
+    def factory(settings):
+        services = original_factory(settings)
+        services.agent_workflow.capabilities = capabilities
+        return services
+    s.worker.services_factory = factory
+    job = s.evaluation.create_job(s.uid, s.request, uuid4())
+    frozen = job.model_snapshot["capabilities"]
+    assert frozen["revision"] == 1 and frozen["search_mode"] == "knowledge"
+    capabilities.change(s.uid, "skills", "new-skill", expected_revision=1, create=True,
+        declaration=SkillDeclaration(name="new-skill", description="New", instructions="Added after job creation"))
+    assert s.worker.run_once()
+    finished = s.evaluation.get_job(s.uid, job.id)
+    assert finished.state == "succeeded" and finished.completed_cases == 2
+    with s.database.sessions() as session:
+        runs = session.scalars(select(ChatRun).where(ChatRun.execution_kind == "evaluation")).all()
+        assert len(runs) == 2
+        assert all(run.execution_snapshot["context"]["capability_snapshot"] == frozen for run in runs)
+    with pytest.raises(AppError) as error:
+        s.evaluation.create_job(s.uid, s.request.model_copy(update={"baseline_job_id": job.id}), uuid4())
+    assert error.value.code == "EVALUATION_BASELINE_INCOMPATIBLE"
+
+
+def test_enabling_capabilities_never_refreezes_an_old_evaluation(runtime):
+    from app.core.errors import AppError
+    s = runtime
+    job = s.evaluation.create_job(s.uid, s.request, uuid4())
+    original = dict(job.model_snapshot)
+    enable_capabilities(s)
+    with s.database.sessions() as session:
+        with pytest.raises(AppError) as error:
+            s.evaluation.validate_scope(session, session.get(EvaluationJob, job.id))
+        assert error.value.code == "CAPABILITY_SCOPE_CHANGED"
+        assert session.get(EvaluationJob, job.id).model_snapshot == original
+
+
 def test_recovery_reuses_completed_generation_and_judge_receipt_without_paid_replay(runtime, monkeypatch):
     s = runtime
     job = s.evaluation.create_job(s.uid, s.request.model_copy(update={"split": "dev"}), uuid4())

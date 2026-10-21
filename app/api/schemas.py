@@ -230,7 +230,17 @@ class SQLCitation(BaseModel):
     excerpt: str = Field(max_length=500)
 
 
-V2Citation = Annotated[Union[KnowledgeCitation, WebCitation, MemoryCitation, SQLCitation], Field(discriminator="type")]
+class ToolCitation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["tool"] = "tool"
+    number: int = Field(ge=1)
+    tool_name: str
+    tool_version: int = Field(ge=1)
+    retrieved_at: datetime
+    excerpt: str = Field(max_length=500)
+
+
+V2Citation = Annotated[Union[KnowledgeCitation, WebCitation, MemoryCitation, SQLCitation, ToolCitation], Field(discriminator="type")]
 
 
 class V2ChatRequest(BaseModel):
@@ -238,6 +248,7 @@ class V2ChatRequest(BaseModel):
     question: str = Field(min_length=1, max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
     model_profile_id: ProfileId | None = None
+    skill_name: str | None = Field(default=None, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$", max_length=64)
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
@@ -294,6 +305,7 @@ class ContextEstimateRequest(BaseModel):
     question: str = Field(default="", max_length=8000)
     model_provider: Literal["deepseek", "ollama"] | None = None
     model_profile_id: ProfileId | None = None
+    skill_name: str | None = Field(default=None, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$", max_length=64)
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
@@ -325,3 +337,4 @@ class RunResumeRequest(BaseModel):
     checkpoint_revision: int = Field(ge=1)
     resume_token: UUID
     supplement: str = Field(min_length=1, max_length=4000)
+    public_query: str | None = Field(default=None, min_length=1, max_length=400)

@@ -12,6 +12,7 @@ from time import monotonic, perf_counter
 from langchain.agents import create_agent
 from langchain.tools import ToolRuntime
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.tools import StructuredTool
 from langgraph.errors import GraphRecursionError
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from typing import Literal
@@ -19,6 +20,7 @@ from typing import Literal
 from app.application.evidence import EvidenceRegistry, evidence_token_budget, normalized_url
 from app.core.errors import AppError
 from app.domain.contracts import AgentRunResult, ModelAnswer, WebSearchBatch
+from app.domain.capabilities import BUILTIN_TOOLS, skill_prompt
 from app.workflows.agent import AnswerStreamParser, FinalAnswer, ModelRuntime, SYSTEM_PROMPT
 from app.workflows.knowledge import KnowledgeWorkflow
 from app.application.run_checkpoint import CONTROL_ERRORS
@@ -40,10 +42,11 @@ _FATAL = {"AGENT_TIMEOUT", "AGENT_LIMIT_EXCEEDED", "CONTEXT_LIMIT_EXCEEDED"} | C
 
 
 class SupervisorWorkflow:
-    def __init__(self, settings, retriever, models, web_search, memories=None, web_reader=None, sql=None, sharing=None):
+    def __init__(self, settings, retriever, models, web_search, memories=None, web_reader=None, sql=None, sharing=None, capabilities=None, http_tools=None):
         self.settings, self.retriever, self.models = settings, retriever, models
         self.web_search, self.memories, self.web_reader, self.sql = web_search, memories, web_reader, sql
         self.sharing = sharing
+        self.capabilities, self.http_tools = capabilities, http_tools
 
     def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None, call_observer=None, checkpoint=None):
         started = perf_counter()
@@ -63,10 +66,17 @@ class SupervisorWorkflow:
         sql_schema_seen = False
         parsers = {}
         supervisor_messages = []
+        execution = None
+        if context.capability_snapshot is not None:
+            if self.capabilities is None:
+                raise AppError("CAPABILITY_SCOPE_CHANGED", "能力执行器未配置", 409)
+            execution = self.capabilities.validate_execution(context.user_id, context.capability_snapshot)
 
         def remaining():
             if checkpoint:
                 checkpoint.check()
+            elif execution is not None:
+                self.capabilities.validate_execution(context.user_id, execution)
             seconds = context.deadline_monotonic - monotonic()
             if seconds <= 0:
                 raise AppError("AGENT_TIMEOUT", "Agent 生成超时", 504)
@@ -152,6 +162,14 @@ class SupervisorWorkflow:
             def wrapped(*args, **kwargs):
                 with tool_order(kwargs.get("runtime")), tool_lock:
                     remaining()
+                    if execution is not None:
+                        scope = {"search_knowledge": "delegate_rag", "search_rewritten_knowledge": "delegate_rag",
+                            "search_web": "delegate_web", "read_web_page": "delegate_web", "crawl_fixed_sites": "delegate_web",
+                            "describe_sql_schema": "delegate_sql", "execute_sql": "delegate_sql"}.get(function.__name__)
+                        if function.__name__ in execution.catalog.tools:
+                            scope = function.__name__
+                        if scope is not None:
+                            self.capabilities.validate_execution(context.user_id, execution, tool_name=scope)
                     if counters["tool_requests"] >= settings.agent_max_tool_calls:
                         raise AppError("AGENT_LIMIT_EXCEEDED", "Agent 工具调用超过限制", 502)
                     counters["tool_requests"] += 1
@@ -179,12 +197,12 @@ class SupervisorWorkflow:
                                         raise
                                     value, error = None, {"code": failure.code, "message": failure.message, "status": failure.status_code}
                                 except Exception:
-                                    if function.__name__ == "save_memory":
+                                    if not getattr(function, "idempotent", function.__name__ != "save_memory"):
                                         raise AppError("TOOL_OUTCOME_UNCERTAIN", "工具结果尚未确认，需人工核查", 409) from None
                                     value, error = None, {"code": "TOOL_EXECUTION_FAILED", "message": "工具执行失败", "status": 502}
                                 return {"value": value, "error": error, "body": body_state()}
 
-                            saved = checkpoint.invoke(key, inputs, execute_tool, readonly=function.__name__ != "save_memory")
+                            saved = checkpoint.invoke(key, inputs, execute_tool, readonly=getattr(function, "idempotent", function.__name__ != "save_memory"))
                             restore_body(saved["body"])
                             if saved["error"]:
                                 error = saved["error"]
@@ -438,6 +456,99 @@ class SupervisorWorkflow:
             """Delegate public research or reading user-specified URLs to the Web Agent."""
             return checkpoint_delegate("web", task, runtime)
 
+        def invoke_public_tool(tool_name: str, runtime: ToolRuntime = None) -> dict:
+            """Run a discovered public HTTP tool using only the frozen public input, never private task data."""
+            if execution is None or self.http_tools is None or not context.public_query:
+                raise AppError("TOOL_NOT_ALLOWED", "当前运行未授权公共工具输入", 403)
+            self.capabilities.validate_execution(context.user_id, execution, tool_name=tool_name)
+            if tool_name not in execution.catalog.tools:
+                raise AppError("TOOL_NOT_ALLOWED", "请选择已注册的 HTTP 工具", 403)
+            record = execution.catalog.tools[tool_name]
+            public_input = context.public_query
+            if checkpoint and checkpoint.state.get("public_inputs"):
+                public_input = next((value for value in reversed(checkpoint.state["public_inputs"]) if value is not None), public_input)
+
+            def execute_http(arguments):
+                data = self.http_tools.invoke(record.declaration, arguments,
+                    deadline=context.deadline_monotonic, check=remaining)
+                return registry.add_tool(tool_name, record.version, data["data"])
+            execute_http.__name__ = tool_name
+            execute_http.idempotent = record.declaration.idempotent
+            instrumented_http = instrument(execute_http)
+            def invoke_http(**arguments):
+                return instrumented_http(arguments=arguments)
+            bound = StructuredTool.from_function(invoke_http, name="call_http_tool",
+                description=record.declaration.description, args_schema=record.declaration.input_schema)
+            frame = "public-tool/" + tool_name
+            if checkpoint and runtime is not None:
+                frame = checkpoint.key("public-tool", {"name": tool_name, "tool_call_id": runtime.tool_call_id,
+                    "messages": [role_runtimes["answer"].message_data(message) for message in runtime.state.get("messages", [])]},
+                    runtime.config.get("metadata", {}).get("checkpoint_frame"))
+            event = {"agent": "public-tool", "tool": tool_name, "version": record.version, "status": "running", "error_code": None}
+            emit("agent_started", dict(event))
+            started_tool = perf_counter()
+            initial_tool_count = len(tool_events)
+            try:
+                with tool_order(runtime), checkpoint.scope(frame) if checkpoint else nullcontext():
+                    # No supervisor task, history, summary, memories, SQL or RAG
+                    # content is forwarded into this parameter-generating agent.
+                    response = invoke_agent("public-tool", [bound], SPECIALIST_PROMPT.format(role="公共 HTTP 工具",
+                        rules="仅根据本轮公开输入生成工具参数。必须调用工具，不得编造结果。"),
+                        [HumanMessage(content=public_input)])
+                    report = SpecialistReport.model_validate_json(response.content)
+                    sources = [source for source in eligible_sources() if source["type"] == "tool" and source.get("tool_name") == tool_name]
+                    if report.status == "ok" and (not sources or not any(item["name"] == tool_name and item["status"] != "failed" for item in tool_events[initial_tool_count:])):
+                        raise AppError("INVALID_AGENT_OUTPUT", "公共工具没有返回有效证据", 502)
+                    event["status"] = report.status
+                    return {**report.model_dump(), "sources": sources}
+            except AppError as error:
+                event.update(status="failed", error_code=error.code)
+                if error.code in _FATAL:
+                    raise
+                failures.append({"tool": tool_name, "code": error.code})
+                return {"status": "failed", "error_code": error.code, "message": error.message}
+            except (ValidationError, ValueError, TypeError):
+                event.update(status="failed", error_code="INVALID_AGENT_OUTPUT")
+                failures.append({"tool": tool_name, "code": "INVALID_AGENT_OUTPUT"})
+                return {"status": "failed", "error_code": "INVALID_AGENT_OUTPUT"}
+            finally:
+                event["elapsed_ms"] = round((perf_counter() - started_tool) * 1000, 2)
+                agent_events.append(dict(event))
+                emit("agent_failed" if event["status"] == "failed" else "agent_finished", dict(event))
+
+        @instrument
+        def search_tools(query: str, limit: int = 5) -> dict:
+            """Find frozen authorized skills/tools; load instructions with describe_skill, call HTTP with invoke_public_tool."""
+            if not execution or not 1 <= limit <= 8 or not 1 <= len(query) <= 240:
+                raise AppError("TOOL_NOT_ALLOWED", "能力搜索参数无效", 422)
+            matches = []
+            for name in execution.allowed_tools:
+                item = execution.catalog.tools.get(name)
+                metadata = ({"version": item.version, "description": item.declaration.description, "group": item.declaration.group,
+                    "input_schema": item.declaration.input_schema} if item else {"version": 1, **BUILTIN_TOOLS[name]})
+                if query.casefold() in (name + " " + metadata["description"] + " " + metadata["group"]).casefold():
+                    self.capabilities.validate_execution(context.user_id, execution, tool_name=name)
+                    matches.append({"name": name, **metadata})
+            skills = []
+            for name, item in execution.catalog.skills.items():
+                if execution.skill_name is not None and execution.skill_name != name:
+                    continue
+                if query.casefold() not in (name + " " + item.declaration.description).casefold():
+                    continue
+                try:
+                    description = self.capabilities.describe_skill(context.user_id, name, frozen=execution)
+                except AppError as error:
+                    if error.status_code == 403:
+                        continue
+                    raise
+                skills.append({key: description[key] for key in ("name", "version", "description", "tool_names")})
+            return {"status": "ok", "tools": matches[:limit], "skills": skills[:limit]}
+
+        @instrument
+        def describe_skill(name: str) -> dict:
+            """Read a frozen authorized Skill's instructions without changing the run's tool permissions."""
+            return self.capabilities.describe_skill(context.user_id, name, frozen=execution)
+
         tools = []
         if context.search_mode in {"knowledge", "auto"}:
             tools.append(delegate_rag)
@@ -445,6 +556,11 @@ class SupervisorWorkflow:
             tools.append(delegate_sql)
         if context.search_mode in {"web", "auto"} and (context.web_enabled or context.web_urls):
             tools.append(delegate_web)
+        if execution is not None:
+            tools = [tool for tool in tools if tool.__name__ in execution.allowed_tools]
+            tools.extend([search_tools, describe_skill])
+            if any(name in execution.catalog.tools for name in execution.allowed_tools):
+                tools.append(invoke_public_tool)
         memory_sources = []
         if self.memories:
             if previous:
@@ -458,7 +574,7 @@ class SupervisorWorkflow:
                 memory_sources = saved["sources"]
             else:
                 memory_sources = registry.add_memories(self.memories.search(context.user_id, context.question))["sources"]
-            if re.match(r"(?i)^\s*(请记住|帮我记住|记住[：:]|/remember\s+|please remember|remember that)", context.question):
+            if (execution is None or execution.skill_name is None) and re.match(r"(?i)^\s*(请记住|帮我记住|记住[：:]|/remember\s+|please remember|remember that)", context.question):
                 @instrument
                 def save_memory(content: str, runtime: ToolRuntime = None) -> dict:
                     """Save user preferences only because this user explicitly requested remembering."""
@@ -467,6 +583,11 @@ class SupervisorWorkflow:
                     return {"status": "saved", "memory_id": str(memory.id)}
                 tools.append(save_memory)
         prompt = SYSTEM_PROMPT + f"\n当前模式 {context.search_mode}，只能委派给已提供的 Agent。"
+        if execution is not None:
+            prompt += "\n公共 HTTP 能力先用 search_tools 查找，再用 invoke_public_tool 调用。参数由只见本轮公开输入的专职 Agent 生成，不能发送私有任务或证据。"
+            if execution.skill_name is not None:
+                selected_skill = execution.catalog.skills[execution.skill_name]
+                prompt += skill_prompt(execution.skill_name, selected_skill.version, execution.allowed_tools, selected_skill.declaration.instructions)
         prompt += "\n事实问题必须先委派对应 Agent，不得靠自身知识或历史回答。SQL 统计交给 SQL；私有文档交给 RAG；公开信息/URL 交给 Web。"
         prompt += "\n复杂问题可顺序组合多个 Agent；收齐所需结果后汇总。工具失败或 partial 时必须指出具体缺口，不得声称任务全部成功。"
         prompt += "\n条件不明先澄清；闲聊直接回答。不能将 SQL/知识库结果发送给公开搜索。搜索工具使用冻结公开词，不能改写。"

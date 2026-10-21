@@ -111,6 +111,7 @@ def admin_overview(services: ServiceDependency, user_id: AdminDependency, respon
         "knowledge_quality": settings.knowledge_quality_enabled,
         "rerank": settings.rerank_enabled,
         "evaluation": settings.evaluation_enabled,
+        "capability_center": settings.capability_center_enabled,
     }, "ingestion_mode": settings.ingestion_mode,
         "notice": "此处显示配置状态，服务可用性需通过部署预检与实际运行确认。"}
 
@@ -312,7 +313,7 @@ def rename_v2_session(session_id: UUID, payload: SessionRename, services: Servic
 @v2_router.post("/sessions/{session_id}/messages", response_model=V2ChatResponse, tags=["v2 chat"])
 def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency):
     data = AgentChatInput(
-        question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, search_mode=payload.search_mode,
+        question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, skill_name=payload.skill_name, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
         web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
@@ -342,7 +343,7 @@ def chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services
 @v2_router.post("/sessions/{session_id}/messages/stream", tags=["v2 chat"])
 def stream_chat_v2(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency):
     data = AgentChatInput(
-        question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, search_mode=payload.search_mode,
+        question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, skill_name=payload.skill_name, search_mode=payload.search_mode,
         document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
         web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids),
     )
@@ -451,7 +452,7 @@ def run_response(run):
 def start_run(session_id: UUID, payload: V2ChatRequest, request: Request, services: ServiceDependency, user_id: UserDependency,
               client_key: Annotated[UUID, Header(alias="Idempotency-Key")]):
     require_runs(services)
-    data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, search_mode=payload.search_mode,
+    data = AgentChatInput(question=payload.question, model_provider=payload.model_provider, model_profile_id=payload.model_profile_id, skill_name=payload.skill_name, search_mode=payload.search_mode,
                           document_ids=tuple(payload.document_ids) if payload.document_ids is not None else None,
                           web_query=payload.web_query, web_urls=tuple(payload.web_urls), knowledge_base_ids=tuple(payload.knowledge_base_ids))
     run = services.runs.start(user_id, session_id, data, request.state.request_id, client_key)
@@ -486,7 +487,8 @@ def cancel_run(run_id: UUID, services: ServiceDependency, user_id: UserDependenc
 @v2_router.post("/runs/{run_id}/resume", status_code=202, tags=["v2 runs"])
 def resume_run(run_id: UUID, payload: RunResumeRequest, services: ServiceDependency, user_id: UserDependency):
     require_runs(services)
-    services.runs.store.resume(user_id, run_id, payload.checkpoint_revision, payload.resume_token, payload.supplement)
+    options = {"public_query": payload.public_query} if payload.public_query is not None else {}
+    services.runs.store.resume(user_id, run_id, payload.checkpoint_revision, payload.resume_token, payload.supplement, **options)
     return run_response(services.runs.store.read(user_id, run_id)[0])
 
 
@@ -571,7 +573,14 @@ def capabilities(services: ServiceDependency, user_id: UserDependency):
     available = {item["provider"] for item in models if item["available"]}
     if default_profile_id not in {item.get("profile_id") for item in models if item["available"]}:
         default_profile_id = None
-    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": True, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".html", ".htm", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"document_tasks": settings.ingestion_mode == "durable", "document_publication": settings.document_publication_enabled, "workspaces": settings.workspaces_enabled, "model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "evaluation": settings.evaluation_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
+    web_read_enabled = True
+    if settings.capability_center_enabled:
+        _, catalog = services.capabilities.snapshot()
+        web_read_enabled = catalog.web is None or catalog.web.declaration.enabled
+        settings = services.capabilities.project_sql(settings, services.capabilities.sql_policy(catalog))
+        if not web_read_enabled:
+            settings = settings.model_copy(update={"web_search_enabled": False})
+    return {"schema_version": 1, "default_model_provider": settings.default_model_provider if settings.default_model_provider in available else None, "default_model_profile_id": default_profile_id, "models": models, "web_search_enabled": settings.web_search_enabled, "web_read_enabled": web_read_enabled, "sql_enabled": bool(settings.sql_database_url.get_secret_value() and settings.sql_allowed_tables), "upload": {"allowed_extensions": office + [".txt", ".md", ".html", ".htm", ".xlsx"], "max_file_bytes": settings.max_upload_mb * 1024 * 1024, "long_running_warning_seconds": 900}, "features": {"capability_center": settings.capability_center_enabled, "document_tasks": settings.ingestion_mode == "durable", "document_publication": settings.document_publication_enabled, "workspaces": settings.workspaces_enabled, "model_center": settings.model_center_enabled, "model_profiles": settings.model_center_enabled, "evaluation": settings.evaluation_enabled, "sharing": settings.sharing_enabled, "durable_runs": settings.chat_runs_enabled, "document_versions": settings.document_versions_enabled, "parent_context": settings.retrieval_parent_context, "multi_agent": True, "authentication": True, "long_term_memory": True, "document_search": True, "document_queryability": True, "session_search": True, "session_rename": True, "metrics": True, "context_estimate": True, "context_compaction": True, "streaming": True}}
 
 
 @v2_router.post("/context-estimate", tags=["v2 context"])

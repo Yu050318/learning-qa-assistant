@@ -67,7 +67,10 @@ class EvaluationWorker:
         def prepare(session, run, payload):
             job = self.store.owned(session, claim)
             self.store.validate_scope(session, job)
-            services.chat.prepare_run(session, run, payload, frozen_snapshot=snapshot)
+            options = {"frozen_snapshot": snapshot}
+            if job.model_snapshot.get("capabilities") is not None:
+                options["frozen_capabilities"] = job.model_snapshot["capabilities"]
+            services.chat.prepare_run(session, run, payload, **options)
             if set(run.execution_snapshot["context"]["allowed_document_ids"]) != set(job.scope_snapshot["document_ids"]):
                 raise AppError("DOCUMENT_SCOPE_CHANGED", "评测检索范围与冻结范围不一致", 409)
             case = session.get(EvaluationCaseResult, case_id)

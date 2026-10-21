@@ -1,6 +1,7 @@
 import re
 import json
 import hashlib
+from datetime import datetime, timezone
 from dataclasses import asdict
 from functools import lru_cache
 from urllib.parse import urlsplit, urlunsplit
@@ -183,6 +184,16 @@ class EvidenceRegistry:
                 truncated = True
         return {"status": "ok" if sources or existing else "empty", "sources": sources, "existing_numbers": existing, "truncated": truncated}
 
+    def add_tool(self, name, version, data):
+        content = json.dumps(data, ensure_ascii=False, sort_keys=True, allow_nan=False)
+        key = ("tool", name + "/" + str(version) + "/" + hashlib.sha256(content.encode()).hexdigest())
+        source, duplicate = self._add(key, {"type": "tool", "tool_name": name, "tool_version": version,
+            "retrieved_at": datetime.now(timezone.utc).isoformat()}, name, content)
+        if source:
+            source.update(tool_name=name, tool_version=version)
+        return {"status": "ok" if source or duplicate else "empty", "sources": [source] if source else [],
+            "existing_numbers": [self.keys[key]] if duplicate else [], "truncated": len(content) > 12000 or source is None and not duplicate}
+
     def add_memories(self, memories: list[dict]) -> dict:
         sources, existing, truncated = [], [], False
         for memory in memories:
@@ -228,6 +239,7 @@ class EvidenceRegistry:
         if kind == "grounded" and not citations:
             raise AppError("INVALID_CITATION", "有依据的回答必须包含引用", 502)
         expected = {"knowledge": "knowledge", "web": "web", "sql": "sql"}.get(search_mode)
-        if expected and any(citation["type"] not in {expected, "memory"} for citation in citations):
+        allowed = {expected, "memory"} | ({"tool"} if search_mode == "web" else set())
+        if expected and any(citation["type"] not in allowed for citation in citations):
             raise AppError("INVALID_CITATION", "回答引用了当前模式未授权的来源", 502)
         return citations

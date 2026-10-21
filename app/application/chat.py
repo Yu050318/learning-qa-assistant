@@ -6,7 +6,7 @@ from time import monotonic, perf_counter
 from uuid import UUID, uuid4
 from copy import copy
 from contextlib import closing, nullcontext
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import datetime, timedelta
 from urllib.parse import urlsplit
 
@@ -79,6 +79,8 @@ class ChatService:
         self.sessions = sessions
         self.agent_workflow = agent_workflow
         self.sharing = SharingService(settings, database)
+        from app.application.capabilities import CapabilityService
+        self.capabilities = CapabilityService(settings, database)
         self.model_center = ModelCenter(settings, database) if settings.model_center_enabled else None
 
     def document_scope(self, repository, user_id, session, payload, settings):
@@ -114,8 +116,12 @@ class ChatService:
             user_id, session.id)[-settings.memory_recent_messages:]]
         return ready_ids, owners, history, session.summary, indexes, kids
 
-    def prepare_run(self, database, run, payload, *, frozen_snapshot=None):
+    def prepare_run(self, database, run, payload, *, frozen_snapshot=None, frozen_capabilities=None):
         """Run, frozen inputs and one stable message pair share the create transaction."""
+        original_question = payload.question
+        if self.settings.capability_center_enabled and frozen_capabilities is None:
+            question, skill_name = self.capabilities.activation(payload.question, payload.skill_name)
+            payload = replace(payload, question=question, skill_name=skill_name)
         repository = Repository(database)
         session = repository.chat_session(run.user_id, run.session_id, lock=True)
         if payload.model_profile_id is not None and self.model_center is None:
@@ -125,13 +131,29 @@ class ChatService:
         selected = payload.model_provider or settings.default_model_provider
         if selected not in settings.enabled_model_providers:
             raise AppError("MODEL_DISABLED", "该模型已停用", 403)
-        frozen_settings = workflow_settings_snapshot(settings)
         public_query, web_enabled, warnings = prepare_public_query(payload, settings.web_search_enabled)
-        if payload.search_mode == "web" and not settings.web_search_enabled and not payload.web_urls:
+        capability_snapshot = None
+        if frozen_capabilities is not None:
+            execution = self.capabilities.validate_execution(run.user_id, frozen_capabilities, session=database)
+            if execution.search_mode != payload.search_mode or execution.skill_name != payload.skill_name:
+                raise AppError("CAPABILITY_SCOPE_CHANGED", "任务冻结的能力与本题请求不一致", 409)
+            capability_snapshot = execution.model_dump(mode="json")
+        elif self.settings.capability_center_enabled:
+            capability_snapshot = self.capabilities.freeze(run.user_id, skill_name=payload.skill_name,
+                search_mode=payload.search_mode, public_query=public_query, session=database).model_dump(mode="json")
+        elif payload.skill_name is not None:
+            raise AppError("CAPABILITIES_DISABLED", "能力中心尚未启用", 503)
+        if capability_snapshot is not None and "delegate_web" not in capability_snapshot["allowed_tools"]:
+            settings = settings.model_copy(update={"web_search_enabled": False})
+            public_query, web_enabled, warnings = prepare_public_query(payload, False)
+        frozen_settings = workflow_settings_snapshot(settings)
+        has_http_tools = capability_snapshot is not None and any(
+            name in capability_snapshot["catalog"]["tools"] for name in capability_snapshot["allowed_tools"])
+        if payload.search_mode == "web" and (not settings.web_search_enabled and not payload.web_urls or capability_snapshot is not None and "delegate_web" not in capability_snapshot["allowed_tools"]) and not has_http_tools:
             raise AppError("WEB_SEARCH_UNAVAILABLE", "网络搜索尚未启用", 503)
         ready_ids, owners, history, summary, indexes, kids = self.scope_and_history(repository, run.user_id, session, payload, settings)
         message_time = utcnow()
-        user_message = ChatMessage(user_id=run.user_id, session_id=run.session_id, role="user", content=payload.question,
+        user_message = ChatMessage(user_id=run.user_id, session_id=run.session_id, role="user", content=original_question,
                                    created_at=message_time)
         assistant = ChatMessage(user_id=run.user_id, session_id=run.session_id, role="assistant", content="",
                                 run_metadata={"run_id": str(run.id), "state": "queued"},
@@ -145,6 +167,7 @@ class ChatService:
             web_urls=payload.web_urls, source_message_id=user_message.id, started_at_utc=run.created_at,
             knowledge_base_ids=kids, document_owners=tuple(owners.items()), retrieval_indexes=indexes,
             organization_id=session.organization_id, shared_only=session.organization_id is not None or session.kind == "evaluation")
+        context = replace(context, capability_snapshot=capability_snapshot)
         context_data = asdict(context)
         for target in indexes:
             database.add(RunIndexPin(run_id=run.id, document_id=target.document_id))
@@ -198,7 +221,17 @@ class ChatService:
         if (context.user_id != claim.user_id or context.session_id != session_id
                 or context.source_message_id != user_message_id):
             raise AppError("RUN_CHECKPOINT_DIVERGED", "运行身份与快照不一致", 409)
+        if self.settings.capability_center_enabled and context.capability_snapshot is None:
+            raise AppError("RUN_CHECKPOINT_DIVERGED", "旧运行缺少冻结能力版本，请重新发起问答", 409)
         workflow = copy(self.agent_workflow)
+        run_sql = None
+        if context.capability_snapshot is not None:
+            execution = self.capabilities.validate_execution(claim.user_id, context.capability_snapshot)
+            if "delegate_sql" in execution.allowed_tools:
+                from app.infrastructure.sql import ReadOnlySQL
+                settings = self.capabilities.project_sql(settings, execution.sql_policy)
+                run_sql = ReadOnlySQL(settings)
+                workflow.sql = run_sql
         workflow.settings = settings
         if getattr(workflow, "retriever", None) is not None and hasattr(workflow.retriever, "for_settings"):
             workflow.retriever = workflow.retriever.for_settings(settings)
@@ -220,6 +253,8 @@ class ChatService:
                 raise AppError("DOCUMENT_SCOPE_CHANGED", "知识库索引配置已变化，请重新发起问答", 409)
             from contextlib import nullcontext
             with (nullcontext(database) if database is not None else self.database.sessions()) as database:
+                if context.capability_snapshot is not None:
+                    self.capabilities.validate_execution(claim.user_id, context.capability_snapshot, session=database, lock=lock)
                 user = database.get(User, claim.user_id)
                 if user is None or not user.is_active:
                     raise AppError("FORBIDDEN", "账号已停用", 403)
@@ -263,10 +298,15 @@ class ChatService:
             revision = snapshot["model_center"]["revision"]
             options["call_observer"] = self.model_center.observer(claim.user_id, session_id, context.request_id, revision)
         with self.sessions.exclusive(session_id) as probe, (closing(workflow.retriever)
-                if getattr(workflow, "retriever", None) is not getattr(self.agent_workflow, "retriever", None) else nullcontext()):
+                if getattr(workflow, "retriever", None) is not getattr(self.agent_workflow, "retriever", None) else nullcontext()), (closing(run_sql) if run_sql is not None else nullcontext()):
             checkpoint.check()
             result = workflow.run(context, [ChatTurn(**turn) for turn in snapshot["history"]], snapshot["summary"],
                                   on_answer_event=on_answer_event, **options)
+            if context.capability_snapshot is not None:
+                frozen = context.capability_snapshot
+                name = frozen["skill_name"]
+                result.run_metadata["capabilities"] = {"revision": frozen["revision"], "catalog_hash": frozen["catalog_hash"],
+                    "skill": {"name": name, "version": frozen["catalog"]["skills"][name]["version"]} if name else None}
             if flush_answer:
                 flush_answer()
             checkpoint.check()
@@ -314,6 +354,10 @@ class ChatService:
                 return message
 
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
+        if self.settings.capability_center_enabled:
+            raise AppError("CAPABILITY_DURABLE_RUN_REQUIRED", "能力调用必须通过持久 Run 入队执行", 503)
+        if payload.skill_name is not None:
+            raise AppError("CAPABILITIES_DISABLED", "能力中心尚未启用", 503)
         if payload.model_profile_id is not None and self.model_center is None:
             raise AppError("MODEL_CENTER_DISABLED", "Profile 选择要求启用模型中心", 503)
         if self.agent_workflow is None:
@@ -453,18 +497,32 @@ class ChatService:
                     context_session = SimpleNamespace(organization_id=payload.organization_id, kind="chat")
                     if payload.search_mode in {"knowledge", "auto"}:
                         ready = self.document_scope(Repository(database), user_id, context_session, payload, self.settings)[0]
-        has_evidence = bool(ready) or payload.search_mode in {"web", "auto"} and (self.settings.web_search_enabled or bool(payload.web_urls)) or payload.search_mode in {"sql", "auto"} and bool(self.settings.sql_allowed_tables)
+        question, name = payload.question, getattr(payload, "skill_name", None)
+        instructions, skill_tokens, skill_version, skill_has_tools = "", 0, None, False
+        if self.settings.capability_center_enabled:
+            question, name = self.capabilities.activation(question, name, allow_empty=True)
+            if name is not None:
+                from app.domain.capabilities import skill_prompt
+                item = self.capabilities.describe_skill(user_id, name)
+                instructions = skill_prompt(name, item["version"], item["tool_names"], item["instructions"])
+                skill_tokens, skill_version, skill_has_tools = count_tokens(instructions), item["version"], bool(item["tool_names"])
+        elif name is not None:
+            raise AppError("CAPABILITIES_DISABLED", "能力中心尚未启用", 503)
+        has_evidence = skill_has_tools or bool(ready) or payload.search_mode in {"web", "auto"} and (self.settings.web_search_enabled or bool(payload.web_urls)) or payload.search_mode in {"sql", "auto"} and bool(self.settings.sql_allowed_tables)
         reserved = evidence_token_budget(budget) if has_evidence else 0
         estimated = count_tokens(
             AGENT_SYSTEM_PROMPT, summary,
-            *(turn.content for turn in history), payload.question,
-        ) + reserved
+            *(turn.content for turn in history), question,
+        ) + reserved + skill_tokens
         ratio = estimated / budget
         recommendation = "over_budget" if ratio > 1 else "urgent_compaction" if ratio >= .9 else "suggest_compaction" if ratio >= .75 else "none"
+        if skill_tokens >= budget:
+            recommendation = "skill_over_budget"
         return {
             "session_id": payload.session_id, "context_version": version, "provider": provider,
             "model_name": model_name, "estimated_input_tokens": estimated,
             "reserved_evidence_tokens": reserved, "input_budget_tokens": budget,
+            "skill_input_tokens": skill_tokens, "skill_name": name, "skill_version": skill_version,
             "usage_ratio": round(ratio, 6), "measurement": "estimated",
             "estimate_basis": "cl100k_base_with_evidence_reserve",
             "thresholds": {"suggest": .75, "urgent": .9}, "recommendation": recommendation,

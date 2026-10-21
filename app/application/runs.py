@@ -46,6 +46,18 @@ def bounded_json(value, max_bytes):
 
 
 class RunStore:
+    @staticmethod
+    def public_input_allowed(run):
+        from app.domain.capabilities import CapabilityExecution
+        try:
+            frozen = (run.execution_snapshot or {}).get("context", {}).get("capability_snapshot")
+            if frozen is None:
+                return False
+            execution = CapabilityExecution.model_validate_json(json.dumps(frozen))
+            return any(name in execution.catalog.tools for name in execution.allowed_tools)
+        except (ValueError, TypeError, AttributeError):
+            return False
+
     def __init__(self, settings, database, *, kind="chat"):
         if kind not in {"chat", "evaluation"}:
             raise ValueError("Unsupported execution queue")
@@ -106,6 +118,8 @@ class RunStore:
         inputs = asdict(payload)
         if inputs.get("model_profile_id") is None:
             inputs.pop("model_profile_id", None)
+        if inputs.get("skill_name") is None:
+            inputs.pop("skill_name", None)
         if not inputs.get("knowledge_base_ids"):
             inputs.pop("knowledge_base_ids", None)  # Preserve phase-nine keys across this additive request field.
         fingerprint = hashlib.sha256(json.dumps({"session_id": str(session_id), "input": inputs}, sort_keys=True, default=str).encode()).hexdigest()
@@ -368,16 +382,25 @@ class RunStore:
             run.owner_token = run.lease_expires_at = run.active_since = None
             self.message_state(session, run)
             self._event(session, run, "run_waiting", {"question": question.strip(), "checkpoint_revision": row.revision,
-                "resume_token": str(run.resume_key), "expires_at": run.expires_at})
+                "resume_token": str(run.resume_key), "expires_at": run.expires_at,
+                **({"public_input_allowed": True} if self.public_input_allowed(run) else {})})
             if own_transaction:
                 session.commit()
             return run
 
-    def resume(self, user_id, run_id, revision, resume_key, supplement):
+    def resume(self, user_id, run_id, revision, resume_key, supplement, *, public_query=None):
         if not isinstance(supplement, str) or not 1 <= len(supplement.strip()) <= 4000:
             raise AppError("INVALID_RESUME_INPUT", "补充信息须为 1 至 4000 个字符", 422)
         supplement = supplement.strip()
+        if public_query is not None:
+            if not isinstance(public_query, str) or not 1 <= len(public_query.strip()) <= 400:
+                raise AppError("INVALID_PUBLIC_INPUT", "公开查询须为 1 至 400 个字符", 422)
+            from app.application.chat import prepare_public_query
+            from app.domain.contracts import AgentChatInput
+            public_query, _, _ = prepare_public_query(AgentChatInput(public_query.strip(), "web"), False)
         input_hash = hashlib.sha256(supplement.encode()).hexdigest()
+        if public_query is not None:
+            input_hash = hashlib.sha256(json.dumps({"supplement": supplement, "public_query": public_query}, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
         with self.database.sessions() as session:
             run = self.get_row(session, user_id, run_id, lock=True)
             row = session.get(ChatRunCheckpoint, run.id)
@@ -388,6 +411,12 @@ class RunStore:
                 return run
             if run.state != "waiting" or not row or row.revision != revision or run.resume_key != resume_key:
                 raise AppError("RESUME_CONFLICT", "运行状态或检查点已变化，请刷新后重试", 409)
+            if public_query is not None:
+                if not self.public_input_allowed(run):
+                    raise AppError("PUBLIC_INPUT_NOT_ALLOWED", "当前运行未授权公共 HTTP 工具", 409)
+                from app.application.capabilities import CapabilityService
+                CapabilityService(self.settings, self.database).validate_execution(user_id,
+                    run.execution_snapshot["context"]["capability_snapshot"], session=session)
             if aware(run.expires_at) <= self.now(session):
                 run.state, run.resume_key = "interrupted", None
                 self.message_state(session, run)
@@ -395,6 +424,11 @@ class RunStore:
                 session.commit()
                 raise AppError("HITL_EXPIRED", "人工补充已过期", 409)
             payload = dict(row.payload)
+            if public_query is not None or "public_inputs" in payload:
+                previous = payload.get("public_inputs", [None] * len(payload.get("human_inputs", [])))
+                if not isinstance(previous, list) or len(previous) != len(payload.get("human_inputs", [])):
+                    raise AppError("RUN_CHECKPOINT_DIVERGED", "公开补充输入与运行轮次不一致", 409)
+                payload["public_inputs"] = [*previous, public_query]
             payload["human_inputs"] = [*payload.get("human_inputs", []), supplement]
             payload["resume_receipt"] = {"key": str(resume_key), "input_hash": input_hash, "revision": revision}
             row.payload, row.revision = bounded_json(payload, 4_000_000), row.revision + 1

@@ -375,6 +375,6 @@ $env:RUN_STORAGE_INTEGRATION='1'
 
 ## 功能补齐与平台管理
 
-功能差异按阶段修复，当前状态见 [补齐进度](docs/replication-repair-progress.md)。数据库升级、管理员邀请码注册与旧白名单迁移见 [平台管理](docs/platform-administration.md)。升级已有环境须先执行 `python -m app.migrate`，再启动新版 API/Worker；不会自动修改数据库或开启高级功能。
+功能差异按阶段修复，当前状态见 [补齐进度](docs/replication-repair-progress.md)。[能力中心与 Skill / Tool 管理](docs/capability-center.md)提供版本化注册、SQL/Web 配置、公共 HTTP 调用与 Ctrl/Cmd+K；运行保留入队版本，停用与撤权仍即时核验。数据库升级、管理员邀请码注册与旧白名单迁移见 [平台管理](docs/platform-administration.md)。升级已有环境须先执行 `python -m app.migrate`，再启动新版 API/Worker；不会自动修改数据库或开启高级功能。
 
 已有能力启用、独立 Worker、只读部署预检和完整 Compose 配置见 [部署预检](docs/deployment-preflight.md)。
