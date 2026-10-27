@@ -38,6 +38,9 @@ def main():
         services = Services(settings)
         database = services.database
         database.check()
+        if settings.sandbox_enabled:
+            services.sandbox.readiness()
+            services.sandbox.reap()
         registry = WorkerRegistry(settings, database, kind="run")
         registry.beat()
         if os.environ.get("WORKER_HEARTBEAT_FILE"):
@@ -59,6 +62,8 @@ def main():
         def consume():
             while not stop.is_set():
                 try:
+                    if settings.sandbox_enabled:
+                        services.sandbox.reap()
                     worked = worker.run_once()
                     services.runs.store.dispatch_outbox()
                 except Exception as error:

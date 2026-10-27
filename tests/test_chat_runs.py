@@ -43,7 +43,7 @@ def system(tmp_path):
     def lock(*args):
         yield lambda: None
 
-    database = SimpleNamespace(settings=settings, sessions=sessionmaker(bind=engine, expire_on_commit=False), resource_lock=lock)
+    database = SimpleNamespace(settings=settings, engine=engine, sessions=sessionmaker(bind=engine, expire_on_commit=False), resource_lock=lock)
     with database.sessions() as session:
         user, other = User(username="run-owner", password_hash="fixture"), User(username="other", password_hash="fixture")
         session.add_all([user, other]);session.commit()
@@ -149,10 +149,10 @@ def test_repeated_post_reuses_run_and_conflicting_payload_is_rejected(system):
 def test_empty_shared_scope_preserves_pre_sharing_idempotency_fingerprint(system):
     import hashlib
     import json
-    from dataclasses import asdict
     key = uuid4()
     payload = AgentChatInput("你好", "sql")
-    legacy = asdict(payload);legacy.pop("knowledge_base_ids");legacy.pop("model_profile_id");legacy.pop("skill_name")
+    legacy = {name: getattr(payload, name) for name in (
+        "question", "search_mode", "document_ids", "web_query", "model_provider", "web_urls")}
     expected = hashlib.sha256(json.dumps({"session_id":str(system.sid),"input":legacy},sort_keys=True,default=str).encode()).hexdigest()
     run = start(system, key)
     with system.database.sessions() as session:

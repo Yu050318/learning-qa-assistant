@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-22",
+  "environment": "isolated PostgreSQL; independent Docker API and Run Worker with current read-only app source overlay; scripted model; real workload container; Desktop development rootful exception",
+  "run_id": "55bfdbd8-9798-4c26-9862-0c3e7effe130",
+  "run_state": "succeeded",
+  "event_counts": {
+    "answer_delta": 1,
+    "answer_start": 1,
+    "artifacts_ready": 1,
+    "context_usage": 1,
+    "done": 1,
+    "run_claimed": 1,
+    "run_started": 1,
+    "tool_approval_granted": 1,
+    "tool_finished": 1,
+    "tool_started": 1,
+    "usage": 1
+  },
+  "final_registry_checkpoint_saved": true,
+  "artifact_count": 4,
+  "tests": {
+    "backend_passed": 773,
+    "backend_skipped": 52,
+    "subtests_passed": 38,
+    "targeted_trace_control_workflow_passed": 29,
+    "postgres_artifact_and_fencing_passed": 4,
+    "frontend_node_passed": 45,
+    "frontend_build": "passed"
+  },
+  "browser_verified": [
+    "legacy timestamp warning",
+    "fresh workload real timestamps, tool start and confirmed receipt, file count",
+    "refresh reads same journal without re-executing workload",
+    "no RAG evidence for Sandbox-only workload; model budget marked estimated",
+    "keyboard End can reach context section in natural narrow viewport"
+  ],
+  "not_yet_browser_verified": [
+    "actual RAG leaf/cited/excluded/parent content with real retrieval",
+    "mixed HTTP/Sandbox HITL",
+    "whole-stage deployment and production rootless"
+  ],
+  "source_sha256": {
+    "app/application/run_trace.py": "4720f09d1a0606f66894d50d8af4e5ff2e8863dc27d0a99520c30b9bcfc7befa",
+    "app/application/runs.py": "73d92c1ce47832923d96987ba2a5894a4996ee6aa3893a4e932173303357adec",
+    "app/application/chat.py": "49816120e856c5c61a75a0a5971613bd827c6526cf1377283b66b871891c04bd",
+    "frontend/src/components/RunTrace.vue": "3c27351a9c76596604b69575e7132f2ec715d6e4135f156159d7765d9af8727a",
+    "frontend/src/run-trace.ts": "f6163a16d524b001731df07e9506723599e45a99a876cf2cb771eb3251203894",
+    "frontend/src/api.ts": "73d2c7586bc8ad67dffcc4e019911e5f91bea55ee9a9d11021fdb43cb46f1b72"
+  }
+}

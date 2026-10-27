@@ -41,6 +41,23 @@ def invoke(runtime, tool=None, arguments=None, **kwargs):
         deadline=monotonic() + 5, **kwargs)
 
 
+def test_approval_only_driver_rejects_unbound_or_other_run_before_network(runtime):
+    from uuid import uuid4
+    from app.domain.tool_approvals import RunToolApproval
+    runtime.settings.tool_approvals_enabled = True
+    identity = dict(user_id=uuid4(), session_id=uuid4(), run_id=uuid4(), organization_id=None, catalog_hash="a" * 64)
+    grant = RunToolApproval(**identity, tool_names=("public.lookup",))
+    tool = declaration(requires_approval=True)
+    fails("HTTP_TOOL_APPROVAL_REQUIRED", invoke, runtime, tool)
+    fails("HTTP_TOOL_APPROVAL_REQUIRED", invoke, runtime, tool, approval=grant,
+        identity={**identity, "run_id": uuid4()})
+    fails("HTTP_TOOL_APPROVAL_REQUIRED", invoke, runtime, tool,
+        approval=grant.model_copy(update={"run_id": "invalid"}), identity=identity)
+    assert runtime.calls == []
+    assert invoke(runtime, tool, approval=grant.model_dump(mode="json"), identity=identity)["data"] == {"answer": 42}
+    assert len(runtime.calls) == 1
+
+
 def fails(code, function, *args, **kwargs):
     with pytest.raises(AppError) as error:
         function(*args, **kwargs)

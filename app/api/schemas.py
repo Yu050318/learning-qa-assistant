@@ -249,6 +249,8 @@ class V2ChatRequest(BaseModel):
     model_provider: Literal["deepseek", "ollama"] | None = None
     model_profile_id: ProfileId | None = None
     skill_name: str | None = Field(default=None, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$", max_length=64)
+    approved_tools: list[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.-]{0,127}$")]] = Field(default_factory=list, max_length=129)
+    approval_catalog_revision: int | None = Field(default=None, ge=1, strict=True)
     search_mode: Literal["knowledge", "web", "sql", "auto"] = "auto"
     document_ids: list[UUID] | None = Field(default=None, min_length=1, max_length=100)
     knowledge_base_ids: list[UUID] = Field(default_factory=list, max_length=20)
@@ -258,6 +260,8 @@ class V2ChatRequest(BaseModel):
     @model_validator(mode="after")
     def validate_scope(self):
         validate_web_scope(self)
+        if len(set(self.approved_tools)) != len(self.approved_tools) or bool(self.approved_tools) != (self.approval_catalog_revision is not None):
+            raise ValueError("批准工具必须唯一，并携带所确认的目录修订")
         if self.document_ids is not None:
             self.document_ids = list(dict.fromkeys(self.document_ids))
         return self

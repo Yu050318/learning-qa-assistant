@@ -133,16 +133,27 @@ class ChatService:
             raise AppError("MODEL_DISABLED", "该模型已停用", 403)
         public_query, web_enabled, warnings = prepare_public_query(payload, settings.web_search_enabled)
         capability_snapshot = None
+        approval = None
         if frozen_capabilities is not None:
             execution = self.capabilities.validate_execution(run.user_id, frozen_capabilities, session=database)
+            if execution.approved_tools or payload.approved_tools or payload.approval_catalog_revision is not None:
+                raise AppError("INVALID_TOOL_APPROVAL", "评测或外部冻结任务不能代替用户批准高风险工具", 403)
             if execution.search_mode != payload.search_mode or execution.skill_name != payload.skill_name:
                 raise AppError("CAPABILITY_SCOPE_CHANGED", "任务冻结的能力与本题请求不一致", 409)
             capability_snapshot = execution.model_dump(mode="json")
         elif self.settings.capability_center_enabled:
             capability_snapshot = self.capabilities.freeze(run.user_id, skill_name=payload.skill_name,
-                search_mode=payload.search_mode, public_query=public_query, session=database).model_dump(mode="json")
+                search_mode=payload.search_mode, public_query=public_query, approved_tools=payload.approved_tools,
+                approval_catalog_revision=payload.approval_catalog_revision, session=database).model_dump(mode="json")
         elif payload.skill_name is not None:
             raise AppError("CAPABILITIES_DISABLED", "能力中心尚未启用", 503)
+        elif payload.approved_tools or payload.approval_catalog_revision is not None:
+            raise AppError("CAPABILITIES_DISABLED", "工具批准要求启用能力中心", 503)
+        if capability_snapshot is not None and capability_snapshot["approved_tools"]:
+            from app.domain.tool_approvals import RunToolApproval
+            approval = RunToolApproval(user_id=run.user_id, session_id=run.session_id, run_id=run.id,
+                organization_id=session.organization_id, catalog_hash=capability_snapshot["catalog_hash"],
+                tool_names=tuple(capability_snapshot["approved_tools"])).model_dump(mode="json")
         if capability_snapshot is not None and "delegate_web" not in capability_snapshot["allowed_tools"]:
             settings = settings.model_copy(update={"web_search_enabled": False})
             public_query, web_enabled, warnings = prepare_public_query(payload, False)
@@ -167,7 +178,7 @@ class ChatService:
             web_urls=payload.web_urls, source_message_id=user_message.id, started_at_utc=run.created_at,
             knowledge_base_ids=kids, document_owners=tuple(owners.items()), retrieval_indexes=indexes,
             organization_id=session.organization_id, shared_only=session.organization_id is not None or session.kind == "evaluation")
-        context = replace(context, capability_snapshot=capability_snapshot)
+        context = replace(context, capability_snapshot=capability_snapshot, run_id=run.id, tool_approval=approval)
         context_data = asdict(context)
         for target in indexes:
             database.add(RunIndexPin(run_id=run.id, document_id=target.document_id))
@@ -200,6 +211,8 @@ class ChatService:
         values = dict(snapshot["context"])
         for name in ("user_id", "session_id", "source_message_id"):
             values[name] = UUID(values[name])
+        if values.get("run_id") is not None:
+            values["run_id"] = UUID(values["run_id"])
         for name in ("allowed_document_ids", "knowledge_base_ids"):
             values[name] = tuple(UUID(value) for value in values[name])
         values["document_owners"] = tuple((UUID(did), UUID(uid)) for did, uid in values["document_owners"])
@@ -219,7 +232,7 @@ class ChatService:
         if settings.document_publication_enabled and context.allowed_document_ids and not context.retrieval_indexes:
             raise AppError("RUN_CHECKPOINT_DIVERGED", "旧运行缺少版本化索引范围，请重新发起问答", 409)
         if (context.user_id != claim.user_id or context.session_id != session_id
-                or context.source_message_id != user_message_id):
+                or context.source_message_id != user_message_id or context.run_id not in {None, claim.run_id}):
             raise AppError("RUN_CHECKPOINT_DIVERGED", "运行身份与快照不一致", 409)
         if self.settings.capability_center_enabled and context.capability_snapshot is None:
             raise AppError("RUN_CHECKPOINT_DIVERGED", "旧运行缺少冻结能力版本，请重新发起问答", 409)
@@ -227,6 +240,8 @@ class ChatService:
         run_sql = None
         if context.capability_snapshot is not None:
             execution = self.capabilities.validate_execution(claim.user_id, context.capability_snapshot)
+            self.capabilities.validate_approval(execution, context.tool_approval, user_id=claim.user_id,
+                session_id=session_id, run_id=claim.run_id, organization_id=context.organization_id)
             if "delegate_sql" in execution.allowed_tools:
                 from app.infrastructure.sql import ReadOnlySQL
                 settings = self.capabilities.project_sql(settings, execution.sql_policy)
@@ -254,7 +269,9 @@ class ChatService:
             from contextlib import nullcontext
             with (nullcontext(database) if database is not None else self.database.sessions()) as database:
                 if context.capability_snapshot is not None:
-                    self.capabilities.validate_execution(claim.user_id, context.capability_snapshot, session=database, lock=lock)
+                    execution = self.capabilities.validate_execution(claim.user_id, context.capability_snapshot, session=database, lock=lock)
+                    self.capabilities.validate_approval(execution, context.tool_approval, user_id=claim.user_id,
+                        session_id=session_id, run_id=claim.run_id, organization_id=context.organization_id)
                 user = database.get(User, claim.user_id)
                 if user is None or not user.is_active:
                     raise AppError("FORBIDDEN", "账号已停用", 403)
@@ -349,11 +366,14 @@ class ChatService:
                 if result.kind == "clarification":
                     store.pause(claim, checkpoint.state, result.answer.content, session=database)
                 else:
+                    store.save_checkpoint(database, current_run, checkpoint.state)
                     store.complete(database, claim.user_id, claim.run_id, message, claim=claim)
                 database.commit()
                 return message
 
     def answer_v2(self, user_id: UUID, session_id: UUID, payload: AgentChatInput, request_id: str, on_answer_event=None, *, run_binding=None):
+        if payload.approved_tools or payload.approval_catalog_revision is not None:
+            raise AppError("CAPABILITY_DURABLE_RUN_REQUIRED", "工具审批必须使用持久 Run", 503)
         if self.settings.capability_center_enabled:
             raise AppError("CAPABILITY_DURABLE_RUN_REQUIRED", "能力调用必须通过持久 Run 入队执行", 503)
         if payload.skill_name is not None:

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "real_docker": true,
+  "real_postgresql": true,
+  "model": "scripted-no-provider-calls",
+  "api": "in-process-http-testclient",
+  "rootless": false,
+  "development_only": true,
+  "artifacts": 3,
+  "frozen_tool_version": 1,
+  "current_tool_version": 2,
+  "download_hashes_match": true,
+  "safe_previews": true,
+  "cross_user_rejected": true,
+  "unauthenticated_rejected": true,
+  "running_container_cancelled": true,
+  "remaining_run_containers": 0,
+  "workload_image_id": "sha256:bd20d5c91e4421f4946b8e4b205c12dabe05c68e0cea520e46a25f121dc1a532",
+  "worker_crash_cleanup": {
+    "actual_driver_sigkill": true,
+    "real_age_grace_seconds": 90,
+    "live_lease_protected": true,
+    "expired_orphan_removed": true,
+    "foreign_deployment_preserved": true,
+    "unknown_receipt_preserved": true
+  },
+  "execution_environment": "trusted Linux Worker image with read-only current app source overlay; real local Docker and disposable PostgreSQL; scripted model",
+  "validation": {
+    "backend_passed": 768,
+    "backend_skipped": 52,
+    "subtests_passed": 38,
+    "sandbox_approval_artifact_regression_passed": 80,
+    "postgres_artifact_storage_and_lock_passed": 4,
+    "frontend_node_passed": 42,
+    "frontend_build": "passed"
+  },
+  "source_sha256": {
+    "app/application/sandbox.py": "aa7dbb913f129e4a562fd850d5592204060ebcf2323c5ab19c5a1d40a81a345c",
+    "app/infrastructure/sandbox.py": "fa6a3fdb19ce10e1fb824cd79b92da8cccbcc01f842b91692fb81813e022f9f0",
+    "app/run_worker.py": "19d652bcdb2ce9d222025ea7a954b435ec1b948bede48ee1894b5e95bdd63c34",
+    "app/application/workers.py": "4a341badea191e751b89ad32c7c7a871a609ec0b403b6c29db32979319139715",
+    "tests/sandbox_run_docker_acceptance.py": "00428527e14c23d000afe0684f1c2ba3c502870685fe696c5afe439c6cc882e5"
+  }
+}

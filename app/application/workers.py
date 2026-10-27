@@ -42,6 +42,11 @@ class WorkerRegistry:
                        milvus_collection=self.settings.milvus_collection)
         if self.kind == "evaluation":
             payload.update(evaluation_protocol=1, evaluation_enabled=self.settings.evaluation_enabled)
+        if self.settings.tool_approvals_enabled:
+            payload.update(tool_approvals_enabled=True, approval_protocol=1)
+        if self.settings.sandbox_enabled:
+            payload.update(sandbox_enabled=True, sandbox_protocol=2,
+                sandbox_require_rootless=self.settings.sandbox_require_rootless)
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
     @staticmethod

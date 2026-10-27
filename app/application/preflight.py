@@ -23,13 +23,21 @@ def capability_preflight(settings, database):
     from app.domain.capabilities import CapabilityCatalog, catalog_digest
     from app.infrastructure.persistence.models import CapabilityConfigurationVersion
     import json
+    if settings.sandbox_enabled and (not settings.tool_approvals_enabled or not settings.capability_center_enabled or not settings.chat_runs_enabled):
+        return "fail", "SANDBOX_CONFIGURATION_REQUIRED", "Sandbox 要求能力中心、工具批准、持久 Run 和匹配的 Run Worker"
+    if settings.tool_approvals_enabled and (not settings.capability_center_enabled or not settings.chat_runs_enabled):
+        return "fail", "TOOL_APPROVAL_CONFIGURATION_REQUIRED", "工具批准要求能力中心、持久 Run 和匹配的 Worker"
     if settings.capability_center_enabled and not settings.chat_runs_enabled:
         return "fail", "CAPABILITY_DURABLE_RUN_REQUIRED", "能力执行要求启用持久 Run 并部署匹配的 Run Worker"
     with database.sessions() as session:
         tables = inspect(session.connection())
+        if settings.sandbox_enabled and not tables.has_table("run_artifacts", schema="rag"):
+            return "fail", "SANDBOX_MIGRATION_REQUIRED", "先执行产物存储迁移，再启用 Sandbox"
         if settings.capability_center_enabled:
             service = CapabilityService(settings, database)
             revision, catalog = service.snapshot(session)
+            if settings.sandbox_enabled and (catalog.sandbox is None or not catalog.sandbox.declaration.enabled):
+                return "fail", "SANDBOX_POLICY_REQUIRED", "请先配置启用的固定镜像和有界资源策略"
             history = session.get(CapabilityConfigurationVersion, revision)
             if history is None or catalog_digest(CapabilityCatalog.model_validate_json(json.dumps(history.configuration))) != catalog_digest(catalog):
                 return "fail", "CAPABILITY_HISTORY_INVALID", "核对目录当前修订与不可变历史；不要重写历史来绕过校验"
@@ -41,7 +49,13 @@ def capability_preflight(settings, database):
                 if settings.capability_center_enabled:
                     if frozen is None:
                         return "fail", "CAPABILITY_RUN_SNAPSHOT_REQUIRED", "先在原配置下完成或取消旧运行；不自动重写检查点"
-                    service.validate_execution(run.user_id, frozen, session=session)
+                    execution = service.validate_execution(run.user_id, frozen, session=session)
+                    from app.infrastructure.persistence.models import ChatSession
+                    parent = session.get(ChatSession, run.session_id)
+                    if parent is None:
+                        raise AppError("CAPABILITY_SCOPE_CHANGED", "批准的会话范围无法核验", 409)
+                    service.validate_approval(execution, run.execution_snapshot["context"].get("tool_approval"),
+                        user_id=run.user_id, session_id=run.session_id, run_id=run.id, organization_id=parent.organization_id)
                 elif frozen is not None:
                     return "fail", "CAPABILITY_FEATURE_DISABLED", "仍有冻结能力的活动运行，恢复原开关或明确取消后再关闭"
         if tables.has_table("evaluation_jobs", schema="rag"):
@@ -51,7 +65,9 @@ def capability_preflight(settings, database):
                 if settings.capability_center_enabled:
                     if frozen is None:
                         return "fail", "CAPABILITY_EVALUATION_SNAPSHOT_REQUIRED", "先在原配置下完成或取消旧评测，不按当前目录补成新版本"
-                    service.validate_execution(job.created_by, frozen, session=session)
+                    execution = service.validate_execution(job.created_by, frozen, session=session)
+                    if execution.approved_tools:
+                        raise AppError("CAPABILITY_SCOPE_CHANGED", "评测不能复用 Run 的工具批准", 409)
                 elif frozen is not None:
                     return "fail", "CAPABILITY_FEATURE_DISABLED", "仍有冻结能力的活动评测，恢复原开关或明确取消后再关闭"
     return ("pass", "CAPABILITY_CATALOG_READY", "") if settings.capability_center_enabled else ("disabled", "CAPABILITIES_DISABLED", "")
@@ -241,4 +257,4 @@ def deployment_preflight(settings, database, vectors, *, require_worker=True):
             "features": {name: getattr(settings, name) for name in (
                 "model_center_enabled", "sharing_enabled", "document_versions_enabled", "chat_runs_enabled",
                 "hierarchy_enabled", "knowledge_quality_enabled", "rerank_enabled", "evaluation_enabled",
-                "document_publication_enabled", "workspaces_enabled", "capability_center_enabled")}}
+                "document_publication_enabled", "workspaces_enabled", "capability_center_enabled", "tool_approvals_enabled")}}

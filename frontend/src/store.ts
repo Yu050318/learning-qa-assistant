@@ -90,6 +90,9 @@ export const useAppStore=defineStore('app',()=>{
     const run=runFor(id);if(run.attempt!==attempt)return
     run.runId=data.run_id
     const assistant=messagesFor(id).find(message=>message.id===assistantId);if(!assistant)return
+    if(data.run_id){assistant.run_metadata||={};assistant.run_metadata.run_id=data.run_id
+      if(['run_started','run_claimed','run_resumed'].includes(event))assistant.run_metadata.state=event==='run_started'?'queued':'running'
+      else if(event==='run_waiting'&&data.is_current!==false)assistant.run_metadata.state='waiting'}
     if(event==='answer_start')assistant.content=''
     else if(event==='answer_delta')assistant.content+=data.delta||''
     else if(['agent_started','agent_finished','agent_failed'].includes(event)){
@@ -99,8 +102,9 @@ export const useAppStore=defineStore('app',()=>{
       run.status=`${agentLabel(data.agent)} · ${statusLabel(data.status)}`
     }else if(event==='done'){run.waiting=null;Object.assign(assistant,{content:data.answer,model_provider:data.model_provider,model_name:data.model_name,citations:data.citations||[],token_usage:data.token_usage,run_metadata:data.run_metadata})}
     else if(event==='run_waiting'&&data.is_current!==false){run.waiting=data;assistant.content=data.question;run.status='等待补充信息'}
-    else if(event==='run_cancelled'){run.waiting=null;run.error='本轮问答已取消'}
-    else if(event==='cancel_requested'){run.status='正在停止执行';run.waiting=null}
+    else if(event==='run_cancelled'){run.waiting=null;run.error='本轮问答已取消';assistant.run_metadata={...(assistant.run_metadata||{}),run_id:data.run_id,state:'cancelled'}}
+    else if(event==='cancel_requested'){run.status='正在停止执行';run.waiting=null;assistant.run_metadata={...(assistant.run_metadata||{}),run_id:data.run_id,state:'cancelling'}}
+    else if(event==='error')assistant.run_metadata={...(assistant.run_metadata||{}),run_id:data.run_id,state:'failed'}
     else if(event==='run_claimed')run.status='正在执行任务'
     run.status=event==='run_started'?'Supervisor 正在识别与分发任务':event==='answer_delta'?'正在生成回答':event==='context_usage'?'正在汇总上下文':event==='usage'?'正在保存回答':run.status
   }}

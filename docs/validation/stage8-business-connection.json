@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-10-27T06:20:54.680516+00:00",
+  "tls_required": true,
+  "sslmode": "require",
+  "business_modified": true,
+  "backup_verified": true,
+  "migration_attempted": true,
+  "postgres_ssl_negotiation": "accepted",
+  "connection_ready": true,
+  "error_type": "OperationalError",
+  "resolved_at": "2026-10-27",
+  "schema_revision": "0010_run_artifacts",
+  "resolution": "Database service restored by user; fresh backup restored and checked before migration"
+}

@@ -65,6 +65,27 @@ def test_custom_http_tool_reaches_real_evidence_path_without_private_context(wor
     assert response.citations[0].tool_name == "public.lookup"
 
 
+def test_approved_http_tool_executes_via_claimed_run_and_retains_its_grant(workflow, monkeypatch):
+    from app.application.run_execution import RunWorker
+    s = workflow.system
+    s.settings.tool_approvals_enabled = True
+    save(s, http_tool(requires_approval=True, input_schema={"type": "object", "properties": {"query": {"type": "string"}},
+        "required": ["query"], "additionalProperties": False}), create=False)
+    s.chat.agent_workflow = workflow.workflow
+    monkeypatch.setattr("app.infrastructure.llms.providers.ModelRouter", lambda *args: Models(workflow.model))
+    run = s.runs.start(s.uid, s.sid, AgentChatInput("public weather", skill_name="research",
+        approved_tools=("public.lookup",), approval_catalog_revision=4), "approved-http", uuid4())
+    original = run.execution_snapshot["context"]["tool_approval"]
+    assert RunWorker(s.store, s.chat).run_once()
+    result, events = s.store.read(s.uid, run.id)
+    assert result.state == "succeeded"
+    assert result.execution_snapshot["context"]["tool_approval"] == original
+    assert events[-1].payload["citations"][0]["tool_version"] == 2
+    assert len(workflow.requests) == 1
+    assert not RunWorker(s.store, s.chat).run_once()
+    assert len(workflow.requests) == 1
+
+
 def test_supervisor_cannot_pass_private_task_as_http_arguments(workflow):
     s = workflow
     s.model.responses = [call("invoke_public_tool", tool_name="public.lookup", query="PRIVATE_DATA"),

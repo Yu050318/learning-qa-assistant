@@ -140,9 +140,10 @@ def test_checkpoint_failure_rolls_back_receipt_and_events_have_outbox_entries(co
         assert session.get(ChatRunCheckpoint, s.run_id) is None
         events = session.scalar(select(func.count()).select_from(ChatRunEvent))
         outbox = session.scalar(select(func.count()).select_from(ChatEventOutbox))
-        assert events == outbox == 2
+        assert events == outbox == 3
+        assert list(session.scalars(select(ChatRunEvent.event).order_by(ChatRunEvent.sequence))) == ['run_started','run_claimed','tool_started']
     assert s.store.dispatch_outbox(limit=1) == 1
-    assert s.store.dispatch_outbox() == 1
+    assert s.store.dispatch_outbox() == 2
     assert s.store.dispatch_outbox() == 0
 
 

@@ -1,0 +1,10 @@
+{
+  "scope": "Last verified stage7 backup rehearsal only; not a fresh business backup or deployment",
+  "source_revision": "0008_series_retirement",
+  "target_revision": "0010_run_artifacts",
+  "project_counts_preserved": true,
+  "roles_and_password_hashes_preserved": true,
+  "artifact_table_empty": true,
+  "business_database_modified": false,
+  "temporary_database_removed": true
+}

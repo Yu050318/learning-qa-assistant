@@ -1,0 +1,30 @@
+# Opt-in only: use after compose.yaml + compose.full.yaml and policy registration.
+x-sandbox-features: &sandbox-features
+  TOOL_APPROVALS_ENABLED: "true"
+  SANDBOX_ENABLED: "true"
+  SANDBOX_REQUIRE_ROOTLESS: "${SANDBOX_REQUIRE_ROOTLESS:-true}"
+
+services:
+  backend:
+    environment:
+      <<: *sandbox-features
+  ingestion-worker:
+    environment:
+      <<: *sandbox-features
+  evaluation-worker:
+    environment:
+      <<: *sandbox-features
+  run-worker:
+    build:
+      context: .
+      target: run-worker
+    environment:
+      <<: *sandbox-features
+    group_add:
+      - "${SANDBOX_DOCKER_GID:?Set the local Docker socket group ID}"
+    volumes:
+      - type: bind
+        source: "${SANDBOX_DOCKER_SOCKET:?Set the local rootless Docker socket path}"
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: false

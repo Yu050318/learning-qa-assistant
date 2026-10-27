@@ -1,0 +1,22 @@
+{
+  "environment": "disposable PostgreSQL, actual API/Vue/Run receipts; scripted model and HTTP transport; preview worker is a thread, not independent deployment",
+  "checks": {
+    "cancel_created_no_run_or_messages": true,
+    "explicit_confirmation_succeeded": true,
+    "grant_bound_to_user_session_run_catalog": true,
+    "later_request_requires_fresh_confirmation": true,
+    "stale_revision_rejected_without_new_run": true,
+    "draft_preserved_after_cancel_and_conflict": true,
+    "fresh_confirmation_shows_tool_v2": true,
+    "ordinary_user_approval_skill_unavailable": true,
+    "ordinary_control_plane_forbidden": true
+  },
+  "run_state": "succeeded",
+  "run_count": 1,
+  "message_count": 2,
+  "approval_events": 1,
+  "frozen_revision": 3,
+  "current_revision": 4,
+  "tool_citation_version": 1,
+  "business_configuration_changed": false
+}

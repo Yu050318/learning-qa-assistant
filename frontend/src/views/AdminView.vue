@@ -10,7 +10,7 @@ const preflight = ref<PreflightReport | null>(null), checking = ref(false)
 const checkNames: Record<string, string> = {database:'数据库迁移',document_files:'历史文档文件',upload_directory:'上传目录',parsed_directory:'解析目录',vectors:'向量存储',authentication:'认证配置',platform_administrator:'平台管理员',model_configuration:'模型配置',ingestion_worker:'入库 Worker',run_worker:'Run Worker',evaluation_worker:'评测 Worker',rerank:'检索精排'}
 const checkStatuses = {pass:'通过',fail:'需处理',warn:'待确认',disabled:'未启用'}
 const labels: Record<string, string> = {
-  capability_center:'能力中心与 Skill / Tool 管理',
+  capability_center:'能力中心与 Skill / Tool 管理',tool_approvals:'Run 工具审批',
   evaluation:'RAG 评测工作台', model_center: '模型中心', sharing: '组织与共享知识库', document_versions: '文档版本',
   durable_runs: 'Run / Event 持久化', hierarchy: '三级分块', knowledge_quality: '知识规划与证据判断', rerank: '检索精排',
 }

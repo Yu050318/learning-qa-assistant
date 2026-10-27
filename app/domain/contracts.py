@@ -172,6 +172,8 @@ class AgentChatInput:
     knowledge_base_ids: tuple[UUID, ...] = ()
     model_profile_id: str | None = None
     skill_name: str | None = None
+    approved_tools: tuple[str, ...] = ()
+    approval_catalog_revision: int | None = None
 
 
 @dataclass(frozen=True)
@@ -205,6 +207,8 @@ class RunContext:
     organization_id: UUID | None = None
     shared_only: bool = False
     capability_snapshot: dict | None = None
+    run_id: UUID | None = None
+    tool_approval: dict | None = None
 
     def __post_init__(self):
         if self.capability_snapshot is not None:
@@ -213,6 +217,12 @@ class RunContext:
             execution = CapabilityExecution.model_validate_json(json.dumps(self.capability_snapshot))
             if execution.search_mode != self.search_mode:
                 raise ValueError("Capability mode differs from frozen run")
+            from app.domain.tool_approvals import validate_run_approval
+            validate_run_approval(self.tool_approval, execution.approved_tools,
+                user_id=self.user_id, session_id=self.session_id, run_id=self.run_id,
+                organization_id=self.organization_id, catalog_hash=execution.catalog_hash)
+        elif self.tool_approval is not None:
+            raise ValueError("Approval requires a frozen capability catalog")
         if self.organization_id is not None and not isinstance(self.organization_id, UUID):
             raise ValueError("Workspace identity must be a UUID")
         if type(self.shared_only) is not bool or self.organization_id is not None and not self.shared_only:

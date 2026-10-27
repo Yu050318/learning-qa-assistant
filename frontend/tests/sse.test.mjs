@@ -51,7 +51,8 @@ test('replay passes historical pauses and continues through the resumed round',a
 test('create retry reuses idempotency key; stream reconnect uses the delivered cursor',async()=>{
   const source=await readFile(new URL('../src/api.ts',import.meta.url),'utf8')
   const sseUrl=new URL('../src/sse.ts',import.meta.url).href
-  const javascript=ts.transpileModule(source.replace("from './sse'",`from '${sseUrl}'`),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText
+  const artifactsUrl=new URL('../src/artifacts.ts',import.meta.url).href
+  const javascript=ts.transpileModule(source.replace("from './sse'",`from '${sseUrl}'`).replace("from './artifacts'",`from '${artifactsUrl}'`),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText
   const originalFetch=globalThis.fetch,originalChannel=globalThis.BroadcastChannel
   const requests=[],events=[];let creates=0,streams=0
   globalThis.BroadcastChannel=class{addEventListener(){}postMessage(){}}

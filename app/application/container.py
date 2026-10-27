@@ -2,6 +2,8 @@ from uuid import UUID
 import logging
 
 from app.application.auth import AuthService
+from app.application.artifacts import ArtifactService
+from app.application.sandbox import SandboxService
 from app.application.capabilities import CapabilityService
 from app.infrastructure.http_tools import HttpToolRuntime
 from app.application.chat import ChatService
@@ -56,6 +58,9 @@ class Services:
         self.sessions = SessionService(self.database)
         self.chat = ChatService(settings, self.database, self.sessions, self.agent_workflow)
         self.runs = RunService(settings, self.database, self.chat) if settings.chat_runs_enabled else None
+        self.artifacts = ArtifactService(self.runs.store, self.capabilities) if self.runs is not None and settings.capability_center_enabled else None
+        self.sandbox = SandboxService(settings, self.capabilities, self.artifacts) if self.artifacts is not None and settings.sandbox_enabled else None
+        self.agent_workflow.sandbox = self.sandbox
 
     def start(self) -> None:
         if self.runs is not None:

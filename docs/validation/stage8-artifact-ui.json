@@ -1,0 +1,91 @@
+{
+  "environment": "isolated PostgreSQL, independent Docker API and Run Worker, scripted model, Docker Desktop rootful development exception; business unchanged",
+  "frontend": {
+    "build": "passed",
+    "node_tests": 42
+  },
+  "runs": [
+    {
+      "state": "cancelled",
+      "count": 1
+    },
+    {
+      "state": "succeeded",
+      "count": 1
+    }
+  ],
+  "operations": [
+    {
+      "state": "started",
+      "readonly": true,
+      "count": 1
+    },
+    {
+      "state": "succeeded",
+      "readonly": false,
+      "count": 2
+    },
+    {
+      "state": "succeeded",
+      "readonly": true,
+      "count": 3
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "active.svg",
+      "size_bytes": 71,
+      "sha256": "3f67c8be987aa1db0ef99ce330286efe1929e729f5f9d1695b5fd0b987246244"
+    },
+    {
+      "name": "answer.txt",
+      "size_bytes": 29,
+      "sha256": "dd72719b1942698b57b79fd91a9691ff619bdb46f762fe7d9dc36889773fdebe"
+    },
+    {
+      "name": "chart.png",
+      "size_bytes": 267,
+      "sha256": "3ef27ba530e444761afc9ed9a9b7e3da3b31e470946e0498a104d9bf69815763"
+    },
+    {
+      "name": "long.txt",
+      "size_bytes": 81000,
+      "sha256": "fa79ea3efe250a77d93480d840868d516fa4fd0479b3b066c5761a8745a13519"
+    }
+  ],
+  "artifacts_from_non_succeeded_runs": 0,
+  "download_sha256": "dd72719b1942698b57b79fd91a9691ff619bdb46f762fe7d9dc36889773fdebe",
+  "container_mounts": {
+    "api": [
+      "/opt/fixture/preview.py",
+      "/app/frontend/dist"
+    ],
+    "run_worker": [
+      "/var/run/docker.sock",
+      "/opt/fixture/preview.py"
+    ]
+  },
+  "remaining_workload_containers": [],
+  "browser_checks": [
+    "native approval displays policy v1, revision 3 and all numeric budgets",
+    "real execution generated four files",
+    "literal text preview, PNG 120x80 preview, long text truncation notice",
+    "SVG attachment only",
+    "Escape restores opener focus",
+    "fresh page restores one shelf without duplicates",
+    "team switch clears personal artifacts",
+    "reader cannot open admin session; no shelf remains",
+    "actual running workload cancelled through stop button"
+  ],
+  "screenshots": [
+    "../screenshots/stage8-artifact-text.png",
+    "../screenshots/stage8-artifact-image.png",
+    "../screenshots/stage8-sandbox-budget.png"
+  ],
+  "budget_dialog_followup": {
+    "fixed_header_and_footer": true,
+    "keyboard_scroll_body": true,
+    "cancel_preserves_draft": true,
+    "preview_restarted_after_docker_exit_with_current_app_source_overlay": true
+  }
+}

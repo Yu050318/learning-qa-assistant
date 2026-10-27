@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query, Response
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.api.dependencies import AdminDependency, ServiceDependency, UserDependency
-from app.domain.capabilities import HttpToolDeclaration, SkillDeclaration, SqlPolicy, WebPolicy
+from app.domain.capabilities import HttpToolDeclaration, SkillDeclaration, SqlPolicy, WebPolicy, SandboxPolicy
 
 router = APIRouter(prefix="/api/v2/capability-center", tags=["capability center"])
 
@@ -29,6 +29,15 @@ class SqlWrite(RevisionRequest):
 
 class WebWrite(RevisionRequest):
     declaration: WebPolicy
+
+
+class SandboxWrite(RevisionRequest):
+    declaration: SandboxPolicy
+
+
+@router.put("/runtime/sandbox")
+def update_sandbox(payload: SandboxWrite, services: ServiceDependency, user_id: AdminDependency):
+    return services.capabilities.update_runtime(user_id, "sandbox", payload.declaration, payload.expected_revision)
 
 
 @router.put("/runtime/sql")

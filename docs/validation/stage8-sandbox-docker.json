@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "image_id": "sha256:bd20d5c91e4421f4946b8e4b205c12dabe05c68e0cea520e46a25f121dc1a532",
+  "rootless": false,
+  "development_only": true,
+  "cases": [
+    {
+      "case": "production_rootless_required",
+      "passed": true
+    },
+    {
+      "case": "python_artifact",
+      "passed": true
+    },
+    {
+      "case": "shell_artifact",
+      "passed": true
+    },
+    {
+      "case": "identity_network_root_and_secret_boundary",
+      "passed": true
+    },
+    {
+      "case": "child_json_does_not_override_failure",
+      "passed": true
+    },
+    {
+      "case": "output_flood",
+      "passed": true
+    },
+    {
+      "case": "timeout",
+      "passed": true
+    },
+    {
+      "case": "cancel",
+      "passed": true
+    },
+    {
+      "case": "lease_loss",
+      "passed": true
+    },
+    {
+      "case": "detached_descendant_cleanup",
+      "passed": true
+    },
+    {
+      "case": "symlink_rejected",
+      "passed": true
+    },
+    {
+      "case": "hardlink_rejected",
+      "passed": true
+    },
+    {
+      "case": "fifo_rejected_without_blocking",
+      "passed": true
+    },
+    {
+      "case": "unsafe_filename_rejected",
+      "passed": true
+    },
+    {
+      "case": "deep_directory_rejected",
+      "passed": true
+    },
+    {
+      "case": "file_count_limit",
+      "passed": true
+    },
+    {
+      "case": "aggregate_file_limit",
+      "passed": true
+    },
+    {
+      "case": "single_file_kernel_limit",
+      "passed": true
+    },
+    {
+      "case": "memory_limit",
+      "passed": true
+    },
+    {
+      "case": "process_limit",
+      "passed": true
+    }
+  ],
+  "passed": 20,
+  "validated_at": "2026-10-21T12:05:11.163118+08:00",
+  "worker_image_id": "sha256:7bbbfff76881f17a6da7bb9dcf503748ff6c33d3f6f334360beeff2cce3b3ffc",
+  "source_sha256": {
+    "app/domain/sandbox.py": "ed89bd86962890cd33a2319292e76b6fde72618658a088961c99c3ca75f8b69b",
+    "app/infrastructure/sandbox.py": "d367736e527ff4c8c1f33c426d459cdc1cd8a39d707d51f0f5efcdd8f2c5bbe2",
+    "app/infrastructure/sandbox_runner.py": "79dc858437138b30a75b3985fe58d6653081f5b372a711992375423f1a39ff58",
+    "tests/sandbox_docker_acceptance.py": "bcbba7029d593539fea971be6733ec87a33111dd1ab2db852ac326dd595c57e3",
+    "docker/sandbox/Dockerfile": "7ec6443d439d3734d8b2d1a3c9f41f4e08419d27cef1092a7102a5aece2b33a9",
+    "Dockerfile": "f371e799bd7611e91f4c7edc47e9c96a140b2c96f85a854503f872f97d05c720"
+  },
+  "remaining_managed_containers": 0,
+  "worker_sources_match": true
+}

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Index, MetaData, String, Text, UniqueConstraint, text
+from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Index, LargeBinary, MetaData, String, Text, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -354,6 +354,34 @@ class ChatRunOperation(Base):
     attempts: Mapped[int] = mapped_column(default=1)
     result: Mapped[dict | None] = mapped_column(JSON().with_variant(JSONB, "postgresql"))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class RunArtifact(Base):
+    __tablename__ = "run_artifacts"
+    __table_args__ = (
+        ForeignKeyConstraint(["run_id", "operation_key"],
+            ["rag.chat_run_operations.run_id", "rag.chat_run_operations.operation_key"], ondelete="CASCADE"),
+        UniqueConstraint("run_id", "operation_key", "name", name="uq_run_artifacts_operation_name"),
+        Index("ix_run_artifacts_owner_run", "user_id", "run_id"),
+        CheckConstraint("size_bytes >= 0 AND size_bytes <= 2097152 AND length(content) = size_bytes", name="ck_run_artifacts_size"),
+        CheckConstraint("tool_version >= 1 AND length(sha256) = 64", name="ck_run_artifacts_identity"),
+        CheckConstraint("preview_kind IN ('text','image','none')", name="ck_run_artifacts_preview"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    run_id: Mapped[UUID]
+    operation_key: Mapped[str] = mapped_column(String(128))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("rag.users.id"))
+    session_id: Mapped[UUID] = mapped_column(ForeignKey("rag.chat_sessions.id", ondelete="CASCADE"))
+    organization_id: Mapped[UUID | None] = mapped_column(ForeignKey("rag.organizations.id"))
+    tool_name: Mapped[str] = mapped_column(String(128))
+    tool_version: Mapped[int]
+    name: Mapped[str] = mapped_column(String(256))
+    size_bytes: Mapped[int]
+    sha256: Mapped[str] = mapped_column(String(64))
+    media_type: Mapped[str] = mapped_column(String(100))
+    preview_kind: Mapped[str] = mapped_column(String(12))
+    content: Mapped[bytes] = mapped_column(LargeBinary)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
 class ChatEventOutbox(Base):

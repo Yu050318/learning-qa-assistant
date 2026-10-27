@@ -10,9 +10,10 @@ import re
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_serializer, model_validator
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
+from app.domain.sandbox import SandboxLimits, SandboxRequest, validate_image_reference
 
 SkillName = Annotated[str, Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$", max_length=64)]
 ToolName = Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.-]{0,127}$")]
@@ -26,6 +27,22 @@ BUILTIN_TOOLS = {
 RESERVED_TOOL_NAMES = frozenset(BUILTIN_TOOLS) | {"search_tools", "describe_skill", "invoke_public_tool", "call_http_tool",
     "save_memory", "search_knowledge", "search_rewritten_knowledge", "search_web", "read_web_page",
     "crawl_fixed_sites", "describe_sql_schema", "execute_sql"}
+SANDBOX_TOOL = "sandbox_execute"
+
+
+def builtin_tools(catalog):
+    # Old HTTP tools keep their identity. A Sandbox policy refuses name reuse.
+    if catalog.sandbox is None:
+        return BUILTIN_TOOLS
+    return {**BUILTIN_TOOLS, SANDBOX_TOOL: {
+        "description": "在无网络的临时容器中执行有界 Python/sh，返回执行回执和受控产物",
+        "group": "sandbox", "network_policy": "none", "resource_scope": "isolated-workspace",
+        "input_schema": SandboxRequest.model_json_schema()}}
+
+
+def requires_tool_approval(catalog, name):
+    return (name == SANDBOX_TOOL and catalog.sandbox is not None or
+            name in catalog.tools and catalog.tools[name].declaration.requires_approval)
 
 
 class CapabilityDeclaration(BaseModel):
@@ -203,6 +220,19 @@ class RegisteredWebPolicy(CapabilityDeclaration):
     declaration: WebPolicy
 
 
+class SandboxPolicy(CapabilityDeclaration):
+    enabled: bool
+    image: str = Field(repr=False)
+    limits: SandboxLimits = Field(default_factory=SandboxLimits)
+
+    _image = field_validator("image")(validate_image_reference)
+
+
+class RegisteredSandboxPolicy(CapabilityDeclaration):
+    version: int = Field(ge=1)
+    declaration: SandboxPolicy
+
+
 class CapabilityCatalog(CapabilityDeclaration):
     schema_version: Literal[1] = 1
     skills: dict[SkillName, RegisteredSkill] = Field(default_factory=dict, max_length=128)
@@ -211,6 +241,14 @@ class CapabilityCatalog(CapabilityDeclaration):
     retired_tools: tuple[ToolName, ...] = Field(default=(), max_length=4096)
     sql: RegisteredSqlPolicy | None = None
     web: RegisteredWebPolicy | None = None
+    sandbox: RegisteredSandboxPolicy | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize(self, handler):
+        value = handler(self)
+        if self.sandbox is None:
+            value.pop("sandbox", None)
+        return value
 
     @model_validator(mode="after")
     def coherent(self):
@@ -218,12 +256,14 @@ class CapabilityCatalog(CapabilityDeclaration):
             raise ValueError("Retired capability identities cannot be reused")
         if set(self.tools).intersection(RESERVED_TOOL_NAMES):
             raise ValueError("Custom tools cannot replace builtins")
+        if self.sandbox is not None and (SANDBOX_TOOL in self.tools or SANDBOX_TOOL in self.retired_tools):
+            raise ValueError("Sandbox identity conflicts with a live or retired HTTP tool")
         for name, record in self.tools.items():
             if name != record.declaration.name:
                 raise ValueError("Tool identity differs from catalog key")
         for name, record in self.skills.items():
             skill = record.declaration
-            if name != skill.name or not set(skill.allowed_tools).issubset(set(self.tools) | set(BUILTIN_TOOLS)):
+            if name != skill.name or not set(skill.allowed_tools).issubset(set(self.tools) | set(builtin_tools(self))):
                 raise ValueError("Skill identity or referenced tool is invalid")
             if skill.enabled and any(not self.tools[tool].declaration.enabled for tool in skill.allowed_tools if tool in self.tools):
                 raise ValueError("Enabled skills cannot depend on disabled tools")
@@ -248,7 +288,8 @@ class CapabilityExecution(CapabilityDeclaration):
     catalog_hash: str = Field(pattern=r"^[a-f0-9]{64}$")
     skill_name: SkillName | None = None
     search_mode: Literal["knowledge", "web", "sql", "auto"]
-    allowed_tools: tuple[ToolName, ...] = Field(default=(), max_length=131, strict=False)
+    allowed_tools: tuple[ToolName, ...] = Field(default=(), max_length=132, strict=False)
+    approved_tools: tuple[ToolName, ...] = Field(default=(), max_length=129, strict=False)
     sql_policy: SqlPolicy | None = None
     sql_connection_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
@@ -258,12 +299,18 @@ class CapabilityExecution(CapabilityDeclaration):
             raise ValueError("Frozen catalog digest differs")
         if self.skill_name is not None and self.skill_name not in self.catalog.skills:
             raise ValueError("Frozen skill is missing")
-        known = set(BUILTIN_TOOLS) | set(self.catalog.tools)
+        builtins = builtin_tools(self.catalog)
+        known = set(builtins) | set(self.catalog.tools)
         if len(set(self.allowed_tools)) != len(self.allowed_tools) or not set(self.allowed_tools).issubset(known):
             raise ValueError("Frozen tools differ from catalog")
-        mode_tools = {"knowledge": {"delegate_rag"}, "sql": {"delegate_sql"}, "web": {"delegate_web"}, "auto": set(BUILTIN_TOOLS)}
-        if any(name in BUILTIN_TOOLS and name not in mode_tools[self.search_mode] or name not in BUILTIN_TOOLS and self.search_mode not in {"web", "auto"} for name in self.allowed_tools):
+        required = {name for name in self.allowed_tools if requires_tool_approval(self.catalog, name)}
+        if set(self.approved_tools) != required or len(set(self.approved_tools)) != len(self.approved_tools):
+            raise ValueError("Approvals must exactly match approval-only tools in the frozen scope")
+        mode_tools = {"knowledge": {"delegate_rag"}, "sql": {"delegate_sql"}, "web": {"delegate_web"}, "auto": set(builtins)}
+        if any(name in builtins and name not in mode_tools[self.search_mode] or name not in builtins and self.search_mode not in {"web", "auto"} for name in self.allowed_tools):
             raise ValueError("Frozen tools exceed selected mode")
+        if SANDBOX_TOOL in self.allowed_tools and self.catalog.sandbox is not None and not self.catalog.sandbox.declaration.enabled:
+            raise ValueError("Frozen Sandbox policy is disabled")
         if self.skill_name is not None and not set(self.allowed_tools).issubset(self.catalog.skills[self.skill_name].declaration.allowed_tools):
             raise ValueError("Frozen tools exceed selected skill")
         if "delegate_sql" in self.allowed_tools and (self.sql_policy is None or not self.sql_policy.enabled or self.sql_connection_sha256 is None):

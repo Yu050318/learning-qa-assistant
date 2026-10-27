@@ -1,5 +1,7 @@
 # 功能补齐进度
 
+当前终止范围：按用户 2026-10-22 最新要求，完成第八阶段验收、提交推送与本次废弃镜像清理后结束目标，不进入第九阶段。
+
 参考基线：本地 SuperMew `eb0495e`。[原始差异清单](replication-gap-audit.md)保留修复前的核查快照，当前状态以本文为准。沿用当前 FastAPI/Vue/PostgreSQL/Milvus，保留历史数据，按功能与流程对齐，不逐屏复制参考主题。每阶段验收后先提交并推送 GitHub，再进入下一阶段。
 
 | 阶段 | 交付范围 | 状态 |
@@ -10,8 +12,8 @@
 | 4 | 版本化模型 Profile、四种角色、Step-back/HyDE | 已验收并推送 0a3bb3b；本地部署就绪 |
 | 5 | 数据集/任务/结果、Evaluation Worker、12 文档/80 题真实 A/B | 已验收并推送 d11d34f；真实质量门禁未通过 |
 | 6 | 租户与检索范围、候选构建/核验/发布、退休与统一任务 | 已验收并推送 f517c09；业务部署就绪 |
-| 7 | Skill/Tool 注册与版本、能力中心、命令面板 | 已验收；运行、界面、Docker 与业务部署就绪，提交记录见 Git |
-| 8 | Run-bound 审批、独立 Sandbox、产物、完整追踪界面 | 未开始 |
+| 7 | Skill/Tool 注册与版本、能力中心、命令面板 | 已验收并推送 a2a6341；业务部署就绪 |
+| 8 | Run-bound 审批、独立 Sandbox、产物、完整追踪界面 | 隔离与业务部署已验收；审批/Sandbox/产物/追踪完成，提交推送与最终清理收尾中 |
 | 9 | 共享限流、安全头、契约生成、监控和全量验收 | 未开始 |
 
 阶段完成只说明对应范围已验收，不表示全部功能已复现。团队空间已完成隔离环境验证并在业务环境启用；原有个人资料和会话保持个人归属，不自动创建团队或提升管理员。阶段六的最终证据见文末，较早的中间记录保留当时状态。
@@ -159,3 +161,25 @@
 - 独立 PostgreSQL 迁移/并发/只读 SQL 管理组合 **31 passed**；前端 **32 项 Node 测试**及构建通过，Docker 中 97 份 Python 文件与当前源码摘要一致。最终后端 **657 passed、48 skipped、38 subtests passed**。
 - 业务备份 `data/backups/20261020-223459-stage7` 已实际恢复验证项目 schema、迁移版本与 4 份文件；随后迁移至 0009，仅启用能力中心。1 个原账号、2 文档、1478 层级节点、3 会话、6 消息、2 个模型历史和 925 叶子绑定清单保留。API/前端与三个 Worker 完整预检通过，没有自动提升管理员或重跑企业 A/B。
 - [最终验收](validation/stage7-acceptance.md)、[Docker 执行证据](validation/stage7-docker-acceptance.json)、[业务数据保留](validation/stage7-deployment.json)。本阶段提交推送后才开始阶段八。任务结束继续按既定范围清理本次废弃 Docker 镜像，不删除数据库或数据卷。
+
+## 阶段八实施中（2026-10-21）
+
+- 当前本地及 GitHub `main` 均核对为阶段七 `a2a63415d3a7fd97f0a30d8468ed4898ede08192`；本阶段源码尚未提交。完整范围和兼容门禁见 [审批与 Sandbox 实施清单](approval-sandbox-plan.md)。
+- 已实现本次 Run 绑定的工具批准、目录修订确认、管理员限制、执行/恢复撤权复核和 HTTP 驱动验证。隔离 PostgreSQL 浏览器验证取消不创建运行、确认执行、每次重新确认、旧修订拒绝与草稿恢复，见 [审批界面验收](validation/stage8-approval-ui.md)。
+- Sandbox 固定 Docker 驱动与可信 runner 已通过 **20 项真实容器检查**，包含 Python/sh、实际容器隔离配置、资源限额、危险文件拒绝、超时/取消/租约丢失和后代清理；没有残留 Sandbox 容器。当前是 Docker Desktop 开发验收，生产 rootless 默认要求会明确拒绝该 daemon，不能据此宣称生产部署通过。[Sandbox 驱动中间验收](validation/stage8-sandbox-docker.md)。
+- 当前后端完整回归 **717 passed、48 skipped、38 subtests passed**；其中 Sandbox 驱动与契约组合 **34 passed**。既有前端审批预览仍是独立测试配置，不是业务部署。
+- Sandbox 的同一次 Run 调度与冻结目录兼容、产物持久化/鉴权下载、完整追踪界面和整阶段部署尚未完成。没有业务迁移或开启 Sandbox，没有重跑第五阶段 A/B，也未推送阶段八中间实现；阶段八验收后先推送，再开始阶段九。
+- 随后补齐 Sandbox 版本策略、管理员配置 API、同名/退休标识冲突拒绝、旧目录序列化与摘要兼容、Worker 配置区分和预检依赖门禁。实际 Run 创建验证冻结镜像、资源版本及本次批准；更新不重写旧运行，停用或撤权拒绝复核。新增专项 **8 passed**，相关能力/审批/Sandbox 组合 **137 passed**。这轮没有重跑整套后端；前述 717 是驱动快照的全量记录。同一次 Run 的真实 Sandbox 调度、产物存储及余下交付仍未完成，不启用或推送阶段八中间实现。
+- 最新推进：新增 `0010_run_artifacts`、数据库产物/鉴权下载/安全预览，接入实际 Supervisor、非重入工具检查点和 Run Worker。成功回执可接管复用，未知执行不自动重跑，取消时清理失败不会被成功取消状态掩盖。真实 Docker/PostgreSQL 验证同一运行的 3 个文件入库、原始摘要下载、图片预览、HTML 附件限制、401/404 越权拒绝及运行中取消清理；无残留工作负载容器。[Run 与产物验收](validation/stage8-sandbox-run.md)。
+- 当前后端全量 **755 passed、51 skipped、38 subtests passed**；真实 PostgreSQL 专项 **4 passed**。真实容器链路使用脚本模型和进程内 HTTP，不能替代真实供应商、独立服务或浏览器验证。产物界面、追踪、遗留容器治理、混合工具/HITL 与整阶段部署继续待完成；业务 schema/config 未更改，阶段八未提交推送。
+- 产物界面现已接入并通过独立 Docker API/Run Worker 与真实 PostgreSQL 浏览器验收：4 份真实文件、摘要校验下载、安全预览/截断、SVG 附件限制、刷新去重、切换团队/账号隔离及真实执行中取消。授权弹窗显示全部数值限额，前端构建与 **42 项 Node 测试**通过；API 无 Docker socket，取消后无工作负载容器残留。[产物界面中间验收](validation/stage8-artifact-ui.md)。使用脚本模型及 Desktop 开发例外，完整追踪、意外退出容器治理、混合工具/HITL 和整阶段部署仍待完成。
+- 2026-10-22 补齐部署 namespace、90 秒宽限、Run 行锁/有效租约保护和 Worker 定期核查。真实驱动进程 SIGKILL 后等待实际宽限，验证有效租约保护、过期回收、其他部署保留与未知回执不改写；测试容器无残留。最新完整后端 **768 passed、52 skipped、38 subtests passed**，相关专项 **80 passed**，真实 PostgreSQL **4 passed**；前端仍为 **42 项测试**及最新构建通过。授权弹窗标题/按钮固定，内容可键盘滚动。[异常退出治理中间验收](validation/stage8-sandbox-reaping.md)。完整追踪、混合工具/HITL、整阶段 Worker 容器重启与业务部署门禁仍未完成，本阶段继续保持未提交。
+
+
+### 第八阶段独立部署验收与当前阻塞
+
+最新验收：独立 Docker 服务的真实 HTTP + Sandbox + 同次 Run HITL、浏览器公开查询确认/刷新恢复、真实 RAG 叶块/父块追踪、整 Run Worker SIGKILL 后接管与孤儿回收均已通过。后端 **775 passed、52 skipped、38 subtests passed**，前端 **45 项测试及构建**通过。旧阶段七备份恢复升级至 0010 且临时库已清理。业务 PostgreSQL SSL 连接仍失败，尚无当前业务库的新验证备份，因此业务迁移/部署、阶段提交推送和最终镜像清理仍待完成；第八阶段未标记完成。见 [独立部署证据](validation/stage8-docker-acceptance.md)。以下保留历史快照。
+
+### 第八阶段业务恢复与最终验收（2026-10-27）
+
+最新业务验收（2026-10-27）：用户恢复数据库服务后，已完成新的业务备份及实际恢复验证，再迁移至 0010。API/前端与三个独立 Worker 全部通过预检；旧账号角色、密码摘要、能力历史、925 个绑定叶块及文档/会话数量保持不变。只开启 TOOL_APPROVALS_ENABLED，业务 Sandbox 保持可选部署/default off；完整链路在独立 Docker 开发部署验收通过。提交推送与最终镜像清理收尾后结束目标，不进入阶段九。见 [业务部署](validation/stage8-deployment.json)。以下保留实施历史，旧阻塞描述已被本段解决。

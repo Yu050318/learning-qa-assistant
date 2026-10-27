@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from contextlib import nullcontext
 import re
 from time import monotonic, sleep
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID, uuid4
 
 from sqlalchemy import and_, func, or_, select
@@ -90,7 +90,8 @@ class RunStore:
                 message.run_metadata = {**(message.run_metadata or {}), "run_id": str(run.id), "state": run.state}
 
     def _event(self, session, run, event, data, *, terminal=False):
-        payload = json.loads(json.dumps({**data, "run_id": str(run.id), "sequence": run.sequence + 1}, default=str))
+        payload = json.loads(json.dumps({**data, "recorded_at": datetime.now(timezone.utc).isoformat(),
+            "run_id": str(run.id), "sequence": run.sequence + 1}, default=str))
         size = len(json.dumps(payload, ensure_ascii=False).encode())
         # Reserve room for a terminal error even if model deltas exhaust the budget.
         if size > 2_000_000 or run.sequence >= (8200 if terminal else 8192) or run.event_bytes + size > (8_000_000 if terminal else 6_000_000):
@@ -120,6 +121,11 @@ class RunStore:
             inputs.pop("model_profile_id", None)
         if inputs.get("skill_name") is None:
             inputs.pop("skill_name", None)
+        if not inputs.get("approved_tools") and inputs.get("approval_catalog_revision") is None:
+            inputs.pop("approved_tools", None)
+            inputs.pop("approval_catalog_revision", None)
+        elif inputs.get("approved_tools"):
+            inputs["approved_tools"] = sorted(inputs["approved_tools"])
         if not inputs.get("knowledge_base_ids"):
             inputs.pop("knowledge_base_ids", None)  # Preserve phase-nine keys across this additive request field.
         fingerprint = hashlib.sha256(json.dumps({"session_id": str(session_id), "input": inputs}, sort_keys=True, default=str).encode()).hexdigest()
@@ -161,6 +167,9 @@ class RunStore:
                     prepare(session, run, payload)
                     run.execution_snapshot = bounded_json(run.execution_snapshot, 4_000_000)
                 self._event(session, run, "run_started", {"request_id": request_id, "search_mode": payload.search_mode})
+                approval = (run.execution_snapshot or {}).get("context", {}).get("tool_approval")
+                if approval:
+                    self._event(session, run, "tool_approval_granted", {"tool_names": approval["tool_names"], "catalog_hash": approval["catalog_hash"]})
                 session.commit()
                 return run, True
         except IntegrityError:
@@ -354,7 +363,7 @@ class RunStore:
     def finish_failure(self, claim, error):
         with self.database.sessions() as session:
             run = self.owned(session, claim, allow_cancelling=True, check_deadline=False)
-            if run.state == "cancelling":
+            if run.state == "cancelling" and not (isinstance(error, AppError) and error.code == "SANDBOX_CLEANUP_FAILED"):
                 run.state = "cancelled"
                 self._event(session, run, "run_cancelled", {}, terminal=True)
             else:
@@ -411,6 +420,14 @@ class RunStore:
                 return run
             if run.state != "waiting" or not row or row.revision != revision or run.resume_key != resume_key:
                 raise AppError("RESUME_CONFLICT", "运行状态或检查点已变化，请刷新后重试", 409)
+            context = (run.execution_snapshot or {}).get("context", {})
+            if context.get("tool_approval") is not None:
+                from app.application.capabilities import CapabilityService
+                service = CapabilityService(self.settings, self.database)
+                execution = service.validate_execution(user_id, context.get("capability_snapshot"), session=session)
+                parent = Repository(session).chat_session(user_id, run.session_id)
+                service.validate_approval(execution, context["tool_approval"], user_id=user_id, session_id=run.session_id,
+                    run_id=run.id, organization_id=parent.organization_id)
             if public_query is not None:
                 if not self.public_input_allowed(run):
                     raise AppError("PUBLIC_INPUT_NOT_ALLOWED", "当前运行未授权公共 HTTP 工具", 409)
@@ -444,7 +461,7 @@ class RunStore:
         inputs = bounded_json(inputs, 2_000_000)
         input_hash = hashlib.sha256(json.dumps(inputs, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         with self.database.sessions() as session:
-            self.owned(session, claim)
+            run = self.owned(session, claim)
             row = session.get(ChatRunOperation, (claim.run_id, key))
             if row:
                 if row.input_hash != input_hash or row.readonly != readonly:
@@ -455,6 +472,9 @@ class RunStore:
                     raise AppError("OPERATION_ALREADY_RUNNING", "同一检查点调用正在执行", 409)
                 if not readonly:
                     row.state = "uncertain"
+                    if key.startswith('tool/'):
+                        self._event(session, run, 'tool_failed', {'operation_key':key,
+                            'status':'uncertain', 'error_code':'TOOL_OUTCOME_UNCERTAIN'})
                     session.commit()
                     raise AppError("TOOL_OUTCOME_UNCERTAIN", "工具结果尚未确认，需人工核查后处理", 409)
                 if row.attempts >= 3:
@@ -466,6 +486,11 @@ class RunStore:
                     raise AppError("RUN_CHECKPOINT_LIMIT", "运行检查点调用超过上限", 413)
                 session.add(ChatRunOperation(run_id=claim.run_id, operation_key=key, input_hash=input_hash,
                     state="started", readonly=readonly, owner_generation=claim.generation, attempts=1))
+            if key.startswith('tool/'):
+                name = inputs.get('name') if isinstance(inputs, dict) else None
+                self._event(session, run, 'tool_started', {'operation_key':key,
+                    'name':name if isinstance(name,str) and re.fullmatch(r'[A-Za-z0-9_.-]{1,128}',name) else None,
+                    'generation':claim.generation,'readonly':readonly})
             session.commit()
             return False, None
 
@@ -477,6 +502,26 @@ class RunStore:
             if not row or row.state != "started" or row.owner_generation != claim.generation:
                 raise AppError("RUN_CHECKPOINT_DIVERGED", "检查点调用状态已变化", 409)
             row.state, row.result = "succeeded", result
+            if key.startswith('tool/'):
+                receipt = result if isinstance(result,dict) else {}
+                value = receipt.get('value') if isinstance(receipt.get('value'), dict) else {}
+                error = value.get('error') if isinstance(value.get('error'), dict) else {}
+                output = value.get('value') if isinstance(value.get('value'),dict) else {}
+                code = receipt.get('code') if receipt.get('ok') is False else error.get('code') or output.get('error_code')
+                failed = receipt.get('ok') is False or bool(error) or output.get('status')=='failed' or output.get('success') is False
+                self._event(session, run, 'tool_failed' if failed else 'tool_finished', {
+                    'operation_key':key, 'status':'failed' if failed else 'completed',
+                    'error_code':code if isinstance(code,str) and re.fullmatch(r'[A-Z0-9_]{1,80}',code) else None,
+                    'elapsed_ms':round(max(0,(datetime.now(timezone.utc)-aware(row.updated_at)).total_seconds()*1000),2)})
+            if self.settings.sandbox_enabled and not row.readonly:
+                from app.infrastructure.persistence.models import RunArtifact
+                artifacts = list(session.scalars(select(RunArtifact).where(
+                    RunArtifact.run_id == run.id, RunArtifact.operation_key == key).order_by(RunArtifact.name)))
+                if artifacts:
+                    self._event(session, run, "artifacts_ready", {"items": [{"id": str(item.id), "name": item.name,
+                        "size_bytes": item.size_bytes, "sha256": item.sha256, "media_type": item.media_type,
+                        "preview_kind": item.preview_kind, "tool_name": item.tool_name,
+                        "tool_version": item.tool_version} for item in artifacts]})
             if checkpoint_payload is not None:
                 self.save_checkpoint(session, run, checkpoint_payload)
             session.commit()

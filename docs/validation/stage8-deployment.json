@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-27",
+  "schema_revision": "0010_run_artifacts",
+  "preserved_counts": {
+    "users": 1,
+    "documents": 2,
+    "hierarchy_nodes": 1478,
+    "chat_sessions": 3,
+    "chat_messages": 6,
+    "chat_runs": 0,
+    "evaluation_jobs": 0,
+    "model_configuration_versions": 2,
+    "organizations": 0
+  },
+  "historical_documents": 2,
+  "preserved_bound_leaves": 925,
+  "source_hashes_unchanged": true,
+  "original_leaf_manifest_matches_adoption": true,
+  "historical_sessions_remain_personal": true,
+  "published_index_bindings": 2,
+  "enabled_flags": [
+    "TOOL_APPROVALS_ENABLED"
+  ],
+  "http_status": {
+    "api": 200,
+    "frontend": 200
+  },
+  "preflight_ready": true,
+  "preflight_checks": [
+    {
+      "name": "database",
+      "status": "pass",
+      "code": "SCHEMA_CURRENT"
+    },
+    {
+      "name": "upload_directory",
+      "status": "pass",
+      "code": "DIRECTORY_ACCESSIBLE"
+    },
+    {
+      "name": "parsed_directory",
+      "status": "pass",
+      "code": "DIRECTORY_ACCESSIBLE"
+    },
+    {
+      "name": "document_files",
+      "status": "pass",
+      "code": "DOCUMENT_FILES_ACCESSIBLE"
+    },
+    {
+      "name": "vectors",
+      "status": "pass",
+      "code": "VECTOR_SCHEMA_VALID"
+    },
+    {
+      "name": "document_publication",
+      "status": "pass",
+      "code": "DOCUMENT_INDEX_BINDINGS_READY"
+    },
+    {
+      "name": "frozen_runs",
+      "status": "pass",
+      "code": "FROZEN_INDEX_SCOPES_READY"
+    },
+    {
+      "name": "frozen_evaluations",
+      "status": "pass",
+      "code": "FROZEN_INDEX_SCOPES_READY"
+    },
+    {
+      "name": "shared_version_selection",
+      "status": "pass",
+      "code": "SHARED_VERSION_SELECTION_READY"
+    },
+    {
+      "name": "capability_catalog",
+      "status": "pass",
+      "code": "CAPABILITY_CATALOG_READY"
+    },
+    {
+      "name": "authentication",
+      "status": "pass",
+      "code": "AUTH_CONFIGURED"
+    },
+    {
+      "name": "platform_administrator",
+      "status": "warn",
+      "code": "ADMIN_REGISTRATION_REQUIRED"
+    },
+    {
+      "name": "model_configuration",
+      "status": "pass",
+      "code": "MODEL_CONFIGURED"
+    },
+    {
+      "name": "ingestion_worker",
+      "status": "pass",
+      "code": "WORKER_AVAILABLE"
+    },
+    {
+      "name": "run_worker",
+      "status": "pass",
+      "code": "RUN_WORKER_AVAILABLE"
+    },
+    {
+      "name": "evaluation_worker",
+      "status": "pass",
+      "code": "EVALUATION_WORKER_AVAILABLE"
+    },
+    {
+      "name": "rerank",
+      "status": "disabled",
+      "code": "RERANK_DISABLED"
+    }
+  ],
+  "backup": "data/backups/20261027-152751-stage8",
+  "project_restore_verified": true,
+  "restored_scope": "rag and public.alembic_version",
+  "copied_files_sha256_verified": 4,
+  "roles_and_password_hashes_preserved": true,
+  "catalog_history_preserved": true,
+  "sandbox_enabled": false,
+  "sandbox_deployment": "Opt-in Docker deployment validated separately; native business runtime stays disabled",
+  "tool_approvals_enabled": true,
+  "capability_catalog_revision": 1,
+  "builtin_skills": [
+    "knowledge",
+    "sql-assistant",
+    "web-research"
+  ],
+  "scope": "Read-only preservation and deployment verification. Authenticated UI tested separately with disposable Docker accounts. No new answer-quality claim."
+}

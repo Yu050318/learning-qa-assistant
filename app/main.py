@@ -15,6 +15,7 @@ from app.api.sharing import router as sharing_router
 from app.api.model_center import router as model_center_router
 from app.api.evaluations import router as evaluation_router
 from app.api.capabilities import router as capability_router
+from app.api.artifacts import router as artifact_router
 from app.application.container import Services
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
@@ -29,7 +30,7 @@ def error_response(request: Request, code: str, message: str, status_code: int):
         {"error": {"code": code, "message": message, "request_id": request_id}},
         status_code=status_code, headers={"X-Request-ID": request_id},
     )
-    if request.url.path.startswith("/api/v2/auth/"):
+    if request.url.path.startswith(("/api/v2/auth/", "/api/v2/runs/")):
         response.headers.update({"Cache-Control": "no-store", "Pragma": "no-cache"})
     if status_code == 401:
         response.headers["WWW-Authenticate"] = "Bearer"
@@ -55,6 +56,7 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
     application.include_router(sharing_router, prefix="/api/v2")
     application.include_router(model_center_router)
     application.include_router(capability_router)
+    application.include_router(artifact_router)
     application.add_middleware(BodyLimitMiddleware, max_bytes=(settings.max_upload_mb + 1) * 1024 * 1024)
 
     @application.middleware("http")

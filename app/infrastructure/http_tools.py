@@ -56,7 +56,7 @@ class HttpToolRuntime:
             return session.request(method, url, headers=headers, data=body, timeout=timeout,
                 allow_redirects=False, verify=True, content_callback=receive)
 
-    def invoke(self, declaration: HttpToolDeclaration, arguments, *, deadline, check=lambda: None):
+    def invoke(self, declaration: HttpToolDeclaration, arguments, *, deadline, check=lambda: None, approval=None, identity=None):
         # Revalidate even when a caller hands us a previously constructed mutable
         # declaration: nested dicts can otherwise bypass frozen-model checks.
         try:
@@ -73,8 +73,19 @@ class HttpToolRuntime:
             return seconds
 
         remaining()
-        if not tool.enabled or tool.requires_approval:
+        if not tool.enabled or tool.requires_approval and not self.settings.tool_approvals_enabled:
             raise AppError("HTTP_TOOL_UNAVAILABLE", "工具已停用或尚需审批", 409)
+        if tool.requires_approval:
+            try:
+                if approval is None:
+                    raise ValueError("Missing approval")
+                from app.domain.tool_approvals import RunToolApproval
+                raw = approval.model_dump_json(warnings=False) if isinstance(approval, RunToolApproval) else json.dumps(approval)
+                grant = RunToolApproval.model_validate_json(raw)
+                if not identity or not grant.allows(tool.name, **identity):
+                    raise ValueError("Approval identity differs")
+            except (ValueError, TypeError):
+                raise AppError("HTTP_TOOL_APPROVAL_REQUIRED", "工具缺少绑定当前 Run 的明确批准", 403) from None
         try:
             raw = json.dumps(arguments, ensure_ascii=False, allow_nan=False).encode("utf-8")
             if len(raw) > 65536:

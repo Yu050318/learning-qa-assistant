@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.engine import make_url
 
 from app.core.errors import AppError
-from app.domain.capabilities import BUILTIN_TOOLS, RESERVED_TOOL_NAMES, CapabilityCatalog, CapabilityExecution, HttpToolDeclaration, SkillDeclaration, SqlPolicy, WebPolicy, catalog_digest
+from app.domain.capabilities import BUILTIN_TOOLS, RESERVED_TOOL_NAMES, SANDBOX_TOOL, CapabilityCatalog, CapabilityExecution, HttpToolDeclaration, SkillDeclaration, SqlPolicy, WebPolicy, SandboxPolicy, builtin_tools, requires_tool_approval, catalog_digest
 from app.infrastructure.persistence.models import CapabilityConfiguration, CapabilityConfigurationVersion, User, utcnow
 
 
@@ -54,7 +54,7 @@ class CapabilityService:
             self.user(session, uid, admin=True)
             row, catalog = self.read(session)
             return {"revision": row.revision, "catalog": catalog.model_dump(mode="json"),
-                    "builtin_tools": BUILTIN_TOOLS, "secret_names": sorted(self.settings.capability_secret_names),
+                    "builtin_tools": builtin_tools(catalog), "secret_names": sorted(self.settings.capability_secret_names),
                     "runtime": {"sql": self.sql_policy(catalog).model_dump(mode="json"), "web": {"enabled": catalog.web is None or catalog.web.declaration.enabled},
                         "sql_connection_configured": bool(self.settings.sql_database_url.get_secret_value()), "web_search_configured": self.settings.web_search_enabled}}
 
@@ -89,13 +89,16 @@ class CapabilityService:
 
     def update_runtime(self, uid, component, policy, expected_revision):
         self.require()
-        if (component == "sql" and not isinstance(policy, SqlPolicy)) or (component == "web" and not isinstance(policy, WebPolicy)) or component not in {"sql", "web"}:
+        policy_types = {"sql": SqlPolicy, "web": WebPolicy, "sandbox": SandboxPolicy}
+        if component not in policy_types or not isinstance(policy, policy_types[component]):
             raise AppError("INVALID_CAPABILITY", "运行配置类型不一致", 422)
         with self.database.sessions() as session:
             self.user(session, uid, admin=True)
             row, catalog = self.read(session, lock=True)
             if row.revision != expected_revision:
                 raise AppError("CAPABILITY_REVISION_CONFLICT", "目录已更新，请刷新后重试", 409)
+            if component == "sandbox" and (SANDBOX_TOOL in catalog.tools or SANDBOX_TOOL in catalog.retired_tools):
+                raise AppError("SANDBOX_IDENTITY_CONFLICT", "已有或已退休的同名 HTTP 工具，不能重新解释其身份", 409)
             if component == "sql" and policy.enabled:
                 from app.infrastructure.sql import ReadOnlySQL
                 sql = ReadOnlySQL(self.project_sql(self.settings, policy))
@@ -104,7 +107,7 @@ class CapabilityService:
                 finally:
                     sql.close()
             raw = catalog.model_dump(mode="json")
-            previous = raw[component]
+            previous = raw.get(component)
             raw[component] = {"version": previous["version"] + 1 if previous else 1, "declaration": policy.model_dump(mode="json")}
             updated = CapabilityCatalog.model_validate_json(json.dumps(raw))
             return self.persist(session, row, uid, updated, {"operation": "update", "kind": "runtime", "name": component})
@@ -123,6 +126,8 @@ class CapabilityService:
             row, catalog = self.read(session, lock=True)
             if row.revision != expected_revision:
                 raise AppError("CAPABILITY_REVISION_CONFLICT", "目录已更新，请刷新后重试", 409)
+            if kind == "tools" and name == SANDBOX_TOOL and catalog.sandbox is not None:
+                raise AppError("BUILTIN_TOOL_PROTECTED", "Sandbox 内置工具不能覆盖或删除", 409)
             raw = catalog.model_dump(mode="json")
             current = raw[kind].get(name)
             if not delete and create and current is not None:
@@ -168,6 +173,10 @@ class CapabilityService:
         return name in self.settings.capability_secret_names and bool(os.environ.get(name))
 
     def tool_reason(self, catalog, role, name):
+        if name == SANDBOX_TOOL and catalog.sandbox is not None:
+            return ("disabled" if not self.settings.sandbox_enabled or not catalog.sandbox.declaration.enabled
+                else "approval_not_available" if not self.settings.tool_approvals_enabled or not self.settings.chat_runs_enabled
+                else "permission_required" if role != "admin" else None)
         if name in BUILTIN_TOOLS:
             if name == "delegate_sql":
                 if not self.sql_policy(catalog).enabled:
@@ -183,7 +192,7 @@ class CapabilityService:
         tool = item.declaration
         return ("disabled" if not tool.enabled else "permission_required" if tool.required_roles and role not in tool.required_roles
             else "not_configured" if any(not self.secret_available(secret) for secret in tool.secret_headers.values())
-            else "approval_not_available" if tool.requires_approval else None)
+            else ("approval_not_available" if not self.settings.tool_approvals_enabled else "permission_required" if role != "admin" else None) if tool.requires_approval else None)
 
     def skill_reason(self, catalog, role, name):
         item = catalog.skills.get(name)
@@ -194,34 +203,58 @@ class CapabilityService:
             else "not_configured" if any(not self.secret_available(secret) for secret in skill.required_secrets)
             else next((reason for tool in skill.allowed_tools if (reason := self.tool_reason(catalog, role, tool))), None))
 
-    def freeze(self, uid, *, skill_name=None, search_mode="auto", public_query=None, session=None):
+    def freeze(self, uid, *, skill_name=None, search_mode="auto", public_query=None, approved_tools=(), approval_catalog_revision=None, session=None):
         self.require()
         if session is None:
             with self.database.sessions() as current:
-                return self.freeze(uid, skill_name=skill_name, search_mode=search_mode, public_query=public_query, session=current)
+                return self.freeze(uid, skill_name=skill_name, search_mode=search_mode, public_query=public_query,
+                    approved_tools=approved_tools, approval_catalog_revision=approval_catalog_revision, session=current)
         role = self.user(session, uid).role
         row, catalog = self.read(session)
+        if not isinstance(approved_tools, (list, tuple)) or any(not isinstance(name, str) for name in approved_tools) or len(set(approved_tools)) != len(approved_tools):
+            raise AppError("INVALID_TOOL_APPROVAL", "批准工具须为不重复的名称", 422)
+        if bool(approved_tools) != (approval_catalog_revision is not None):
+            raise AppError("INVALID_TOOL_APPROVAL", "批准工具必须携带所确认的目录修订", 422)
+        if approved_tools:
+            if not self.settings.chat_runs_enabled:
+                raise AppError("CAPABILITY_DURABLE_RUN_REQUIRED", "工具批准必须使用持久 Run", 503)
+            if not self.settings.tool_approvals_enabled:
+                raise AppError("TOOL_APPROVALS_DISABLED", "Run 工具审批尚未启用", 503)
+            if role != "admin":
+                raise AppError("FORBIDDEN", "只有平台管理员可为本次 Run 批准高风险工具", 403)
+            if type(approval_catalog_revision) is not int or approval_catalog_revision != row.revision:
+                raise AppError("CAPABILITY_REVISION_CONFLICT", "能力目录已变化，请核对工具后重新确认", 409)
+            if any(not requires_tool_approval(catalog, name) for name in approved_tools):
+                raise AppError("INVALID_TOOL_APPROVAL", "只能批准当前目录中声明需要审批的工具", 422)
         if skill_name is not None and self.skill_reason(catalog, role, skill_name):
             raise AppError("SKILL_UNAVAILABLE", "该 Skill 不存在、尚未配置或当前账号无权使用", 403)
+        builtins = builtin_tools(catalog)
         modes = {"knowledge": {"delegate_rag"}, "sql": {"delegate_sql"}, "web": {"delegate_web"},
-                 "auto": set(BUILTIN_TOOLS)}
+                 "auto": set(builtins)}
         candidates = (catalog.skills[skill_name].declaration.allowed_tools if skill_name is not None
-                      else (*BUILTIN_TOOLS, *catalog.tools))
+                      else (*builtins, *catalog.tools))
         allowed = []
         for name in candidates:
-            if name in BUILTIN_TOOLS and name not in modes[search_mode] or name not in BUILTIN_TOOLS and search_mode not in {"web", "auto"}:
+            if name in builtins and name not in modes[search_mode] or name not in builtins and search_mode not in {"web", "auto"}:
                 if skill_name is not None:
                     raise AppError("SKILL_MODE_CONFLICT", "当前模式与 Skill 的工具范围不兼容，请切换为自动模式", 422)
                 continue
             if self.tool_reason(catalog, role, name):
                 continue
-            if name not in BUILTIN_TOOLS and not public_query:
+            if requires_tool_approval(catalog, name) and name not in approved_tools:
+                if skill_name is not None:
+                    raise AppError("TOOL_APPROVAL_REQUIRED", "此 Skill 需要为本次 Run 明确批准工具", 403)
+                continue
+            if name in catalog.tools and not public_query:
                 if skill_name is not None:
                     raise AppError("HTTP_TOOL_PUBLIC_QUERY_REQUIRED", "请提供本轮允许发送给公共工具的查询内容", 422)
                 continue
             allowed.append(name)
+        if not set(approved_tools).issubset(allowed):
+            raise AppError("INVALID_TOOL_APPROVAL", "批准工具超出了本次模式、Skill 或公开输入范围", 422)
         return CapabilityExecution(revision=row.revision, catalog=catalog, catalog_hash=catalog_digest(catalog),
             skill_name=skill_name, search_mode=search_mode, allowed_tools=tuple(allowed),
+            approved_tools=tuple(sorted(approved_tools)),
             sql_policy=self.sql_policy(catalog) if "delegate_sql" in allowed else None,
             sql_connection_sha256=self.sql_connection_identity() if "delegate_sql" in allowed else None)
 
@@ -266,6 +299,8 @@ class CapabilityService:
             raw = frozen.model_dump_json() if isinstance(frozen, CapabilityExecution) else json.dumps(frozen)
             execution = CapabilityExecution.model_validate_json(raw)
             role = self.user(session, uid).role
+            if execution.approved_tools and (not self.settings.tool_approvals_enabled or role != "admin"):
+                raise ValueError("Approval is disabled or administrator role revoked")
             _, current = self.read(session, lock=lock, shared=True)
             history = session.get(CapabilityConfigurationVersion, execution.revision)
             if history is None or catalog_digest(CapabilityCatalog.model_validate_json(json.dumps(history.configuration))) != execution.catalog_hash:
@@ -279,6 +314,8 @@ class CapabilityService:
                     raise ValueError("SQL authorization or connection changed")
             if any(self.tool_reason(current, role, name) for name in execution.allowed_tools):
                 raise ValueError("Frozen tool authorization changed")
+            if any(requires_tool_approval(current, name) and name not in execution.approved_tools for name in execution.allowed_tools):
+                raise ValueError("Tool now requires approval not present in the frozen Run")
             if tool_name is not None and (tool_name not in execution.allowed_tools or any(
                     self.tool_reason(catalog, role, tool_name) for catalog in (execution.catalog, current))):
                 raise ValueError("Tool authorization changed")
@@ -286,19 +323,29 @@ class CapabilityService:
         except (AppError, ValueError, TypeError):
             raise AppError("CAPABILITY_SCOPE_CHANGED", "能力已停用、授权已改变或冻结版本不可核验", 409) from None
 
+    @staticmethod
+    def validate_approval(execution, approval, **identity):
+        from app.domain.tool_approvals import validate_run_approval
+        try:
+            return validate_run_approval(approval, execution.approved_tools, catalog_hash=execution.catalog_hash, **identity)
+        except (ValueError, TypeError):
+            raise AppError("CAPABILITY_SCOPE_CHANGED", "工具批准与当前 Run 或能力版本不一致", 409) from None
+
     def public_catalog(self, uid):
         self.require()
         with self.database.sessions() as session:
             role = self.user(session, uid).role
             row, catalog = self.read(session)
             tools = []
-            for name, metadata in BUILTIN_TOOLS.items():
+            for name, metadata in builtin_tools(catalog).items():
                 reason = self.tool_reason(catalog, role, name)
-                policy = catalog.sql if name == "delegate_sql" else catalog.web if name == "delegate_web" else None
+                sandbox = name == SANDBOX_TOOL
+                policy = catalog.sandbox if sandbox else catalog.sql if name == "delegate_sql" else catalog.web if name == "delegate_web" else None
                 # Explicit page reading remains available when search is disabled.
                 tools.append({"name": name, "version": policy.version if policy else 1, **metadata, "available": reason is None,
-                    "availability_reason": reason, "required_roles": [],
-                    "requires_approval": False, "idempotent": True, "exposure": "resident"})
+                    "availability_reason": reason, "required_roles": ["admin"] if sandbox else [],
+                    "requires_approval": sandbox, "idempotent": not sandbox, "exposure": "resident",
+                    **({"sandbox_limits": policy.declaration.limits.model_dump(mode="json")} if sandbox else {})})
             for name, item in catalog.tools.items():
                 tool = item.declaration
                 reason = self.tool_reason(catalog, role, name)

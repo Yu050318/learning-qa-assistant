@@ -1,0 +1,112 @@
+{
+  "scope": "Isolated stock Docker acceptance; native business deployment verified separately in stage8-deployment.json",
+  "backend_tests": {
+    "passed": 775,
+    "skipped": 52,
+    "subtests": 38
+  },
+  "frontend_tests": 45,
+  "frontend_build_passed": true,
+  "scenarios": {
+    "mixed": {
+      "run_id": "78770a6d-2a9c-4c0d-9660-d62bccb56340",
+      "state": "succeeded",
+      "generation": 2,
+      "mutating_receipts": 2,
+      "attempts_each": 1,
+      "approval_events": 1,
+      "artifacts": 1,
+      "tool_version": 4,
+      "echo_exact_public_query": true,
+      "private_marker_absent": true,
+      "same_run_hitl_resume": true
+    },
+    "browser_mixed": {
+      "run_id": "6258819c-00ac-452f-af12-b850d00354d3",
+      "state": "succeeded",
+      "generation": 2,
+      "mutating_receipts": 2,
+      "attempts_each": 1,
+      "approval_events": 1,
+      "artifacts": 1,
+      "tool_version": 5,
+      "echo_exact_public_query": true,
+      "private_marker_absent": true,
+      "same_run_hitl_resume": true
+    },
+    "worker_sigkill": {
+      "run_id": "ec2d4501-04f8-4f53-8c9f-fae3fab60b04",
+      "state": "failed",
+      "generation": 2,
+      "mutating_attempts": 1,
+      "outcome": "uncertain",
+      "automatic_reexecution": false,
+      "orphan_removed": true
+    },
+    "rag": {
+      "run_id": "010256b3-3a14-41e5-b1dc-a06d52f62bea",
+      "cited_leaf_count": 6,
+      "parent_context_count": 1,
+      "material": "Fictional disposable handbook; not a quality benchmark"
+    }
+  },
+  "business_backup_verified": true,
+  "business_migration_attempted": true,
+  "limitations": [
+    "Docker Desktop development rootful exception only; production default rootless gate retained",
+    "Stage5 quality A/B failure remains unchanged",
+    "Failed exploratory model runs retained: parallel discovery deadlock fixed; clarification citation prompt repaired; Skill/tool confusion addressed only in explicit test Skill instructions"
+  ],
+  "deployment": [
+    {
+      "service": "backend",
+      "image_id": "sha256:20989e84af69d836a13c9a99ebd1dd40aad924a93bb58c3a67be6615b8dbbe23",
+      "mounts": [
+        "/app/data"
+      ],
+      "running": true,
+      "healthy": "healthy"
+    },
+    {
+      "service": "run-worker",
+      "image_id": "sha256:53e7f88dd77a51c838cfcc3b6940b83c95eba2645301a07d303bf2271f978e37",
+      "mounts": [
+        "/app/data",
+        "/var/run/docker.sock"
+      ],
+      "running": true,
+      "healthy": "healthy"
+    },
+    {
+      "service": "ingestion-worker",
+      "image_id": "sha256:20989e84af69d836a13c9a99ebd1dd40aad924a93bb58c3a67be6615b8dbbe23",
+      "mounts": [
+        "/app/data"
+      ],
+      "running": true,
+      "healthy": "healthy"
+    },
+    {
+      "service": "evaluation-worker",
+      "image_id": "sha256:20989e84af69d836a13c9a99ebd1dd40aad924a93bb58c3a67be6615b8dbbe23",
+      "mounts": [
+        "/app/data"
+      ],
+      "running": true,
+      "healthy": "healthy"
+    },
+    {
+      "service": "frontend",
+      "image_id": "sha256:4fd00fd97abd603351d7aaa12ad72cbef8f4769b858fcf2cc8fa40a33ea39ddc",
+      "mounts": [],
+      "running": true,
+      "healthy": null
+    }
+  ],
+  "source_files_match_host": 107,
+  "docker_cli_services": [
+    "run-worker"
+  ],
+  "sandbox_image_id": "sha256:bd20d5c91e4421f4946b8e4b205c12dabe05c68e0cea520e46a25f121dc1a532",
+  "run_worker_source_files_match_host": 107
+}

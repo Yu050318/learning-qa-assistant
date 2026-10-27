@@ -20,7 +20,8 @@ from typing import Literal
 from app.application.evidence import EvidenceRegistry, evidence_token_budget, normalized_url
 from app.core.errors import AppError
 from app.domain.contracts import AgentRunResult, ModelAnswer, WebSearchBatch
-from app.domain.capabilities import BUILTIN_TOOLS, skill_prompt
+from app.domain.capabilities import SANDBOX_TOOL, builtin_tools, skill_prompt
+from app.domain.sandbox import SandboxRequest
 from app.workflows.agent import AnswerStreamParser, FinalAnswer, ModelRuntime, SYSTEM_PROMPT
 from app.workflows.knowledge import KnowledgeWorkflow
 from app.application.run_checkpoint import CONTROL_ERRORS
@@ -42,11 +43,12 @@ _FATAL = {"AGENT_TIMEOUT", "AGENT_LIMIT_EXCEEDED", "CONTEXT_LIMIT_EXCEEDED"} | C
 
 
 class SupervisorWorkflow:
-    def __init__(self, settings, retriever, models, web_search, memories=None, web_reader=None, sql=None, sharing=None, capabilities=None, http_tools=None):
+    def __init__(self, settings, retriever, models, web_search, memories=None, web_reader=None, sql=None, sharing=None, capabilities=None, http_tools=None, sandbox=None):
         self.settings, self.retriever, self.models = settings, retriever, models
         self.web_search, self.memories, self.web_reader, self.sql = web_search, memories, web_reader, sql
         self.sharing = sharing
         self.capabilities, self.http_tools = capabilities, http_tools
+        self.sandbox = sandbox
 
     def run(self, context, history, summary, on_answer_event=None, *, on_evidence=None, call_observer=None, checkpoint=None):
         started = perf_counter()
@@ -71,6 +73,8 @@ class SupervisorWorkflow:
             if self.capabilities is None:
                 raise AppError("CAPABILITY_SCOPE_CHANGED", "能力执行器未配置", 409)
             execution = self.capabilities.validate_execution(context.user_id, context.capability_snapshot)
+            self.capabilities.validate_approval(execution, context.tool_approval, user_id=context.user_id,
+                session_id=context.session_id, run_id=context.run_id, organization_id=context.organization_id)
 
         def remaining():
             if checkpoint:
@@ -166,7 +170,7 @@ class SupervisorWorkflow:
                         scope = {"search_knowledge": "delegate_rag", "search_rewritten_knowledge": "delegate_rag",
                             "search_web": "delegate_web", "read_web_page": "delegate_web", "crawl_fixed_sites": "delegate_web",
                             "describe_sql_schema": "delegate_sql", "execute_sql": "delegate_sql"}.get(function.__name__)
-                        if function.__name__ in execution.catalog.tools:
+                        if function.__name__ in execution.catalog.tools or function.__name__ == SANDBOX_TOOL:
                             scope = function.__name__
                         if scope is not None:
                             self.capabilities.validate_execution(context.user_id, execution, tool_name=scope)
@@ -470,7 +474,9 @@ class SupervisorWorkflow:
 
             def execute_http(arguments):
                 data = self.http_tools.invoke(record.declaration, arguments,
-                    deadline=context.deadline_monotonic, check=remaining)
+                    deadline=context.deadline_monotonic, check=remaining, approval=context.tool_approval,
+                    identity={"user_id": context.user_id, "session_id": context.session_id, "run_id": context.run_id,
+                        "organization_id": context.organization_id, "catalog_hash": execution.catalog_hash})
                 return registry.add_tool(tool_name, record.version, data["data"])
             execute_http.__name__ = tool_name
             execute_http.idempotent = record.declaration.idempotent
@@ -517,7 +523,7 @@ class SupervisorWorkflow:
                 emit("agent_failed" if event["status"] == "failed" else "agent_finished", dict(event))
 
         @instrument
-        def search_tools(query: str, limit: int = 5) -> dict:
+        def search_tools(query: str, limit: int = 5, runtime: ToolRuntime = None) -> dict:
             """Find frozen authorized skills/tools; load instructions with describe_skill, call HTTP with invoke_public_tool."""
             if not execution or not 1 <= limit <= 8 or not 1 <= len(query) <= 240:
                 raise AppError("TOOL_NOT_ALLOWED", "能力搜索参数无效", 422)
@@ -525,7 +531,9 @@ class SupervisorWorkflow:
             for name in execution.allowed_tools:
                 item = execution.catalog.tools.get(name)
                 metadata = ({"version": item.version, "description": item.declaration.description, "group": item.declaration.group,
-                    "input_schema": item.declaration.input_schema} if item else {"version": 1, **BUILTIN_TOOLS[name]})
+                    "input_schema": item.declaration.input_schema} if item else {
+                    "version": execution.catalog.sandbox.version if name == SANDBOX_TOOL else 1,
+                    **builtin_tools(execution.catalog)[name]})
                 if query.casefold() in (name + " " + metadata["description"] + " " + metadata["group"]).casefold():
                     self.capabilities.validate_execution(context.user_id, execution, tool_name=name)
                     matches.append({"name": name, **metadata})
@@ -545,9 +553,27 @@ class SupervisorWorkflow:
             return {"status": "ok", "tools": matches[:limit], "skills": skills[:limit]}
 
         @instrument
-        def describe_skill(name: str) -> dict:
+        def describe_skill(name: str, runtime: ToolRuntime = None) -> dict:
             """Read a frozen authorized Skill's instructions without changing the run's tool permissions."""
             return self.capabilities.describe_skill(context.user_id, name, frozen=execution)
+
+        def execute_sandbox(language: str, source: str, runtime: ToolRuntime = None) -> dict:
+            """Execute bounded Python/sh in the approved isolated container; only actual results are evidence."""
+            if (execution is None or self.sandbox is None or checkpoint is None
+                    or execution.catalog.sandbox is None or SANDBOX_TOOL not in execution.allowed_tools):
+                raise AppError("TOOL_NOT_ALLOWED", "本次运行没有授权 Sandbox", 403)
+            try:
+                request = SandboxRequest(language=language, source=source)
+            except ValidationError:
+                raise AppError("SANDBOX_INVALID_REQUEST", "隔离执行语言或源代码超出范围", 422) from None
+            result = self.sandbox.execute(context, request, checkpoint)
+            if not result["success"]:
+                raise AppError(result["error_code"], "隔离执行未成功，没有发布产物", 502)
+            return registry.add_tool(SANDBOX_TOOL, execution.catalog.sandbox.version, result)
+
+        execute_sandbox.__name__ = SANDBOX_TOOL
+        execute_sandbox.idempotent = False
+        sandbox_execute = instrument(execute_sandbox)
 
         tools = []
         if context.search_mode in {"knowledge", "auto"}:
@@ -561,6 +587,8 @@ class SupervisorWorkflow:
             tools.extend([search_tools, describe_skill])
             if any(name in execution.catalog.tools for name in execution.allowed_tools):
                 tools.append(invoke_public_tool)
+            if execution.catalog.sandbox is not None and SANDBOX_TOOL in execution.allowed_tools:
+                tools.append(sandbox_execute)
         memory_sources = []
         if self.memories:
             if previous:
@@ -630,7 +658,7 @@ class SupervisorWorkflow:
                 + f"\n本轮证据：{json.dumps(eligible_sources(), ensure_ascii=False)}"
                 + f"\n无编号理解上下文：{json.dumps(eligible_contexts(), ensure_ascii=False)}"
                 + f"\n知识任务状态：{json.dumps(knowledge_events, ensure_ascii=False)}"
-                + f"\n失败：{json.dumps(failures)}\n上次输出：{final_message.content}\n错误：{error.code}。重新生成最终 JSON。"
+                + f"\n失败：{json.dumps(failures)}\n上次输出：{final_message.content}\n错误：{error.code}：{error.message}。重新生成最终 JSON。"
             )
             runtime.on_chunk = lambda chunk, stream_id: emit_repair(chunk, stream_id)
 

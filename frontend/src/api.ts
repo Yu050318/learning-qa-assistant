@@ -1,4 +1,5 @@
 import {readEventStream,type StreamCursor} from './sse'
+import {artifactBytes,artifactItems,type RunArtifact} from './artifacts'
 export type Organization = {id:string;name:string;role:'owner'|'admin'|'member'}
 export type Workspace = {id:string|null;kind:'personal'|'team';name:string;role:'owner'|'admin'|'member';session_count:number}
 export type DocumentTask = {id:string;document_id:string|null;parent_task_id:string|null;organization_id:string|null;original_name:string;kind:'ingest'|'hierarchy'|'delete'|'delete_series';state:'queued'|'running'|'succeeded'|'failed'|'cancelled';phase:string;processed_units:number;total_units:number|null;attempts:number;max_attempts:number;error_code:string|null;can_retry:boolean;created_at:string;updated_at:string}
@@ -50,7 +51,29 @@ async function request<T>(path:string,init:RequestInit={},retry=true):Promise<T>
   if(response.status===401&&retry&&!path.startsWith('/api/v2/auth/')){await refresh();return request<T>(path,init,false)}
   return parse<T>(response)
 }
+async function runRead<T>(operation:()=>Promise<T>,signal?:AbortSignal):Promise<T>{
+  const owner=currentAuth?.user.id
+  for(let attempt=0;;attempt++){
+    if(signal?.aborted)throw new DOMException('读取已取消','AbortError')
+    if(currentAuth?.user.id!==owner)throw new ApiError('AUTH_CHANGED','运行读取范围已改变',401)
+    try{const value=await operation();if(currentAuth?.user.id!==owner)throw new ApiError('AUTH_CHANGED','运行读取范围已改变',401);return value}
+    catch(error:any){if(error.code!=='RESOURCE_BUSY'||attempt>=2)throw error;await new Promise(resolve=>setTimeout(resolve,150*(attempt+1)))}
+  }
+}
 async function authRequest(path:string,username:string,password:string,adminCode?:string){const result=await request<AuthResult>(path,{method:'POST',body:JSON.stringify({username,password,...(adminCode?{admin_code:adminCode}:{})})},false);setToken(result);channel?.postMessage({type:'token',result});return result}
+async function artifactContent(runId:string,item:RunArtifact,preview=false,signal?:AbortSignal){
+  const owner=currentAuth?.user.id
+  const load=async(retry=true):Promise<Response>=>{
+    const response=await fetch(`/api/v2/runs/${encodeURIComponent(runId)}/artifacts/${encodeURIComponent(item.id)}/${preview?'preview':'download'}`,{headers:{Authorization:`Bearer ${accessToken}`},cache:'no-store',signal})
+    if(response.status===401&&retry){await refresh();if(currentAuth?.user.id!==owner)throw new ApiError('AUTH_CHANGED','登录账号已改变，请重新读取产物',401);return load(false)}
+    if(!response.ok)await parse(response)
+    if(currentAuth?.user.id!==owner){await response.body?.cancel().catch(()=>{});throw new ApiError('AUTH_CHANGED','登录账号已改变，请重新读取产物',401)}
+    return response
+  }
+  const value=await artifactBytes(await load(),item,preview)
+  if(currentAuth?.user.id!==owner||signal?.aborted)throw new ApiError('AUTH_CHANGED','产物读取范围已改变',401)
+  return value
+}
 async function streamRequest(path:string,body:any,onEvent:(event:string,data:StreamEvent)=>void,retry=true):Promise<StreamEvent>{
   const response=await fetch(path,{method:'POST',headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json','Accept':'text/event-stream'},body:JSON.stringify(body)})
   if(response.status===401&&retry){await refresh();return streamRequest(path,body,onEvent,false)}
@@ -62,7 +85,8 @@ async function upload(file:File,onProgress:(n:number)=>void,organizationId:strin
 export type RunWaiting={public_input_allowed?:boolean;question:string;checkpoint_revision:number;resume_token:string;expires_at:string;sequence:number}
 export type RunInfo={run_id:string;session_id:string;state:'queued'|'running'|'waiting'|'cancelling'|'cancelled'|'succeeded'|'failed'|'interrupted';sequence:number;message_id:string|null;waiting:RunWaiting|null}
 export type CapabilitySkill={name:string;version:number;description:string;activation:string;required_roles:string[];tool_names:string[];available:boolean;availability_reason:string|null;approval_tools:string[]}
-export type CapabilityTool={name:string;version:number;description:string;group:string;available:boolean;availability_reason:string|null;required_roles:string[];requires_approval:boolean;idempotent:boolean;network_policy:string;resource_scope:string;exposure:string}
+export type SandboxLimits={timeout_seconds:number;memory_bytes:number;cpu_count:number;pids_limit:number;output_bytes:number;workspace_bytes:number;max_files:number;max_file_bytes:number;max_artifact_bytes:number}
+export type CapabilityTool={name:string;version:number;description:string;group:string;available:boolean;availability_reason:string|null;required_roles:string[];requires_approval:boolean;idempotent:boolean;network_policy:string;resource_scope:string;exposure:string;sandbox_limits?:SandboxLimits}
 export type CapabilityDirectory={schema_version:number;revision:number;catalog_hash:string;skills:CapabilitySkill[];tools:CapabilityTool[]}
 export type SkillDeclaration={name:string;description:string;instructions:string;allowed_tools:string[];required_roles:string[];required_secrets:string[];enabled:boolean}
 export type HttpToolDeclaration={name:string;description:string;group:string;endpoint:string;method:'GET'|'POST';input_schema:Record<string,any>;static_headers:Record<string,string>;secret_headers:Record<string,string>;required_roles:string[];requires_approval:boolean;idempotent:boolean;timeout_seconds:number;max_response_bytes:number;enabled:boolean}
@@ -128,8 +152,10 @@ export const api={
   knowledgeBases:()=>request<KnowledgeBase[]>('/api/v2/knowledge-bases'),createBase:(id:string,name:string)=>request<KnowledgeBase>(`/api/v2/organizations/${id}/knowledge-bases`,{method:'POST',body:JSON.stringify({name})}),deleteBase:(id:string)=>request<void>(`/api/v2/knowledge-bases/${id}`,{method:'DELETE'}),
   grants:(id:string)=>request<Member[]>(`/api/v2/knowledge-bases/${id}/grants`),setGrant:(id:string,user:string,role:string)=>request<void>(`/api/v2/knowledge-bases/${id}/grants/${user}`,{method:'PUT',body:JSON.stringify({role})}),revokeGrant:(id:string,user:string)=>request<void>(`/api/v2/knowledge-bases/${id}/grants/${user}`,{method:'DELETE'}),
   sharedDocuments:(id:string)=>request<SharedDocument[]>(`/api/v2/knowledge-bases/${id}/documents`),publish:(id:string,document:string,expected:string|null)=>request<void>(`/api/v2/knowledge-bases/${id}/documents/${document}`,{method:'PUT',body:JSON.stringify({expected_current_document_id:expected})}),unpublish:(id:string,document:string)=>request<void>(`/api/v2/knowledge-bases/${id}/documents/${document}`,{method:'DELETE'}),
+  artifactContent:(runId:string,item:RunArtifact,preview=false,signal?:AbortSignal)=>runRead(()=>artifactContent(runId,item,preview,signal),signal),artifacts:async(runId:string,signal?:AbortSignal)=>artifactItems(await runRead(()=>request(`/api/v2/runs/${encodeURIComponent(runId)}/artifacts`,{cache:'no-store',signal}),signal),runId),
   resumeRun,runs:(id:string)=>request<RunInfo[]>(`/api/v2/sessions/${id}/runs`),
   run:(id:string)=>request<RunInfo>(`/api/v2/runs/${id}`),
+  runTrace:(id:string,after=0,signal?:AbortSignal)=>runRead(()=>request<any>(`/api/v2/runs/${encodeURIComponent(id)}/trace?after=${after}`,{cache:'no-store',signal}),signal),
   cancelRun:(id:string)=>request<RunInfo>(`/api/v2/runs/${id}/cancel`,{method:'POST'}),
   continueRun:(id:string,waiting:RunWaiting,supplement:string,publicQuery?:string)=>request<RunInfo>(`/api/v2/runs/${id}/resume`,{method:'POST',body:JSON.stringify({checkpoint_revision:waiting.checkpoint_revision,resume_token:waiting.resume_token,supplement,public_query:publicQuery})}),
 

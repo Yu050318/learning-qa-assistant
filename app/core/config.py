@@ -78,6 +78,9 @@ class Settings(BaseSettings):
     sharing_enabled: bool = False
     workspaces_enabled: bool = False
     capability_center_enabled: bool = False
+    tool_approvals_enabled: bool = False
+    sandbox_enabled: bool = False
+    sandbox_require_rootless: bool = True
     # Explicit Secret names only. Never expose arbitrary process environment
     # variables to a browser-defined HTTP endpoint.
     capability_secret_names: list[str] = Field(default_factory=list)

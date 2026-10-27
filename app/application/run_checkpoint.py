@@ -12,7 +12,8 @@ from app.infrastructure.persistence.models import ChatRunOperation
 
 CONTROL_ERRORS = frozenset({"RUN_LEASE_LOST", "RUN_CANCEL_REQUESTED", "AGENT_TIMEOUT", "RUN_CHECKPOINT_DIVERGED",
                            "RUN_CHECKPOINT_LIMIT", "TOOL_OUTCOME_UNCERTAIN", "RUN_RECOVERY_LIMIT",
-                           "EVALUATION_LEASE_LOST", "EVALUATION_CANCEL_REQUESTED", "DOCUMENT_SCOPE_CHANGED", "CAPABILITY_SCOPE_CHANGED"})
+                           "EVALUATION_LEASE_LOST", "EVALUATION_CANCEL_REQUESTED", "DOCUMENT_SCOPE_CHANGED", "CAPABILITY_SCOPE_CHANGED",
+                           "SANDBOX_CLEANUP_FAILED"})
 
 
 class RunCheckpoint:
@@ -25,6 +26,7 @@ class RunCheckpoint:
                     or any(value is not None and (not isinstance(value, str) or not 1 <= len(value.strip()) <= 400) for value in inputs)):
                 raise AppError("RUN_CHECKPOINT_DIVERGED", "公开补充输入与运行轮次不一致", 409)
         self.frame = ContextVar(f"run-frame-{claim.run_id}", default=f"round/{len(self.state.get('human_inputs', []))}")
+        self.operation_key = ContextVar(f"run-operation-{claim.run_id}", default=None)
         self.validate = validate
         self.ordering = Condition()
         self.finished = {}
@@ -76,12 +78,15 @@ class RunCheckpoint:
         cached, outcome = self.store.begin_operation(self.claim, key, inputs, readonly=readonly)
         if not cached:
             self.check()
+            token = self.operation_key.set(key)
             try:
                 outcome = {"ok": True, "value": call()}
             except AppError as error:
                 if error.code in CONTROL_ERRORS:
                     raise
                 outcome = {"ok": False, "code": error.code, "message": error.message, "status": error.status_code}
+            finally:
+                self.operation_key.reset(token)
             # Fresh and replayed tool results must have identical JSON ordering:
             # ToolMessage serializes dictionaries into the next model's input.
             outcome = bounded_json(outcome, 2_000_000)
