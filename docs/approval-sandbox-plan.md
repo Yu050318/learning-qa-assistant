@@ -32,6 +32,8 @@
 
 ## 当前状态
 
+第八阶段已验收，实现提交 `90df24d` 已推送并核对远端，最终废弃镜像清理完成；按用户要求止于第八阶段。见 [最终验收](validation/stage8-acceptance.md)、[逐项核查](validation/stage8-delivery-audit.md) 和 [清理证据](validation/stage8-cleanup.json)。下面各段为实施历史快照，不作为未完成事项。
+
 最新业务验收（2026-10-27）：用户恢复数据库服务后，已完成新的业务备份及实际恢复验证，再迁移至 0010。API/前端与三个独立 Worker 全部通过预检；旧账号角色、密码摘要、能力历史、925 个绑定叶块及文档/会话数量保持不变。只开启 TOOL_APPROVALS_ENABLED，业务 Sandbox 保持可选部署/default off；完整链路在独立 Docker 开发部署验收通过。提交推送与最终镜像清理收尾后结束目标，不进入阶段九。见 [业务部署](validation/stage8-deployment.json)。以下保留实施历史，旧阻塞描述已被本段解决。
 
 最新验收：独立 Docker 服务的真实 HTTP + Sandbox + 同次 Run HITL、浏览器公开查询确认/刷新恢复、真实 RAG 叶块/父块追踪、整 Run Worker SIGKILL 后接管与孤儿回收均已通过。后端 **775 passed、52 skipped、38 subtests passed**，前端 **45 项测试及构建**通过。旧阶段七备份恢复升级至 0010 且临时库已清理。业务 PostgreSQL SSL 连接仍失败，尚无当前业务库的新验证备份，因此业务迁移/部署、阶段提交推送和最终镜像清理仍待完成；第八阶段未标记完成。见 [独立部署证据](validation/stage8-docker-acceptance.md)。以下保留历史快照。

@@ -28,3 +28,7 @@
 在具备 rootless Docker 的部署中，先完成迁移并由管理员注册固定镜像/有界策略，再显式使用 `compose.yaml + compose.full.yaml + compose.sandbox.yaml`；设置本机 socket 路径及其 GID，仅 Run Worker 挂载 socket。默认缺少策略、镜像或合规驱动时拒绝启用，不会在 API/宿主执行模型生成的代码。
 
 [业务保留证据](stage8-deployment.json)、[逐项交付核查](stage8-delivery-audit.md)、[实施计划与历史](../approval-sandbox-plan.md)。最终镜像清理只处理本任务已不用的镜像和其已退出的测试应用容器，保留最终四类镜像、数据库/向量服务、原有容器和所有数据卷。
+
+## 提交与清理
+
+实现提交 `90df24d` 已推送 GitHub main 并核对远端一致。其后删除 **13 个废弃任务镜像、17 个已退出的测试应用容器**；保留最终四类镜像、29 个保护容器及全部数据卷。见 [清理记录](stage8-cleanup.json)。本次收尾文档同步后结束目标，不进入第九阶段。

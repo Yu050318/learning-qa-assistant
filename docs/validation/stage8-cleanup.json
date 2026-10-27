@@ -1,0 +1,84 @@
+{
+  "scope": "Only task-owned unused stage2-7 and stage8 preview application images and exited test app containers",
+  "removed_containers": [
+    "codex-stage8-artifact-preview-api",
+    "codex-stage8-artifact-preview-worker",
+    "codex-stage7-run-worker-1",
+    "codex-stage7-backend-1",
+    "codex-stage7-ingestion-worker-1",
+    "codex-stage7-evaluation-worker-1",
+    "codex-stage7-frontend-1",
+    "codex-stage6-frontend-1",
+    "codex-stage6-backend-1",
+    "codex-stage6-run-worker-1",
+    "codex-stage6-ingestion-worker-1",
+    "codex-stage6-evaluation-worker-1",
+    "codex-stage5-frontend-1",
+    "codex-stage5-ingestion-worker-1",
+    "codex-stage5-evaluation-worker-1",
+    "codex-stage5-backend-1",
+    "codex-stage5-run-worker-1"
+  ],
+  "removed_images": [
+    {
+      "tag": "codex-stage8-preview-api:latest",
+      "id": "sha256:248f473af1ace99df9f367e78cbadc63ffb92ad6cb347c52abcaf882d5c89fa1"
+    },
+    {
+      "tag": "codex-stage7-backend:latest",
+      "id": "sha256:731c0727db213aea7107e9642cdd42eaf762c32e29a913a080446f3e4af0954d"
+    },
+    {
+      "tag": "codex-stage7-frontend:latest",
+      "id": "sha256:244d44746687e942d03b54a822ca10bb187a9f17a574dd960c174a269c7d1006"
+    },
+    {
+      "tag": "codex-stage6-frontend:latest",
+      "id": "sha256:40665072daf8149c68a198227d79f067efe0aa682547b4f4519d9de01e79e2b9"
+    },
+    {
+      "tag": "codex-stage6-backend:latest",
+      "id": "sha256:ea7b97e80fed9b929e44912f8dcd5636dc81438b55b25b95d1ba736bb5f99918"
+    },
+    {
+      "tag": "codex-stage5-frontend:latest",
+      "id": "sha256:86d5968181eff74fe2680c0d79433c34ca6ea9e3c49594985f9545ae5c53d173"
+    },
+    {
+      "tag": "codex-stage5-backend:latest",
+      "id": "sha256:ee5b7c3eab2e070a46bce8972429c375dcbba4d3cc3e4d7d6681a8b3f45f3127"
+    },
+    {
+      "tag": "codex-stage4-frontend:latest",
+      "id": "sha256:329bc5b2270de60bee0394876f6ea52f80288e20ac6bdbdb89242185cc7bcaba"
+    },
+    {
+      "tag": "codex-stage4-backend:latest",
+      "id": "sha256:32d9207f5036f84d8ef5e8372ca42d5ea27fe42d6e3872397ab5926507916d92"
+    },
+    {
+      "tag": "codex-stage3-frontend:latest",
+      "id": "sha256:9f012deda4ba77804e966ded8ef44a53e46499bea4641c08655c00cf6a776669"
+    },
+    {
+      "tag": "codex-stage3-backend:latest",
+      "id": "sha256:c9e4853269e18672f43495ddd0bc13a59da2d861d911ce39da6ff000cec784bd"
+    },
+    {
+      "tag": "langchaindemo-frontend:latest",
+      "id": "sha256:f01ea7aa58b2b704c4b0ab7df667275c92a863ccbe495645f3c136ea520cd12f"
+    },
+    {
+      "tag": "langchaindemo-backend:latest",
+      "id": "sha256:81736ba70a0948b6bdfe6eac923bc842af8ce3ea024a44b678e0b17d659e4398"
+    }
+  ],
+  "protected_containers_preserved": 29,
+  "all_volumes_preserved": true,
+  "remaining_deployment": [
+    "codex-stage8-frontend:latest",
+    "codex-stage8-run-worker:latest",
+    "codex-stage8-backend:latest",
+    "codex-stage8-sandbox:latest"
+  ]
+}
