@@ -301,6 +301,30 @@ class AgentV2Tests(unittest.TestCase):
             workflow.run(self.context(), [], "")
         self.assertEqual(1, self.model.position)
 
+    def test_model_balance_error_is_sanitized_preserves_cause_and_is_not_retried(self):
+        from openai import APIStatusError
+        error = APIStatusError('sensitive upstream body', response=httpx.Response(402,
+            request=httpx.Request('POST', 'https://model.test/chat/completions')), body={})
+        workflow = self.workflow([error])
+        with self.assertRaises(AppError) as raised:
+            workflow.run(self.context(), [], '')
+        self.assertEqual('MODEL_BALANCE_EXHAUSTED', raised.exception.code)
+        self.assertEqual(503, raised.exception.status_code)
+        self.assertNotIn('sensitive', raised.exception.message)
+        self.assertIs(error, raised.exception.__cause__)
+        self.assertEqual(1, self.model.position)
+
+        from app.manager.llms.providers import LangChainProvider
+        from unittest.mock import Mock
+        provider = LangChainProvider(Settings(_env_file=None))
+        provider.client = Mock()
+        provider.client.invoke.side_effect = error
+        with self.assertRaises(AppError) as plain:
+            provider.generate([])
+        self.assertEqual('MODEL_BALANCE_EXHAUSTED', plain.exception.code)
+        self.assertIs(error, plain.exception.__cause__)
+        self.assertEqual(1, provider.client.invoke.call_count)
+
     def test_missing_sql_configuration_remains_failure(self):
         workflow = self.workflow([call("delegate_sql", task="查询销量"), call("describe_sql_schema"),
                                   report("数据库不可用", "empty"), final("业务数据库未配置，无法查询", "insufficient")])

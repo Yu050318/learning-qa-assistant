@@ -1,0 +1,43 @@
+{
+  "split": "dev",
+  "repeats": 3,
+  "workers": 8,
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "model": "deepseek-flash",
+  "memory_top_k": 3,
+  "agent_context_token_budget": 24000,
+  "identities": [
+    {
+      "baseline": "eb3357c7-a3b2-4b02-a952-c5ad0dc81f98",
+      "openviking": "92f5748c-8292-4cef-a1ea-1db29483ea0c"
+    },
+    {
+      "baseline": "9273dcc3-4af4-4c1e-80b7-015895599910",
+      "openviking": "07979a1a-23ec-4769-b074-f4247254a6c6"
+    },
+    {
+      "baseline": "f74445b2-6d7a-4e5a-89cc-5f4d6a801a1d",
+      "openviking": "9ab8525f-a633-4732-9a7d-128037f4872a"
+    },
+    {
+      "baseline": "97731309-64ad-40ea-a884-e26a31b84e02",
+      "openviking": "2e196f1b-b66a-4794-87bb-9067cdb60322"
+    },
+    {
+      "baseline": "722bbecb-e3b4-4501-ba0a-8d53c08c72fb",
+      "openviking": "0abc9053-9909-43e1-bb08-f1cc19bbeaa9"
+    },
+    {
+      "baseline": "1e631e0c-264f-4fe7-8bbe-edb7c7c3929e",
+      "openviking": "bb8096f9-3eae-4d4b-8e70-fa21742abc65"
+    },
+    {
+      "baseline": "705ab8b5-e666-4b29-91ac-2055e690f3c2",
+      "openviking": "9d249fd2-4350-4c26-9ddd-8391c22d7e87"
+    },
+    {
+      "baseline": "1eff07f6-f740-4445-bfe4-28c8d287974b",
+      "openviking": "a867b7db-5814-4c51-919d-b604f7b07480"
+    }
+  ]
+}

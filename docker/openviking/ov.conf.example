@@ -1,0 +1,29 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 1933,
+    "auth_mode": "trusted",
+    "root_api_key": "REPLACE_WITH_PRIVATE_GATEWAY_KEY"
+  },
+  "default_account": "learning-qa",
+  "default_user": "bootstrap",
+  "storage": {"workspace": "/app/.openviking/data"},
+  "embedding": {
+    "dense": {
+      "provider": "openai",
+      "api_base": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key": "REPLACE_WITH_EMBEDDING_KEY",
+      "model": "text-embedding-v4",
+      "dimension": 1024,
+      "input": "text"
+    }
+  },
+  "vlm": {
+    "provider": "openai",
+    "api_base": "https://api.deepseek.com/v1",
+    "api_key": "REPLACE_WITH_MODEL_KEY",
+    "model": "deepseek-flash",
+    "max_retries": 1
+  },
+  "memory": {"session_auto_commit": {"enabled": false}}
+}

@@ -7,12 +7,12 @@ import signal
 from threading import Event, Thread
 from uuid import UUID
 
-from app.application.evaluation_worker import EvaluationWorker
-from app.application.workers import WorkerRegistry
+from app.service.evaluation_worker import EvaluationWorker
+from app.manager.workers import WorkerRegistry
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
-from app.infrastructure.persistence.database import Database
+from app.dao.postgres.database import Database
 
 logger = logging.getLogger("rag")
 
@@ -51,7 +51,8 @@ def main():
         thread.start()
         for name in ("SIGINT", "SIGTERM"):
             signal.signal(getattr(signal, name), lambda *_: stop.set())
-        worker = EvaluationWorker(settings, database)
+        from app.composition.container import Services
+        worker = EvaluationWorker(settings, database, Services)
         worker.stop = stop
         while not stop.is_set():
             try:

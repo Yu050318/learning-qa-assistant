@@ -1,0 +1,22 @@
+[
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "79fd2b2903b1dad9f7c8914e58ca0b73e62c0be841e17973d0e324ff523567ab",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a50d34ee6e289006db474a282f535f852804c0b470fa6feeeda453ff4595bf3e",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  }
+]

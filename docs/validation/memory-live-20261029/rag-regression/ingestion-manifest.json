@@ -1,0 +1,80 @@
+{
+  "user_id": "4ba6f404-78cb-4354-a465-3f8584c5a181",
+  "fixture_fingerprint": "ac1144d4e7148d29008e5004cbb8fe025b084fc8e20e3a3574522de087b497f1",
+  "allowlist": [
+    "upload_corpus/aftersales_policy.html",
+    "upload_corpus/inventory.xlsx",
+    "upload_corpus/product_faq.html",
+    "upload_corpus/product_manual.html",
+    "upload_corpus/product_prices.xlsx",
+    "upload_corpus/product_specs.xlsx",
+    "upload_corpus/release_notes.html",
+    "upload_corpus/repair_records.xlsx",
+    "upload_corpus/selection_guide.html",
+    "upload_corpus/technical_specs.html",
+    "upload_corpus/troubleshooting.html",
+    "upload_corpus/warranty_rules.html"
+  ],
+  "documents": [
+    {
+      "file": "upload_corpus/aftersales_policy.html",
+      "document_id": "84d21f05-78cb-4346-9f10-aad03ac18d18",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/inventory.xlsx",
+      "document_id": "52c6b616-89f4-47a1-977f-792ab5ab7106",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/product_faq.html",
+      "document_id": "cde45e80-2b5f-4936-a133-f7b8505565f0",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/product_manual.html",
+      "document_id": "2a8fe2c6-beea-42fe-ae73-f0498dd413c5",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/product_prices.xlsx",
+      "document_id": "242611fe-05b4-4823-8d28-ec5794367867",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/product_specs.xlsx",
+      "document_id": "c2d5b53f-59a3-4f53-8078-fd4fe2e5ea39",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/release_notes.html",
+      "document_id": "e7c9cdd1-8bba-4351-a0d1-60c507e22784",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/repair_records.xlsx",
+      "document_id": "f7756096-50fc-447e-9498-691d1aa63a5b",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/selection_guide.html",
+      "document_id": "6fae4a6c-125b-4459-bb46-5f0b1651f6f2",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/technical_specs.html",
+      "document_id": "d2c837f9-5aa1-492d-a5ef-c5ad37398d6b",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/troubleshooting.html",
+      "document_id": "76535f6f-5ce5-4f67-bd61-054360ecc9fd",
+      "status": "ready"
+    },
+    {
+      "file": "upload_corpus/warranty_rules.html",
+      "document_id": "9a4507dc-702d-4991-85e9-7c4bcef29554",
+      "status": "ready"
+    }
+  ]
+}

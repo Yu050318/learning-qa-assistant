@@ -3,9 +3,9 @@ import argparse
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
-from app.infrastructure.persistence.database import Database
-from app.infrastructure.vectorstores.milvus import MilvusVectorStore
-from app.application.model_center import ModelCenter
+from app.dao.postgres.database import Database
+from app.dao.milvus import MilvusVectorStore
+from app.service.model_center import ModelCenter
 
 
 def main() -> int:

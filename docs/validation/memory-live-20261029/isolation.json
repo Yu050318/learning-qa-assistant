@@ -1,0 +1,818 @@
+{
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "split": "frozen",
+  "measurement": "isolation",
+  "workers": 8,
+  "expected_trials": 100,
+  "cases": [
+    {
+      "case_id": "frozen-corrections-02",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-01",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-01",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-01",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-01",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-02",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-02",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-01",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-04",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-02",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-03",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-02",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-03",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-03",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-03",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-03",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-04",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-05",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-05",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-04",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-04",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-05",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-04",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-05",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-07",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-06",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-06",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-06",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-05",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-06",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-07",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-06",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-08",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-07",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-08",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-08",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-07",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-08",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-08",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-07",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-09",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-09",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-10",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-09",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-09",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-10",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-10",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-09",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-10",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-11",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-12",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-10",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-11",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-11",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-11",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-11",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-12",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-13",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-12",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-13",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-13",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-12",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-12",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-13",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-14",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-15",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-14",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-13",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-14",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-15",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-14",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-14",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-15",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-15",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-16",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-16",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-16",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-16",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-15",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-16",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-17",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-17",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-17",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-18",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-17",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-18",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-17",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-18",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-18",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-18",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-20",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-19",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-19",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-preferences-19",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-corrections-20",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-19",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-19",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-facts-20",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-forgetting-20",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    },
+    {
+      "case_id": "frozen-unknown-20",
+      "trial": 1,
+      "error_code": null,
+      "source_verified": true,
+      "cross_user_leak": false,
+      "deleted_recall": false
+    }
+  ],
+  "embedding_usage": null,
+  "indexing_usage": null,
+  "summary": {
+    "completed": 100,
+    "execution_failures": 0,
+    "source_verified": 100,
+    "cross_user_leaks": 0,
+    "deleted_recalls": 0
+  }
+}

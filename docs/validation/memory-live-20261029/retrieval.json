@@ -1,0 +1,1823 @@
+{
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "split": "frozen",
+  "measurement": "retrieval",
+  "workers": 8,
+  "expected_trials": 180,
+  "cases": [
+    {
+      "case_id": "frozen-preferences-02",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3083.284599999388,
+      "openviking_retrieval_ms": 276.37250000043423
+    },
+    {
+      "case_id": "frozen-preferences-01",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3455.077500000698,
+      "openviking_retrieval_ms": 175.13400000098045
+    },
+    {
+      "case_id": "frozen-facts-01",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3259.0825999996014,
+      "openviking_retrieval_ms": 490.5436999997619
+    },
+    {
+      "case_id": "frozen-facts-03",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3230.9327999992092,
+      "openviking_retrieval_ms": 153.26339999955962
+    },
+    {
+      "case_id": "frozen-facts-02",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3611.550100000386,
+      "openviking_retrieval_ms": 184.14579999989655
+    },
+    {
+      "case_id": "frozen-preferences-03",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3324.2853000010655,
+      "openviking_retrieval_ms": 182.0594999990135
+    },
+    {
+      "case_id": "frozen-corrections-01",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3692.596799999592,
+      "openviking_retrieval_ms": 153.07769999890297
+    },
+    {
+      "case_id": "frozen-corrections-02",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3619.1445000004023,
+      "openviking_retrieval_ms": 200.14219999939087
+    },
+    {
+      "case_id": "frozen-preferences-02",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3236.2217999998393,
+      "openviking_retrieval_ms": 285.99229999963427
+    },
+    {
+      "case_id": "frozen-preferences-01",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3349.3134999989707,
+      "openviking_retrieval_ms": 207.57869999943068
+    },
+    {
+      "case_id": "frozen-facts-01",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3508.7664000002405,
+      "openviking_retrieval_ms": 279.84420000029786
+    },
+    {
+      "case_id": "frozen-facts-02",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3239.807200001451,
+      "openviking_retrieval_ms": 260.0605000006908
+    },
+    {
+      "case_id": "frozen-corrections-01",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3110.5759000001854,
+      "openviking_retrieval_ms": 131.40070000008564
+    },
+    {
+      "case_id": "frozen-corrections-02",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3347.105200000442,
+      "openviking_retrieval_ms": 162.5848000003316
+    },
+    {
+      "case_id": "frozen-facts-03",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3700.8559000005334,
+      "openviking_retrieval_ms": 198.4797000004619
+    },
+    {
+      "case_id": "frozen-preferences-03",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 2991.696900000534,
+      "openviking_retrieval_ms": 168.23130000011588
+    },
+    {
+      "case_id": "frozen-preferences-02",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3281.605500000296,
+      "openviking_retrieval_ms": 366.3675999996485
+    },
+    {
+      "case_id": "frozen-preferences-01",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3288.426299999628,
+      "openviking_retrieval_ms": 254.5479999989766
+    },
+    {
+      "case_id": "frozen-facts-02",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3202.0720000000438,
+      "openviking_retrieval_ms": 175.02970000168716
+    },
+    {
+      "case_id": "frozen-facts-01",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3090.773800000534,
+      "openviking_retrieval_ms": 316.9577999997273
+    },
+    {
+      "case_id": "frozen-corrections-02",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3145.970800000214,
+      "openviking_retrieval_ms": 273.4794000007241
+    },
+    {
+      "case_id": "frozen-corrections-01",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3430.7303999994474,
+      "openviking_retrieval_ms": 204.15480000156094
+    },
+    {
+      "case_id": "frozen-facts-03",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3397.9693000001134,
+      "openviking_retrieval_ms": 257.14030000017374
+    },
+    {
+      "case_id": "frozen-preferences-03",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3270.458500001041,
+      "openviking_retrieval_ms": 165.2353999998013
+    },
+    {
+      "case_id": "frozen-corrections-04",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3539.642699999604,
+      "openviking_retrieval_ms": 309.6614000005502
+    },
+    {
+      "case_id": "frozen-preferences-05",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3285.335300000952,
+      "openviking_retrieval_ms": 194.6975000009843
+    },
+    {
+      "case_id": "frozen-corrections-03",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3472.3057999999583,
+      "openviking_retrieval_ms": 165.7643000016833
+    },
+    {
+      "case_id": "frozen-preferences-04",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3226.8788999990647,
+      "openviking_retrieval_ms": 395.156999999017
+    },
+    {
+      "case_id": "frozen-facts-05",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3218.7659999999596,
+      "openviking_retrieval_ms": 165.57830000056128
+    },
+    {
+      "case_id": "frozen-facts-04",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3132.658500000616,
+      "openviking_retrieval_ms": 173.02879999988363
+    },
+    {
+      "case_id": "frozen-preferences-06",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3584.9192000005132,
+      "openviking_retrieval_ms": 159.66880000087258
+    },
+    {
+      "case_id": "frozen-corrections-05",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3590.5969999985246,
+      "openviking_retrieval_ms": 162.96109999893815
+    },
+    {
+      "case_id": "frozen-corrections-04",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3453.5723000008147,
+      "openviking_retrieval_ms": 267.5593000003573
+    },
+    {
+      "case_id": "frozen-preferences-05",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3225.410199998805,
+      "openviking_retrieval_ms": 184.19180000091728
+    },
+    {
+      "case_id": "frozen-corrections-03",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3070.683199999621,
+      "openviking_retrieval_ms": 154.4088999999076
+    },
+    {
+      "case_id": "frozen-facts-05",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3047.8172000002814,
+      "openviking_retrieval_ms": 197.84849999996368
+    },
+    {
+      "case_id": "frozen-preferences-04",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3043.8931999997294,
+      "openviking_retrieval_ms": 240.54760000035458
+    },
+    {
+      "case_id": "frozen-facts-04",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3036.4160999997694,
+      "openviking_retrieval_ms": 136.0674999996263
+    },
+    {
+      "case_id": "frozen-preferences-06",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3298.969000001307,
+      "openviking_retrieval_ms": 329.0188999999373
+    },
+    {
+      "case_id": "frozen-corrections-05",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3670.59110000082,
+      "openviking_retrieval_ms": 174.86429999917164
+    },
+    {
+      "case_id": "frozen-corrections-04",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3505.515099999684,
+      "openviking_retrieval_ms": 279.0566999992734
+    },
+    {
+      "case_id": "frozen-preferences-05",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3231.9853999997576,
+      "openviking_retrieval_ms": 203.76009999927192
+    },
+    {
+      "case_id": "frozen-facts-04",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3173.655399999916,
+      "openviking_retrieval_ms": 304.8283000007359
+    },
+    {
+      "case_id": "frozen-preferences-04",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3299.549200000911,
+      "openviking_retrieval_ms": 332.68739999948593
+    },
+    {
+      "case_id": "frozen-corrections-03",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3162.3431999996683,
+      "openviking_retrieval_ms": 158.72879999915313
+    },
+    {
+      "case_id": "frozen-facts-05",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3120.3230999999505,
+      "openviking_retrieval_ms": 138.23799999954645
+    },
+    {
+      "case_id": "frozen-preferences-06",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3096.86739999961,
+      "openviking_retrieval_ms": 320.86900000103924
+    },
+    {
+      "case_id": "frozen-corrections-05",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3328.947400001198,
+      "openviking_retrieval_ms": 183.93689999902563
+    },
+    {
+      "case_id": "frozen-facts-07",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3330.7627999984106,
+      "openviking_retrieval_ms": 302.88840000139317
+    },
+    {
+      "case_id": "frozen-corrections-07",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3411.158400000204,
+      "openviking_retrieval_ms": 294.31879999901867
+    },
+    {
+      "case_id": "frozen-preferences-07",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3315.3464999995776,
+      "openviking_retrieval_ms": 178.24730000029376
+    },
+    {
+      "case_id": "frozen-facts-06",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3188.8464000003296,
+      "openviking_retrieval_ms": 221.81610000006913
+    },
+    {
+      "case_id": "frozen-corrections-06",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3187.1202000002086,
+      "openviking_retrieval_ms": 151.53000000100292
+    },
+    {
+      "case_id": "frozen-preferences-08",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3117.333199999848,
+      "openviking_retrieval_ms": 151.29800000067917
+    },
+    {
+      "case_id": "frozen-corrections-08",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3579.7550000006595,
+      "openviking_retrieval_ms": 314.33649999962654
+    },
+    {
+      "case_id": "frozen-facts-08",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3436.1838000004354,
+      "openviking_retrieval_ms": 624.7223999998823
+    },
+    {
+      "case_id": "frozen-facts-07",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3112.4675999999454,
+      "openviking_retrieval_ms": 303.4327999994275
+    },
+    {
+      "case_id": "frozen-corrections-07",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3111.2503000003926,
+      "openviking_retrieval_ms": 268.5208999992028
+    },
+    {
+      "case_id": "frozen-preferences-07",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3319.8971999991045,
+      "openviking_retrieval_ms": 146.31720000033965
+    },
+    {
+      "case_id": "frozen-corrections-06",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3046.778699999777,
+      "openviking_retrieval_ms": 236.00380000061705
+    },
+    {
+      "case_id": "frozen-facts-06",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3133.890400000382,
+      "openviking_retrieval_ms": 218.84850000060396
+    },
+    {
+      "case_id": "frozen-preferences-08",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3022.0104999989417,
+      "openviking_retrieval_ms": 291.69370000090566
+    },
+    {
+      "case_id": "frozen-corrections-08",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3589.437000000544,
+      "openviking_retrieval_ms": 416.4132999994763
+    },
+    {
+      "case_id": "frozen-facts-08",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3310.244700000112,
+      "openviking_retrieval_ms": 143.2228000012401
+    },
+    {
+      "case_id": "frozen-facts-07",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3166.342499998791,
+      "openviking_retrieval_ms": 267.82639999873936
+    },
+    {
+      "case_id": "frozen-corrections-07",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3037.3273999994126,
+      "openviking_retrieval_ms": 546.2880999984918
+    },
+    {
+      "case_id": "frozen-preferences-07",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3196.2234000002354,
+      "openviking_retrieval_ms": 148.2899999991787
+    },
+    {
+      "case_id": "frozen-preferences-08",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3114.8234000011144,
+      "openviking_retrieval_ms": 274.45349999834434
+    },
+    {
+      "case_id": "frozen-facts-06",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3149.789099999907,
+      "openviking_retrieval_ms": 169.03309999906924
+    },
+    {
+      "case_id": "frozen-corrections-06",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3170.1028000006772,
+      "openviking_retrieval_ms": 498.98120000034396
+    },
+    {
+      "case_id": "frozen-corrections-08",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4241.273199999341,
+      "openviking_retrieval_ms": 270.4442999984167
+    },
+    {
+      "case_id": "frozen-facts-08",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4899.756799999523,
+      "openviking_retrieval_ms": 143.89420000043174
+    },
+    {
+      "case_id": "frozen-preferences-10",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3610.128499998609,
+      "openviking_retrieval_ms": 178.52060000041092
+    },
+    {
+      "case_id": "frozen-facts-10",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3329.6168000015314,
+      "openviking_retrieval_ms": 219.8056999986875
+    },
+    {
+      "case_id": "frozen-corrections-09",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3212.424999999712,
+      "openviking_retrieval_ms": 162.93079999923066
+    },
+    {
+      "case_id": "frozen-corrections-10",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3238.0396999997174,
+      "openviking_retrieval_ms": 253.4512000001996
+    },
+    {
+      "case_id": "frozen-preferences-09",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3274.0003999988403,
+      "openviking_retrieval_ms": 140.71250000051805
+    },
+    {
+      "case_id": "frozen-facts-09",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3352.04689999955,
+      "openviking_retrieval_ms": 215.1224999997794
+    },
+    {
+      "case_id": "frozen-preferences-10",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3431.601499998578,
+      "openviking_retrieval_ms": 319.9948999990738
+    },
+    {
+      "case_id": "frozen-facts-11",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4436.719499999526,
+      "openviking_retrieval_ms": 283.3847000001697
+    },
+    {
+      "case_id": "frozen-corrections-09",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3203.212000000349,
+      "openviking_retrieval_ms": 182.13189999914903
+    },
+    {
+      "case_id": "frozen-preferences-11",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4479.794300001231,
+      "openviking_retrieval_ms": 183.90929999986838
+    },
+    {
+      "case_id": "frozen-facts-10",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3334.6658000009484,
+      "openviking_retrieval_ms": 241.25350000031176
+    },
+    {
+      "case_id": "frozen-corrections-10",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3217.022299999371,
+      "openviking_retrieval_ms": 289.10220000034315
+    },
+    {
+      "case_id": "frozen-preferences-09",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3213.5551999999734,
+      "openviking_retrieval_ms": 166.5290000000823
+    },
+    {
+      "case_id": "frozen-facts-09",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3181.139300000723,
+      "openviking_retrieval_ms": 155.80060000138474
+    },
+    {
+      "case_id": "frozen-preferences-10",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3314.045299999634,
+      "openviking_retrieval_ms": 319.32389999929
+    },
+    {
+      "case_id": "frozen-corrections-09",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3129.257900000084,
+      "openviking_retrieval_ms": 161.2965999993321
+    },
+    {
+      "case_id": "frozen-facts-10",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3180.9149000000616,
+      "openviking_retrieval_ms": 190.24270000045362
+    },
+    {
+      "case_id": "frozen-facts-11",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3761.589699999604,
+      "openviking_retrieval_ms": 170.06519999995362
+    },
+    {
+      "case_id": "frozen-preferences-11",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4179.472199999509,
+      "openviking_retrieval_ms": 155.09129999918514
+    },
+    {
+      "case_id": "frozen-preferences-09",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3182.2783000006893,
+      "openviking_retrieval_ms": 180.1394000012806
+    },
+    {
+      "case_id": "frozen-corrections-10",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3131.2204000005295,
+      "openviking_retrieval_ms": 236.4730999997846
+    },
+    {
+      "case_id": "frozen-facts-09",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3149.037099999987,
+      "openviking_retrieval_ms": 149.95169999929203
+    },
+    {
+      "case_id": "frozen-corrections-12",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3288.5075000012876,
+      "openviking_retrieval_ms": 379.1679000005388
+    },
+    {
+      "case_id": "frozen-facts-12",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3247.234300000855,
+      "openviking_retrieval_ms": 159.10210000038205
+    },
+    {
+      "case_id": "frozen-preferences-13",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3589.375800000198,
+      "openviking_retrieval_ms": 151.92819999901985
+    },
+    {
+      "case_id": "frozen-facts-11",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3804.903700000068,
+      "openviking_retrieval_ms": 315.33090000084485
+    },
+    {
+      "case_id": "frozen-corrections-11",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3298.1297000005725,
+      "openviking_retrieval_ms": 170.64709999976913
+    },
+    {
+      "case_id": "frozen-preferences-11",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4065.147400000569,
+      "openviking_retrieval_ms": 157.5940000002447
+    },
+    {
+      "case_id": "frozen-preferences-12",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3198.23439999891,
+      "openviking_retrieval_ms": 178.35550000017975
+    },
+    {
+      "case_id": "frozen-facts-13",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3573.9472999994177,
+      "openviking_retrieval_ms": 242.96529999992345
+    },
+    {
+      "case_id": "frozen-corrections-12",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3360.0144000010914,
+      "openviking_retrieval_ms": 285.36649999841757
+    },
+    {
+      "case_id": "frozen-facts-12",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3317.759200001092,
+      "openviking_retrieval_ms": 208.9534000006097
+    },
+    {
+      "case_id": "frozen-preferences-13",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3382.6706999989256,
+      "openviking_retrieval_ms": 153.1648000000132
+    },
+    {
+      "case_id": "frozen-corrections-11",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3399.7096000002784,
+      "openviking_retrieval_ms": 261.9851999988896
+    },
+    {
+      "case_id": "frozen-preferences-14",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4196.175799999764,
+      "openviking_retrieval_ms": 231.45089999889024
+    },
+    {
+      "case_id": "frozen-facts-13",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3185.80639999891,
+      "openviking_retrieval_ms": 143.76140000058513
+    },
+    {
+      "case_id": "frozen-preferences-12",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3415.2544000007765,
+      "openviking_retrieval_ms": 278.69619999910356
+    },
+    {
+      "case_id": "frozen-corrections-13",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3602.640600000086,
+      "openviking_retrieval_ms": 169.62659999990137
+    },
+    {
+      "case_id": "frozen-corrections-12",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3041.0315999997692,
+      "openviking_retrieval_ms": 334.2408999997133
+    },
+    {
+      "case_id": "frozen-facts-12",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3084.902399999919,
+      "openviking_retrieval_ms": 174.20390000006591
+    },
+    {
+      "case_id": "frozen-preferences-13",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3262.7251999983855,
+      "openviking_retrieval_ms": 162.81290000006265
+    },
+    {
+      "case_id": "frozen-corrections-11",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3379.051400001117,
+      "openviking_retrieval_ms": 327.4407999997493
+    },
+    {
+      "case_id": "frozen-facts-13",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3329.368799999429,
+      "openviking_retrieval_ms": 196.5333999996801
+    },
+    {
+      "case_id": "frozen-preferences-12",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3193.970599999375,
+      "openviking_retrieval_ms": 154.14419999979145
+    },
+    {
+      "case_id": "frozen-preferences-14",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4005.4787999997643,
+      "openviking_retrieval_ms": 580.4248000004009
+    },
+    {
+      "case_id": "frozen-corrections-13",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3952.3860000008426,
+      "openviking_retrieval_ms": 159.3737000002875
+    },
+    {
+      "case_id": "frozen-preferences-15",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3302.938800001357,
+      "openviking_retrieval_ms": 169.7913999996672
+    },
+    {
+      "case_id": "frozen-facts-15",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3547.305600000982,
+      "openviking_retrieval_ms": 175.63019999943208
+    },
+    {
+      "case_id": "frozen-corrections-15",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3362.8217999994376,
+      "openviking_retrieval_ms": 177.17009999978472
+    },
+    {
+      "case_id": "frozen-facts-14",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3450.1278000007005,
+      "openviking_retrieval_ms": 389.2021999999997
+    },
+    {
+      "case_id": "frozen-preferences-16",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3533.7842000008095,
+      "openviking_retrieval_ms": 218.12900000077207
+    },
+    {
+      "case_id": "frozen-corrections-14",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3051.1513000001287,
+      "openviking_retrieval_ms": 349.0676000001258
+    },
+    {
+      "case_id": "frozen-preferences-15",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3423.7047000005987,
+      "openviking_retrieval_ms": 376.58140000166895
+    },
+    {
+      "case_id": "frozen-preferences-14",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 5864.364200000637,
+      "openviking_retrieval_ms": 378.2939000011538
+    },
+    {
+      "case_id": "frozen-facts-15",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3427.078500000789,
+      "openviking_retrieval_ms": 187.9795999993803
+    },
+    {
+      "case_id": "frozen-corrections-13",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4425.127200000134,
+      "openviking_retrieval_ms": 199.9918000001344
+    },
+    {
+      "case_id": "frozen-corrections-15",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3724.61309999926,
+      "openviking_retrieval_ms": 217.2020000016346
+    },
+    {
+      "case_id": "frozen-facts-14",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3335.2469999990717,
+      "openviking_retrieval_ms": 408.0846999986534
+    },
+    {
+      "case_id": "frozen-preferences-16",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3834.98150000014,
+      "openviking_retrieval_ms": 190.64040000012028
+    },
+    {
+      "case_id": "frozen-corrections-14",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3311.618499999895,
+      "openviking_retrieval_ms": 160.0708999994822
+    },
+    {
+      "case_id": "frozen-preferences-15",
+      "trial": 3,
+      "error_code": "UpstreamError"
+    },
+    {
+      "case_id": "frozen-facts-15",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3442.36280000041,
+      "openviking_retrieval_ms": 333.3099999999831
+    },
+    {
+      "case_id": "frozen-corrections-15",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3428.9202999989357,
+      "openviking_retrieval_ms": 198.9439000008133
+    },
+    {
+      "case_id": "frozen-corrections-16",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 5137.718100000711,
+      "openviking_retrieval_ms": 344.9962999984564
+    },
+    {
+      "case_id": "frozen-facts-16",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 5671.640399999887,
+      "openviking_retrieval_ms": 314.958500001012
+    },
+    {
+      "case_id": "frozen-facts-14",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3566.25940000049,
+      "openviking_retrieval_ms": 225.01030000057654
+    },
+    {
+      "case_id": "frozen-corrections-14",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3180.3631000002497,
+      "openviking_retrieval_ms": 541.5915999983554
+    },
+    {
+      "case_id": "frozen-preferences-16",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3374.318399999538,
+      "openviking_retrieval_ms": 593.4965000014927
+    },
+    {
+      "case_id": "frozen-corrections-17",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3215.18130000004,
+      "openviking_retrieval_ms": 171.04749999998603
+    },
+    {
+      "case_id": "frozen-preferences-18",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3198.4691999987263,
+      "openviking_retrieval_ms": 294.347299999572
+    },
+    {
+      "case_id": "frozen-facts-18",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3646.619900000587,
+      "openviking_retrieval_ms": 152.19299999989744
+    },
+    {
+      "case_id": "frozen-preferences-17",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3305.1068000004307,
+      "openviking_retrieval_ms": 366.3605000001553
+    },
+    {
+      "case_id": "frozen-facts-17",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3376.807700000427,
+      "openviking_retrieval_ms": 292.062900000019
+    },
+    {
+      "case_id": "frozen-corrections-18",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3711.9793000001664,
+      "openviking_retrieval_ms": 196.15750000048138
+    },
+    {
+      "case_id": "frozen-corrections-16",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4619.980299999952,
+      "openviking_retrieval_ms": 182.50310000075842
+    },
+    {
+      "case_id": "frozen-facts-16",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4574.552500000209,
+      "openviking_retrieval_ms": 659.0971000005084
+    },
+    {
+      "case_id": "frozen-corrections-17",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3616.977300000144,
+      "openviking_retrieval_ms": 190.54660000074364
+    },
+    {
+      "case_id": "frozen-preferences-18",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3157.8566000007413,
+      "openviking_retrieval_ms": 395.4080999992584
+    },
+    {
+      "case_id": "frozen-facts-18",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3373.7588999993022,
+      "openviking_retrieval_ms": 228.9232000002812
+    },
+    {
+      "case_id": "frozen-preferences-17",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3188.54040000042,
+      "openviking_retrieval_ms": 714.8815000000468
+    },
+    {
+      "case_id": "frozen-facts-17",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3335.183200000756,
+      "openviking_retrieval_ms": 309.93470000066736
+    },
+    {
+      "case_id": "frozen-corrections-18",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3402.7086999994935,
+      "openviking_retrieval_ms": 185.61270000100194
+    },
+    {
+      "case_id": "frozen-corrections-17",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3270.8317000015086,
+      "openviking_retrieval_ms": 774.430499999653
+    },
+    {
+      "case_id": "frozen-facts-16",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3588.47969999988,
+      "openviking_retrieval_ms": 149.56379999966884
+    },
+    {
+      "case_id": "frozen-facts-18",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3061.578400000144,
+      "openviking_retrieval_ms": 159.40150000096764
+    },
+    {
+      "case_id": "frozen-preferences-18",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3105.1186000004236,
+      "openviking_retrieval_ms": 483.1805000012537
+    },
+    {
+      "case_id": "frozen-corrections-16",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3810.6383999984246,
+      "openviking_retrieval_ms": 169.09880000093835
+    },
+    {
+      "case_id": "frozen-preferences-17",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3117.425299999013,
+      "openviking_retrieval_ms": 277.89900000061607
+    },
+    {
+      "case_id": "frozen-facts-17",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3404.785000000629,
+      "openviking_retrieval_ms": 289.76460000012594
+    },
+    {
+      "case_id": "frozen-corrections-18",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3187.24900000052,
+      "openviking_retrieval_ms": 1173.3617000008962
+    },
+    {
+      "case_id": "frozen-facts-20",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3515.6697999991593,
+      "openviking_retrieval_ms": 162.6983999994991
+    },
+    {
+      "case_id": "frozen-preferences-19",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3292.281999998522,
+      "openviking_retrieval_ms": 145.5005000007077
+    },
+    {
+      "case_id": "frozen-corrections-20",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3282.9326999999466,
+      "openviking_retrieval_ms": 171.39679999854707
+    },
+    {
+      "case_id": "frozen-facts-19",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3026.890499999354,
+      "openviking_retrieval_ms": 143.77479999893694
+    },
+    {
+      "case_id": "frozen-corrections-19",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3163.690699999279,
+      "openviking_retrieval_ms": 293.58200000024226
+    },
+    {
+      "case_id": "frozen-preferences-20",
+      "trial": 1,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3395.3232999992906,
+      "openviking_retrieval_ms": 275.1262999991013
+    },
+    {
+      "case_id": "frozen-facts-20",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3358.036400000856,
+      "openviking_retrieval_ms": 169.946500000151
+    },
+    {
+      "case_id": "frozen-preferences-19",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3354.2189999989205,
+      "openviking_retrieval_ms": 268.5773000011977
+    },
+    {
+      "case_id": "frozen-corrections-20",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3114.4554000002245,
+      "openviking_retrieval_ms": 139.40870000078576
+    },
+    {
+      "case_id": "frozen-facts-19",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3394.5556999988185,
+      "openviking_retrieval_ms": 163.02579999864975
+    },
+    {
+      "case_id": "frozen-corrections-19",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 2960.521699998935,
+      "openviking_retrieval_ms": 282.37760000047274
+    },
+    {
+      "case_id": "frozen-preferences-20",
+      "trial": 2,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3145.5303999991884,
+      "openviking_retrieval_ms": 152.64840000054392
+    },
+    {
+      "case_id": "frozen-facts-20",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3308.52109999978,
+      "openviking_retrieval_ms": 296.51449999983015
+    },
+    {
+      "case_id": "frozen-corrections-20",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3380.4822000001877,
+      "openviking_retrieval_ms": 271.6478999991523
+    },
+    {
+      "case_id": "frozen-preferences-19",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 3918.1391000001895,
+      "openviking_retrieval_ms": 367.5528999992821
+    },
+    {
+      "case_id": "frozen-facts-19",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 4076.3516999995772,
+      "openviking_retrieval_ms": 666.8620000000374
+    },
+    {
+      "case_id": "frozen-corrections-19",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 2970.9963999994216,
+      "openviking_retrieval_ms": 284.16819999984
+    },
+    {
+      "case_id": "frozen-preferences-20",
+      "trial": 3,
+      "error_code": null,
+      "baseline_recall_at_3": 1.0,
+      "openviking_recall_at_3": 1.0,
+      "gold_count": 1,
+      "baseline_retrieval_ms": 2875.110799999675,
+      "openviking_retrieval_ms": 273.7629000002926
+    }
+  ],
+  "embedding_usage": null,
+  "indexing_usage": null,
+  "index_processing": "vectors_only",
+  "llm_endpoint": "unreachable_dummy",
+  "top_k": 3,
+  "summary": {
+    "executed": 180,
+    "execution_failures": 1,
+    "baseline_recall_at_3": 0.9944444444444445,
+    "baseline_ci95": [
+      0.983333,
+      1.0
+    ],
+    "openviking_recall_at_3": 0.9944444444444445,
+    "openviking_ci95": [
+      0.983333,
+      1.0
+    ]
+  }
+}

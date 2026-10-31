@@ -7,15 +7,8 @@ from alembic.config import Config
 from sqlalchemy import select
 
 from app.core.config import get_settings
-from app.infrastructure.persistence.database import Database
-from app.infrastructure.persistence.models import User
-
-
-def upgrade(database, revision="head"):
-    config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
-    with database.engine.begin() as connection:
-        config.attributes["connection"] = connection
-        command.upgrade(config, revision)
+from app.entity.do.models import User
+from app.dao.postgres.schema_migrations import upgrade
 
 
 def migrate_model_admins(database, usernames):
@@ -33,6 +26,7 @@ def migrate_model_admins(database, usernames):
 
 
 def main():
+    from app.dao.postgres.database import Database
     parser = argparse.ArgumentParser(description="显式升级数据库；不会修改 .env 或自动提升用户")
     parser.add_argument("--model-admins", action="store_true", help="升级后显式将旧模型管理员白名单转为平台管理员")
     options = parser.parse_args()

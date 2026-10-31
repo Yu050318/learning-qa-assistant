@@ -52,7 +52,8 @@ def driver():
             value.owner = next(a.split('=',1)[1] for a in args if a.startswith('learningqa.sandbox.owner='))
             return 0, b'c'*64+b'\n', b''
         if args[0] == 'cp':
-            content = b'wrong runner' if value.mismatch else Path('app/infrastructure/sandbox_runner.py').read_bytes()
+            import inspect
+            content = b'wrong runner' if value.mismatch else Path(inspect.getfile(read_request)).read_bytes()
             buffer = BytesIO()
             with tarfile.open(fileobj=buffer, mode='w:') as archive:
                 member = tarfile.TarInfo('runner.py');member.size=len(content)

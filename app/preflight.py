@@ -3,10 +3,10 @@ import argparse
 import json
 import sys
 
-from app.application.preflight import deployment_preflight
+from app.service.preflight import deployment_preflight
 from app.core.config import Settings
-from app.infrastructure.persistence.database import Database
-from app.infrastructure.vectorstores.milvus import MilvusVectorStore
+from app.dao.postgres.database import Database
+from app.dao.milvus import MilvusVectorStore
 
 
 def main():

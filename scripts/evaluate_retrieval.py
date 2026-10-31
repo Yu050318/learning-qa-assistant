@@ -4,14 +4,17 @@ import argparse
 from contextlib import ExitStack
 from dataclasses import asdict
 import json
+import sys
 from pathlib import Path
 from uuid import UUID
 
-from app.application.retriever import RetrieverService
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from app.manager.retriever import RetrieverService
 from app.core.config import Settings
-from app.infrastructure.embeddings.qwen import QwenEmbedding
-from app.infrastructure.vectorstores.milvus import MilvusVectorStore
-from app.infrastructure.rerank import TextReranker
+from app.manager.embeddings.qwen import QwenEmbedding
+from app.dao.milvus import MilvusVectorStore
+from app.manager.rerank import TextReranker
 
 
 def score_rankings(rankings: list[tuple[list[str], set[str]]], ks: list[int]) -> dict:

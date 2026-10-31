@@ -1,0 +1,2958 @@
+{
+  "schema_version": 1,
+  "name": "personal-memory-v1",
+  "cases": [
+    {
+      "id": "dev-preferences-01",
+      "family": "交流语言",
+      "split": "dev",
+      "category": "preferences",
+      "initial_memories": [
+        "我的交流语言是中文。"
+      ],
+      "sessions": [
+        [
+          "关于交流语言，我个人偏好中文。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的交流语言是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "中文"
+      ],
+      "gold_memories": [
+        "我的交流语言是中文。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-facts-01",
+      "family": "交流语言",
+      "split": "dev",
+      "category": "facts",
+      "initial_memories": [
+        "我的交流语言是中文。"
+      ],
+      "sessions": [
+        [
+          "我的交流语言是中文。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的交流语言是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "中文"
+      ],
+      "gold_memories": [
+        "我的交流语言是中文。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-corrections-01",
+      "family": "交流语言",
+      "split": "dev",
+      "category": "corrections",
+      "initial_memories": [
+        "我的交流语言是中文。"
+      ],
+      "sessions": [
+        [
+          "我的交流语言是中文。"
+        ],
+        [
+          "更正之前的记录：我的交流语言已经改为英文，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的交流语言是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "英文"
+      ],
+      "gold_memories": [
+        "我的交流语言是英文。"
+      ],
+      "forbidden_facts": [
+        "中文"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-forgetting-01",
+      "family": "交流语言",
+      "split": "dev",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的交流语言是中文。"
+      ],
+      "sessions": [
+        [
+          "我的交流语言是中文。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的交流语言是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "中文"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-unknown-01",
+      "family": "交流语言",
+      "split": "dev",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的交流语言是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "中文"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-preferences-02",
+      "family": "答复长度",
+      "split": "dev",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于答复长度，我个人偏好三句话。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的答复长度是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "三句话"
+      ],
+      "gold_memories": [
+        "我的答复长度是三句话。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-facts-02",
+      "family": "答复长度",
+      "split": "dev",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的答复长度是三句话。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的答复长度是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "三句话"
+      ],
+      "gold_memories": [
+        "我的答复长度是三句话。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-corrections-02",
+      "family": "答复长度",
+      "split": "dev",
+      "category": "corrections",
+      "initial_memories": [
+        "我的答复长度是三句话。"
+      ],
+      "sessions": [
+        [
+          "我的答复长度是三句话。"
+        ],
+        [
+          "更正之前的记录：我的答复长度已经改为五句话，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的答复长度是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "五句话"
+      ],
+      "gold_memories": [
+        "我的答复长度是五句话。"
+      ],
+      "forbidden_facts": [
+        "三句话"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-forgetting-02",
+      "family": "答复长度",
+      "split": "dev",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的答复长度是三句话。"
+      ],
+      "sessions": [
+        [
+          "我的答复长度是三句话。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的答复长度是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "三句话"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-unknown-02",
+      "family": "答复长度",
+      "split": "dev",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的答复长度是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "三句话"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-preferences-03",
+      "family": "演示时间",
+      "split": "dev",
+      "category": "preferences",
+      "initial_memories": [
+        "我的演示时间是上午九点。"
+      ],
+      "sessions": [
+        [
+          "关于演示时间，我个人偏好上午九点。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的演示时间是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "上午九点"
+      ],
+      "gold_memories": [
+        "我的演示时间是上午九点。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-facts-03",
+      "family": "演示时间",
+      "split": "dev",
+      "category": "facts",
+      "initial_memories": [
+        "我的演示时间是上午九点。"
+      ],
+      "sessions": [
+        [
+          "我的演示时间是上午九点。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的演示时间是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "上午九点"
+      ],
+      "gold_memories": [
+        "我的演示时间是上午九点。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-corrections-03",
+      "family": "演示时间",
+      "split": "dev",
+      "category": "corrections",
+      "initial_memories": [
+        "我的演示时间是上午九点。"
+      ],
+      "sessions": [
+        [
+          "我的演示时间是上午九点。"
+        ],
+        [
+          "更正之前的记录：我的演示时间已经改为下午三点，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的演示时间是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "下午三点"
+      ],
+      "gold_memories": [
+        "我的演示时间是下午三点。"
+      ],
+      "forbidden_facts": [
+        "上午九点"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-forgetting-03",
+      "family": "演示时间",
+      "split": "dev",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的演示时间是上午九点。"
+      ],
+      "sessions": [
+        [
+          "我的演示时间是上午九点。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的演示时间是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "上午九点"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-unknown-03",
+      "family": "演示时间",
+      "split": "dev",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的演示时间是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "上午九点"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-preferences-04",
+      "family": "示例项目名称",
+      "split": "dev",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于示例项目名称，我个人偏好练习甲。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的示例项目名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "练习甲"
+      ],
+      "gold_memories": [
+        "我的示例项目名称是练习甲。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-facts-04",
+      "family": "示例项目名称",
+      "split": "dev",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的示例项目名称是练习甲。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的示例项目名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "练习甲"
+      ],
+      "gold_memories": [
+        "我的示例项目名称是练习甲。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-corrections-04",
+      "family": "示例项目名称",
+      "split": "dev",
+      "category": "corrections",
+      "initial_memories": [
+        "我的示例项目名称是练习甲。"
+      ],
+      "sessions": [
+        [
+          "我的示例项目名称是练习甲。"
+        ],
+        [
+          "更正之前的记录：我的示例项目名称已经改为练习乙，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的示例项目名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "练习乙"
+      ],
+      "gold_memories": [
+        "我的示例项目名称是练习乙。"
+      ],
+      "forbidden_facts": [
+        "练习甲"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "dev-forgetting-04",
+      "family": "示例项目名称",
+      "split": "dev",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的示例项目名称是练习甲。"
+      ],
+      "sessions": [
+        [
+          "我的示例项目名称是练习甲。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的示例项目名称是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "练习甲"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "dev-unknown-04",
+      "family": "示例项目名称",
+      "split": "dev",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的示例项目名称是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "练习甲"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-01",
+      "family": "常住城市",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的常住城市是厦门。"
+      ],
+      "sessions": [
+        [
+          "关于常住城市，我个人偏好厦门。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的常住城市是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "厦门"
+      ],
+      "gold_memories": [
+        "我的常住城市是厦门。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-01",
+      "family": "常住城市",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的常住城市是厦门。"
+      ],
+      "sessions": [
+        [
+          "我的常住城市是厦门。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的常住城市是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "厦门"
+      ],
+      "gold_memories": [
+        "我的常住城市是厦门。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-01",
+      "family": "常住城市",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的常住城市是厦门。"
+      ],
+      "sessions": [
+        [
+          "我的常住城市是厦门。"
+        ],
+        [
+          "更正之前的记录：我的常住城市已经改为青岛，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的常住城市是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "青岛"
+      ],
+      "gold_memories": [
+        "我的常住城市是青岛。"
+      ],
+      "forbidden_facts": [
+        "厦门"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-01",
+      "family": "常住城市",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的常住城市是厦门。"
+      ],
+      "sessions": [
+        [
+          "我的常住城市是厦门。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的常住城市是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "厦门"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-01",
+      "family": "常住城市",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的常住城市是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "厦门"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-02",
+      "family": "项目代号",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于项目代号，我个人偏好松涛。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的项目代号是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "松涛"
+      ],
+      "gold_memories": [
+        "我的项目代号是松涛。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-02",
+      "family": "项目代号",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的项目代号是松涛。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的项目代号是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "松涛"
+      ],
+      "gold_memories": [
+        "我的项目代号是松涛。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-02",
+      "family": "项目代号",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的项目代号是松涛。"
+      ],
+      "sessions": [
+        [
+          "我的项目代号是松涛。"
+        ],
+        [
+          "更正之前的记录：我的项目代号已经改为远帆，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的项目代号是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "远帆"
+      ],
+      "gold_memories": [
+        "我的项目代号是远帆。"
+      ],
+      "forbidden_facts": [
+        "松涛"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-02",
+      "family": "项目代号",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的项目代号是松涛。"
+      ],
+      "sessions": [
+        [
+          "我的项目代号是松涛。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的项目代号是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "松涛"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-02",
+      "family": "项目代号",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的项目代号是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "松涛"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-03",
+      "family": "周报提交日",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的周报提交日是周三。"
+      ],
+      "sessions": [
+        [
+          "关于周报提交日，我个人偏好周三。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的周报提交日是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "周三"
+      ],
+      "gold_memories": [
+        "我的周报提交日是周三。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-03",
+      "family": "周报提交日",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的周报提交日是周三。"
+      ],
+      "sessions": [
+        [
+          "我的周报提交日是周三。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的周报提交日是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "周三"
+      ],
+      "gold_memories": [
+        "我的周报提交日是周三。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-03",
+      "family": "周报提交日",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的周报提交日是周三。"
+      ],
+      "sessions": [
+        [
+          "我的周报提交日是周三。"
+        ],
+        [
+          "更正之前的记录：我的周报提交日已经改为周五，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的周报提交日是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "周五"
+      ],
+      "gold_memories": [
+        "我的周报提交日是周五。"
+      ],
+      "forbidden_facts": [
+        "周三"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-03",
+      "family": "周报提交日",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的周报提交日是周三。"
+      ],
+      "sessions": [
+        [
+          "我的周报提交日是周三。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的周报提交日是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "周三"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-03",
+      "family": "周报提交日",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的周报提交日是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "周三"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-04",
+      "family": "报告计量单位",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于报告计量单位，我个人偏好件。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报告计量单位是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "件"
+      ],
+      "gold_memories": [
+        "我的报告计量单位是件。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-04",
+      "family": "报告计量单位",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的报告计量单位是件。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报告计量单位是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "件"
+      ],
+      "gold_memories": [
+        "我的报告计量单位是件。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-04",
+      "family": "报告计量单位",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的报告计量单位是件。"
+      ],
+      "sessions": [
+        [
+          "我的报告计量单位是件。"
+        ],
+        [
+          "更正之前的记录：我的报告计量单位已经改为箱，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报告计量单位是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "箱"
+      ],
+      "gold_memories": [
+        "我的报告计量单位是箱。"
+      ],
+      "forbidden_facts": [
+        "件"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-04",
+      "family": "报告计量单位",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的报告计量单位是件。"
+      ],
+      "sessions": [
+        [
+          "我的报告计量单位是件。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的报告计量单位是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "件"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-04",
+      "family": "报告计量单位",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报告计量单位是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "件"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-05",
+      "family": "日志时区",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的日志时区是UTC+8。"
+      ],
+      "sessions": [
+        [
+          "关于日志时区，我个人偏好UTC+8。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日志时区是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "UTC+8"
+      ],
+      "gold_memories": [
+        "我的日志时区是UTC+8。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-05",
+      "family": "日志时区",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的日志时区是UTC+8。"
+      ],
+      "sessions": [
+        [
+          "我的日志时区是UTC+8。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日志时区是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "UTC+8"
+      ],
+      "gold_memories": [
+        "我的日志时区是UTC+8。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-05",
+      "family": "日志时区",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的日志时区是UTC+8。"
+      ],
+      "sessions": [
+        [
+          "我的日志时区是UTC+8。"
+        ],
+        [
+          "更正之前的记录：我的日志时区已经改为UTC+9，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日志时区是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "UTC+9"
+      ],
+      "gold_memories": [
+        "我的日志时区是UTC+9。"
+      ],
+      "forbidden_facts": [
+        "UTC+8"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-05",
+      "family": "日志时区",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的日志时区是UTC+8。"
+      ],
+      "sessions": [
+        [
+          "我的日志时区是UTC+8。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的日志时区是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "UTC+8"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-05",
+      "family": "日志时区",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日志时区是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "UTC+8"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-06",
+      "family": "首选编辑器",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于首选编辑器，我个人偏好Vim。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的首选编辑器是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "Vim"
+      ],
+      "gold_memories": [
+        "我的首选编辑器是Vim。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-06",
+      "family": "首选编辑器",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的首选编辑器是Vim。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的首选编辑器是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "Vim"
+      ],
+      "gold_memories": [
+        "我的首选编辑器是Vim。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-06",
+      "family": "首选编辑器",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的首选编辑器是Vim。"
+      ],
+      "sessions": [
+        [
+          "我的首选编辑器是Vim。"
+        ],
+        [
+          "更正之前的记录：我的首选编辑器已经改为VS Code，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的首选编辑器是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "VS Code"
+      ],
+      "gold_memories": [
+        "我的首选编辑器是VS Code。"
+      ],
+      "forbidden_facts": [
+        "Vim"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-06",
+      "family": "首选编辑器",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的首选编辑器是Vim。"
+      ],
+      "sessions": [
+        [
+          "我的首选编辑器是Vim。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的首选编辑器是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "Vim"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-06",
+      "family": "首选编辑器",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的首选编辑器是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "Vim"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-07",
+      "family": "会议长度",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的会议长度是25分钟。"
+      ],
+      "sessions": [
+        [
+          "关于会议长度，我个人偏好25分钟。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的会议长度是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "25分钟"
+      ],
+      "gold_memories": [
+        "我的会议长度是25分钟。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-07",
+      "family": "会议长度",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的会议长度是25分钟。"
+      ],
+      "sessions": [
+        [
+          "我的会议长度是25分钟。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的会议长度是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "25分钟"
+      ],
+      "gold_memories": [
+        "我的会议长度是25分钟。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-07",
+      "family": "会议长度",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的会议长度是25分钟。"
+      ],
+      "sessions": [
+        [
+          "我的会议长度是25分钟。"
+        ],
+        [
+          "更正之前的记录：我的会议长度已经改为45分钟，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的会议长度是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "45分钟"
+      ],
+      "gold_memories": [
+        "我的会议长度是45分钟。"
+      ],
+      "forbidden_facts": [
+        "25分钟"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-07",
+      "family": "会议长度",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的会议长度是25分钟。"
+      ],
+      "sessions": [
+        [
+          "我的会议长度是25分钟。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的会议长度是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "25分钟"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-07",
+      "family": "会议长度",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的会议长度是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "25分钟"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-08",
+      "family": "默认文件格式",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于默认文件格式，我个人偏好CSV。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认文件格式是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "CSV"
+      ],
+      "gold_memories": [
+        "我的默认文件格式是CSV。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-08",
+      "family": "默认文件格式",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的默认文件格式是CSV。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认文件格式是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "CSV"
+      ],
+      "gold_memories": [
+        "我的默认文件格式是CSV。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-08",
+      "family": "默认文件格式",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的默认文件格式是CSV。"
+      ],
+      "sessions": [
+        [
+          "我的默认文件格式是CSV。"
+        ],
+        [
+          "更正之前的记录：我的默认文件格式已经改为Parquet，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认文件格式是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "Parquet"
+      ],
+      "gold_memories": [
+        "我的默认文件格式是Parquet。"
+      ],
+      "forbidden_facts": [
+        "CSV"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-08",
+      "family": "默认文件格式",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的默认文件格式是CSV。"
+      ],
+      "sessions": [
+        [
+          "我的默认文件格式是CSV。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的默认文件格式是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "CSV"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-08",
+      "family": "默认文件格式",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认文件格式是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "CSV"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-09",
+      "family": "邮件称呼",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的邮件称呼是林同学。"
+      ],
+      "sessions": [
+        [
+          "关于邮件称呼，我个人偏好林同学。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的邮件称呼是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "林同学"
+      ],
+      "gold_memories": [
+        "我的邮件称呼是林同学。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-09",
+      "family": "邮件称呼",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的邮件称呼是林同学。"
+      ],
+      "sessions": [
+        [
+          "我的邮件称呼是林同学。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的邮件称呼是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "林同学"
+      ],
+      "gold_memories": [
+        "我的邮件称呼是林同学。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-09",
+      "family": "邮件称呼",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的邮件称呼是林同学。"
+      ],
+      "sessions": [
+        [
+          "我的邮件称呼是林同学。"
+        ],
+        [
+          "更正之前的记录：我的邮件称呼已经改为林工，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的邮件称呼是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "林工"
+      ],
+      "gold_memories": [
+        "我的邮件称呼是林工。"
+      ],
+      "forbidden_facts": [
+        "林同学"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-09",
+      "family": "邮件称呼",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的邮件称呼是林同学。"
+      ],
+      "sessions": [
+        [
+          "我的邮件称呼是林同学。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的邮件称呼是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "林同学"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-09",
+      "family": "邮件称呼",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的邮件称呼是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "林同学"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-10",
+      "family": "通知渠道",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于通知渠道，我个人偏好站内信。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的通知渠道是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "站内信"
+      ],
+      "gold_memories": [
+        "我的通知渠道是站内信。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-10",
+      "family": "通知渠道",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的通知渠道是站内信。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的通知渠道是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "站内信"
+      ],
+      "gold_memories": [
+        "我的通知渠道是站内信。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-10",
+      "family": "通知渠道",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的通知渠道是站内信。"
+      ],
+      "sessions": [
+        [
+          "我的通知渠道是站内信。"
+        ],
+        [
+          "更正之前的记录：我的通知渠道已经改为邮件，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的通知渠道是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "邮件"
+      ],
+      "gold_memories": [
+        "我的通知渠道是邮件。"
+      ],
+      "forbidden_facts": [
+        "站内信"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-10",
+      "family": "通知渠道",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的通知渠道是站内信。"
+      ],
+      "sessions": [
+        [
+          "我的通知渠道是站内信。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的通知渠道是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "站内信"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-10",
+      "family": "通知渠道",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的通知渠道是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "站内信"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-11",
+      "family": "报表配色",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的报表配色是深绿色。"
+      ],
+      "sessions": [
+        [
+          "关于报表配色，我个人偏好深绿色。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报表配色是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "深绿色"
+      ],
+      "gold_memories": [
+        "我的报表配色是深绿色。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-11",
+      "family": "报表配色",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的报表配色是深绿色。"
+      ],
+      "sessions": [
+        [
+          "我的报表配色是深绿色。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报表配色是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "深绿色"
+      ],
+      "gold_memories": [
+        "我的报表配色是深绿色。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-11",
+      "family": "报表配色",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的报表配色是深绿色。"
+      ],
+      "sessions": [
+        [
+          "我的报表配色是深绿色。"
+        ],
+        [
+          "更正之前的记录：我的报表配色已经改为藏蓝色，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报表配色是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "藏蓝色"
+      ],
+      "gold_memories": [
+        "我的报表配色是藏蓝色。"
+      ],
+      "forbidden_facts": [
+        "深绿色"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-11",
+      "family": "报表配色",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的报表配色是深绿色。"
+      ],
+      "sessions": [
+        [
+          "我的报表配色是深绿色。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的报表配色是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "深绿色"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-11",
+      "family": "报表配色",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的报表配色是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "深绿色"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-12",
+      "family": "代码缩进",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于代码缩进，我个人偏好两个空格。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的代码缩进是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "两个空格"
+      ],
+      "gold_memories": [
+        "我的代码缩进是两个空格。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-12",
+      "family": "代码缩进",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的代码缩进是两个空格。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的代码缩进是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "两个空格"
+      ],
+      "gold_memories": [
+        "我的代码缩进是两个空格。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-12",
+      "family": "代码缩进",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的代码缩进是两个空格。"
+      ],
+      "sessions": [
+        [
+          "我的代码缩进是两个空格。"
+        ],
+        [
+          "更正之前的记录：我的代码缩进已经改为四个空格，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的代码缩进是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "四个空格"
+      ],
+      "gold_memories": [
+        "我的代码缩进是四个空格。"
+      ],
+      "forbidden_facts": [
+        "两个空格"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-12",
+      "family": "代码缩进",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的代码缩进是两个空格。"
+      ],
+      "sessions": [
+        [
+          "我的代码缩进是两个空格。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的代码缩进是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "两个空格"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-12",
+      "family": "代码缩进",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的代码缩进是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "两个空格"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-13",
+      "family": "导出编码",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的导出编码是UTF-8。"
+      ],
+      "sessions": [
+        [
+          "关于导出编码，我个人偏好UTF-8。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的导出编码是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "UTF-8"
+      ],
+      "gold_memories": [
+        "我的导出编码是UTF-8。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-13",
+      "family": "导出编码",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的导出编码是UTF-8。"
+      ],
+      "sessions": [
+        [
+          "我的导出编码是UTF-8。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的导出编码是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "UTF-8"
+      ],
+      "gold_memories": [
+        "我的导出编码是UTF-8。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-13",
+      "family": "导出编码",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的导出编码是UTF-8。"
+      ],
+      "sessions": [
+        [
+          "我的导出编码是UTF-8。"
+        ],
+        [
+          "更正之前的记录：我的导出编码已经改为GB18030，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的导出编码是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "GB18030"
+      ],
+      "gold_memories": [
+        "我的导出编码是GB18030。"
+      ],
+      "forbidden_facts": [
+        "UTF-8"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-13",
+      "family": "导出编码",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的导出编码是UTF-8。"
+      ],
+      "sessions": [
+        [
+          "我的导出编码是UTF-8。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的导出编码是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "UTF-8"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-13",
+      "family": "导出编码",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的导出编码是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "UTF-8"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-14",
+      "family": "日期格式",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于日期格式，我个人偏好YYYY/MM/DD。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日期格式是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "YYYY/MM/DD"
+      ],
+      "gold_memories": [
+        "我的日期格式是YYYY/MM/DD。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-14",
+      "family": "日期格式",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的日期格式是YYYY/MM/DD。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日期格式是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "YYYY/MM/DD"
+      ],
+      "gold_memories": [
+        "我的日期格式是YYYY/MM/DD。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-14",
+      "family": "日期格式",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的日期格式是YYYY/MM/DD。"
+      ],
+      "sessions": [
+        [
+          "我的日期格式是YYYY/MM/DD。"
+        ],
+        [
+          "更正之前的记录：我的日期格式已经改为DD-MM-YYYY，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日期格式是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "DD-MM-YYYY"
+      ],
+      "gold_memories": [
+        "我的日期格式是DD-MM-YYYY。"
+      ],
+      "forbidden_facts": [
+        "YYYY/MM/DD"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-14",
+      "family": "日期格式",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的日期格式是YYYY/MM/DD。"
+      ],
+      "sessions": [
+        [
+          "我的日期格式是YYYY/MM/DD。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的日期格式是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "YYYY/MM/DD"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-14",
+      "family": "日期格式",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的日期格式是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "YYYY/MM/DD"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-15",
+      "family": "文件命名前缀",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的文件命名前缀是review_。"
+      ],
+      "sessions": [
+        [
+          "关于文件命名前缀，我个人偏好review_。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的文件命名前缀是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "review_"
+      ],
+      "gold_memories": [
+        "我的文件命名前缀是review_。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-15",
+      "family": "文件命名前缀",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的文件命名前缀是review_。"
+      ],
+      "sessions": [
+        [
+          "我的文件命名前缀是review_。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的文件命名前缀是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "review_"
+      ],
+      "gold_memories": [
+        "我的文件命名前缀是review_。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-15",
+      "family": "文件命名前缀",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的文件命名前缀是review_。"
+      ],
+      "sessions": [
+        [
+          "我的文件命名前缀是review_。"
+        ],
+        [
+          "更正之前的记录：我的文件命名前缀已经改为audit_，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的文件命名前缀是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "audit_"
+      ],
+      "gold_memories": [
+        "我的文件命名前缀是audit_。"
+      ],
+      "forbidden_facts": [
+        "review_"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-15",
+      "family": "文件命名前缀",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的文件命名前缀是review_。"
+      ],
+      "sessions": [
+        [
+          "我的文件命名前缀是review_。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的文件命名前缀是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "review_"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-15",
+      "family": "文件命名前缀",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的文件命名前缀是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "review_"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-16",
+      "family": "工作台名称",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于工作台名称，我个人偏好杉木台。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的工作台名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "杉木台"
+      ],
+      "gold_memories": [
+        "我的工作台名称是杉木台。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-16",
+      "family": "工作台名称",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的工作台名称是杉木台。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的工作台名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "杉木台"
+      ],
+      "gold_memories": [
+        "我的工作台名称是杉木台。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-16",
+      "family": "工作台名称",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的工作台名称是杉木台。"
+      ],
+      "sessions": [
+        [
+          "我的工作台名称是杉木台。"
+        ],
+        [
+          "更正之前的记录：我的工作台名称已经改为星河台，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的工作台名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "星河台"
+      ],
+      "gold_memories": [
+        "我的工作台名称是星河台。"
+      ],
+      "forbidden_facts": [
+        "杉木台"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-16",
+      "family": "工作台名称",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的工作台名称是杉木台。"
+      ],
+      "sessions": [
+        [
+          "我的工作台名称是杉木台。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的工作台名称是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "杉木台"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-16",
+      "family": "工作台名称",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的工作台名称是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "杉木台"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-17",
+      "family": "默认排序字段",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的默认排序字段是创建时间。"
+      ],
+      "sessions": [
+        [
+          "关于默认排序字段，我个人偏好创建时间。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认排序字段是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "创建时间"
+      ],
+      "gold_memories": [
+        "我的默认排序字段是创建时间。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-17",
+      "family": "默认排序字段",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的默认排序字段是创建时间。"
+      ],
+      "sessions": [
+        [
+          "我的默认排序字段是创建时间。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认排序字段是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "创建时间"
+      ],
+      "gold_memories": [
+        "我的默认排序字段是创建时间。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-17",
+      "family": "默认排序字段",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的默认排序字段是创建时间。"
+      ],
+      "sessions": [
+        [
+          "我的默认排序字段是创建时间。"
+        ],
+        [
+          "更正之前的记录：我的默认排序字段已经改为更新时间，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认排序字段是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "更新时间"
+      ],
+      "gold_memories": [
+        "我的默认排序字段是更新时间。"
+      ],
+      "forbidden_facts": [
+        "创建时间"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-17",
+      "family": "默认排序字段",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的默认排序字段是创建时间。"
+      ],
+      "sessions": [
+        [
+          "我的默认排序字段是创建时间。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的默认排序字段是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "创建时间"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-17",
+      "family": "默认排序字段",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的默认排序字段是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "创建时间"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-18",
+      "family": "每页记录数",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于每页记录数，我个人偏好25条。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的每页记录数是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "25条"
+      ],
+      "gold_memories": [
+        "我的每页记录数是25条。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-18",
+      "family": "每页记录数",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的每页记录数是25条。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的每页记录数是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "25条"
+      ],
+      "gold_memories": [
+        "我的每页记录数是25条。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-18",
+      "family": "每页记录数",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的每页记录数是25条。"
+      ],
+      "sessions": [
+        [
+          "我的每页记录数是25条。"
+        ],
+        [
+          "更正之前的记录：我的每页记录数已经改为40条，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的每页记录数是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "40条"
+      ],
+      "gold_memories": [
+        "我的每页记录数是40条。"
+      ],
+      "forbidden_facts": [
+        "25条"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-18",
+      "family": "每页记录数",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的每页记录数是25条。"
+      ],
+      "sessions": [
+        [
+          "我的每页记录数是25条。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的每页记录数是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "25条"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-18",
+      "family": "每页记录数",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的每页记录数是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "25条"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-19",
+      "family": "看板列名",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [
+        "我的看板列名是待核对。"
+      ],
+      "sessions": [
+        [
+          "关于看板列名，我个人偏好待核对。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的看板列名是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "待核对"
+      ],
+      "gold_memories": [
+        "我的看板列名是待核对。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-19",
+      "family": "看板列名",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [
+        "我的看板列名是待核对。"
+      ],
+      "sessions": [
+        [
+          "我的看板列名是待核对。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的看板列名是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "待核对"
+      ],
+      "gold_memories": [
+        "我的看板列名是待核对。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-19",
+      "family": "看板列名",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的看板列名是待核对。"
+      ],
+      "sessions": [
+        [
+          "我的看板列名是待核对。"
+        ],
+        [
+          "更正之前的记录：我的看板列名已经改为待验收，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的看板列名是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "待验收"
+      ],
+      "gold_memories": [
+        "我的看板列名是待验收。"
+      ],
+      "forbidden_facts": [
+        "待核对"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-19",
+      "family": "看板列名",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的看板列名是待核对。"
+      ],
+      "sessions": [
+        [
+          "我的看板列名是待核对。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的看板列名是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "待核对"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-19",
+      "family": "看板列名",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的看板列名是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "待核对"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-preferences-20",
+      "family": "测试环境名称",
+      "split": "frozen",
+      "category": "preferences",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "关于测试环境名称，我个人偏好薄荷环境。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的测试环境名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "薄荷环境"
+      ],
+      "gold_memories": [
+        "我的测试环境名称是薄荷环境。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-facts-20",
+      "family": "测试环境名称",
+      "split": "frozen",
+      "category": "facts",
+      "initial_memories": [],
+      "sessions": [
+        [
+          "我的测试环境名称是薄荷环境。"
+        ],
+        [
+          "这是另一次会话：我最近在整理工作笔记，不修改之前的个人设置。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的测试环境名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "薄荷环境"
+      ],
+      "gold_memories": [
+        "我的测试环境名称是薄荷环境。"
+      ],
+      "forbidden_facts": [],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-corrections-20",
+      "family": "测试环境名称",
+      "split": "frozen",
+      "category": "corrections",
+      "initial_memories": [
+        "我的测试环境名称是薄荷环境。"
+      ],
+      "sessions": [
+        [
+          "我的测试环境名称是薄荷环境。"
+        ],
+        [
+          "更正之前的记录：我的测试环境名称已经改为琥珀环境，旧值不再适用。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的测试环境名称是什么？不清楚请直接说明。",
+      "expected_facts": [
+        "琥珀环境"
+      ],
+      "gold_memories": [
+        "我的测试环境名称是琥珀环境。"
+      ],
+      "forbidden_facts": [
+        "薄荷环境"
+      ],
+      "expected_abstain": false
+    },
+    {
+      "id": "frozen-forgetting-20",
+      "family": "测试环境名称",
+      "split": "frozen",
+      "category": "forgetting",
+      "initial_memories": [
+        "我的测试环境名称是薄荷环境。"
+      ],
+      "sessions": [
+        [
+          "我的测试环境名称是薄荷环境。",
+          "这是一条个人设置，请只用于后续与我的交流。"
+        ]
+      ],
+      "forget_before_query": true,
+      "question": "根据我之前明确告诉你的个人资料，我的测试环境名称是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "薄荷环境"
+      ],
+      "expected_abstain": true
+    },
+    {
+      "id": "frozen-unknown-20",
+      "family": "测试环境名称",
+      "split": "frozen",
+      "category": "unknown",
+      "initial_memories": [
+        "我喜欢在安静的环境阅读。"
+      ],
+      "sessions": [
+        [
+          "今天只想聊聊如何整理桌面，没有提供其他个人资料。"
+        ]
+      ],
+      "forget_before_query": false,
+      "question": "根据我之前明确告诉你的个人资料，我的测试环境名称是什么？不清楚请直接说明。",
+      "expected_facts": [],
+      "gold_memories": [],
+      "forbidden_facts": [
+        "薄荷环境"
+      ],
+      "expected_abstain": true
+    }
+  ]
+}

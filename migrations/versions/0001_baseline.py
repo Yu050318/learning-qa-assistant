@@ -2,7 +2,7 @@
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-from app.infrastructure.persistence.migration_checks import create_or_validate, create_index_or_validate
+from app.dao.postgres.migration_checks import create_or_validate, create_index_or_validate
 
 revision = "0001_baseline"
 down_revision = None

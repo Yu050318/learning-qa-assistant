@@ -201,6 +201,21 @@ def test_backfill_preserves_leaf_ids_and_never_invokes_embedding_or_vector_write
         backfill(system.settings, system.database, vectors, system.other, did)
 
 
+def test_backfill_rechecks_document_after_vector_read(system):
+    system.settings.hierarchy_enabled = True
+    did, tree = install(system)
+    system.database.document_lock = lambda did: nullcontext(lambda: None)
+    def read(*args):
+        with system.database.sessions() as session:
+            document = session.get(DocumentRecord, did)
+            document.parser_metadata = {**document.parser_metadata, 'generation': 99}
+            session.commit()
+        return tree.leaves
+    with pytest.raises(AppError) as error:
+        backfill(system.settings, system.database, SimpleNamespace(read_document_chunks=read), system.uid, did)
+    assert error.value.code == 'HIERARCHY_STALE'
+
+
 def test_legacy_fallback_does_not_rebuild_or_write(system):
     did, tree = install(system)
     with system.database.sessions() as session:

@@ -2,8 +2,8 @@
 from alembic import context
 
 from app.core.config import get_settings
-from app.infrastructure.persistence.database import Database
-from app.infrastructure.persistence.models import Base
+from app.dao.postgres.database import Database
+from app.entity.do.models import Base
 
 
 def migrate(connection):

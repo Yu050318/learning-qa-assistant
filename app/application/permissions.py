@@ -1,14 +1,4 @@
-"""Platform administration never grants access to another user's content."""
-from app.core.errors import AppError
-from app.infrastructure.persistence.models import User
-
-
-def is_platform_admin(database, user_id):
-    with database.sessions() as session:
-        user = session.get(User, user_id)
-        return bool(user and user.is_active and user.role == "admin")
-
-
-def require_platform_admin(database, user_id):
-    if not is_platform_admin(database, user_id):
-        raise AppError("FORBIDDEN", "需要平台管理员权限", 403)
+"""Compatibility import; implementation lives in app.service.permissions."""
+from importlib import import_module as _import_module
+import sys as _sys
+_sys.modules[__name__] = _import_module("app.service.permissions")

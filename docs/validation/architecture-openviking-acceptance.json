@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-30",
+  "scope": "layered_architecture_and_opt_in_personal_memory",
+  "source_tree_sha256": "656f24d2ed899b9e5207d0843e2823af8b138e9a4126fedc5b201f4e8b342824",
+  "source_files_hashed": 253,
+  "baseline": {
+    "web_persistence_files": [
+      "app/api/routes.py"
+    ],
+    "original_application_sqlalchemy_files": [
+      "app/application/artifacts.py",
+      "app/application/auth.py",
+      "app/application/capabilities.py",
+      "app/application/document_publication.py",
+      "app/application/document_tasks.py",
+      "app/application/evaluation_jobs.py",
+      "app/application/evaluation_worker.py",
+      "app/application/hierarchy.py",
+      "app/application/ingestion.py",
+      "app/application/ingestion_jobs.py",
+      "app/application/memories.py",
+      "app/application/model_center.py",
+      "app/application/preflight.py",
+      "app/application/run_checkpoint.py",
+      "app/application/run_trace.py",
+      "app/application/runs.py",
+      "app/application/sandbox.py",
+      "app/application/sharing.py",
+      "app/application/workers.py",
+      "app/application/workspaces.py"
+    ]
+  },
+  "current": {
+    "violations": [],
+    "cycles": [],
+    "canonical_modules": 169,
+    "compatibility_modules": 76,
+    "web_persistence_files": [],
+    "service_sqlalchemy_files": []
+  },
+  "http_compatibility": {
+    "changed_old_paths": [],
+    "changed_old_schemas": [],
+    "added_paths": [
+      "/api/v2/automatic-memories",
+      "/api/v2/automatic-memories/{memory_id}",
+      "/api/v2/memory-settings"
+    ]
+  },
+  "offline_regression": {
+    "tests": 891,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 55,
+    "duration_seconds": 345.308,
+    "source": "docs\\validation\\memory-live-final-tests.xml",
+    "pytest_passed": 798,
+    "subtests_passed": 38,
+    "warnings": 3
+  },
+  "isolated_postgres_regression": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 2.791,
+    "source": "tmp/automatic-memory-postgres-tests.xml"
+  },
+  "frontend_build": "passed_vue_tsc_and_vite",
+  "compose_validation": "passed_config_quiet; isolated real-key evaluation containers ran; production overlay not started",
+  "cli_import_checks": [
+    "app.bootstrap --help",
+    "scripts/evaluate_answers.py --help",
+    "scripts/evaluate_retrieval.py --help",
+    "scripts/evaluate_memory_retrieval.py --help"
+  ],
+  "synthetic_rag_fixture": {
+    "documents": 12,
+    "cases": 80,
+    "integrity": "passed",
+    "live_model_regression": "executed_80_cases",
+    "gate_passed": false,
+    "report": "memory-live-20261029/rag-regression/report.json"
+  },
+  "openviking_protocol": {
+    "image": "ghcr.io/volcengine/openviking:v0.5.2.1",
+    "digest": "sha256:7c26f9777c7632fd4b771be77471634bffb6ec8d6338b39f53deb2da1b1d34b3",
+    "credentials": "dummy_only",
+    "model_inference": false,
+    "steps": [
+      {
+        "step": "create_with_explicit_policy",
+        "status": "passed"
+      },
+      {
+        "step": "append",
+        "status": "passed"
+      },
+      {
+        "step": "read",
+        "status": "passed"
+      },
+      {
+        "step": "delete_session",
+        "status": "passed"
+      }
+    ]
+  },
+  "memory_quality": {
+    "report": "memory-live-20261029/report.json",
+    "recovered_answers": 600,
+    "original_attempts": 600,
+    "original_execution_failures": 274,
+    "new_recovery_attempts": 400,
+    "accuracy_baseline": 0.6,
+    "accuracy_openviking": 0.9966666666666667,
+    "accuracy_delta_pp": 39.6667,
+    "updated_fact_rate": 1.0,
+    "unsupported_personal_fact_rate": null,
+    "controlled_recall_at_3": {
+      "executed": 180,
+      "execution_failures": 1,
+      "baseline_recall_at_3": 0.9944444444444445,
+      "baseline_ci95": [
+        0.983333,
+        1.0
+      ],
+      "openviking_recall_at_3": 0.9944444444444445,
+      "openviking_ci95": [
+        0.983333,
+        1.0
+      ]
+    },
+    "isolation": {
+      "completed": 100,
+      "execution_failures": 0,
+      "source_verified": 100,
+      "cross_user_leaks": 0,
+      "deleted_recalls": 0
+    },
+    "p95_overhead_percent": null,
+    "final_answer_tokens_change_percent": null,
+    "total_token_saving": null,
+    "total_currency_cost": null,
+    "recovered_quality_gate_passed": false,
+    "all_acceptance_gates_passed": false,
+    "reviewer": "fixed model; not full human audit",
+    "authorization": "explicitly_granted_by_user"
+  },
+  "deployment": {
+    "real_openviking_enabled": false,
+    "target_database_migration_applied": false,
+    "isolated_real_model_evaluation_executed": true,
+    "test_containers_stopped": true,
+    "isolated_test_database_dump_saved_privately": true
+  },
+  "limitations": [
+    "No passing pre-refactor full-suite result was captured; before/after API and dependency snapshots exist.",
+    "55 skipped integrations retain prerequisites; no Java P3C or complete handbook certification is claimed.",
+    "Original quota-interrupted run remains separate from recovered measurements; failures are never overwritten.",
+    "Synthetic model-reviewed results and shared local-host timing do not establish production accuracy or SLA.",
+    "Task/preparation phase accounting is reported separately; standalone embedding queries and failed-call bills remain incomplete."
+  ],
+  "source_fingerprint_scope": "app/**/*.py and scripts/*.py; relative path NUL sha256(file bytes), sorted",
+  "post_full_suite_targeted_regression": {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 8.497,
+    "source": "docs\\validation\\memory-evaluation-resume-tests.xml",
+    "pytest_passed": 8
+  },
+  "publication": {
+    "date": "2026-10-31",
+    "previous_measured_source_sha256": "fd71122c615c7410496b205a51dab548984bffb2aa3e4d151652cbd8f9faca31",
+    "source_change": "trailing blank line removal only; no executable behavior changes",
+    "source_files_formatted": [
+      "app/entity/dto/model_center.py",
+      "app/open_api/capabilities_contracts.py",
+      "app/open_api/evaluations_contracts.py",
+      "app/open_api/model_center_contracts.py",
+      "app/open_api/sharing_contracts.py",
+      "app/service/hierarchy_backfill.py"
+    ],
+    "readme": "product, architecture, measured results, demo and retrospective; career-ops project presentation",
+    "verification": "3 architecture and HTTP compatibility tests passed; saved memory results rescored offline; no model calls"
+  }
+}

@@ -1,0 +1,39 @@
+[
+  {
+    "event": "openviking_entrypoint_fixed_before_trials"
+  },
+  {
+    "event": "test_registration_rate_limit_respected_and_fixtures_seeded_before_trials"
+  },
+  {
+    "event": "postgres_memory_limit_256MiB_to_1GiB",
+    "reason": "tmpfs WAL safety",
+    "approximately_completed_final_answers": 52,
+    "application_or_model_settings_changed": false
+  },
+  {
+    "event": "deepseek_balance_exhaustion_original_campaign",
+    "execution_failures": 274,
+    "unreviewed_successes": 2
+  },
+  {
+    "event": "resume_20261030",
+    "model_probe_success": true,
+    "probe_total_tokens": 9,
+    "test_database_restored_from_pause_dump": true,
+    "docker_runtime_socket_directories_preserved_and_recreated": true,
+    "original_campaign_preserved": true,
+    "new_full_paired_rounds": [
+      2,
+      3
+    ]
+  },
+  {
+    "event": "frozen_recovery_extraction_output_cap",
+    "case_id": "frozen-forgetting-09",
+    "trial": 3,
+    "group": "openviking",
+    "max_tokens": 2048,
+    "outcome": "task failed; attempt preserved; no mid-run budget change"
+  }
+]

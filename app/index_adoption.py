@@ -9,19 +9,19 @@ from uuid import UUID
 
 from sqlalchemy import func, select
 
-from app.application.document_publication import DocumentPublication, fingerprint, leaf_fingerprint
-from app.application.ingestion import IngestionService
-from app.application.workers import WorkerRegistry
+from app.service.document_publication import DocumentPublication, fingerprint, leaf_fingerprint
+from app.service.ingestion import IngestionService
+from app.manager.workers import WorkerRegistry
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.domain.contracts import Chunk, ExcelSource
-from app.domain.retrieval_scope import RetrievalIndex, index_connection_identity, retrieval_index_identity
-from app.infrastructure.loaders.hierarchy import HierarchyBuilder, digest
-from app.infrastructure.loaders.local import LocalDocumentLoader
-from app.infrastructure.persistence.database import Database
-from app.infrastructure.persistence.models import ChatRun, DocumentIndex, DocumentSeries, DocumentVersion, HierarchyNode, IngestionJob, WorkerHeartbeat, utcnow
-from app.infrastructure.persistence.repository import Repository
-from app.infrastructure.vectorstores.milvus import MilvusVectorStore
+from app.entity.bo.contracts import Chunk, ExcelSource
+from app.entity.bo.retrieval_scope import RetrievalIndex, index_connection_identity, retrieval_index_identity
+from app.manager.loaders.hierarchy import HierarchyBuilder, digest
+from app.manager.loaders.local import LocalDocumentLoader
+from app.dao.postgres.database import Database
+from app.entity.do.models import ChatRun, DocumentIndex, DocumentSeries, DocumentVersion, HierarchyNode, IngestionJob, WorkerHeartbeat, utcnow
+from app.dao.postgres.repository import Repository
+from app.dao.milvus import MilvusVectorStore
 
 
 def require_maintenance(session):

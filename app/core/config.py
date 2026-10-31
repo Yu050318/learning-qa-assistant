@@ -133,9 +133,25 @@ class Settings(BaseSettings):
     memory_collection: str = "rag_user_memories_v1_1024"
     memory_top_k: int = Field(default=3, ge=1, le=10)
     memory_max_items: int = Field(default=200, ge=1, le=1000)
+    openviking_enabled: bool = False
+    openviking_url: str = "http://127.0.0.1:1933"
+    openviking_api_key: SecretStr = Field(default=SecretStr(""), repr=False)
+    openviking_account: str = "learning-qa"
+    openviking_recall_timeout: float = Field(default=1, gt=0, le=5)
+    openviking_worker_timeout: float = Field(default=15, gt=0, le=30)
+    openviking_task_timeout: int = Field(default=600, ge=30, le=3600)
+    openviking_poll_seconds: float = Field(default=2, ge=.1, le=60)
 
     @model_validator(mode="after")
     def check_chunk_overlap(self):
+        if self.openviking_enabled:
+            endpoint = urlsplit(self.openviking_url)
+            if (endpoint.scheme not in {"http", "https"} or not endpoint.hostname or endpoint.username
+                    or endpoint.password or endpoint.query or endpoint.fragment
+                    or not self.openviking_api_key.get_secret_value()
+                    or not self.openviking_account or len(self.openviking_account) > 64
+                    or not all(c.isalnum() or c in "-_" for c in self.openviking_account)):
+                raise ValueError("OpenViking requires a trusted server URL, gateway key and account")
         if self.workspaces_enabled and not (self.sharing_enabled and self.document_publication_enabled
                 and self.chat_runs_enabled and self.ingestion_mode == "durable"):
             raise ValueError("Workspaces require sharing, document publication, durable ingestion and durable runs")

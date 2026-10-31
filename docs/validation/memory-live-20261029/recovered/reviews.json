@@ -1,0 +1,5992 @@
+[
+  {
+    "case_id": "frozen-facts-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7ab7730bc0a2d3af08edadc6e35ef8ee2816c39a17d8c6ef63b6a3632476d68f",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "baf671139f4b9db543ccda1bfa03e674b459bbb0d790449abd61e12c1dbeb1f2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a29f5491925e29e88940b17ce3169797856d1160503485768680c360fbc9e8aa",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "01513b459ff378f66bef4a99d3f8b819251a1824aa5d42c5708b5d3c710e4dcf",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9dc3e6ceefaa0a11571e29130e5e004558e899ea1aa7f1a3504d2d20c405a0cf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "517440bbd75cc70b1fd5da6a441b086c3502876917072218fdbbd029ddb3199d",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e7fd39680f001c9bae4b5b56b44d8cf466ccb63a40f5b48fc80fc7e9908b21ca",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "709ad0cb82c270d4f15212d307e3d336ac08455dce8962eb6e0cf3109150248a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "365540c2d69154d83159a05352045ff3acd0a1f7da67bc1745b22a00258d2e8f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bdf1d8e10b17c226766f2aa95c8d9b89626ab4d7391df1757dd433a9a1e8503b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-04",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8eafef026e69a34f6ab666ecba7daf4be51e81ea1d76bdfd64d7e14a1ea589db",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d0f7c5c965f4cf19538e8da91fcc54ed087bc6ed45c54e1c335ed1303511e963",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b0c614e9a26402be1e9a45f30650f8e77ed53c3f420e41d00a2dc434872cceba",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d6dd775ecfa4b8e065b3cda5722f53b5c334cceaa81b69013328529006af6421",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7cd1f288628da604d29c5291ef24407c321176114462fc7875e4705cac2cffcf",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "a26e55e60ffbf31825c6f57389f7ac4dcbc0e28c99f3bc07964d08a720b498b1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b3c3f112ea7744ebe4bdf1a31e83cd7a1a14c0b86c3239a08dbd5bae4a4044cc",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-05",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5a991a04a65450ee97da343d0426da2f0bcb282d88af71c1287cf90b311853e9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b565be3ae479e877d873c879d9dcf0abc7c78ab02606796cc3dbae106df2461f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "906cd6a7a691d8354efb7143afa1bfa4fa7ac32ae20bef4dfbb02353366de2c9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "08dce1ca1167fa44b77ca229eb683f179e17c8f89bc8515b419dd9dc6b149d0b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8ba79689d79458902104759418d358022c32c614ae98e47dc6c3873b61eaca49",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-07",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e226492336c77ba67b8487580a0bd61ea552db3005503fbd770af72ac9084312",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "50aceb5d2b589d032179ef5aae69639402ba380e6a4f0996ffe82f8d39d91e2d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "cfe6ad17fcbc2c93516038887382b8ead19671178e284f73eb05444035ae99b0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "db904fe2dedd36ee56f40657ca9a078da89ad74b0d17d13775fde2f3310c3095",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-06",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "27f1ed117e574ceb15abc9ca29dafb5193ed95fe687ef5fadbee9c9808278947",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-06",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "6c720996994f983460d9c48badcf7cf21b9ce547316b3bc3db8d09a02576ee24",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1e7027c06757ed2eb569236cdcee11e0ee5c0413b8b170943b115e22169e76b7",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e7077319c293126492f37333faf06d8df9fe61108f4f2ca5a14fed27a7453ba7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3f4e25f5e631c9f4e3fb9384bc0cb243718b37b9afbd89b0d483df58c31141b5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7ba8a3f3a5ddf1bbba8f6a53b908c794cb599ca8ed9eefdbce9f97eb8d748e31",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3dbcdb773679bc18c8e60622033099e51d659f13cb5c36f62c6a5d5d373ab6e1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-preferences-06",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "999850b5649611e852093fd5ba8e1a8c5c88cfbf58ec83a2f9b34753e4886b1d",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e8d77c8239ffc6a614d2001235f32296820d5752568c07f2aff54326fa8b8008",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-05",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "67c07b60289ff5768236afb64ce8c4c211ef358322b6fe50683436129a6a2f27",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d3e0aa09be4423f3d1881193a925b297e1a55250b0476b32a3f807ff9e2c3e11",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e09a525bdc9acbfdeb2ccdee21633736278f89e8c8fc59f6b19902c008797516",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4db65ddf542e78c191768a83390dd46b0207938428cd9c3be2899a05b6529c8e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8f0edb83c203c988e134d826bb9eff0007cfa7d65ec335be83c3cd77249b71a6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-05",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5342f896e46dcde5b098f98a6b52347b4220250d425a1117367e980c5e3953ce",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-07",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "649f3a7ac318189c453182694ca69d43f3f3eb97dcd39e41fc0683efc90e5197",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-07",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "33295fbf64298e5236a9257ac444531524ec1c8152acbc30fa1046a0cf0f328b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-06",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5558d2c50ab393536b660772fcdc502532a2b7ef2f9d233182a15a9b37ef274b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-05",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d129c08aa5df3cb6469e82b3940bb415839851ae4134c1473a0d6a95a3f46bd4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-08",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "93e5592fe5b649602990b91154016030f229657ee6d5ec5020289413aa5c5b2f",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-06",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3b8b492c0145f82304354913b1314a2d30573969aa2422e9ff0c914dde96f63c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-05",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "7909ac11be6be52d73239327d1f9e71efce716d086464d9283f9aa57fc06ec8d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-10",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "514aa1af0f61c62b9ea8caed19e48206e2a99904d71b24ea85f09ded7e888142",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-07",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b71216d1de26f9dc7f337f55a48d6f0cc4911b8f0a932a40f92d5f0af1cce963",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-06",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bf502fb3ecfbfb684fd15c1169b6f03d7ef03d6ce4fa306988c97b124dc8af5e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-04",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e45f87f5a697714963e765f2d03160367c9b1db50380cbfec3bbfeb12144491c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-04",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "33d3bd59e3f211810db5bd1df0a79679aff945def39505736d24ea6516d715c6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-06",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "64d485063d3a7f1ac2d34f7649b861bb4b17ab282a636e85b3e2c3d898103c64",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-05",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e5b55b4e591878f5c7316347cf886b7efe242c6b7aac8a5308fdd0f8c9ee5d5f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-09",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8d361de501f705df6e37a5020aee8575ae59eaef2f18c5ab1a3a7994613c73ee",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "23f15fcb658c6bddbe6501e7f8cb0ad40c981aabbe7d7be7373b284a73b8ff42",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-09",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0278c8d55c306bcd8e99a880e9182fe96a670d2e6edcc4b128e8dc0f5aeb9e1a",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-05",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2818d828245dbb00ab1de1785b93f38adc536f1ea4ada660ee0cba82e26a92f5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-06",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4c06875c78b836a951169d1a0b0cc8e4689f7d84fe6c68164bd1a420f30b9791",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-07",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a05e0d763a5fb86f2efbe588cb611228bb598bf0198538c7bf948eb75f415cbf",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-04",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2fb7371d8040308d9bb6e3d11b76e4a840aab26cabf13468e9d1ab8bd31153bf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-05",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e700492a36cc5d6f9632650376d9694c7387020f242abf77e789430224b3e500",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-05",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "30eaaf44149d79e84f5517e5e3fc793fb92581d0ad7aac9f1f21071751c014bb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-09",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "25e5951b0ce116b2f236891c6ecc2a830a341fa95aa6037ac51e977f8e421748",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-08",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "fb1be80e9f4a6bdcb3aaba5633b03408eda9e69f094efa5914dbd21f75fc0cc6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-09",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6d60abe1a12d900f8eb05779b2e971286019b9953a6a3fe709428d1db2073a35",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-04",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "cfb94adbf4fc48ccf7ca53140aa811670301303224e2cc936ed06bec898552da",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-10",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "190e3a3e8f40b2a5947b5cbe1ed96e962eef9d9ddf097ea99eee9b6f034e1fd1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-06",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c5b37bbed837d0fa84e930c7ae89b65cb9537983c48d4cf0edad794cbec35e57",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-10",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "77db0b3df6d2687e2d87acc4e2889be9749d26c933b803079b297500f8548549",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "066ffda56dd6cb0c93d0fce92cdc39943d13ae82798f99ddcdca6d2aa145aafd",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-08",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "139b9263e68a6a4c2b2f8fdbac3467a180f8daeefde3d507475c2273f2a6054a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-10",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6bfc38b585f3ff8875ec5912385b3dc69089a38185e97cc806c13329362c7d9b",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-06",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "aaec36bd2067e344cc749d3762666235be927a3ac08f6600223c92ff929c2986",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-11",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "859e276101a65da5b2a96258e4657a9fb523632460d4f69c9cca2cd6e2ce7b11",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-05",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4d244437f02fcc6474e556ada896045b9729bcc99bef79dc7887f66055abeff8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-08",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "001ea39868c7ecd5542bd7e0eef585f1fc04c651ebd4c6f2b405927475a3074b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-07",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7bf1e53dd46ed353a1c26e2118af8c4936e974e8f957a1a711a67aa762bffbe5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-08",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "28052e9c225c6b783d9ff65096b19c1f4b05f4f3b8681940ccc3492fa2c72508",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-10",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "89b3896d73225953b4bcf946619666148f203fa8436485362e51f557dc7bb87d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-13",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c71c4be95f5e25c6e29b7322e370b2c5ab3847914c6b1db5713bb2f6fedc2c95",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-09",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6df6b0d3dc0a7ffc3ffdfd27949434f778fed6eca2588bfae660f2f004dce6ef",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-08",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5a1d9bba3cb6e5e96e13d5cd01055bf243710f25a48fbd291897f409012833a5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-preferences-09",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "635f2fb0cde95a1f71f93077fe7c441cb84e3410aa1b2b13c42b5e2fff176c27",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-10",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bc0b4bcb79024cdb31d8e1358320b6e7960a0c7214791f5be538a2a9ef707427",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-09",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8a7b3d4ae8a81e86419a92bbe8f47eed52c0ba113ec0c4cabb85a7b3a414c56b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-08",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2de0316e63e6d5cc9101dc00848268761b45179afc99e4d16dfa7e23a87c7302",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-12",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0e628aa9685cbf77689e8e8f4458a1b9131db6098097430e38eb7c970efa1444",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-07",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0cfb423afd6718f2e93f2cc7504e0fa57427c393ff754b95c5fe07247caa303b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-07",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1ca714517db5ad0939ff41460920bb5f61ad433a827c8b0d63e7d86ddcc14595",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-08",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ddbf238249a55da916f026e31e73bab9875429c3eb30b4afd0cf855d8ac0f7f8",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-13",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "edd410dd23f9bc557d1d4fa5be91e7ccda5831a789101ada7af047658b9d96f4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-09",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "34bf333de62f9798938eabc608634734c266786fd68e9ae1808c9f15f5944654",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-12",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "26d47ad3769936f4ecd76db56f2cdf05bf566213b82ba37ee277e0c23695bef1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-08",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9965561a1648939d52c704da23dac4c94f752d2f2b94537479b4ba92fab50c29",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-09",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "13a818ff2f333d069cdd7f34234cd24b17bd9c7c64fe5b400c82ce78ac2539e4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-11",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "41b2938efae9a82b855cfdb65f0af01cd1e6414e4f689f63a6bec50d130412d7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-12",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f97d141ec244d6ca821d23eba5597b35004971b5ef2ddc9e786232d92d807e2e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-10",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "dbfd29742e2dbad5fed8ee0b6ef20713640a6cfcc2f42353d9cf9ae5ce1a78e6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-13",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a0778a2097d10928dc7387a6ed4b6a286a1890eae55b72b87dec91dfdb151fda",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-08",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "9ea80dcaf908e4dda8ba94e00c9cc0e9ccce42f138bf7402fa140c2c87c9ec1e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-13",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9d106d188c92648f678176d91652b6bcdb2082e925537710397f0377e9b641a6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-11",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "6629edd4a8ed17ddb6c94f86ffdf31f618a61d7e771cf136a06c457883014359",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-11",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4e580ed0a8068b49368dc85f87170414643854ed47758e01ef9fd97ebea804a7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-12",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "abf8af3af8075d96a2c4daa074b97474f4e832a42060721e4434ae449f1d6454",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-07",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3cd72a2e31780c7b5f730fb3259de1b357f65077578494cf43875c9f1a5f3b4b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-09",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ce99cb6077393cfb34ed5df63af5cf32353a414b027c146638961588d9d8ba57",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-13",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "f54f3496f4ed7b3183b2bdf9cc441790f456cc9e8361181e0a53d6886b9cd000",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-11",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fca0508126592fbbf372a12e2c2e010acb973dea62af8fc6ac9b9bfb28f34d79",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-12",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "94b71b720ffb1e9ceff2e1c6fa88749f63c18acfb8330c081c1bac5805e38e55",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-11",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b4ef349635fa79aded6558831b8d624cd435dacd4e12f1219d7c341f8d3c4cb2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-12",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "be0fecfac9e966a6ee4f611d13b7d7faf6acc7a1fb41f063879f7c9aa4552e50",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-14",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bebe5f01396315dc951de8a7a60f81e022f283edb1ab3be2096cf9ca7eed201c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-12",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7f7fb1a81bf87e9d307a80668facc020215348769ed63de7b73f6fcfd4a4890b",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-07",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "af76d23763930d4417699170ec83856871da2b25fa6979d8c4b7df89a3249f62",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-16",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "023b8ac464d76681d16de46898085b531264f1f816946c605dbf22d416dc0423",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-11",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "662e620e5e11108446bf3488db47dad822f7d4642c3ef78956361d1c0b043401",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-13",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "82aaaaf9d259115e7eee925e19f2e3719f095f093d9004f302ef08b1e16a9152",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-15",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "89b4a4197ddefb91b6854b8ef746f9d39afc423a974c4079f1be032285b78963",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-14",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a9bb568c785318c19be8cd8783960ee93184fe818a5c8bb5cb84b46be145a6a7",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-12",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "fbd1822668159c04b70b29e572905da7f86154bf3ac27922e827b75044d3ad04",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-11",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "edc05a04671fa8ec12e1d31f06ab406752eec91d8580e058d3e68b99e1ba75ac",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-13",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c66699d3394ac0c2931307c4b0716af813fda224a5a026a956e9f89c9ab45afa",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-11",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b9837fa858347c46523d31927478344cef2599410be11f488f42291676ea58ab",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-16",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d7a7330ec2b9d13c9afe42dfa70c4eaedb6135c6d2c32def564662f458af381b",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-13",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "44d51b3c855baf96be89e2139504a32751e25ec13470d1cad284487a6cb74732",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-10",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "cac15c8df218199ad53de928bc75e7ca965fa6a541f54ee5fddf228cbfb4119e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-12",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c1c0a4a7ca91528dfcf28e3d895773b493277a0629383c7ec974cdd3dee319b2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-12",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "36c23b486bc663bbc516f2e78d6797a3a5052e809df94ba83999f2dcb9a3a671",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-15",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "53ef165d17d34d1cd5956a419446195843892d7c95d9372cdac75d8d2b8d7187",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-11",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "50cd5d037c5fad2fbfefa46eea8af779a8ba3981d0b01752cb15987512a0bf93",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-10",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "27dfeaf98d074f29ede83a7034b092338feb8b54bcda76a2e1be94a00bf91aa7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-15",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ea876235d0411ab9e36a7cb7c0833c6949b99fd34745a2662e20608fafa50d04",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-10",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "de33658bfe9b246b2fe62c9288b3eb16a5855cf678d1679b2cf0bc7435a7631d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "98d75d6c53074e77d22d952d8a20e19ec54e99724338c5408f8bf1734d8799a9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-16",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "244f3d281aafa0676113689a5acbaa167f83a8495143982a4942a3b1dda36ddc",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-14",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "10e72c0c6b2d142ffde0b9d1368b291ec3fd5a113b57ff8ba814a478e4fecff2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-15",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ad63c5c45663ad4518c09bfe06a9d0554440cc70bf9370784ef30dbd524c30f9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-13",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "81e7e153abbf57487dddba261678ed919451fe5ad3a866b2b6009090faa545b8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-14",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c41b2a9a7e42c0122136103ee1ef40121a2921ab76ad4e212f2a991be2edd7e6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-16",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8732f93bf4a9cf78a3ca9a55a425369c16bbf5bea0d272ce6bfb0cd3b35cde29",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-16",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c10b6759e8af94fdfd10d49c69854d01816b84e8f15021f1f16b6ad7255aea2d",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-15",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f181d04062a2a8d117b16067164600821265aef425826fce2420213e8cfdba98",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-14",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8a11281d9c951aae6d456770f0bfccbfdd1bed8d25a497c68c4ca975bffe5d48",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-16",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2c898697674c3e4622c6d20f3ec789d5be47a752ea80b1c949ccc1ba4e46bc7a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-16",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "fdf57162f8d35d27b9ae7b47289aebec0bedf724dab80c39a3078650b0415e66",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-14",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "82b1f087faf574e3c75d7483092932eea4e1dc1b90c5a3ceec9f43993be33016",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-15",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0b5d5c63df6841dafd34126a787ea57de957996f53fca9e35c3a770575f1ec6b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-14",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b79497d11b0210aaec4eefae5158cad569f0c6932078a4453b302a379b6e8ce6",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-15",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2ee7ee46780bd85b7b29443e5984f1cc828c666a750e28079015a0fa707edd6c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "43d5f22270f00bd8c4798a9f9d011c391dc52701c6bedb0cd1e81660ec4d91ef",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-16",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1ea8b65835c77b38f8df001ad25c1253cbd066b86e61b7d84dda7a43f0f15421",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-17",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fd8078edebbb65efbd71b17156b0b925eba86f244c0437335cc7094708a8b828",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-16",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e40d8adeecfb9d3250d312ad1ba9d8ebf07d01247207f56b6077e4bb0b5f27d1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-15",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4e81985b47916c51c353aa3bea20b2f159d366db1367f9b30a3e0a404fb1e5ea",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-16",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f882a5f3085d9b303a2a52fcdd9f0dc0ebebc35b3cd8f28468c6e6c6ec232b15",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-14",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "253adbb670832eac2977763c9c3006c59bc41c820fe58e169f239d14c0f7fdec",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-18",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a99b6362a698d7b2829f0a84e423204cba436f2442e5db7fea010f89b3580f55",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-17",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6cf571d0c3513f4cd95bc1dbf9b22bbbdef42e2ae0d48ca48211701c13447285",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-19",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1b0844f0bce152a2450009a4c9795098d53d9784fe6f2cb13bdd862abe502484",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-14",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c077d84f19a32892e3a855b95aca39ab24bfe17f2b21b91e091e12db05b05a98",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-13",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ed85259c276179a2dab086b10152e91f599d5620d0ed9524f84edf76ad089c3f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-19",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b7edc8e974a285d72ada698e67e92e59fd7c9ee69da8fee818be0d360815aef0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-14",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bf58473ee2e8f824461665f07b6a72b06f8a8be57b9af1b7e6b96cdb3b5bb74f",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-19",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "30cb7a9549b1de548358c81af44ff09f8f4e4c1beed7f6680907f33cdecac0bc",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-18",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "249b973371165e1aca4e26da4ef27bebf8227be4f1012325c205e57ecae59752",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-18",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "acb338a54d35cf676d90a45a2d2b8e61a209cd6aa03832314068e884069e51f5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-17",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "80de073d7eccf2d205f0080ba1fcfc78b2ca9e8034e0a8adcf38d59e8750ab49",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-17",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "96d36226fc8987fb0d851207eedeb06bec9a3ae0e252d414dd3cd1eb13e51d36",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-19",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0d7484f0a3680482a00bbfa2088cecf49c2e0bcbf78a85f06682805988bcedd5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-18",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "af9cda195da464bedef0d52faa372a9582d9bdf7505a02935a19ee61d0af749d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-20",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "7c62aa521455e26bb645a11ee8c3ef6be128d7d9e381d4fa67570fd2876a8577",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-18",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "563a7b2d994d8f71c002f9175e3d786575c18422f48e7a8a23e2d4a8a61621bb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-20",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e23e86c7431fcb11f36d8fced939f2d26b0a08afa30bf650f00678f3e8288fcb",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-19",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c8fbe202fbd16dca9523fbb81bf363d1409b7a85f94e6da87c6393eb17a8a39d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-18",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ff52bcd680cddb60a25863a20e1ef01b740654b1f8bae553c649ff16b0e7b2be",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-19",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3c99f28c1c49d261be90ab670122210a8fca6f2a93e0ff21891b4de6450052c2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-17",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "9c6c4805e1bfcdc75eba1fcb6a2bbe690ac0097d8dc9b8c3db51b03016d2235e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-19",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c85ee28d4cde341619f157ce096045032e9f384c1ea8838dbb480dec0528544e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-18",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c2173444d795afb364c7129741c4c70a81d10b6e163d5092eb92bd90134ee276",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-18",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ea768287b4197ca055f833613833303993ec1f5254c4280c5357a0a7a87df53c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-preferences-17",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "02f68227b060f58aa12c883d112f8152542f5094af7a6f6f754f4ff71ba8ecff",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-19",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7606c121d1c58fb3d17e71329cee6025deb85e21a1a526d20fdb1492ab4af1f6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-19",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e51076255b816e37f205f25fd92f2892fcb613a543c5557d33f53cc4e845b81a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-17",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "7f1cad3413a75e8f1040f28cebf8ad97995cc3fd7a6961ff22191ba1af596747",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-17",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c40b14e4869f2abf1b4beacb5a0b68e39d3eb998aed034ba913e2b01b7f630e8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-17",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "2aa9b174ad44f54eb7401db501ea1f9cedc88da7d5fdf42fa2f0847c54efaf95",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-20",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c8c4f50741626dea032f4e2b059140729f6e470fee11335bcc70ce0b9e70eb28",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-18",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "eb7989a06165aa98eee8117f088b48d468644eacdbcffd18949eacd889bc3240",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-18",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "f16ba7f3c7226c317be5f1bcd013fe39302e9df46656310f86ac2d03c2893d8b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-19",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ab1bd54ea8e8d76bb847beda5876e47567fdcaeff450a7d7c920b5d9c919895d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-17",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a294247d309af29b8ea48af9a7baa3e14df56798fd4448bd437a7fa4defdb2bb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-20",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a584bdcf29526b93cf814de3c6a8962ac9bebe28f91b733d4521ce44020787be",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-20",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "02bff6d3278a44c064d346a7f3d7cc454afb449fa09044da32a85434856cf65b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-20",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c7768b90cee96173c07c09011392b0db0da093828a73ab1a414f43b40812ef8e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-20",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "dc1560a8d86e22d356fe0ed3fe9fd459b67bdeafcd194dd4bd1c279f707c3037",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-20",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "6ca14004a9d1b27397aa7b00a2bc21fa4808993694199325641b709af724beca",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-20",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8e42c2f9692b276b374bb8414d0a0b34bfcbb32c1a00e9f0941a14f324b5e812",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-20",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0cfbe8478b6a85343a33ca96b12654af7ca261f7961f18577061e6f4307fbe3c",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-04",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fe9cdbd573f3b0cdab059a1bd9fefea97de26a5a4adf4c839cfa2409498650e8",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7356e7c0a00347c10443c35f02e177e351e6749dbcc48219d1a7bf9598d7e70e",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-02",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b823bb7ca01f1239f4e13c0723ae33982f4de327562d311957d7a51dfb380658",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-01",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4150fd38d51af0bcba7227802f702ecf7e279573ecb6205906f59bff7d2db600",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-02",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f0bf77e692f9b3e7a2f0200c4f1cf5dc4d53e2d5411ba44229be792718c59d26",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-03",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "979d1dd3ae661adaa6061c3bce1f12b536519cd20c146c679c4baeb12fcbdef9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-01",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "237a2ab7cb07b81e5d71cd67d41ce7f4ceabb77f889adc90442bc2a5b0c77c02",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-03",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ec30853086a401e01ea4d1ba8428a246ef488ac3c4daab7f1c1536b20a5ddf3d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-01",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "852a7b02bd13826d8ecc21fabcfae52fbdfb486f251b84f3cc5244a8048982ba",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-03",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "33a81e34871a8a9bf55df43ed7a027bffab5124dbbeca5a0307bc9c23c10f3c2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-03",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "69e430bfeef012d925fd88f0503586af1b852a653d881eeddb19c9b4856cc2e9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-01",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8e993e858d899ed8b56cdd4a42b42b65eb0e37045f9a1052d66d4822cc3612c6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-04",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3aaf0ed2c52ce5f48a464dce29e47a832e47ba811f0d094fdc6288ca0ca92fc3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-02",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "49144ebdad48a4efe1b7a1d88710580b2378677747741a9a559045174095c506",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-01",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c330b63879a6804293071a8c144814ac7883d47347d78b50773ad5961ebfec7a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "dcad92f4a1bbe7550009cefc38ce825d92c0dcecd327bb4bafda65195d0f69c1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-03",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "2cb3e21ebec3ea54f03d63526abece77d5c057e49515fe24af7b4b8fb5cf936a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-03",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "399d0d7efa135dddc039583d94bc3823f5aaec6302a7db8d38721024ad200dfa",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-06",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ce71e47feb5f0b22f1c41e049ccd765323101d82b4f98c70227aa8009a0c2cff",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-01",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a141d2c0da7d63236781b93582d7bd7cd78f2de3f69d5e01891ae3858661a25e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-02",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "23ce3f848be4fadf7f8671120c92be3e6e60c5b047c3f781719825929674b425",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-07",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bfd55c9c8992e96359b017e775dc9d808372a6077c047a923e57070e733e1d90",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-02",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "13ce52be9f8e9698b82a1516b3bce468f150f84d774f5741e8e8fb690da5b1d9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-01",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "706beaab4a75915cf77b69b72c92007cea134d9ba6d1ab537cc690052d3b131e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-05",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bc2d88d40b9791c435417b03885e33b01da02a1ec8b771f7b98826a9aae8c37d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-01",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "a08435ba0088317b6a34510373f5e3aa3cbc80ac1a12412a7e80889f075303c8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-02",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5f37408a50a19ad5fb799a3c89fd51d31e666efcb5ee06259f233ebb4143a4a7",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-03",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "945a6179b2ca14f7f2506b8bf9377f0bd685a6d73feaf97bcb70eef8a0451df2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-03",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bf973ee1734a1104be7d1a4a1a49beedba3e0089d51c0d0de3e91e23c25a28f7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-01",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "065ea00d126b59f7db6f5d4513e0d3734db68933965520eeae6780a7948d6f64",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-02",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "61bb877ba247e51752ee12132d27c89864c0aac1e30e429065f5ec83164e1432",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-02",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8d1892cfeb9377da602302ba2c046717864855f5cc1d1d4b0e8ab5316b5e541b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-01",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "558a579d67596d17ebf07cc0d620b80405ab937a31bfc4cf80dfecd76e219bc3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-04",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "48335ba003b83ee94d8e2f3e6eda4f4ba70cbbd5b57eb46014d6a2c3ea4b1b59",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-03",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9b7785f982e1b486c4f28af1edfd8ac66342db9a4ca2cf92b4b6595cff8e79ce",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-03",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "55774fc42ed1373f5a5e0850073a6e0c3bbc20d10c5bd5acf38d0da99da42e09",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-05",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "43080e8a198edb9308c2580b211db418b6d0942607b28a3952e21a123028416f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-06",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "264effab1d93f6d295312c175be26a41a16bf6b95732407d19580184fb66269c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-06",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ac1eb634f41c9fa447298fdf60260ac38cfe85676280ba701f605b5d83de9c91",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-07",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "de7c2c15732559e1bf60fe7b85c134aae5d95f010cf754bf2f1d5d8f01d86937",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-04",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ee9c8fcb7e624a0451a75124fdc1e4bc303045b89a333181ee34867b7450a64d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-06",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ef3b1adc89c093227668410997ec127b41b75ef707ae5716d96b94bc0da2ec00",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-05",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "49394a5a81d4f7c3fb94842c0e5a2fe6c71e1f84cabc7ab7d8836d7aa573726b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-06",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2f783fb22a12c666fbfe03c6b40c65e0b99a4f0854624f82a702f30643c9ee87",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-05",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fd9433e0c6321231d311b28d903b15de0f27d95fdba0e69c753cd0f68fffa8fb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-09",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f5658d512ef2bd32d415d7efba80d489e1a09d9efb18188f2fcafcc5c9987b32",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-07",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8c6609a8e95bf39bb9a8d90efa9dabf80dbcef4d0f580ec5782c34164d78fb42",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-04",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "a6d421bc7fb020065b04baa3ef6f4352e3683418cbbf0235e97a190d36e8ab0a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-05",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "667a6aa0d9ba7c1e0f89b3c64681dcb452f756f2c670bd3df493f4877a62b65d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-06",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "04b157c89682cffb8059f0d4cd67342e54c45d6933c15b920d24bb09a3cdc78a",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-07",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "215cc40d19f8acc022ed2d9fe6ac14d2e6a179c62b667f470604cb4ee4c5e40e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-05",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "131444bb466db4ba82d114864e98e5f0327d748d5e844781e023cea9f9d7c501",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-04",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7ba1faf83130622aeb764f8c3f647a72e094bf52dccb4a8ea947ddb9ef927aa6",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-05",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b279329b79281c52d1d00f72d73b80e00b9ec50fb12a74ad453b053a46c1fc7e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-04",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "20ca4f0ce2d2bd8cecd8b9d0f8d83c212f18c9c0f8ef921818535a33b7ecfd2d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-06",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "256d6aebb1f39ac7b9a51141edd9cf3590eaa10729722de54fa58344b56e8d97",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-05",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "160a7c930d56cf6e4e60a6aa4cdf108f0c3c5d911ae4888c4ffe2570ca0fe44f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-10",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "90a34b36ba0ce484f7e09effca3d4677f26b0b936e45e3ab2687a8931bf46fa2",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-08",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "10178e1de7e85df137b627fc94837e172088d2eeaafca16b4aa5af17e48eb073",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-08",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "65020873474efca3e2911a0efd70100d0c4c3ab4aa8af123ecd81abb3ef8cae3",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-10",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9a8cf9c22317c4ee1e5782bcd6512e8190b4f0688008cef74b4e87606dacc48e",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-04",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c9fb0c49883ad50e4649bc4d31adbd47ae3a2bec786cdaa06b55d59c99ee38bb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-05",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4bd910aaad7acb36b981db30ae804c4ac4906a1eff9383958a2c32ccf03c258a",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-06",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1269f352fecafda6714ef346e777459733a1772c44ab25e565b29f7ad7b536a6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-08",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0da6e701631b5283554d2b8303750b356897f2b84feaeb9a23719e0404a2aab8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-04",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "254a4457f15e43104a73675c47bd8abe4c928a40d650343fd3dc1a945b3a58ef",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-06",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8ec11bb86d36a3edd10e1e6f67eff67637684c021a7deff647a59b9d16c76c61",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-10",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5dcaf8d76402c1d0c9b2be270615f6eea17d599223ce04503a333eaa5ec23f3c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-09",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "7d1bf3e6eeb318df3038c84fa0ea45f4c2192dcb1cc69b13f285096f65b7a1ee",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-08",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "3f94bbda105afcc49a11f110ba38c4e6ba690c4887c0580cca734bbeb8c2ee57",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-04",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "758b30abde928deee6c3647c1efdbf026d5165da85d7e3572520526335c79180",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-09",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "dacd0493b67b597d1ff8e6f3589216acd197a8ee04eccbd7301e404f787a30d7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-05",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b6c3861716b9e31c05d48326b4977db56f69e0a1f7ce19f3ddf19fe42aa82b9d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-10",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "54cfc3901ca89d0490ff1611f8de00f8840e538b2d13240ce5391ab9b0859cef",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-06",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "73424b68af51f54038893c6aeeb770fa60a7ecb0071e800f42c7954ae4654a83",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-08",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "aa1cd9c326a1338f39cc3884553a4ae0413aae49fd6edfaadbf883f753aeec1c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-10",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "cb70bf1e4bd74d742fd489519d3f2f3a144f6e5414382916a7290830e145e39f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-12",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "451df6ff55403e731a91523add7afab93c97d07b0cd98bee3d5df4b30f4316b2",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-07",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1c84f7c980c6e895c1bc692a388ece0ec690bdbc34e018e922304b93a25c46c0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-09",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "711d0a7e19c5b03649a74a3a6740cb6598979c649236c7e94f0dd3a5c6ec3e92",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-09",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b261f4d180140cd17c730d3513dc80605742e1d1b49b7192e922ffe4bdc76a72",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-08",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bfef26a2f841fe68cb7fca8d7b547c7b7e43ac85ea6ed83f63ff4fc1022beb35",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-11",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "246ca7e790c3a1f7097a80e7b511b2f6cc45afe33fbe174e6679df9cee807221",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-07",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "6b5d38bb2df630d92db81ac41e1726b95a30c3ffb421b373bb04676db02c7b3e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-13",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "699edf6039facadcdafecca8f0d9e13e87c2b6eebc9b0e470961fd343a0b0d2a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-07",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d2cbeed7dd7b656ee81f8cae0af1c8495a2fab389f7ba133c7b1b1676a55145a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-10",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "22b2ca8d95c330586fdc096738cbda5d15b6c58b00e1b95daa3f7cfba6057ebd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-09",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3ced74dffbb204faa7d63db75b40e0b831dda2f79d6392d6ebe2ea5793bcbf87",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-07",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "97101b1d266052b8912eb8552d07b42357f865812de9772b7ef4936e35a74279",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-08",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d8b52185f37aeaca47deb38cdfba993d462aad85d59586b0913d162dfc72723c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-08",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "11f4705124dee8ea32c42ea8482908b7f04daaa6d3ce03d03a764df5b15cb59c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-08",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "9c8ad515aef2fa3b7de4417451ec591f9ffc7cfe0720031f0e9b0b38950d43a1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-07",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "af7775ecb70cded1fb68341dc307eba8f726a6ffde875df76fc02cdcd0e653dd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-09",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0c5d3783fa8aca915ca678e1821a89a0e9007b933f0c8a8310ae2877da0d5b62",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-13",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0d65f61b770405a5f667160a0bafd8913b74ed909544546dbac913d5ad4e1654",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-12",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "3a17edcda4c60efc5e825de0fd7d8433a64984be5781ee8c97ee1fe675ff912d",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-08",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "dd9c12f0befbd0a15f4dc5fa1c39c0430ea3c904fb43b781a232b328e738f966",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-11",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "aed06805d2e33bb3aefcf64120970d3ed9335f1eb6a9285ba6c6574c33c50709",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-11",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "77eb3697be5b598c637ce6eeb4392cd7de6490b9f074121f0aaef4e65978dad4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-12",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "64e81e72da47ab58f0641dea4eacb3ce1a69527d0f974a3bd26fae34cf09e059",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-13",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "db016b752de17703e4280fb8dbb829cd6fbd4b47210f447749e20bc868e76cb4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-12",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c74442e67632c447020a4cd20a6ab9365a981c24f313cb29c99b6c1abb5dc7de",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-11",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e215b3f4795eb9f63eab0dece5c4a41ad5cb445e4f3e25c8f7a5cb382533d9e7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-12",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "cb025e2a8e93066da45daa83781207f9311d537a79a35e0447946245a6d42ca1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-07",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3bc5636999b19b90cca830f573e564f82da87655c332dabd39b62513950d625e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-13",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "781c83f52fba84b2a1df60a587a2fddb4646aa4e0492c8a83b72b01c21461cc7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-11",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "83d0c8ee3d3b100965afc38ed7109e6e0de24a02a0879f4df6ad038f06b7eb6b",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-09",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "398b5991be59c76f4a11ae57d7a3675773ba354dbe596735296d6a8f1b062046",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-13",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ad7797089cf3d410782fa1fb15a3b549c74fcdc3a11e1f23526f755644323b91",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-13",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "a84a1c3061b8ddf8b99416db5e0dbce6a487175a3d790726893b7e347ffff766",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-11",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bb092c8af8fd3eb38db4e18874fc88921ab78d13c06f17bcf0940e7141c3d7ce",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-12",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e1222afa1d2efe389165a7562e98dbf2d0e255f18ca9f20b978788f7cb45f6b0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-14",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6579bc3742202f6ac099c0603c49817a3f30a684684b4ccbb2ed60b47cfe8704",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-11",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "eb08ad5ce15c92e8248e1f5930cfe0715252f1543019ee8d60c3cc6c25454cd7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-10",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "de6c50b888ea1caf1876be2d4055ff8d2e36df5b5089002ae384878e1add2a4c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-15",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8935fcebb13c4df78e36b3bd2d0c7fe3280de719c8c68714855749e0012441ce",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-16",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7ce5181d282143d1ffdb81c9c10c966d22ba483c0b8fc4efa55ac8fc58e169d6",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-12",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f152511686c7ffcb92002978cd2b4d0200e796699afce9602b5d8648eef08ae8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-11",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0a29ca11b23a3c84c50758b4d97bdee57b77770eaadc9eebade2cc3e951d32c3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-13",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5e33bff5e70ae1996dc126f18677117c0b11e0a4fef7b91ac3cc8160570cd594",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-10",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "7966b4d30e9b083e674c9ec4b6cb5a9e788c79bc7c51d6c321d55bf3551bc51d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-11",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1ee7361a4f908d35c341cb9e96640a2b6e977ca751a4a6210dbd624e64eed509",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-15",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "895f4d6755f4bf8e594dbbd9e476cc424b52e50e80f86bf9b947556a9e076cba",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-13",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "833c468da65f2c39b05e21f292baeac800c825379290ca26eff8f5b8bb775b4d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-10",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "01db4878ed9b8cfae648ff7db180bd23858089d5772ce9be7231cf6946e39378",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-10",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "64af1fe986d243ebe7afb98753c303323e3fc936b4970df923500b63e8855986",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-11",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "888c54c7b25db290fb431fcce1a4a6e4ceef6dc2210845d5784cab701d90ba56",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-14",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "68bfb9b243235fb5ac7abdec25dea79bf2d1259714dfaf843842ed67c64b8ad0",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-16",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c7534f1e54f1c06b0f8e945d3d89a8a872b18bc63bda5358fa481ffdc7f4f959",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-12",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5fa8109ffa0df5ac4c3e1b2e6623527db982c28cb9bf6ea261304861513d4f77",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-16",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ec0ce012cf825f0c17a1421e8d3b78d1ab2bdf0887fc8f7ba53fbef0bef48fc1",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-14",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a2710b7790124a88c1d7022e65a8ca1d31b810ed8ab773b09185f65fb60b7bf3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-15",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8c464303f4123227119033b4ab361b3c7da2188cce8489ade608f29202972d40",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-14",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3fba42a24df1acefe0902463260bd847a25ea26c72379536008c9631cc682f2a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-15",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "000140cb801a3be3a11fabc742549e255b279338efc23d90cf86161024d83ab5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-16",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2a38db7b2089ac69634b4ab473057a9e175157f2b7d0d8caaf7c12eb650da122",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-14",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2f5ea7c38f4039e1ba6bec9bda8ea0966e848be71e96b7776a74a1cb21c1ebdf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-16",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0cd11ddf7f0728d0a493732425d21f94aeeaf8832aefe48c345d82acb1ee88b8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-13",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "61f887e53c4ad9c1aa25c2d47007b21c40f8b0b4c4872450da60601c104c91e3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-14",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "be3811fcc67407d7fb2ee5743df2e030669b2ecd82dd0ff499a5677983da7212",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-15",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "435054417d66d7b3664c17d10643bb75c68cf4ee01fe2af34e5a7ec920b51fe9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-15",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9d5656bf0785872bbb37abf03c3c4c6d04bc158988a9b84e350b5d40e1ba11c0",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-16",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d5aefc6245d300817c2b4a932d58c3f074184c821fa359ca0c84da6c870edfcf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-15",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fe51d50774e13f4fdbf3ffd6113d62a7a8184e98893257b47beba29aaa2b49da",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-16",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8de70b618e7ee7c7f3074f223588c388709fbdea37bcac21c338f2c2857f10f2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-15",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "203a78678d4988b8df0a6adba085e4c14e23d0860def2124b5bc307fbc8c0ce1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-14",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4a660ec7df4107d46599f9ce8b919cede334d27e06e4b3f9c65a9a2bc250bdf6",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-14",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e1b52be001f6d6ed57c4be80c19d7bc8c8bb77a18fef4e72f3767dc0655dc006",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-16",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4accc4818bb6946dc9081d23870f013e83910ba4317548acc586cfbe3b9b2272",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-14",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "607344a28f7cd29a0a6454ab9818143a4f267f04d5d27a5412ae9113304d0caf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-14",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "104a779f6f7840c100d2c5beeaccadc1c2674d7a7b933104615035f4e4460518",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-13",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7f11e4011ecdfe3319fc9733318b3818271babc1fcb750fb3af214e16ce82ae1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-20",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4b34b46c1b2d75bd53dcbe7da18fa76e51c144f731b33428e46d2d3743d835b1",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-16",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "830ddcea92e18feafc112f681b2cef251df52857ce249a5512687dd6bb0a428f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-18",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e0bde958937cc29df68462c4cb474dce55f6837669d94e5916633090c8918682",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-16",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7ad62edcc608a25c87c126db38c1ef7cce2a42f54027ef75da42509d7146c183",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-17",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f5afab59466dd70aaf64e5bb94bad1214f165967c9a454006a77f654e817c3bc",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-18",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8d27168e8e97f3f6cd71392779d01db3e1b4825a0d4d6aed8395d439aca5ea7a",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-18",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ea702211d5efb7a0d6dc75c1fa334750ff7dd2599a45d7a36d6afd16a3cd9d3e",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-17",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7d80fa5a29ceff57a38283316f08a93adc82b88885674b71f6459db45ae7ff0b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-19",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d57b2f1b0ef11a383267b13f20e87409b780f4ee349392fda28e371cb34c28f9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-19",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6e198030793863a4151c799008c5b44cf2c8af43135ab72b0c49f27c7695ba1e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-17",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "cd0e8b8b97f0e23dd178cd5adaefe0d156c50705605f8a8f43aa8fce6423305d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-18",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "28905704cb7d0953e7fb42ab70cac49faad183bb0b262da9d6d852f091b2c21e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-20",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "602a76a01504537b8fee248aca4ececc1accb7845b4fc5b6553d1ffeb6c92af1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-19",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ef67db3a71ea5b83c118b1bd9c62e94e97cb7f13669c77f96ce1d5a7e5840369",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-18",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ff3a2b9e5a7cfa330393bd338267a4d7ee756d4aca265a515a3dcf8bef4d2fe2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-18",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d4700ec8b33ddd255c4f1cfdd520f6bb1782cd09e33fe5b861d1fa24481071b9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-17",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1864a3cb73af79ba3403d9a302b86d1ec377d26ff4e24f9a59569d42d9e7b821",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-17",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "118b759311c6459141b050cabae0e464e5d6211dbfc60ecb6709b36ab6307383",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-18",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "068f77ed37b78a95390e98070e9e90fa0fa38c5a00249e7e2271d00a6b4e8c0f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-18",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "52050d1c7cc9da7d3c771ab4f7a66087d3224f8c6a016bfcddf9c5f3552c3668",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-19",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9defd0d3235da81f44e826b60b33877a4632f6864b3d30fb2ba3a475fb43afd2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-17",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "397e460877380693aa5f74666a71ace4233abf8296f5a65e0cc1124176c76547",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-01",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "898d764b61d265a13a365f0d6b7d62199129662f44f02d2decf4f434521bc525",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-17",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d06861b5a4a5093d54dce213ee4713878f54acfe8b62e2febfd06ab2f4613563",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-02",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "93a09834429d49269b03d24b152f6b1ed0329375f9dbdf65859fa8830264da4c",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-02",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "16d160ca5af96f21bfffa1beb37659d1bcdadc0a58a33a01bbf4e81558ed7499",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-19",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "463f6e419719f7443d3d0cc3ebd4514c86142f03fb16cdcc7edb2b38afc97bd1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-17",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0140aff1f7ca0fb41444856a4f35526eecd2681295b4f92630748abcbe45c9df",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-03",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8b2e51fab46d685138aa3db9e2329a5dba15a745c2655763b72783f8a539ec8d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-17",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "93b8162107ffb2c4ad5b7f185843cc4de641d519e9aa92f012caff45aa088157",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-18",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6bc9ac8ad5f3d481398db231611ca2ce490a7b210cf455e0395139cc41ce3569",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-04",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "07dddb2e2f9d4d0acf626a33479dfd8ac19ff45f4b4ff02591c59b5d77134ee5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-19",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0601800edb516f4f86aaaafd99a68e843153548f68a6c3cd26a748824896b1d3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-18",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8c53d4e4ade3dd920fdb87167793d5c4e5ce3d7b2f94d7a2e66414eb03d37927",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-17",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e50117c02ec4a2a6ed1917e1b0d1daf385904ee89fe984f871987160ff6b4a35",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-02",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1812f70ac785bf0ffc5c7f96379f4d4b0d7e6a7b0703924aeaab6bfc040bb164",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-19",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "13b75ebca63edef08e902b39099bc5652e49238e133695075acff7fb0de2ab49",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-20",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "febaa2f237753bad4ed84f1287cf3ea3f9b34a0d8a5387581f45d7fb3fb1b93d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-19",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "04ac245ac83bdac2ea0fb1370eb767c4f3510344c72b24ea5374c7b0faca9720",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-04",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "03faf3dd00e2809ab19c3819ad80e210f863fcb7ae3ab780a03318bc38e897d8",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-01",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "27f241219027aedac8b418b50f4b4afc262a797e8e471a49861bbf7e169de778",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-20",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5aeb62f1f20e7723a78b65e15f222aee3e382ecfccd1a9c1264215350e5ea0aa",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8344175702afa9e51cc31b89798d1b26b43c8372fcfed4baba0cfab495cb7f1e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c5e4f62f76f15f92e58b6cfb61061effb1e41d59dcd31a02354848be368f25c2",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-03",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "bc3dac50fa13c42c71ccf2c692d660669bc5d4ed58033aacf4aa7ad33a6e257a",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-05",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "107e021ba1be51080dfb7c890a3054b7c3e94015763417596801a7eedd7402ab",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-03",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "6dbd35801822b975d20f97c8f383481e035136b251ae028244799778773b35b4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-02",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ba6fc2e416489701cff069b3c64429cfed5bdfdafc0c70f5549ce2e2598921c3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-06",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "098ccc53ffc1d812fd5c865b607fdec6a3fc53011f917bdac7cab0f6cc44ac97",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-20",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e22e3c60966098a1aef07af2f44206578b048020ddd3b1d58e9e21047ae2369f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-07",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0f11bbc3e58258a92a38105825c5add8c793ac54f66a077f78d7ca8f9f216c44",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-06",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6d51d1c2b7da1c98b60764b4e89a65e7d56b66c5bc94ffb026e9596e9ccff34f",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-20",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "508ae9832f4b1afd86a7c1f4ae2dd2df2344bed571ba314531e543e059763573",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-20",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ff16aac9571cd716190d8240d6ea39cb476ce6ad0730202386912be47aa5283d",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-02",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0eca4b5cf86c0b94a1ef732d02aa839d80278f6c77573dbefae472766f784eb6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-01",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "93345fc0ca7eb125b7d9e34c3b7220ca99f63709d102ebe8cbffb5b71a1106fa",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-03",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c3ec60c4afca59b24025397dadf0eb617cf7eb6452d3d63d7abd32fdbb94bf5a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-05",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "53385f314cec6e607269991dc6eed726c7c81a3c6b8f1c7eb3a6785ec589157a",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-05",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c1bf3f34ef390a75f2067aa3cffed13401c88214a9113dc2da84253b7913897d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-07",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3cc698a3067c8a02cbad3e352fc2da3524834690d0d8a85588f5015b359b4f71",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-20",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e4b235ed44a6ceceb73e0915406c66eb5cfc8082bb1cf97aca3b7a3af20be11e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-03",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bf7199158d36b61aa08110a50f01230445c1ec21bca6ae269469886dad0ae1fc",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-08",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "24658bd8bd81c7f673c884d1db4f1159d7182192c300dd00b0690909b9947f1e",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-03",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f812c4e12e4b79c001c8837c273b6d2b49c15b77fb4dfd1405f52150acd48761",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-02",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1bd525ad0eb5f8be81b0dcde6bc14e8ae42fa2f4f7d18b927335f57bf46ce67d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-05",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "005af67a91f3324ef1bed6065586b75eac40b841a7e263ca4eee369b83880a0a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-07",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "10576088fe92ed313bf1e6dd857370ebcf5ca629fbb6a2960dcf89b6d6f2252d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-07",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0ebe9247ef92eaa1fbb99013e208a463331fe478b7ac256524cd8daa1c37cf0f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-20",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "372857e4c2b646dd9ed7305bc27c4d59759bc31d8129ca793ea5f3084b2f10ee",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-03",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8d2a731647c2beb0c59a41ef7dbd988560e94f2783cd33eec0f99d0c040d79b6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-20",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "90c090a5c8a133d60874d2740fcec352f598e0c8f9b92b227018fb6a9d017eba",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-10",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "3e949c04f1b84835f7e65527dc116c8640ce7b529bb98b6cac0fe54751b9bbe1",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-03",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fc84d541aa4c71f46d7a19b4cd761f0cc82cffdb8b97832d5951af4a506aa872",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-02",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "9da110afd436c630caaf43fb216f0506e35de90bcc8b21f32521c89038c760dd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-02",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "74e6537677a16b2427200b54e3bb4b37f836a6dc4e760c19ec9864c176c7a613",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-09",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4684dd9c28ad24418ea516324d9832d9c4f4cf65c451a5af264f5b94a1f45f6e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-01",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "21a237287c08ad299fac428cc7eac84eef972c47ba28950378a87ef558f4a523",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-05",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d1ea72757a4111987e12e6523400a065335fddbc126f6aacf408e4f669609a8d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-01",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5036743d511fba0c98623d65ef4d692477d7741a7e94d63b5550b0bededffae3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-01",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "18675efe0cf4dca79dcdc6aa87c66b8638255048b2b558a451d3a42b216da171",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-04",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7aff886bfd052edb8d96fc477adeb06c21a6449e2d538156ecc3a62f0b7a7bd3",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-05",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4f2783936568f39d6971388fcf5557e4d1d9bf419837dc2021af682f72f2c88d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-06",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "65821c18ff64d37d663ec53dfd4bb6e0a411894d37711fdb3c7e56f430564473",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-09",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5ec58018a91fb101c55345aeec7f5e30c5daeb4908aaf4947a958951b0a43d06",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-06",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c5a29fd0d0edc56b926a1e231aee4b487f6e85da59b86280d463f27e74fc1632",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-05",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ea9fce80b4287a78847bf4b79cb49e43ef9a4f6ffdec225923499cd41da17bc9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-01",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5614edb6986aef372fbfbf56de1bcd44f638c264c87d40cdae739efd2f465439",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-08",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "49af68749bf243f4094333811bc58edc4ce7bce50531add43da0bf4701dc1405",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-06",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "236b0f8abe73e4858b9eb8f751900764e4ae2864f3d09fa4d939e1337db007b4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-05",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ad61390e93642299f02f14b6a0f1009833d22338dbb9e04b68ed6c80d5d115a5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-06",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "f27f716c206f66fad032e30854d21249008ea6876a03bc23a0588d6abfa67dce",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-08",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "112fb70a0a722bb0dd27332dd606c9f0a60e307b3590656396a7500a76d9c3b2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-01",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "05b825fefeeb92d59e1b8425e65c3eae3f0894dbe29ea7cb581dff68a61ba2bd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-10",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "f5f0cabdf2da84bdbe5c2a46998f622b5783dcbb49e3345beadb9eac55d90108",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-11",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9b4fd0f3a5cab68e3ff5c39a094d3007db0117e1c3712fb73f724607ad38ba5f",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-09",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fa3adebea64afcc6cb2800f65804192c9ac9ab0676cfc57bf1f94b4339fbadfb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-06",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "411c1303ee501643811cea623802276d56c92be3e93ad364b54e5c47c187f9bf",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-10",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ab3d96234ecba5b78fb096d57b4e9272bb52a40e566925c48a77e3a827fb3733",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-04",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0b325bf79e8106f2a469c93d0e5eebe1a952f625ff0d214b77cbf68bba4c2e49",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-04",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "68c14610b016ff168d3fca2488f744aa1758afa3f1059075b5141c26555be8fc",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-05",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3f43b914ea21a469f3ffb34e7e03598a00fab3aded4bef98f77bdcb0f8786ae3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-10",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e2ee876be515f3402b9f6759235ec35241771616b225c7088abe26028dc88d42",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-13",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "40ca4796810c15443048eda3bf88cac9bd6d45476f0b180b5dafadfaedf64a53",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-01",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "572455309b13458757fc7d8c6b6426f6cb73dc87cc7202e1897aba0493d89ec5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-10",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8ac72949bea2b6c8d47bbd004033fcea97859794251fa23822a371ace1c08563",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-08",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c59de785ba22c9b04993e9fe45140286cb5b1bddfe8faa1338ae568e8db52def",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-01",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4906e3511495de72a8911f800ac20ce4a51e629c8b01bd4323a7d478dd504dc5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-09",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "02a6b249f497677824839788839129057d5fd55da01d6c7d17558fd823ab8b20",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-04",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "cbd846b4a6f90d019db10e9bdb89a6e62e954a582e4bc327abad38b73fc79f53",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-06",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "83cf2d7f05c39fceed92700050ac431a0fd03a55c824f0d04ae10230d751224c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-10",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6b0eb7deadf7458aa72951f0247843a717145dc6c59242be420373389e4419ff",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-07",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "3a1cf2ada9d4e5858f2d2d2b499a8fae0e2167304b43f16b384191e5e38e268a",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-12",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4e6400df9c4577ec7e34627f9ddc8323febed61602fa9e9a08f7cca196e6fef8",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-05",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "0e606f1640f91f73a05fb7e166b151ac843c6740b899fc45cbc4b691f4abf24e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-08",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "2d3f5285822becf08e7486f03d3c602650f2a04e8cbf82b8e88b9959ad5369bd",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-09",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "301e2b1a2d44e76ea400ae011f7bf4fc653cc908f8197147cd0df0bfc9489491",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-09",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "56b312f579211a5242d25c6a6e482e63238d657a2b0b686d1e8f1a7510434113",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-preferences-09",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "573c687a5400ce49cc6f0cb702b92527a748ed822e1f0f64b5e716532c755f12",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-04",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fc2fa2ba472e1bf82e005d5437c8ffb41d2c5e8a963e9b446fa5719419046884",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-12",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "9ba82c46096922105ec31b8f0b89f813adc3daadfcf0773cacd13e856790d247",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-12",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "171872c097bcb80a774113e705ff95084e28258c856dbb39a1db73eb17327540",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-08",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "eae3e269a70339001a643c5a9dda8dd3071b6f8abb147cbdf3af184633acb62d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-08",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "f82a240fea09a1df188d9a05a3537260e22b551e88c578e1ffa874d8a4334c17",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-11",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4833fcc0505f4457ebe870ced4d175a2d0a7f3094045b9407d06de0898928e33",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-09",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b5250df1392014e6ea7f31aa9cf42d48a84bf1f283e6fb07b970488ab320eaca",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-08",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "87db9413aec7ab454aca1264f60c57684b3f31bcf4c3e43b5ea433e080b2923e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-09",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "11cf6b1293a3bde204e585962a225a85e846d9cd725be9f469c8dd67c7492086",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-11",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7569b54568b20176c0be912fa1a1f98d543cb7864a6dcf79778b4c2aba070245",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-13",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e1994057dffeb592c863d116b5470542a8b64dd9fe81069566852876897fcfe7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-08",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "53017fff0cf5fd6e2537a27e6a8cfaf7a11bd21b423f20d6fa355b0ff606a36c",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-13",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b5c7bc6c71bb3164433f26c58df3ef47e8368a6dee8e176f2c429d1939ffdcf4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-08",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c0a3664183c20506cc61a672a640e0148f92e2ff280df497d4dd0730aa3fa613",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-13",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "719ef9199e5f12a146e6927e01eaf5afc18ffeeaee9c2ab54883e256ce1264d2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-04",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "66625708885a1a8d8a4fa08e92dfc54abaea1556741964d1d0dff19a8946e482",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-14",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fe340cdb2a5bcd82e5ddba7e55458f2f598334b84ae78eda65ea5edbe9489eb4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-13",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "75ef4eb63cae1bfee544b8e25cf0e8491fef64497966b63cc9a97318c10caf07",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-facts-13",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5020c8dfc128c72e543c9b25b9e05015326fcc180eaf3213911ec733d4b695a6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-12",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d2f6e45f396f73aa8bb5ea77275799c73e6550c61af26e880e358972defb8641",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-11",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0222731112a30559f16e9303602793c30fa3b18c85d9ed8e2a5a0e1ba27cd261",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-07",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "2a98fd03fd8931da42ba65f06d5913a82e0ecf4c6d70456954beef8f85e8a423",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-04",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1dc895be88f43e8eabf5cdd8e0598382f75bdb5293068373b75b5c21d951cfeb",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-11",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "47c3d76c68f102362bd3c62cd54bf7b44ab562afccd8822d1b1ef513d0a9f75e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-13",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "25194b8809dcbc682fa11a576772d76c6a9e9128dd0a6e20f1d4619cbea8fc29",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-12",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5f5c7a7b40e07a52b84cdaa8518c9cd1b148c3b5097b2f66354670f700615b72",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-04",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ef88b92e55401729bea9c9ed3c317289f88e78b87a23bd68dca378e859662126",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-12",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "dab171728197482d4229ba71ea6981a96d7dd7988e63c608eaefc3e69c431011",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-16",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "40272f054267bfe1f07546622b3bb1a5704a880aa5832e72abd3dd88fbc71756",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-12",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ae21119453eb4f05d94bb83db8b2a89937ee27b453fe22cbf9a9a12c3cb239d1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-15",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "00c1d4e178eef49494f82dea53ac7ac9aa5956b669fca74f5ab3c0e028058a59",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-11",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "960f29f2f4b6b2204ec70b55ba1406398a59b3778c09ed35eb51a20f78023731",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-12",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "606da4becd8fef383afbe12d3a9cc64b934ffc31d2bd11d4d1ac7f72e080fc26",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-15",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "86dd68cd853b34587710db3ca399839fe652a02319858cf883c5babaa77d6832",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-10",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "05cf9fc0d1cc1fae46c12bb9650446c016d960944018700e5d709bdf205fce4b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-13",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e42c4be70b45a29fe01be7ebb0f811a3d98a4bc1001e09d42bd60db30f3ee0a1",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-12",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "60c3b5e3a6dc2ba05883d4cd81635395596a5ffc407d6d8b24a20b10c7c466d7",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-07",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "468ad7e336f64e9b6d44d378612f78269319cfdebb1b2c332924b0cfe2baf69a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-11",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "cef56a93cf011e4c2c33ad11a4d3a488827299f1a3082867c4e8d1dbf4d5c771",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-15",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "64d31941da348f6378c453d4841c0840304f7fbbf522781ca1299ce1288550c0",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-12",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "819a1c24ced75e04fc6b91a5e9c7260f31b9d464b437ad496c2df1bb865d752f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-11",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f43ad8cb6026d2dfc606aeaa99722f07e0e3c91b4e5df0398df1e0ac093b7842",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-16",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c50347144e78d29cfed2c6410e4a71a97bd9580ed09446f1e1ddb2a29b276fe9",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-16",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e8b546f00f73c3abe456a2a39b79294b2f10acde8a1002886e5a0872f7fb76bb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-15",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1c29cbebb303826915e88616fe7216c505d914c4860d7574a4a513039d4092bf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-14",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0a2a6a6015b4deb2a16efe1412db0003a4b975858869850c69c53990e5c0cfd5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-16",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "30f98498ab87ef3cbcaeb730b4a8f9515a26eab4acbb9b6606392e72b46c6c65",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-16",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4858d2605c35d9389b6bb494886c05445a698fd22dd5f348519b41c64a573a37",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-15",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c55d93a54cbb69e59c1f0238bac1a14a6e74e2466fa362def9f83b724908c2d5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-07",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "227492cb997ede70aa83062d308aab811a22b2cd579141421c83b624979088bf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-16",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4d70e799790af89190688cbe0a03e59ab20af4bad8dd586919b4c4ff721ada33",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-unknown-14",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "6370aa7bdf997a936925dc8fb05d2c1ee8fdcb504ec64e082bbca001dd1c19f0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-16",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e262dcbfe56363395bd24656c897c53ba49473c6131e7ddc2566ff967baa6770",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "43018fe847344429635872ec9827d55c326e3e7c2b032dda93e7932048ef741e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-18",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f6b17ebbaff0fd672e252cd5c70d116417ca6453b8985260fef3983ed1c91d43",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-17",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "fdb76eab2597bbbfe933919c6049872b48d77c686ea012cc0622c1f8765e3a84",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-07",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "52381bb3c600c58462f2e1d6f950533ac9aa6944a74aeec2c775b7eb44ce05c7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-18",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "92f20667c03fe1663649c51a8bfad9a825b04fd7c21c5375d9305b0acfc74d91",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-11",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6274f9db9cfa78b45e89b5a4988794eb7add9da8769b32bcf2efdec6ce087f12",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-16",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "28aa5160b67d59fb3c8ab5e78a37625ce347ce4b9fe436a4981e742f28c54590",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-14",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7ac0bbaf026c013eff80e5b931ef01600759e48bb6613f081b0715f0007b6755",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "aa8ee2ec7caed16a1a9c68365275f7adae233e7b72cd329e761ab0a496287299",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-16",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b5a70fc27e6998a83b5fcc1cbeaeca5ac875b000e568db67ab637e342a46d528",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-16",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "167cf31bf5dbd50250cc76c7e0c985212cb7a46b04e95f579d72c87b2bec2adf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-18",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5138353bea51ed30564c9ed38ace6aaa42ff4c99053cf8c5aac57c6e7403a8bd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-15",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "84b035ae26d7dc2660fe8064f60e8380d24fe9bf93a4b86cd3c8b07ca15b3fbf",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-10",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "91eb260c2223f38bfaea39a55a3d66e9c4a589dd96d16091df206ebdf7a145d0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-20",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c7ef0e5277fd4184d1f6aaf81b9d507b2a1aba498503d65b75db2e19bee2b446",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-07",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "153eeaee19b92b407fbe40c31852595ba1d335630ef926a40f4fe53fd9f0bc07",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-19",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "de388d4c546bd9fb2d05ba5a0bad4142892e38156968da03116c484ea082be88",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-19",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "3ccb0fc63009fedfa933f502cb0054bb10d48867eea9ba9470c79135cd91e6b1",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-facts-15",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "275707612d25b61c6f80ffc55e4d10d4064aff13ec8bae79ee0e828d84db96ce",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-17",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "06e74a00179a2f86c2f63a743c76b92cb27eabdb90d85c6f409a74883258d68e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-13",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "8e5c59fa926887000049ef646797643b51e5d9e408467c60c9bb966e856604a9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-20",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "3707610041eed5462a5b81e4796d613a159e2021cf7c06a7b1012f0670ef27c1",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-15",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "8b501731573318cf3e5a542c189275407484c753d6e177b0b936dfb6a2abffc7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-14",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "989ebb638c4130dbae6728c80886207a1eb1fa58e4e8dad93e5b0812c5176164",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-preferences-18",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "b68f14149dcc9400ce163831ff1fe291f1f6fe276c631b08e6b9bdfc2971277c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-14",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "25ccba8bf63b0a2fd158ddc51781109a5a297bd6f583407debf34e3aaeed7ce2",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-18",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "e36329547962c3c84b4311f7e5f441fafba00cf789a80f6fc487cfbf9cdef55a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-18",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bef5f5fcda9604f9cb92f356a459e11fa7f3993182c5467649e51c2a5f3ed895",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-19",
+    "trial": 2,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d125cb3dfb9237d51081b1027263fca6f0a241df5d826de70ee8b041edc04526",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-10",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ae9378b0df513884265860ceaee103d97313b6b91ad65a2c44d08921b637788b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-11",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "7dfb45f703426c50139050baee2d7473399e4008d906da5df26465ef281fada2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-19",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "ae074db06388191f50120289c8a6d859640ae0ca581156b5c712abac6d8df2cb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-18",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7e1fe178a6e266a101a786ef984302482ece0bc3f2f8b4d62ab0be2d40335506",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-19",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "fb325ce177cadc38361364689287d08b8d6376a6fdc2ffb227c35f5b20089bc0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-13",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c676d428175811180bbe1c1882ce4328360bebdcc3d8df4363a85caf04658879",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-14",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "30c19db9b14880ad5fe7b7476aa032751964c0198f916464607cc5f891dfdfe7",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-19",
+    "trial": 2,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "79229ba1411799914dba0b680a312b3bf64cb3853892917d0d0bb2d1b55a67d9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-10",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "245737a1592cce139e488f694eec06c7e669b8ab6e8edc6e87db6b6c7712a0a6",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-17",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "cb5cfea7bb92c7b748b8c5c5de7f546a863822e0d7d24e2a31fdd147b2f66a37",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-19",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "72c6982c145f06440cb30019ce37f627dc537659878088b392f1d731b7673d25",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-03",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "c409b4d508bae08f7a254665be4f40ac55949f758fcb345a7e94f2ead180d96f",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-19",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "68ebe1ecc8e101896cbc370d15d1132fdefa4f7a2908d234935820c5ed745b94",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-19",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5c5642f56f0d5abb01260637dad7fae12f498febee77793efd171e52e1154665",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-18",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "71b36dd95a0d3994f4fc0c8ab57f0ff06cdd75719e6e932a69f2fae9c431090e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-19",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "100c57acabf209e909b5ebd89aad57a5e4f3b39150522b78dbbf29bbed8f13b4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-14",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0403add998bd6c4ff5eefec69a419bdb3e8f87e1df912cefdd47f600e704c1a0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-17",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "fa835079b01e3ccf496e9b7e4b1dd13890ab4a8200fc37f16ebfcd8a0a6ceb7e",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-14",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "491106146457330ac22c3847512427bf534c6c8f2e0d00e01ad42fa4e9f46bda",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-18",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "204d26d56772bca49ab5bc38e13b0ecc1ff5bee84eee327f0f9c6090dc404573",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-14",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1944d05587dcf5c73d1d81ff7c404bfd8ac103f92ad6d6636c8295c0d21367cb",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-17",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "d7a392bf34fbdb64f0b98b8438cd1a9c549a8a77a44ed72d938e73f21d1899cd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-20",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "707702b51979af50d88100ff971ce8a89c7a05d2d93607217989f3b0dc57c7ce",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-03",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "79268ffbf5b600264884ffe6c8a69a4a440f3165ee5623c4a7f052bfcbb161fa",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-18",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1a6426c1bc0bdf7c9abd25cfbf8b6f48ec0348eb4b45a2fd56a0ba2e690e46d1",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-17",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "5301461621e8d756a4300cc02a4e9b48584c6f6baf2f3024e73c6348e40fd1a0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-06",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1467254a005b6c8a5cec5d2bf5fb3d2b99855d95848e73ca6febe019c679d912",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-17",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "182cde671346bc34a01a7b9b102e19a1b4efdbac90dce0ece3d518f99dc5df57",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-unknown-20",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "026f80ad0fbcc0f8b6367e80e0ff565153a48e925aa8eccdb17719a9d5853075",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-17",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "33a030eb2192e1f213df73b7958f012d4bec711141396382dd3e06cfe171c24c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-20",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bc21e55830fb0e69c21519b56c951df2eed990d850e2915b4c7616706a9fc167",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-20",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1642d84a6608aae6954028c240ec50cec540811fbe0d4e790d80fc77751f4385",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-06",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "4fa441e4140ef0c8297f1d540aea00173abe98991309eee66e3e1dff45921a0b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-facts-17",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a9a0639d0cb12c8d2afc839af515aa21790e5b5d06f948e106d8632a5c909f2b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-09",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "20af5eb097b5490ed676eda001f2e30492f86c0c8c55a7e9cc6db50ed684f95b",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-corrections-17",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "25797e96a228214995f1bfea77dec49b3d4a27a3ea2b231a52980dd9ece4043b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-20",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "2f31ada9b57fe9bbf5994c29a108030716524fcb797e0fb28b3d70d2df09ddd0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-09",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "00c5a66ada2b0a4f9a1086bbeceac898e89c3a9fc79e4338c78b2a9bd73167f9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-corrections-20",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1b78c62181594982b0121a5c574c4ebccf3b05b8bc48410eb96addf44e5a70be",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": true
+  },
+  {
+    "case_id": "frozen-forgetting-20",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "50633d3e85566f5d80dd00ab20522d1153e5c55fee8e2bdd9e358032a5cd614a",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-forgetting-12",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f1ef44c69b333bf1c33beccce355940ff26f1f5cb3513ff692ccc5871f23d33c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-corrections-20",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "f804c2d4f4cfc358f92fe1f39acef2dc56720ae606b55acb6d393818d7aa101f",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "frozen-forgetting-12",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5ea607988845f5612522ee55eebb4cc1a99d39e985a6abdb8c91307a67a4d761",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "95cc4ed29c1744fa515e7923d422ec80426216c636a529d9561ef7d01ee2d61d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "0067f1d66465b15644394f72b288511ed8e6c824c86a0d4813dd5b09a18a56f4",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-19",
+    "trial": 3,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "4cc552ad8811b8b14e33b3e0691994feab987f1a5efdb05526b7147bbb45b527",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "frozen-preferences-19",
+    "trial": 3,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c09dc3d93ae76dcc469e0033c725385c8e86f64257e4a79c45ec6e2af3e39a6d",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  }
+]

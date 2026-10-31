@@ -1,0 +1,38 @@
+[
+  {
+    "case_id": "frozen-unknown-15",
+    "trial": 2,
+    "group": "openviking",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "prompt_sha256": "bbf197404c8a745d3df1d10bb0751f6b746ec6f0c4bc5a982c2590f1b864f72a",
+    "elapsed_ms": 818.6585000003106,
+    "usage": {
+      "input_tokens": 422,
+      "output_tokens": 24,
+      "total_tokens": 446,
+      "input_token_details": {
+        "cache_read": 256
+      },
+      "output_token_details": {}
+    }
+  },
+  {
+    "case_id": "frozen-preferences-02",
+    "trial": 3,
+    "group": "baseline",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "prompt_sha256": "bbf197404c8a745d3df1d10bb0751f6b746ec6f0c4bc5a982c2590f1b864f72a",
+    "elapsed_ms": 659.4239000000925,
+    "usage": {
+      "input_tokens": 386,
+      "output_tokens": 24,
+      "total_tokens": 410,
+      "input_token_details": {
+        "cache_read": 252
+      },
+      "output_token_details": {}
+    }
+  }
+]

@@ -120,6 +120,11 @@ async function durableChat(id:string,body:any,onEvent:(event:string,data:StreamE
   return resumeRun(run.run_id,onEvent)
 }
 export const api={
+  memorySettings:()=>request<{available:boolean;automatic_enabled:boolean;generation:number;pending_jobs:number;failed_jobs:number}>('/api/v2/memory-settings'),
+  setAutomaticMemory:(automatic_enabled:boolean)=>request('/api/v2/memory-settings',{method:'PATCH',body:JSON.stringify({automatic_enabled})}),
+  automaticMemories:()=>request<Array<{id:string;content:string;version:number;source_session_id:string|null;source_message_id:string|null;updated_at:string}>>('/api/v2/automatic-memories'),
+  deleteAutomaticMemory:(id:string)=>request(`/api/v2/automatic-memories/${id}`,{method:'DELETE'}),
+  clearAutomaticMemories:()=>request('/api/v2/automatic-memories',{method:'DELETE'}),
   capabilityDirectory:()=>request<CapabilityDirectory>('/api/v2/capability-center'),
   capabilityControl:()=>request<CapabilityControl>('/api/v2/capability-center/control-plane'),
   saveCapabilityRuntime:(component:'sql'|'web',declaration:SqlPolicy|{enabled:boolean},revision:number)=>request<CapabilityWriteResult>(`/api/v2/capability-center/runtime/${component}`,{method:'PUT',body:JSON.stringify({expected_revision:revision,declaration})}),

@@ -1,0 +1,342 @@
+[
+  {
+    "case_id": "dev-preferences-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "19e3fe0375d4a99c6c392abbb224826c297fb594d0befebaf87649bb2a89424b",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-corrections-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "b491414037d6ad6f0fd6d1ac5edf818e8d05a512c1fb218f0927beb054e08eeb",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "dev-forgetting-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "181ef79c6944d97f6a35c8744743ce24df68b65da3730344d44a1d920ded1eb9",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-facts-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "aba213fa3efce4176cdb0adc815ce9db5ddb82fd07bb8d927f0d5e9d12085d89",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "979b6ea4e0024497e45c72d6bbaca407fd97fc18557f6af674cc7db8d547e580",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-forgetting-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "34407479ea3ce8450207986c57b668e53bc2d0bfe6e70dcc65351714f62dc182",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-facts-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "538e1100aaa5e60125c464b69641586a296fda26ee5123f870b9cd208c4676b3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-unknown-01",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "a3c6dcba27a28cd36088d60a81ca02e56436b5054c6bdd26a1b208d1b8b0e7f5",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-corrections-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5b9730ae62e10c753c53d861b8a99193755e0167cb9079f352455f20c63c09bd",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "dev-facts-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "eaedf65b04f57ad3d60fe3fe734e107ee78d807fdd95e8b50ba4a9d272a85424",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-unknown-01",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "3a344b26ca83952e8f8b152733a85c496158b2d48854fed6cac80095a1555a10",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "637f86f874e8026e05362749796cc7e4dfda5ff9fd85501dd3ce402536bc93b0",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "1df80cf79ef53fdd3e8377a4a550b19f37a76364b1b2c975bb93764e04d1e086",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-forgetting-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "024d385ccd54e4c3cf1a4acbfa620094888170f65c080b9c5ff45947d9d3c5f3",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-facts-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "419da187fcc2ab622e9e33050bc01071196b6159a962bb898381c5159e89b730",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-corrections-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "e34ac72dcab46b134c4fd7e8fbc858649b92ee34eb02562ba7de48ff6e5008be",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "dev-unknown-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "c0fb80c5e95f47602d6b3f9d91a8aeba9f7677315186f22e14d73bae556aa673",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "857d36fc291977599d4381232a41933b75fa632eee4a176d3ed511a0c7fcd661",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-unknown-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "6909c45af1affcd38e79db5922358b344cf405a72899f7952a1f83b8a03113fa",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-corrections-02",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d1343bbb30b0c37e48d34746b7dcbea4b0a4e48cb2475b3974901ccea472af9c",
+    "correct": false,
+    "unsupported_personal_fact": true,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "dev-forgetting-02",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "dc4799e4191e0bab85f7f9493be0bed0c245d885b3159c3e0e38dd1969324cc7",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "59944945bf63f6e41e3fb024f366c4b58a10c2bf96691410537558a6dbc9fd57",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-corrections-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "78e3391bc8e54db29828f8f1306606026e41b567cf3da602c41b816ceb73e8ad",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "dev-facts-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "38aac9a2a8e8b2f425cb9a1bc0b5c4fe073d977150280ee2a3d0d9d4d531a926",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-forgetting-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "5468edacefea5e0fce38e71becea9f21da599bbbd89b3cdda42f56cb0a38a85c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-unknown-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "7327a9dce3777ae8d5a284cac2942d92ca6b40c82a35ebe7d04098486674c96c",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-facts-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "528c0798e9aa2209c7b581ca72c81ed5430e5f3924c4c476ca1fef4ec3a3e614",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-forgetting-03",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "04b19dfca8b5b820e117a9a3746ad61131f5d96bae8db805312262c7cf1a63e2",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-corrections-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "40b2def611e7eed3bec9b047d13a458a8b05b147bd3ded709fba0b99c093d306",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": false
+  },
+  {
+    "case_id": "dev-unknown-03",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "bdd0a5bce641006153dc6bf7eaf0e3a33dc66c26f3800fc0ebaacdc563e69bea",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-facts-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "ae3cea435b231c917f077abf282424ca32f333f88b9d5e7478aff539c3794343",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-04",
+    "trial": 1,
+    "group": "openviking",
+    "reviewer": "model",
+    "prediction_sha256": "1bc682fe23bff2de5d3dd3f00dfe5d8ffa7db485e6b1db6491bf0dc39a657105",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-preferences-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "cd0a5c0cc8f5a5eb2ae1eabaae2a2ab9aa47dd0eef06658887d0e93e232aa6a4",
+    "correct": false,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  },
+  {
+    "case_id": "dev-forgetting-04",
+    "trial": 1,
+    "group": "baseline",
+    "reviewer": "model",
+    "prediction_sha256": "d1738dd793450e07213981c5d94c22ab94af3fc768095c8799e95cd855afd5bd",
+    "correct": true,
+    "unsupported_personal_fact": false,
+    "used_updated_fact": null
+  }
+]

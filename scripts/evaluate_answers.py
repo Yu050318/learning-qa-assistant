@@ -3,26 +3,29 @@
 import argparse
 from contextlib import ExitStack
 import json
+import sys
 from pathlib import Path
 from time import monotonic
 from uuid import UUID, uuid4
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import TypeAdapter
 
-from app.application.evaluation import AnswerCase, Prediction, SemanticReview, evaluate, review_digest, compare_reports, CONFIG_KEYS, digest
+from app.entity.evaluation.evaluation import AnswerCase, Prediction, SemanticReview, evaluate, review_digest, compare_reports, CONFIG_KEYS, digest
 from app.core.errors import AppError
 
 
-from app.application.evaluation_judge import JUDGE_PROMPT
+from app.service.evaluation_judge import JUDGE_PROMPT
 
 
 def predict_live(case, services):
-    from app.api.schemas import V2ChatRequest
-    from app.application.chat import prepare_public_query
-    from app.domain.contracts import AgentChatInput, RunContext
-    from app.infrastructure.persistence.repository import Repository
-    from app.workflows.supervisor import SupervisorWorkflow
+    from app.entity.vo.schemas import V2ChatRequest
+    from app.service.chat import prepare_public_query
+    from app.entity.bo.contracts import AgentChatInput, RunContext
+    from app.dao.postgres.repository import Repository
+    from app.service.agent.supervisor import SupervisorWorkflow
 
     if case.user_id is None or (case.search_mode in {"knowledge", "auto"} and not case.document_ids):
         return Prediction(id=case.id, error_code="EVAL_EXPLICIT_SCOPE_REQUIRED")
@@ -64,7 +67,7 @@ def predict_live(case, services):
 
 
 def judge_prediction(case, prediction, settings, models, provider):
-    from app.workflows.agent import ModelRuntime
+    from app.manager.agent_runtime import ModelRuntime
 
     timeout = min(settings.model_timeout, 30.)
     model, provider, model_name = models.agent_model(provider, timeout)
@@ -131,14 +134,14 @@ def main():
             from app.core.config import Settings
             settings = Settings()
         if args.live:
-            from app.application.container import Services
+            from app.composition.container import Services
             services = Services(settings)
             stack.callback(services.close)
             models = services.models
             predictions = [predict_live(case, services) for case in cases]
         if args.judge:
             if models is None:
-                from app.infrastructure.llms.providers import DeepSeekProvider, ModelRouter, OllamaProvider
+                from app.manager.llms.providers import DeepSeekProvider, ModelRouter, OllamaProvider
                 models = ModelRouter(settings, {"deepseek": DeepSeekProvider(settings), "ollama": OllamaProvider(settings)})
             by_id = {item.id: item for item in predictions}
             for case in cases:

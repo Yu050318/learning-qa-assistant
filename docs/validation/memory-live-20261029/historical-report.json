@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "split": "frozen",
+  "case_count": 100,
+  "repeats": 3,
+  "groups": {
+    "baseline": {
+      "executed": 300,
+      "missing_predictions": 0,
+      "execution_failures": 136,
+      "reviewed": 164,
+      "review_required": 164,
+      "correctness": 0.32,
+      "correctness_ci95": [
+        0.263333,
+        0.376667
+      ],
+      "updated_fact_rate": null,
+      "updated_fact_denominator": 60,
+      "updated_fact_reviewed": 34,
+      "unsupported_personal_fact_rate": null,
+      "unsupported_fact_denominator": 300,
+      "unsupported_fact_reviewed": 164,
+      "forgetting_leaks": null,
+      "forgetting_denominator": 60,
+      "forgetting_reviewed": 32,
+      "p95_ms": null,
+      "answer_usage": null,
+      "extraction_usage": null,
+      "embedding_usage": null,
+      "maintenance_usage": null,
+      "review_usage": null
+    },
+    "openviking": {
+      "executed": 300,
+      "missing_predictions": 0,
+      "execution_failures": 138,
+      "reviewed": 162,
+      "review_required": 162,
+      "correctness": 0.5333333333333333,
+      "correctness_ci95": [
+        0.5,
+        0.563333
+      ],
+      "updated_fact_rate": null,
+      "updated_fact_denominator": 60,
+      "updated_fact_reviewed": 33,
+      "unsupported_personal_fact_rate": null,
+      "unsupported_fact_denominator": 300,
+      "unsupported_fact_reviewed": 162,
+      "forgetting_leaks": null,
+      "forgetting_denominator": 60,
+      "forgetting_reviewed": 33,
+      "p95_ms": null,
+      "answer_usage": null,
+      "extraction_usage": null,
+      "embedding_usage": null,
+      "maintenance_usage": null,
+      "review_usage": null
+    }
+  },
+  "quality_gate_passed": false,
+  "measurement": "live_predictions_with_explicit_semantic_reviews",
+  "missing_usage_is_zero": false,
+  "comparable": true,
+  "accuracy_delta_pp": 21.3333,
+  "paired_delta_ci95_pp": [
+    16.0,
+    27.0
+  ],
+  "isolation_gate_passed": false,
+  "isolation": null
+}

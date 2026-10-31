@@ -8,12 +8,12 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Thread
 from uuid import UUID
 
-from app.application.run_execution import RunWorker
-from app.application.workers import WorkerRegistry
+from app.manager.run_execution import RunWorker
+from app.manager.workers import WorkerRegistry
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
-from app.infrastructure.persistence.database import Database
+from app.dao.postgres.database import Database
 
 logger = logging.getLogger("rag")
 
@@ -34,7 +34,7 @@ def main():
         if options.healthcheck:
             database = Database(settings)
             return 0 if WorkerRegistry(settings, database, kind="run").healthy_count(UUID(marker.read_text().strip())) else 1
-        from app.application.container import Services
+        from app.composition.container import Services
         services = Services(settings)
         database = services.database
         database.check()

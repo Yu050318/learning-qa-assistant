@@ -1,0 +1,24 @@
+{
+  "image": "ghcr.io/volcengine/openviking:v0.5.2.1",
+  "digest": "sha256:7c26f9777c7632fd4b771be77471634bffb6ec8d6338b39f53deb2da1b1d34b3",
+  "credentials": "dummy_only",
+  "model_inference": false,
+  "steps": [
+    {
+      "step": "create_with_explicit_policy",
+      "status": "passed"
+    },
+    {
+      "step": "append",
+      "status": "passed"
+    },
+    {
+      "step": "read",
+      "status": "passed"
+    },
+    {
+      "step": "delete_session",
+      "status": "passed"
+    }
+  ]
+}

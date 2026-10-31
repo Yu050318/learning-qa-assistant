@@ -9,14 +9,15 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.exceptions import HTTPException
 
-from app.api.middleware import BodyLimitMiddleware
-from app.api.routes import health_router, v2_router
-from app.api.sharing import router as sharing_router
-from app.api.model_center import router as model_center_router
-from app.api.evaluations import router as evaluation_router
-from app.api.capabilities import router as capability_router
-from app.api.artifacts import router as artifact_router
-from app.application.container import Services
+from app.web.middleware import BodyLimitMiddleware
+from app.web.routes import health_router, v2_router
+from app.web.sharing import router as sharing_router
+from app.web.model_center import router as model_center_router
+from app.web.evaluations import router as evaluation_router
+from app.web.capabilities import router as capability_router
+from app.web.artifacts import router as artifact_router
+from app.web.memory import router as memory_router
+from app.composition.container import Services
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
@@ -57,6 +58,7 @@ def create_app(settings: Settings | None = None, services: Services | None = Non
     application.include_router(model_center_router)
     application.include_router(capability_router)
     application.include_router(artifact_router)
+    application.include_router(memory_router)
     application.add_middleware(BodyLimitMiddleware, max_bytes=(settings.max_upload_mb + 1) * 1024 * 1024)
 
     @application.middleware("http")

@@ -1,0 +1,5 @@
+{
+  "job_id": "15c72622-8d4c-4307-8772-26301139a7f1",
+  "status": "failed",
+  "error": "Memory extraction aborted: Response was cut off by the output-token budget (finish_reason='length', output cap=2048 tokens, completion_tokens=2048), response_preview=''. Raise vlm.max_tokens in ov.conf or reduce the memory context before retrying."
+}

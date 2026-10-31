@@ -1,0 +1,74 @@
+# Opt-in overlay; see docs/openviking-memory.md before enabling or starting.
+x-memory: &memory
+  OPENVIKING_ENABLED: "true"
+  OPENVIKING_URL: http://openviking:1933
+  OPENVIKING_API_KEY: ${OPENVIKING_API_KEY:?Set a private trusted gateway key}
+  OPENVIKING_ACCOUNT: ${OPENVIKING_ACCOUNT:-learning-qa}
+
+services:
+  openviking:
+    image: ghcr.io/volcengine/openviking:v0.5.2.1@sha256:7c26f9777c7632fd4b771be77471634bffb6ec8d6338b39f53deb2da1b1d34b3
+    environment:
+      OPENVIKING_WITH_BOT: "0"
+    volumes:
+      - type: bind
+        source: ./data/openviking/ov.conf
+        target: /app/.openviking/ov.conf
+        read_only: true
+        bind:
+          create_host_path: false
+      - openviking_data:/app/.openviking/data
+    expose: ["1933"]
+    restart: unless-stopped
+    mem_limit: 2g
+    cpus: 2
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:1933/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      start_period: 90s
+      retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  backend:
+    environment:
+      <<: *memory
+    depends_on:
+      openviking:
+        condition: service_healthy
+  ingestion-worker:
+    environment:
+      <<: *memory
+  run-worker:
+    extends:
+      file: compose.full.yaml
+      service: run-worker
+    environment:
+      <<: *memory
+    depends_on:
+      openviking:
+        condition: service_healthy
+  evaluation-worker:
+    extends:
+      file: compose.full.yaml
+      service: evaluation-worker
+    environment:
+      <<: *memory
+  memory-worker:
+    extends:
+      file: compose.yaml
+      service: ingestion-worker
+    command: ["python", "-m", "app.memory_worker"]
+    environment:
+      <<: *memory
+    depends_on:
+      openviking:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+
+volumes:
+  openviking_data:

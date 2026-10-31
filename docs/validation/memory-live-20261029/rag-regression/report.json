@@ -1,0 +1,4380 @@
+{
+  "schema_version": 1,
+  "dataset_sha256": "d94e9bdcd7108a70478760c4b1fb4182165c8076d047bf382be1e87b089d4319",
+  "predictions_sha256": "52937b7e40e7045b7e6c51324a71665aa66923fccfc97613f6b045e273378fa3",
+  "reviews_sha256": "158164db28f6a548f75474fcba7fad541c6effbbeffa261adc90ac4ff4e23806",
+  "summary": {
+    "cases": 80,
+    "successful_runs": 69,
+    "failed_runs": 11,
+    "invalid_reviews": 0,
+    "metrics": {
+      "citation_support": {
+        "value": 0.945894,
+        "scored_cases": 69
+      },
+      "citation_validity": {
+        "value": 1.0,
+        "scored_cases": 69
+      },
+      "citations_valid": {
+        "value": 0.8625,
+        "scored_cases": 80
+      },
+      "claim_citation_coverage": {
+        "value": 0.776984,
+        "scored_cases": 69
+      },
+      "fact_coverage": {
+        "value": 1.0,
+        "scored_cases": 69
+      },
+      "faithfulness": {
+        "value": 0.853226,
+        "scored_cases": 69
+      },
+      "kind_correct": {
+        "value": 0.8625,
+        "scored_cases": 80
+      },
+      "source_types_correct": {
+        "value": 0.8625,
+        "scored_cases": 80
+      }
+    }
+  },
+  "by_category": {
+    "cross_document": {
+      "cases": 20,
+      "successful_runs": 20,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.95,
+          "scored_cases": 20
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "claim_citation_coverage": {
+          "value": 0.954167,
+          "scored_cases": 20
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "faithfulness": {
+          "value": 0.925,
+          "scored_cases": 20
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 20
+        }
+      }
+    },
+    "no_answer": {
+      "cases": 10,
+      "successful_runs": 0,
+      "failed_runs": 10,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citation_validity": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "citations_valid": {
+          "value": 0.0,
+          "scored_cases": 10
+        },
+        "claim_citation_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "fact_coverage": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "faithfulness": {
+          "value": null,
+          "scored_cases": 0
+        },
+        "kind_correct": {
+          "value": 0.0,
+          "scored_cases": 10
+        },
+        "source_types_correct": {
+          "value": 0.0,
+          "scored_cases": 10
+        }
+      }
+    },
+    "simple_fact": {
+      "cases": 20,
+      "successful_runs": 20,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.923333,
+          "scored_cases": 20
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "claim_citation_coverage": {
+          "value": 0.660833,
+          "scored_cases": 20
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "faithfulness": {
+          "value": 0.669167,
+          "scored_cases": 20
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 20
+        }
+      }
+    },
+    "table_query": {
+      "cases": 20,
+      "successful_runs": 20,
+      "failed_runs": 0,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "citations_valid": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "claim_citation_coverage": {
+          "value": 0.766667,
+          "scored_cases": 20
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "faithfulness": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "kind_correct": {
+          "value": 1.0,
+          "scored_cases": 20
+        },
+        "source_types_correct": {
+          "value": 1.0,
+          "scored_cases": 20
+        }
+      }
+    },
+    "version_policy": {
+      "cases": 10,
+      "successful_runs": 9,
+      "failed_runs": 1,
+      "invalid_reviews": 0,
+      "metrics": {
+        "citation_support": {
+          "value": 0.866667,
+          "scored_cases": 9
+        },
+        "citation_validity": {
+          "value": 1.0,
+          "scored_cases": 9
+        },
+        "citations_valid": {
+          "value": 0.9,
+          "scored_cases": 10
+        },
+        "claim_citation_coverage": {
+          "value": 0.664286,
+          "scored_cases": 9
+        },
+        "fact_coverage": {
+          "value": 1.0,
+          "scored_cases": 9
+        },
+        "faithfulness": {
+          "value": 0.776587,
+          "scored_cases": 9
+        },
+        "kind_correct": {
+          "value": 0.9,
+          "scored_cases": 10
+        },
+        "source_types_correct": {
+          "value": 0.9,
+          "scored_cases": 10
+        }
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "simple_fact_001",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8377.04,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_002",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 10488.99,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_003",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8402.1,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_004",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8312.9,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_005",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.8,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.8
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 5,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 11488.12,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_006",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 7935.86,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_007",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5507.02,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_008",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5771.99,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_009",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 6430.31,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_010",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8364.67,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_011",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 7042.95,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_012",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 0.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 6030.06,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_013",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.75,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.75
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8893.44,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_014",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5896.59,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_015",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5799.78,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_016",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.5,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 6381.26,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_017",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 6620.24,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_018",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5837.22,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_019",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 0.666667,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9753.39,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "simple_fact_020",
+      "category": "simple_fact",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 0.8,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 5,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9368.77,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_001",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 7915.06,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_002",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5864.66,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": []
+      }
+    },
+    {
+      "id": "table_query_003",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5545.0,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": []
+      }
+    },
+    {
+      "id": "table_query_004",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5729.47,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_005",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 6241.34,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": []
+      }
+    },
+    {
+      "id": "table_query_006",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 4835.43,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": []
+      }
+    },
+    {
+      "id": "table_query_007",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5879.39,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_008",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 6181.91,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": []
+      }
+    },
+    {
+      "id": "table_query_009",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 1,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 5743.35,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": []
+      }
+    },
+    {
+      "id": "table_query_010",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 2,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 7094.55,
+        "model_attempts": 4,
+        "knowledge_searches": 1,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_011",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8280.67,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_012",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8813.06,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_013",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8272.08,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_014",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8948.92,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_015",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8453.09,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_016",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8928.96,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_017",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8028.16,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_018",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9074.55,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_019",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9344.97,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "table_query_020",
+      "category": "table_query",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9434.9,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_001",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.75,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9171.9,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_002",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8944.24,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_003",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.833333,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 6,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9419.08,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_004",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9114.53,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_005",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.75,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9801.73,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_006",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8174.57,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_007",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.75
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 10225.11,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_008",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9207.57,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_009",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9533.16,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_010",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 10546.42,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_011",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9808.03,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_012",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9745.17,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_013",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8968.27,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_014",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9276.82,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_015",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.75,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 10087.13,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_016",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9441.61,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_017",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 3,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9277.42,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_018",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 8823.5,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_019",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.75,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9360.75,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "cross_document_020",
+      "category": "cross_document",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 1.0,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 1.0
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 4,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9167.23,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "no_answer_001",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_002",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_003",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_004",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_005",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_006",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_007",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_008",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_009",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "no_answer_010",
+      "category": "no_answer",
+      "status": "failed",
+      "error_code": "INVALID_CITATION",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "version_policy_001",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.8,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.8
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 5,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 10892.45,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_002",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.833333,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.833333
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 6,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 13244.1,
+        "model_attempts": 4,
+        "knowledge_searches": 3,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_003",
+      "category": "version_policy",
+      "status": "failed",
+      "error_code": "AGENT_LIMIT_EXCEEDED",
+      "metrics": {
+        "kind_correct": 0.0,
+        "citations_valid": 0.0,
+        "source_types_correct": 0.0,
+        "citation_validity": null,
+        "faithfulness": null,
+        "citation_support": null,
+        "fact_coverage": null,
+        "claim_citation_coverage": null
+      }
+    },
+    {
+      "id": "version_policy_004",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.8,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.8
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 5,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 11080.08,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_005",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.8,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.8
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 5,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 9984.0,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_006",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.875,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.75
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 8,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 11055.72,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_007",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.666667,
+        "citation_support": 0.75,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.666667
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 6,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 11613.82,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_008",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.714286,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.428571
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 7,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 12389.57,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_009",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.7,
+        "citation_support": 0.8,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.5
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 10,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 11646.52,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    },
+    {
+      "id": "version_policy_010",
+      "category": "version_policy",
+      "status": "ok",
+      "metrics": {
+        "kind_correct": 1.0,
+        "citations_valid": 1.0,
+        "citation_validity": 1.0,
+        "source_types_correct": 1.0,
+        "faithfulness": 0.8,
+        "citation_support": 1.0,
+        "fact_coverage": 1.0,
+        "claim_citation_coverage": 0.4
+      },
+      "reviewer": "model",
+      "review_error": null,
+      "judge_policy": {
+        "judge_provider": "deepseek",
+        "judge_model": "deepseek-flash",
+        "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1"
+      },
+      "reviewed_claims": 10,
+      "unknown_reference_numbers": [],
+      "invalid_citation_cards": 0,
+      "model": "deepseek-flash",
+      "provider": "deepseek",
+      "trace": {
+        "elapsed_ms": 12627.13,
+        "model_attempts": 4,
+        "knowledge_searches": 2,
+        "knowledge_rewrites": 0,
+        "warnings": [
+          "PARENT_CONTEXT_BUDGET_EXCEEDED"
+        ]
+      }
+    }
+  ],
+  "gate_policy": {
+    "schema_version": 1,
+    "max_failed_cases": 0,
+    "require_model_review": true,
+    "require_comparison": false,
+    "metric_gates": [
+      {
+        "metric": "kind_correct",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      },
+      {
+        "metric": "citations_valid",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      },
+      {
+        "metric": "source_types_correct",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      },
+      {
+        "metric": "faithfulness",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      },
+      {
+        "metric": "fact_coverage",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      },
+      {
+        "metric": "citation_support",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      },
+      {
+        "metric": "claim_citation_coverage",
+        "minimum": 1.0,
+        "maximum": null,
+        "direction": "higher",
+        "max_regression": 0.0,
+        "required": true
+      }
+    ]
+  },
+  "gate_checks": [
+    {
+      "name": "execution_failures",
+      "passed": false,
+      "value": 11,
+      "maximum": 0
+    },
+    {
+      "name": "model_review",
+      "passed": true,
+      "scored_cases": 69,
+      "eligible_cases": 69
+    },
+    {
+      "name": "comparison",
+      "passed": true
+    },
+    {
+      "name": "kind_correct",
+      "value": 0.8625,
+      "eligible_cases": 80,
+      "scored_cases": 80,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    },
+    {
+      "name": "citations_valid",
+      "value": 0.8625,
+      "eligible_cases": 80,
+      "scored_cases": 80,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    },
+    {
+      "name": "source_types_correct",
+      "value": 0.8625,
+      "eligible_cases": 80,
+      "scored_cases": 80,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    },
+    {
+      "name": "faithfulness",
+      "value": 0.853226,
+      "eligible_cases": 70,
+      "scored_cases": 69,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    },
+    {
+      "name": "fact_coverage",
+      "value": 1.0,
+      "eligible_cases": 70,
+      "scored_cases": 69,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    },
+    {
+      "name": "citation_support",
+      "value": 0.945894,
+      "eligible_cases": 70,
+      "scored_cases": 69,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    },
+    {
+      "name": "claim_citation_coverage",
+      "value": 0.776984,
+      "eligible_cases": 70,
+      "scored_cases": 69,
+      "minimum": 1.0,
+      "maximum": null,
+      "max_regression": 0.0,
+      "delta": null,
+      "passed": false,
+      "reason": "checked"
+    }
+  ],
+  "gate_passed": false,
+  "judge_events": [
+    {
+      "id": "simple_fact_006",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6730,
+          "output_tokens": 127,
+          "total_tokens": 6857,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 0,
+          "miss_tokens": 6730,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_003",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8144,
+          "output_tokens": 149,
+          "total_tokens": 8293,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 0,
+          "miss_tokens": 8144,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_004",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8516,
+          "output_tokens": 221,
+          "total_tokens": 8737,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 0,
+          "miss_tokens": 8516,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_001",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7165,
+          "output_tokens": 221,
+          "total_tokens": 7386,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 0,
+          "miss_tokens": 7165,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_002",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8204,
+          "output_tokens": 296,
+          "total_tokens": 8500,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7564,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_005",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9974,
+          "output_tokens": 370,
+          "total_tokens": 10344,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 9334,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_007",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8157,
+          "output_tokens": 184,
+          "total_tokens": 8341,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7517,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_008",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8518,
+          "output_tokens": 192,
+          "total_tokens": 8710,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7878,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_009",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7428,
+          "output_tokens": 266,
+          "total_tokens": 7694,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 6788,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_010",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6740,
+          "output_tokens": 151,
+          "total_tokens": 6891,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 6100,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_011",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8145,
+          "output_tokens": 150,
+          "total_tokens": 8295,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7505,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_012",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8515,
+          "output_tokens": 189,
+          "total_tokens": 8704,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7875,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_015",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8139,
+          "output_tokens": 144,
+          "total_tokens": 8283,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7499,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_014",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6744,
+          "output_tokens": 207,
+          "total_tokens": 6951,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 6104,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_013",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8331,
+          "output_tokens": 297,
+          "total_tokens": 8628,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7691,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_016",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8511,
+          "output_tokens": 164,
+          "total_tokens": 8675,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7871,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_018",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6731,
+          "output_tokens": 148,
+          "total_tokens": 6879,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 6091,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_017",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7205,
+          "output_tokens": 320,
+          "total_tokens": 7525,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 6565,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_003",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 2923,
+          "output_tokens": 168,
+          "total_tokens": 3091,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 2283,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_002",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 2951,
+          "output_tokens": 252,
+          "total_tokens": 3203,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 2311,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_001",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5794,
+          "output_tokens": 282,
+          "total_tokens": 6076,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5154,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_019",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8856,
+          "output_tokens": 194,
+          "total_tokens": 9050,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8216,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_004",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5118,
+          "output_tokens": 302,
+          "total_tokens": 5420,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4478,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "simple_fact_020",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 10247,
+          "output_tokens": 488,
+          "total_tokens": 10735,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 9607,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_006",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 2925,
+          "output_tokens": 165,
+          "total_tokens": 3090,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 2285,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_007",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5762,
+          "output_tokens": 200,
+          "total_tokens": 5962,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5122,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_005",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 2898,
+          "output_tokens": 335,
+          "total_tokens": 3233,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 2258,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_009",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 2936,
+          "output_tokens": 167,
+          "total_tokens": 3103,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 2296,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_008",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 2875,
+          "output_tokens": 166,
+          "total_tokens": 3041,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 2235,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_010",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6483,
+          "output_tokens": 260,
+          "total_tokens": 6743,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5843,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_011",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9242,
+          "output_tokens": 380,
+          "total_tokens": 9622,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8602,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_012",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 10226,
+          "output_tokens": 346,
+          "total_tokens": 10572,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 9586,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_013",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 10212,
+          "output_tokens": 332,
+          "total_tokens": 10544,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 9572,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_015",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9268,
+          "output_tokens": 361,
+          "total_tokens": 9629,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8628,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_014",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9294,
+          "output_tokens": 356,
+          "total_tokens": 9650,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8654,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_016",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8327,
+          "output_tokens": 348,
+          "total_tokens": 8675,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7687,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_017",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8736,
+          "output_tokens": 398,
+          "total_tokens": 9134,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8096,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_018",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9414,
+          "output_tokens": 579,
+          "total_tokens": 9993,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8774,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_020",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7727,
+          "output_tokens": 355,
+          "total_tokens": 8082,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7087,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "table_query_019",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8780,
+          "output_tokens": 401,
+          "total_tokens": 9181,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8140,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_001",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5370,
+          "output_tokens": 351,
+          "total_tokens": 5721,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4730,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_002",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9575,
+          "output_tokens": 427,
+          "total_tokens": 10002,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8935,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_003",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5463,
+          "output_tokens": 614,
+          "total_tokens": 6077,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4823,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_006",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9588,
+          "output_tokens": 314,
+          "total_tokens": 9902,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8948,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_004",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8936,
+          "output_tokens": 283,
+          "total_tokens": 9219,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8296,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_005",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5390,
+          "output_tokens": 358,
+          "total_tokens": 5748,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4750,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_007",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8152,
+          "output_tokens": 363,
+          "total_tokens": 8515,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7512,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_008",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8886,
+          "output_tokens": 390,
+          "total_tokens": 9276,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8246,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_009",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8830,
+          "output_tokens": 490,
+          "total_tokens": 9320,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8190,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_010",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5842,
+          "output_tokens": 329,
+          "total_tokens": 6171,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5202,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_011",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7703,
+          "output_tokens": 545,
+          "total_tokens": 8248,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7063,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_013",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8256,
+          "output_tokens": 275,
+          "total_tokens": 8531,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7616,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_012",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5675,
+          "output_tokens": 300,
+          "total_tokens": 5975,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5035,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_014",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5960,
+          "output_tokens": 452,
+          "total_tokens": 6412,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5320,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_015",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5698,
+          "output_tokens": 342,
+          "total_tokens": 6040,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5058,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_018",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9483,
+          "output_tokens": 299,
+          "total_tokens": 9782,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8843,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_016",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 8826,
+          "output_tokens": 365,
+          "total_tokens": 9191,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 8186,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_017",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 4499,
+          "output_tokens": 332,
+          "total_tokens": 4831,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 3859,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_019",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6269,
+          "output_tokens": 402,
+          "total_tokens": 6671,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5629,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "cross_document_020",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 9873,
+          "output_tokens": 420,
+          "total_tokens": 10293,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 9233,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_001",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5519,
+          "output_tokens": 719,
+          "total_tokens": 6238,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4879,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_002",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7754,
+          "output_tokens": 673,
+          "total_tokens": 8427,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7114,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_005",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 4830,
+          "output_tokens": 694,
+          "total_tokens": 5524,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4190,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_004",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 5226,
+          "output_tokens": 781,
+          "total_tokens": 6007,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 4586,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_006",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7723,
+          "output_tokens": 636,
+          "total_tokens": 8359,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7083,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_007",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7662,
+          "output_tokens": 520,
+          "total_tokens": 8182,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 7022,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_008",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6482,
+          "output_tokens": 743,
+          "total_tokens": 7225,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5842,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_009",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 7240,
+          "output_tokens": 859,
+          "total_tokens": 8099,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 6600,
+          "reported_cache_calls": 1
+        }
+      }
+    },
+    {
+      "id": "version_policy_010",
+      "status": "ok",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "model_attempts": 1,
+      "usage_by_model": {
+        "deepseek/deepseek-flash": {
+          "input_tokens": 6635,
+          "output_tokens": 867,
+          "total_tokens": 7502,
+          "attempts": 1,
+          "complete": true,
+          "hit_tokens": 640,
+          "miss_tokens": 5995,
+          "reported_cache_calls": 1
+        }
+      }
+    }
+  ],
+  "comparison": null,
+  "measurement": "80_case_live_regression_current_configuration_not_a_memory_benchmark"
+}

@@ -7,7 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from app.application.evaluation_dataset import WorkbenchDataset
+from app.entity.evaluation.evaluation_dataset import WorkbenchDataset
 
 
 def verify(directory: Path):

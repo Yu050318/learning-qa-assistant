@@ -1,0 +1,4141 @@
+[
+  {
+    "case_id": "dev-preferences-01",
+    "group": "baseline",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "根据本轮召回的用户记忆，你的交流语言是中文。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1330,
+      "output_tokens": 44,
+      "total_tokens": 1374
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 3760.05,
+    "elapsed_ms": 4255.35,
+    "response": {
+      "message_id": "1dfdf8b5-ee44-4045-b308-97bc0f1d02ec",
+      "answer": "根据本轮召回的用户记忆，你的交流语言是中文。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "08a84337-e957-4769-998c-f0b6ad288200",
+          "excerpt": "我的交流语言是中文。",
+          "score": 0.7578922510147095
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 583,
+        "output_tokens": 23,
+        "total_tokens": 606,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 4187.7,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1330,
+            "output_tokens": 44,
+            "total_tokens": 1374,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 583,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.024292,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-corrections-01",
+    "group": "baseline",
+    "trial": 1,
+    "category": "corrections",
+    "answer": "根据本轮召回的用户长期记忆，你的交流语言是中文。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1331,
+      "output_tokens": 46,
+      "total_tokens": 1377
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 8668.35,
+    "elapsed_ms": 4252.29,
+    "response": {
+      "message_id": "a49f4e6b-1fba-4e98-ab76-d6aec59e878a",
+      "answer": "根据本轮召回的用户长期记忆，你的交流语言是中文。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "2bea95d4-084f-44ab-b593-24c0eed801e4",
+          "excerpt": "我的交流语言是中文。",
+          "score": 0.7578922510147095
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 584,
+        "output_tokens": 24,
+        "total_tokens": 608,
+        "input_token_details": {
+          "cache_read": 384
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 4208.25,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1331,
+            "output_tokens": 46,
+            "total_tokens": 1377,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 584,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.024333,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": true
+  },
+  {
+    "case_id": "dev-forgetting-01",
+    "group": "openviking",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "本轮没有召回任何用户记忆或历史资料，因此我无法确认你之前明确告知的交流语言。请直接告诉我你希望使用的交流语言。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 40,
+      "total_tokens": 756
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 30999.4,
+    "elapsed_ms": 986.32,
+    "response": {
+      "message_id": "b7d56d1a-1054-46db-a88b-af21599c3f84",
+      "answer": "本轮没有召回任何用户记忆或历史资料，因此我无法确认你之前明确告知的交流语言。请直接告诉我你希望使用的交流语言。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 40,
+        "total_tokens": 756,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 928.01,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 40,
+            "total_tokens": 756,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-facts-01",
+    "group": "openviking",
+    "trial": 1,
+    "category": "facts",
+    "answer": "根据本轮召回的用户记忆，你的交流语言是中文（[1]、[2] 均记录为使用中文进行交流）。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1440,
+      "output_tokens": 74,
+      "total_tokens": 1514
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 31342.96,
+    "elapsed_ms": 4929.83,
+    "response": {
+      "message_id": "fec5f9fa-0420-470e-9743-5af560779736",
+      "answer": "根据本轮召回的用户记忆，你的交流语言是中文（[1]、[2] 均记录为使用中文进行交流）。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "12032025-8e40-4f34-9b0d-ed4f962c7083",
+          "excerpt": "我的交流语言是中文。",
+          "score": 0.01639344262295082
+        },
+        {
+          "type": "memory",
+          "number": 2,
+          "memory_id": "a57d664a-e8ab-47c3-93cd-2889eef57959",
+          "excerpt": "- 使用中文进行交流。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 663,
+        "output_tokens": 36,
+        "total_tokens": 699,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 2
+        },
+        "cited_sources": {
+          "memory": 2
+        },
+        "elapsed_ms": 4874.42,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1440,
+            "output_tokens": 74,
+            "total_tokens": 1514,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 265,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 265,
+                "hit_rate": 0.658945,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 777,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.032375,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 663,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.027625,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-01",
+    "group": "openviking",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "根据本轮召回的用户记忆，你的交流语言是中文，并且你偏好使用中文进行交流[1][2]。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1436,
+      "output_tokens": 65,
+      "total_tokens": 1501
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 22849.65,
+    "elapsed_ms": 5026.96,
+    "response": {
+      "message_id": "1a12c678-326f-475e-be31-8e74c0c9fc73",
+      "answer": "根据本轮召回的用户记忆，你的交流语言是中文，并且你偏好使用中文进行交流[1][2]。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "580b8b0b-d61f-4fa0-9c1f-2b0ce79b87ab",
+          "excerpt": "我的交流语言是中文。",
+          "score": 0.01639344262295082
+        },
+        {
+          "type": "memory",
+          "number": 2,
+          "memory_id": "56318993-4c87-453c-b492-3813252851fc",
+          "excerpt": "- 偏好使用中文进行交流。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 658,
+        "output_tokens": 34,
+        "total_tokens": 692,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 2
+        },
+        "cited_sources": {
+          "memory": 2
+        },
+        "elapsed_ms": 4971.69,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1436,
+            "output_tokens": 65,
+            "total_tokens": 1501,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 256,
+            "miss_tokens": 522,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 256,
+                "miss_tokens": 522,
+                "hit_rate": 0.329049,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 778,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.032417,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 658,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.027417,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-forgetting-01",
+    "group": "baseline",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "我这边没有检索到任何你此前提供的个人资料（本轮用户记忆为空），因此无法确定你的交流语言。请直接告诉我你希望使用哪种语言交流。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 43,
+      "total_tokens": 759
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 8023.0,
+    "elapsed_ms": 1117.53,
+    "response": {
+      "message_id": "1079c2db-5bbc-4140-b9a3-82d38d787e13",
+      "answer": "我这边没有检索到任何你此前提供的个人资料（本轮用户记忆为空），因此无法确定你的交流语言。请直接告诉我你希望使用哪种语言交流。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 43,
+        "total_tokens": 759,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1065.78,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 43,
+            "total_tokens": 759,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-facts-01",
+    "group": "baseline",
+    "trial": 1,
+    "category": "facts",
+    "answer": "根据本轮召回的用户记忆，你的交流语言是中文。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1330,
+      "output_tokens": 44,
+      "total_tokens": 1374
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 8129.22,
+    "elapsed_ms": 4279.34,
+    "response": {
+      "message_id": "8322bec2-26cb-4914-9526-8a6cb1cab3ff",
+      "answer": "根据本轮召回的用户记忆，你的交流语言是中文。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "57ec92f6-e601-4d02-aa75-6ede0b59022b",
+          "excerpt": "我的交流语言是中文。",
+          "score": 0.7578922510147095
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 583,
+        "output_tokens": 23,
+        "total_tokens": 606,
+        "input_token_details": {
+          "cache_read": 384
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 4230.89,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1330,
+            "output_tokens": 44,
+            "total_tokens": 1374,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 583,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.024292,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-unknown-01",
+    "group": "baseline",
+    "trial": 1,
+    "category": "unknown",
+    "answer": "我目前召回的用户记忆里只有“喜欢在安静的环境阅读”这一条，没有关于你交流语言的明确记录，因此无法确定。你可以直接告诉我你希望使用哪种交流语言。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 48,
+      "total_tokens": 795
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 5076.99,
+    "elapsed_ms": 3864.15,
+    "response": {
+      "message_id": "dae0ee4a-c591-42b1-9516-4da4e350c290",
+      "answer": "我目前召回的用户记忆里只有“喜欢在安静的环境阅读”这一条，没有关于你交流语言的明确记录，因此无法确定。你可以直接告诉我你希望使用哪种交流语言。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 48,
+        "total_tokens": 795,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {},
+        "elapsed_ms": 3814.18,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 48,
+            "total_tokens": 795,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-corrections-01",
+    "group": "openviking",
+    "trial": 1,
+    "category": "corrections",
+    "answer": "你的长期记忆中存在冲突：一条记录显示你的交流语言是中文，另一条显示你习惯使用英文交流。请确认你希望我使用哪种语言。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 780,
+      "output_tokens": 42,
+      "total_tokens": 822
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 45657.16,
+    "elapsed_ms": 4511.57,
+    "response": {
+      "message_id": "6574d173-0812-46ba-ad81-b0f7ab859c8b",
+      "answer": "你的长期记忆中存在冲突：一条记录显示你的交流语言是中文，另一条显示你习惯使用英文交流。请确认你希望我使用哪种语言。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 780,
+        "output_tokens": 42,
+        "total_tokens": 822,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "clarification",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 2
+        },
+        "cited_sources": {},
+        "elapsed_ms": 4458.42,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 780,
+            "output_tokens": 42,
+            "total_tokens": 822,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 256,
+            "miss_tokens": 524,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 256,
+                "miss_tokens": 524,
+                "hit_rate": 0.328205,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 780,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.0325,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": true
+  },
+  {
+    "case_id": "dev-facts-02",
+    "group": "baseline",
+    "trial": 1,
+    "category": "facts",
+    "answer": "我这边没有检索到任何关于你个人资料（包括答复长度偏好）的用户记忆记录，因此无法确认你之前明确告知的答复长度。请直接告诉我你希望的答复长度，我会按此执行。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 53,
+      "total_tokens": 769
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 2548.33,
+    "elapsed_ms": 1506.6,
+    "response": {
+      "message_id": "de86364f-efc1-4399-a1e8-0114913d4f7b",
+      "answer": "我这边没有检索到任何关于你个人资料（包括答复长度偏好）的用户记忆记录，因此无法确认你之前明确告知的答复长度。请直接告诉我你希望的答复长度，我会按此执行。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 53,
+        "total_tokens": 769,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1459.07,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 53,
+            "total_tokens": 769,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-unknown-01",
+    "group": "openviking",
+    "trial": 1,
+    "category": "unknown",
+    "answer": "不清楚。本轮召回的用户记忆中只有“我喜欢在安静的环境阅读”这一条，没有关于你交流语言的记录，因此无法确认。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 37,
+      "total_tokens": 784
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 13159.95,
+    "elapsed_ms": 3921.09,
+    "response": {
+      "message_id": "69f602b9-f7af-4a89-a358-5b879621b7e9",
+      "answer": "不清楚。本轮召回的用户记忆中只有“我喜欢在安静的环境阅读”这一条，没有关于你交流语言的记录，因此无法确认。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 37,
+        "total_tokens": 784,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {},
+        "elapsed_ms": 3863.95,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 37,
+            "total_tokens": 784,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-02",
+    "group": "openviking",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "根据本轮召回的用户记忆，你偏好答复长度约为三句话，回答保持简短精炼 [1]。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 755,
+      "output_tokens": 32,
+      "total_tokens": 787
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 20575.21,
+    "elapsed_ms": 1749.09,
+    "response": {
+      "message_id": "abb9935c-ad77-4d6c-9650-752462bae63f",
+      "answer": "根据本轮召回的用户记忆，你偏好答复长度约为三句话，回答保持简短精炼 [1]。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "03d30c23-e64c-494d-baec-adab644900a6",
+          "excerpt": "- 偏好答复长度约为三句话，回答保持简短精炼。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 755,
+        "output_tokens": 32,
+        "total_tokens": 787,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 1683.73,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 755,
+            "output_tokens": 32,
+            "total_tokens": 787,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 256,
+            "miss_tokens": 499,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 256,
+                "miss_tokens": 499,
+                "hit_rate": 0.339073,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 755,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031458,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-02",
+    "group": "baseline",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "本轮没有召回任何关于你个人资料的用户记忆，因此我无法确认你此前明确告知的答复长度偏好。请直接告诉我你希望的答复长度（例如简短、适中或详细）。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 48,
+      "total_tokens": 764
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 1234.59,
+    "elapsed_ms": 1427.84,
+    "response": {
+      "message_id": "4ffb93cc-3f11-4313-940c-e28e1cd6e3b6",
+      "answer": "本轮没有召回任何关于你个人资料的用户记忆，因此我无法确认你此前明确告知的答复长度偏好。请直接告诉我你希望的答复长度（例如简短、适中或详细）。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 48,
+        "total_tokens": 764,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1372.84,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 48,
+            "total_tokens": 764,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-forgetting-02",
+    "group": "baseline",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "我这边没有检索到任何关于你个人资料（包括答复长度偏好）的用户记忆，因此无法确认你之前明确告诉过我的答复长度设置。请直接告诉我你希望的答复长度，我会按此执行。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 54,
+      "total_tokens": 770
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 7380.21,
+    "elapsed_ms": 1302.37,
+    "response": {
+      "message_id": "d1d3b3fe-bf05-446c-b21f-4119d2a85ffc",
+      "answer": "我这边没有检索到任何关于你个人资料（包括答复长度偏好）的用户记忆，因此无法确认你之前明确告诉过我的答复长度设置。请直接告诉我你希望的答复长度，我会按此执行。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 54,
+        "total_tokens": 770,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1250.56,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 54,
+            "total_tokens": 770,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-facts-02",
+    "group": "openviking",
+    "trial": 1,
+    "category": "facts",
+    "answer": "根据本轮召回的用户记忆，你习惯将答复长度控制为三句话。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 751,
+      "output_tokens": 27,
+      "total_tokens": 778
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 27931.76,
+    "elapsed_ms": 1616.13,
+    "response": {
+      "message_id": "c7a26590-3f5c-4401-ab59-a395f0847a74",
+      "answer": "根据本轮召回的用户记忆，你习惯将答复长度控制为三句话。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "3912edd2-5f6c-4652-8d67-a3afa2e0d5c5",
+          "excerpt": "- 习惯将答复长度控制为三句话。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 751,
+        "output_tokens": 27,
+        "total_tokens": 778,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 1527.45,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 751,
+            "output_tokens": 27,
+            "total_tokens": 778,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 239,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 239,
+                "hit_rate": 0.681758,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 751,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031292,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-corrections-02",
+    "group": "openviking",
+    "trial": 1,
+    "category": "corrections",
+    "answer": "你之前明确说过：答复长度是三句话[1]，同时希望每次答复控制在五句话以内[2]。这两条偏好可以同时满足，即每次答复不超过三句话。若两者冲突，以你最新的明确陈述为准。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1473,
+      "output_tokens": 110,
+      "total_tokens": 1583
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 46916.58,
+    "elapsed_ms": 4793.21,
+    "response": {
+      "message_id": "1d0fefa5-ee58-4585-ac0b-92c54ade0d53",
+      "answer": "你之前明确说过：答复长度是三句话[1]，同时希望每次答复控制在五句话以内[2]。这两条偏好可以同时满足，即每次答复不超过三句话。若两者冲突，以你最新的明确陈述为准。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "57e1d438-ad27-41f4-a6b4-dc3f492aed56",
+          "excerpt": "我的答复长度是三句话。",
+          "score": 0.01639344262295082
+        },
+        {
+          "type": "memory",
+          "number": 2,
+          "memory_id": "685a70b4-2a72-4471-80c2-6885b30278cc",
+          "excerpt": "- 希望助手的每次答复长度控制在五句话以内。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 690,
+        "output_tokens": 57,
+        "total_tokens": 747,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 2
+        },
+        "cited_sources": {
+          "memory": 2
+        },
+        "elapsed_ms": 4719.44,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1473,
+            "output_tokens": 110,
+            "total_tokens": 1583,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 256,
+            "miss_tokens": 527,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 256,
+                "miss_tokens": 527,
+                "hit_rate": 0.326948,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 783,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.032625,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 690,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.02875,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": true
+  },
+  {
+    "case_id": "dev-unknown-02",
+    "group": "openviking",
+    "trial": 1,
+    "category": "unknown",
+    "answer": "我本轮召回的用户记忆里只有“我喜欢在安静的环境阅读”这一条，没有关于你答复长度偏好的记录，因此无法确定你的答复长度偏好。你可以直接告诉我希望的回答长度（例如简短、适中或详细）。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 57,
+      "total_tokens": 804
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 12683.28,
+    "elapsed_ms": 3950.69,
+    "response": {
+      "message_id": "c41c2fb8-ee51-4848-9467-12eeeefc7ab5",
+      "answer": "我本轮召回的用户记忆里只有“我喜欢在安静的环境阅读”这一条，没有关于你答复长度偏好的记录，因此无法确定你的答复长度偏好。你可以直接告诉我希望的回答长度（例如简短、适中或详细）。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 57,
+        "total_tokens": 804,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {},
+        "elapsed_ms": 3891.11,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 57,
+            "total_tokens": 804,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-03",
+    "group": "baseline",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 748,
+      "output_tokens": 26,
+      "total_tokens": 774
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 4056.84,
+    "elapsed_ms": 3548.09,
+    "response": {
+      "message_id": "c256bc5d-5974-4bec-be94-286cfabca73b",
+      "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "2232eb3b-2552-493a-967e-c1cdbbebd6db",
+          "excerpt": "我的演示时间是上午九点。",
+          "score": 0.7706018686294556
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 748,
+        "output_tokens": 26,
+        "total_tokens": 774,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 3495.31,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 748,
+            "output_tokens": 26,
+            "total_tokens": 774,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 236,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 236,
+                "hit_rate": 0.684492,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 748,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031167,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-unknown-02",
+    "group": "baseline",
+    "trial": 1,
+    "category": "unknown",
+    "answer": "我本轮召回的用户记忆中只有“我喜欢在安静的环境阅读”这一条，没有关于你答复长度偏好的记录，因此无法确定你的答复长度要求。你可以直接告诉我希望的长度（如简短、适中或详细）。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 55,
+      "total_tokens": 802
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 5533.11,
+    "elapsed_ms": 3899.93,
+    "response": {
+      "message_id": "2f803b65-183f-4314-86ef-38d4ac411f77",
+      "answer": "我本轮召回的用户记忆中只有“我喜欢在安静的环境阅读”这一条，没有关于你答复长度偏好的记录，因此无法确定你的答复长度要求。你可以直接告诉我希望的长度（如简短、适中或详细）。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 55,
+        "total_tokens": 802,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {},
+        "elapsed_ms": 3836.53,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 55,
+            "total_tokens": 802,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-corrections-02",
+    "group": "baseline",
+    "trial": 1,
+    "category": "corrections",
+    "answer": "根据长期记忆，你此前明确说明自己的答复长度是三句话。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 25,
+      "total_tokens": 772
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 8028.49,
+    "elapsed_ms": 3974.78,
+    "response": {
+      "message_id": "62502d61-8561-48ff-befc-fc9228ac138d",
+      "answer": "根据长期记忆，你此前明确说明自己的答复长度是三句话。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "ab5cc25a-43f9-41b2-9ee1-72304ab5925f",
+          "excerpt": "我的答复长度是三句话。",
+          "score": 0.6960489749908447
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 25,
+        "total_tokens": 772,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 3916.44,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 25,
+            "total_tokens": 772,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": true
+  },
+  {
+    "case_id": "dev-forgetting-02",
+    "group": "openviking",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "我这边没有检索到任何关于你个人资料（包括答复长度偏好）的用户记忆，因此无法确认你之前明确告诉过我的答复长度设置。请直接告诉我你希望的答复长度，我会按此执行。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 54,
+      "total_tokens": 770
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 35213.91,
+    "elapsed_ms": 1261.28,
+    "response": {
+      "message_id": "3b9a8f79-7789-4ca1-b13d-240a41e8a6b8",
+      "answer": "我这边没有检索到任何关于你个人资料（包括答复长度偏好）的用户记忆，因此无法确认你之前明确告诉过我的答复长度设置。请直接告诉我你希望的答复长度，我会按此执行。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 54,
+        "total_tokens": 770,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1166.01,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 54,
+            "total_tokens": 770,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-03",
+    "group": "openviking",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点 [1][2]。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 782,
+      "output_tokens": 29,
+      "total_tokens": 811
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 22272.55,
+    "elapsed_ms": 4743.38,
+    "response": {
+      "message_id": "2352eded-cb72-4b1a-81ea-5031a1ed74a4",
+      "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点 [1][2]。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "c09c4ffc-2d1f-4a65-94d2-d4a6cd13166a",
+          "excerpt": "我的演示时间是上午九点。",
+          "score": 0.01639344262295082
+        },
+        {
+          "type": "memory",
+          "number": 2,
+          "memory_id": "5a8cf479-639d-420a-9f01-53e20bdc600d",
+          "excerpt": "- 偏好将演示安排在上午九点进行。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 782,
+        "output_tokens": 29,
+        "total_tokens": 811,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 2
+        },
+        "cited_sources": {
+          "memory": 2
+        },
+        "elapsed_ms": 4672.13,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 782,
+            "output_tokens": 29,
+            "total_tokens": 811,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 256,
+            "miss_tokens": 526,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 256,
+                "miss_tokens": 526,
+                "hit_rate": 0.327366,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 782,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.032583,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-corrections-03",
+    "group": "baseline",
+    "trial": 1,
+    "category": "corrections",
+    "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 748,
+      "output_tokens": 26,
+      "total_tokens": 774
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 7309.56,
+    "elapsed_ms": 3543.89,
+    "response": {
+      "message_id": "23f3481a-9725-427b-a4f4-e16f454c74a4",
+      "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "d96210f3-272c-4e5e-8aa5-553827834573",
+          "excerpt": "我的演示时间是上午九点。",
+          "score": 0.7706018686294556
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 748,
+        "output_tokens": 26,
+        "total_tokens": 774,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 3483.83,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 748,
+            "output_tokens": 26,
+            "total_tokens": 774,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 236,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 236,
+                "hit_rate": 0.684492,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 748,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031167,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": true
+  },
+  {
+    "case_id": "dev-facts-03",
+    "group": "openviking",
+    "trial": 1,
+    "category": "facts",
+    "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 748,
+      "output_tokens": 26,
+      "total_tokens": 774
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 24919.29,
+    "elapsed_ms": 4036.26,
+    "response": {
+      "message_id": "a2f92e22-f217-410d-ab23-14678de7c7a7",
+      "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "712f7bf8-9b13-4bc9-8762-8f8fff424723",
+          "excerpt": "我的演示时间是上午九点。",
+          "score": 0.7706018686294556
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 748,
+        "output_tokens": 26,
+        "total_tokens": 774,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 3959.68,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 748,
+            "output_tokens": 26,
+            "total_tokens": 774,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 236,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 236,
+                "hit_rate": 0.684492,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 748,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031167,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-forgetting-03",
+    "group": "openviking",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "我这边没有检索到你在本轮对话中提供的个人资料，因此无法确定你的演示时间。请直接告诉我你的演示时间，或提供相关安排信息。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 42,
+      "total_tokens": 758
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 28999.55,
+    "elapsed_ms": 1106.34,
+    "response": {
+      "message_id": "85cf6032-a6ab-4a16-b48c-b766a7dfc4aa",
+      "answer": "我这边没有检索到你在本轮对话中提供的个人资料，因此无法确定你的演示时间。请直接告诉我你的演示时间，或提供相关安排信息。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 42,
+        "total_tokens": 758,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1046.19,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 42,
+            "total_tokens": 758,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-unknown-03",
+    "group": "baseline",
+    "trial": 1,
+    "category": "unknown",
+    "answer": "我本轮召回的用户记忆里只有“喜欢在安静的环境阅读”这一条，没有关于你演示时间的任何个人资料，因此无法回答。请补充你的演示时间信息。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 46,
+      "total_tokens": 793
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 5114.32,
+    "elapsed_ms": 3916.56,
+    "response": {
+      "message_id": "1798c195-bab7-496b-bc4a-3319b633c8e2",
+      "answer": "我本轮召回的用户记忆里只有“喜欢在安静的环境阅读”这一条，没有关于你演示时间的任何个人资料，因此无法回答。请补充你的演示时间信息。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 46,
+        "total_tokens": 793,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {},
+        "elapsed_ms": 3871.62,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 46,
+            "total_tokens": 793,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-facts-03",
+    "group": "baseline",
+    "trial": 1,
+    "category": "facts",
+    "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 748,
+      "output_tokens": 26,
+      "total_tokens": 774
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 7980.78,
+    "elapsed_ms": 3647.24,
+    "response": {
+      "message_id": "fade06eb-33b6-4b0a-a032-a1cdab88c102",
+      "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "7d825b94-a24b-4c20-b5cb-11c0c6be43e1",
+          "excerpt": "我的演示时间是上午九点。",
+          "score": 0.7706018686294556
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 748,
+        "output_tokens": 26,
+        "total_tokens": 774,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 3551.79,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 748,
+            "output_tokens": 26,
+            "total_tokens": 774,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 236,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 236,
+                "hit_rate": 0.684492,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 748,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031167,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-forgetting-03",
+    "group": "baseline",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "我这边没有可用的、你此前明确告知的个人资料（本轮用户记忆为空），因此无法确定你的演示时间。请直接告诉我演示时间，或提供相关安排信息。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 716,
+      "output_tokens": 46,
+      "total_tokens": 762
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 7849.7,
+    "elapsed_ms": 907.85,
+    "response": {
+      "message_id": "54616d7e-064c-4da5-8fa4-4dd98aa57edd",
+      "answer": "我这边没有可用的、你此前明确告知的个人资料（本轮用户记忆为空），因此无法确定你的演示时间。请直接告诉我演示时间，或提供相关安排信息。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 716,
+        "output_tokens": 46,
+        "total_tokens": 762,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 854.85,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 716,
+            "output_tokens": 46,
+            "total_tokens": 762,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 204,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 204,
+                "hit_rate": 0.715084,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 716,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029833,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-corrections-03",
+    "group": "openviking",
+    "trial": 1,
+    "category": "corrections",
+    "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 748,
+      "output_tokens": 26,
+      "total_tokens": 774
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 24952.77,
+    "elapsed_ms": 3399.81,
+    "response": {
+      "message_id": "3752a53a-8045-4940-ac85-b0f2398d673b",
+      "answer": "根据你此前明确告知的个人资料，你的演示时间是上午九点。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "10fb5fb5-417f-4c33-965a-c997ea6fbc9a",
+          "excerpt": "我的演示时间是上午九点。",
+          "score": 0.7706018686294556
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 748,
+        "output_tokens": 26,
+        "total_tokens": 774,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 3337.88,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 748,
+            "output_tokens": 26,
+            "total_tokens": 774,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 236,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 236,
+                "hit_rate": 0.684492,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 748,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031167,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": true
+  },
+  {
+    "case_id": "dev-unknown-03",
+    "group": "openviking",
+    "trial": 1,
+    "category": "unknown",
+    "answer": "我目前没有检索到你在个人资料中明确提供过演示时间的信息，因此无法回答。请补充说明你的演示时间，或告知相关资料来源。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 747,
+      "output_tokens": 41,
+      "total_tokens": 788
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 12798.99,
+    "elapsed_ms": 3825.89,
+    "response": {
+      "message_id": "b6e441fd-109f-4cd6-8e19-1eb636098fcf",
+      "answer": "我目前没有检索到你在个人资料中明确提供过演示时间的信息，因此无法回答。请补充说明你的演示时间，或告知相关资料来源。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 747,
+        "output_tokens": 41,
+        "total_tokens": 788,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {},
+        "elapsed_ms": 3768.59,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 747,
+            "output_tokens": 41,
+            "total_tokens": 788,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 235,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 235,
+                "hit_rate": 0.685408,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 747,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031125,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-facts-04",
+    "group": "baseline",
+    "trial": 1,
+    "category": "facts",
+    "answer": "我这边没有可用的、你此前明确告知的个人资料记录，因此无法确定你的示例项目名称。请直接告诉我项目名称，或提供相关文档以便我检索。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 717,
+      "output_tokens": 45,
+      "total_tokens": 762
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 2954.43,
+    "elapsed_ms": 1076.53,
+    "response": {
+      "message_id": "f424b9a0-0d55-4e97-b721-967221418749",
+      "answer": "我这边没有可用的、你此前明确告知的个人资料记录，因此无法确定你的示例项目名称。请直接告诉我项目名称，或提供相关文档以便我检索。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 717,
+        "output_tokens": 45,
+        "total_tokens": 762,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1027.02,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 717,
+            "output_tokens": 45,
+            "total_tokens": 762,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 205,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 205,
+                "hit_rate": 0.714086,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 717,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029875,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-04",
+    "group": "openviking",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "根据本轮召回的用户长期记忆，你偏好的示例项目名称是“练习甲”。[1]",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 1350,
+      "output_tokens": 57,
+      "total_tokens": 1407
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 18519.46,
+    "elapsed_ms": 2397.64,
+    "response": {
+      "message_id": "ee725207-9e4c-4861-b759-39ccfde94887",
+      "answer": "根据本轮召回的用户长期记忆，你偏好的示例项目名称是“练习甲”。[1]",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [
+        {
+          "type": "memory",
+          "number": 1,
+          "memory_id": "882f3134-7915-47f5-aecb-891e1a2fff78",
+          "excerpt": "- 示例项目名称偏好使用“练习甲”。",
+          "score": 0.01639344262295082
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 598,
+        "output_tokens": 30,
+        "total_tokens": 628,
+        "input_token_details": {
+          "cache_read": 256
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "grounded",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 2,
+        "fallback_used": false,
+        "repair_used": true,
+        "registered_sources": {
+          "memory": 1
+        },
+        "cited_sources": {
+          "memory": 1
+        },
+        "elapsed_ms": 2337.39,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 1350,
+            "output_tokens": 57,
+            "total_tokens": 1407,
+            "attempts": 2,
+            "complete": true,
+            "hit_tokens": 256,
+            "miss_tokens": 496,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 256,
+                "miss_tokens": 496,
+                "hit_rate": 0.340426,
+                "reported_calls": 1,
+                "total_calls": 2,
+                "complete": false
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 752,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.031333,
+                "measurement": "reported"
+              },
+              {
+                "attempt_index": 2,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 598,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.024917,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-preferences-04",
+    "group": "baseline",
+    "trial": 1,
+    "category": "preferences",
+    "answer": "我这边没有可用的、你此前明确告知的个人资料记录，因此无法确定你的示例项目名称。请直接告诉我项目名称，或提供相关文档以便我检索。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 717,
+      "output_tokens": 45,
+      "total_tokens": 762
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 1303.02,
+    "elapsed_ms": 1227.72,
+    "response": {
+      "message_id": "d772c796-2e25-4d1a-ad3b-c5a33b41c2db",
+      "answer": "我这边没有可用的、你此前明确告知的个人资料记录，因此无法确定你的示例项目名称。请直接告诉我项目名称，或提供相关文档以便我检索。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 717,
+        "output_tokens": 45,
+        "total_tokens": 762,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 1144.43,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 717,
+            "output_tokens": 45,
+            "total_tokens": 762,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 205,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 205,
+                "hit_rate": 0.714086,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 717,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029875,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": false,
+    "literal_forbidden_match": false
+  },
+  {
+    "case_id": "dev-forgetting-04",
+    "group": "baseline",
+    "trial": 1,
+    "category": "forgetting",
+    "answer": "我这边没有检索到任何关于你个人资料或示例项目名称的长期记忆记录，因此无法确认你的示例项目名称。请直接告诉我项目名称，或提供相关文档以便查询。",
+    "error_code": null,
+    "answer_usage": {
+      "input_tokens": 717,
+      "output_tokens": 49,
+      "total_tokens": 766
+    },
+    "extraction_usage": null,
+    "embedding_usage": null,
+    "maintenance_usage": null,
+    "review_usage": null,
+    "preparation_ms": 7972.77,
+    "elapsed_ms": 796.74,
+    "response": {
+      "message_id": "0b4eee71-edc2-44fd-8683-7ccfe8fd6765",
+      "answer": "我这边没有检索到任何关于你个人资料或示例项目名称的长期记忆记录，因此无法确认你的示例项目名称。请直接告诉我项目名称，或提供相关文档以便查询。",
+      "model_provider": "deepseek",
+      "model_name": "deepseek-flash",
+      "search_mode": "knowledge",
+      "citations": [],
+      "token_usage": {
+        "input_tokens": 717,
+        "output_tokens": 49,
+        "total_tokens": 766,
+        "input_token_details": {
+          "cache_read": 512
+        },
+        "output_token_details": {}
+      },
+      "run_metadata": {
+        "schema_version": 3,
+        "search_mode": "knowledge",
+        "kind": "insufficient",
+        "tool_requests": 0,
+        "knowledge_searches": 0,
+        "web_attempts": 0,
+        "web_reads": 0,
+        "sql_queries": 0,
+        "delegations": {},
+        "agent_events": [],
+        "failures": [],
+        "model_attempts": 1,
+        "fallback_used": false,
+        "repair_used": false,
+        "registered_sources": {},
+        "cited_sources": {},
+        "elapsed_ms": 724.34,
+        "tavily_credits": null,
+        "usage_by_model": {
+          "deepseek/deepseek-flash": {
+            "input_tokens": 717,
+            "output_tokens": 49,
+            "total_tokens": 766,
+            "attempts": 1,
+            "complete": true,
+            "hit_tokens": 512,
+            "miss_tokens": 205,
+            "reported_cache_calls": 1
+          }
+        },
+        "tool_events": [],
+        "parent_context_count": 0,
+        "warnings": [],
+        "rerank_events": [],
+        "hierarchy_events": [],
+        "knowledge_quality_enabled": false,
+        "knowledge_events": [],
+        "knowledge_rewrites": 0,
+        "excluded_source_numbers": [],
+        "metrics": {
+          "cache": {
+            "scope": "reported_calls",
+            "by_model": [
+              {
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "hit_tokens": 512,
+                "miss_tokens": 205,
+                "hit_rate": 0.714086,
+                "reported_calls": 1,
+                "total_calls": 1,
+                "complete": true
+              }
+            ]
+          },
+          "context": {
+            "calls": [
+              {
+                "attempt_index": 1,
+                "provider": "deepseek",
+                "model_name": "deepseek-flash",
+                "input_tokens": 717,
+                "input_budget_tokens": 24000,
+                "usage_ratio": 0.029875,
+                "measurement": "reported"
+              }
+            ],
+            "complete": true,
+            "highest_usage_attempt_index": 1
+          }
+        }
+      }
+    },
+    "model": "deepseek-flash",
+    "provider": "deepseek",
+    "literal_fact_match": true,
+    "literal_forbidden_match": false
+  }
+]

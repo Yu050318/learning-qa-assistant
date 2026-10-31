@@ -1,0 +1,28 @@
+{
+  "python_files": 96,
+  "web_persistence_files": [
+    "app/api/routes.py"
+  ],
+  "application_sqlalchemy_files": [
+    "app/application/artifacts.py",
+    "app/application/auth.py",
+    "app/application/capabilities.py",
+    "app/application/document_publication.py",
+    "app/application/document_tasks.py",
+    "app/application/evaluation_jobs.py",
+    "app/application/evaluation_worker.py",
+    "app/application/hierarchy.py",
+    "app/application/ingestion.py",
+    "app/application/ingestion_jobs.py",
+    "app/application/memories.py",
+    "app/application/model_center.py",
+    "app/application/preflight.py",
+    "app/application/run_checkpoint.py",
+    "app/application/run_trace.py",
+    "app/application/runs.py",
+    "app/application/sandbox.py",
+    "app/application/sharing.py",
+    "app/application/workers.py",
+    "app/application/workspaces.py"
+  ]
+}

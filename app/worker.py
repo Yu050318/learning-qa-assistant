@@ -7,17 +7,17 @@ from pathlib import Path
 from uuid import UUID
 from threading import Event, Thread
 
-from app.application.ingestion import IngestionService
-from app.application.ingestion_jobs import lease_lost
-from app.application.workers import WorkerRegistry
+from app.service.ingestion import IngestionService
+from app.service.ingestion_jobs import lease_lost
+from app.manager.workers import WorkerRegistry
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
-from app.infrastructure.embeddings.qwen import QwenEmbedding
-from app.infrastructure.loaders.local import LocalDocumentLoader
-from app.infrastructure.loaders.mineru import MinerUParser
-from app.infrastructure.persistence.database import Database
-from app.infrastructure.vectorstores.milvus import MilvusVectorStore
+from app.manager.embeddings.qwen import QwenEmbedding
+from app.manager.loaders.local import LocalDocumentLoader
+from app.manager.loaders.mineru import MinerUParser
+from app.dao.postgres.database import Database
+from app.dao.milvus import MilvusVectorStore
 
 logger = logging.getLogger("rag")
 

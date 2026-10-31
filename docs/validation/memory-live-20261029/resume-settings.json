@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "deepseek_model": "deepseek-flash",
+    "default_model_provider": "deepseek",
+    "embedding_model": "text-embedding-v4",
+    "embedding_dimension": 1024,
+    "model_max_tokens": 2048,
+    "agent_context_token_budget": 24000,
+    "agent_max_model_calls": 16,
+    "agent_max_tool_calls": 12,
+    "memory_top_k": 3,
+    "openviking_recall_timeout": 1.0,
+    "openviking_worker_timeout": 15.0,
+    "openviking_task_timeout": 600,
+    "openviking_poll_seconds": 0.5
+  },
+  "code_sha256": "fd71122c615c7410496b205a51dab548984bffb2aa3e4d151652cbd8f9faca31",
+  "judge_prompt_version": "bbf197404c8a745d3df1d10bb0751f6b746ec6f0c4bc5a982c2590f1b864f72a",
+  "planned_frozen_repeats": 3,
+  "planned_frozen_cases": 100,
+  "planned_parallel_pairs": 16,
+  "date": "2026-10-30",
+  "original_code_sha256": "84e4dcb48e8c1dcb02b45089737d1af3eeb532fb1aebe30c7c2d40ba4ea63c38",
+  "planned_new_answers": 400,
+  "policy": "Retain original 600; reuse complete scheduled round 1; new full paired attempts for rounds 2 and 3",
+  "code_changes_since_original": "402 error normalization and evaluation fail-fast only; no prompt, model, corpus or retrieval tuning"
+}

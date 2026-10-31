@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "split": "frozen",
+  "case_count": 100,
+  "repeats": 1,
+  "groups": {
+    "baseline": {
+      "executed": 100,
+      "missing_predictions": 0,
+      "execution_failures": 0,
+      "reviewed": 100,
+      "review_required": 100,
+      "correctness": 0.6,
+      "correctness_ci95": [
+        0.5,
+        0.69
+      ],
+      "updated_fact_rate": 0.0,
+      "updated_fact_denominator": 20,
+      "updated_fact_reviewed": 20,
+      "unsupported_personal_fact_rate": 0.08,
+      "unsupported_fact_denominator": 100,
+      "unsupported_fact_reviewed": 100,
+      "forgetting_leaks": 0.0,
+      "forgetting_denominator": 20,
+      "forgetting_reviewed": 20,
+      "p95_ms": 5324.87,
+      "answer_usage": {
+        "input_tokens": 85452,
+        "output_tokens": 4221,
+        "total_tokens": 89673
+      },
+      "extraction_usage": null,
+      "embedding_usage": null,
+      "maintenance_usage": null,
+      "review_usage": null
+    },
+    "openviking": {
+      "executed": 100,
+      "missing_predictions": 0,
+      "execution_failures": 0,
+      "reviewed": 100,
+      "review_required": 100,
+      "correctness": 1.0,
+      "correctness_ci95": [
+        1.0,
+        1.0
+      ],
+      "updated_fact_rate": 1.0,
+      "updated_fact_denominator": 20,
+      "updated_fact_reviewed": 20,
+      "unsupported_personal_fact_rate": 0.0,
+      "unsupported_fact_denominator": 100,
+      "unsupported_fact_reviewed": 100,
+      "forgetting_leaks": 0.0,
+      "forgetting_denominator": 20,
+      "forgetting_reviewed": 20,
+      "p95_ms": 6162.6,
+      "answer_usage": {
+        "input_tokens": 119197,
+        "output_tokens": 6200,
+        "total_tokens": 125397
+      },
+      "extraction_usage": null,
+      "embedding_usage": null,
+      "maintenance_usage": null,
+      "review_usage": null
+    }
+  },
+  "quality_gate_passed": false,
+  "measurement": "preliminary_first_scheduled_repeat_only_not_the_planned_three_repeat_acceptance",
+  "missing_usage_is_zero": false,
+  "comparable": true,
+  "accuracy_delta_pp": 40.0,
+  "paired_delta_ci95_pp": [
+    31.0,
+    50.0
+  ],
+  "isolation_gate_passed": false,
+  "isolation": null
+}

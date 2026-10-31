@@ -1,0 +1,27 @@
+{
+  "split": "dev",
+  "repeats": 3,
+  "workers": 4,
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "model": "deepseek-flash",
+  "memory_top_k": 3,
+  "agent_context_token_budget": 24000,
+  "identities": [
+    {
+      "baseline": "3952e26b-fdc8-4284-8c4d-8528b1321af5",
+      "openviking": "3059c364-3d38-4517-b9ba-79d8be419971"
+    },
+    {
+      "baseline": "7d732b0b-aada-4f29-ae1b-76b036c45311",
+      "openviking": "502b67ca-9cf0-4bee-a7e2-fa02f9e65af5"
+    },
+    {
+      "baseline": "55b735a6-b19a-4e09-9361-f2569f62a069",
+      "openviking": "af0afe17-5aeb-49e9-9b14-7c1cb6abbbf7"
+    },
+    {
+      "baseline": "3cfac90c-7483-4457-aaae-a518f9b0a24f",
+      "openviking": "36146f70-286f-43b6-a754-a0b1464391ff"
+    }
+  ]
+}

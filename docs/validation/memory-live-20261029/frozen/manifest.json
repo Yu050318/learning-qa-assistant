@@ -1,0 +1,75 @@
+{
+  "split": "frozen",
+  "repeats": 3,
+  "workers": 16,
+  "dataset_fingerprint": "d893f3222dfd79805d3e94a90cc69205eae853708c637e1a9627b589985fd881",
+  "model": "deepseek-flash",
+  "memory_top_k": 3,
+  "agent_context_token_budget": 24000,
+  "identities": [
+    {
+      "baseline": "cc4f7bf2-d681-4603-93f0-228c72e1ba1e",
+      "openviking": "4d9b1768-51fc-4537-9353-cd0c07ff135d"
+    },
+    {
+      "baseline": "b8cb2270-5db4-4473-8726-888e47e0b550",
+      "openviking": "bc6ceb63-0f9d-4c64-9e1c-71dc036b365a"
+    },
+    {
+      "baseline": "9ff7bbd8-4996-4df6-a591-41fd128f4fd3",
+      "openviking": "d4729ea7-0af0-4eaa-9a0c-7e3af382400d"
+    },
+    {
+      "baseline": "97a4fcde-d07b-43af-9501-6de0691b9e68",
+      "openviking": "9ad4b002-0f73-4300-9d20-910d06cf17fd"
+    },
+    {
+      "baseline": "7c8a4cf6-350d-4a29-8c72-fb625ac8e8f5",
+      "openviking": "776e23e4-b040-4111-b49b-911236cba698"
+    },
+    {
+      "baseline": "f1dfe038-8d2d-4a5e-a26a-eb42280bac1e",
+      "openviking": "9e8cac09-11c3-4d39-a623-f076e2d96b7a"
+    },
+    {
+      "baseline": "b3ba5f43-1323-47ab-8b2e-f03319ee5a60",
+      "openviking": "cb09630f-c3f1-4b65-b5f5-19b031b3452a"
+    },
+    {
+      "baseline": "aae71c00-55b4-4373-a242-bd9fc2136ab5",
+      "openviking": "bb67b6d1-c36b-4893-8d2c-0302252fb4e0"
+    },
+    {
+      "baseline": "78fcda34-09e3-4865-994f-c5a177c5a951",
+      "openviking": "90558c24-24b6-4451-8e5a-5ed88d9e33d1"
+    },
+    {
+      "baseline": "d904d8ec-d519-49dc-8be2-76f68f5933e1",
+      "openviking": "a522bbcf-c56a-42f4-8f96-216ad5e9d5cf"
+    },
+    {
+      "baseline": "d9e3a9f1-1a70-4b1b-a442-d906396a160b",
+      "openviking": "9bcf61e7-f584-4b1d-ae1e-797091f11a00"
+    },
+    {
+      "baseline": "97cf1c38-108e-4bf4-bf7d-e235aa25b064",
+      "openviking": "0aa38b49-7095-4ca0-a156-b7357fc632d0"
+    },
+    {
+      "baseline": "5da4dcc8-cd20-4feb-8197-fb3cdf1219a8",
+      "openviking": "0696c694-8ab7-4158-8df6-f58df6e050c6"
+    },
+    {
+      "baseline": "c2e5f6c7-1bf2-49be-aa39-08e4aca7ed72",
+      "openviking": "d1a1d3a3-07a5-41d8-bd22-63519fab9df5"
+    },
+    {
+      "baseline": "36313a79-3411-4393-9a30-943a5a34d411",
+      "openviking": "2ccdc541-3304-479c-8d8f-9ac68e7c1226"
+    },
+    {
+      "baseline": "82e50052-4d3e-42d9-abf7-8a91ab911ed7",
+      "openviking": "e346f8d5-a17b-47e4-bb8e-2fc8ac4c64cb"
+    }
+  ]
+}

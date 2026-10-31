@@ -1,0 +1,3341 @@
+[
+  {
+    "id": "simple_fact_006",
+    "reviewer": "model",
+    "input_sha256": "c358894475cfb79e6395fc125a1d958fabe5335b9b7ab1aac4f11b927225925d",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品 FAQ 文档，NX-046 的使用环境为：室内干燥环境，禁止浸水 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-046 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_003",
+    "reviewer": "model",
+    "input_sha256": "a8c10e16af0867421d811ebe7d7d80869a87176ba83b9eea473e57ba42874210",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据技术规格文档，NX-043 的供电要求为 24 V DC [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-043\nNX-043 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "文档中仅记录了电压规格，未提供电流、功耗等其他供电参数。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_004",
+    "reviewer": "model",
+    "input_sha256": "b81a7af71a89aed411904e63fd4bdf4ac53dc8344acbebd0eebc2703311827ea",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据 troubleshooting.html 文档，NX-044 的复位方法是：断电 30 秒后重新上电 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-044\nNX-044 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      },
+      {
+        "text": "该条目只给出这一条步骤，未列出其他附加操作或前置条件。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-044\nNX-044 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_001",
+    "reviewer": "model",
+    "input_sha256": "bff7e8495d9e860d046914f9e4aa6426083ef130b418b5efabc239f7bd72509d",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品手册，NX-041 的安装要求是：断电后接线，并固定在 DIN 导轨上 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-041 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "此外，产品 FAQ 说明其使用环境为室内干燥环境，禁止浸水 [3]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "NX-041 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未检索到 NX-041 更详细的安装步骤或额外注意事项。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_002",
+    "reviewer": "model",
+    "input_sha256": "8629d32f17c9563f7150c612c97f5760c08b84a0f6cefddee0dab92529a8c9a8",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品 FAQ 文档，NX-042 的使用环境为：室内干燥环境，禁止浸水[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-042 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "产品参数表（product_specs.xlsx）中 NX-042 的参数行只列出了产品类别（智能网关）、额定功率 25W、重量 4.3kg、协议 MQTT、硬件版本 2.0、生效日期 2026-01-01，并未包含环境条件字段[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-042；产品类别：智能网关；额定功率 (W)：25；重量 (kg)：4.3；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "因此环境信息仅来自 FAQ 文档。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_005",
+    "reviewer": "model",
+    "input_sha256": "6b9d2926917d76ce3ddfe47fedfe21be2dda188759f643cf5a2a5de6ab675dcb",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-045 的安装要求：断电后接线，并固定在 DIN 导轨上 [3]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "NX-045 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "使用环境：室内干燥环境，禁止浸水 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-045 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "供电要求：24 V DC [4]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 4,
+            "text": "NX-045 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "产品参数：智能网关，额定功率 175 W，重量 4.5 kg，协议 MQTT，硬件版本 2.0，生效日期 2026-01-01 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "型号：NX-045；产品类别：智能网关；额定功率 (W)：175；重量 (kg)：4.5；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "现有文档未提供更细的分步安装流程，也未提供安装尺寸、紧固扭矩等规格，因此这些内容无法从现有资料确认。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_007",
+    "reviewer": "model",
+    "input_sha256": "1c57ea79ace81dc3c588ca0e2284dab1885d1103a5e1d37c2e7a9b2ec7ed5f30",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-047 的供电要求为 24 V DC [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-047 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中仅记录了电压规格，未提供电流、功率或具体供电方式（如接线/端子形式）等信息。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_008",
+    "reviewer": "model",
+    "input_sha256": "6ac7593606d9160a1e76d5f981b133b0d3eb154d0aa4a6135ebaf9e34be46375",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据 troubleshooting.html 文档，NX-048 的复位方法是：断电 30 秒后重新上电 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-048\nNX-048 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      },
+      {
+        "text": "文档中只给出这一条操作说明，没有其他复位步骤或额外细节。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_009",
+    "reviewer": "model",
+    "input_sha256": "6d055630799b4ff625a868d7e11381328848a91a949006ca322d08859d00fe27",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品手册，NX-049 的安装要求是：断电后接线，并固定在 DIN 导轨上 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-049 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "补充说明：手册中 NX-049 只列出这一条安装要求，没有更细分的安装条件、分步步骤或额外注意事项。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "另外，技术规格中 NX-049 的供电要求为 24 V DC [6]，这属于供电规格，不是安装要求。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 6,
+            "text": "NX-049 的供电要求：24 V DC。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_010",
+    "reviewer": "model",
+    "input_sha256": "e06863ff4cf6677c1e1198f510df48f903bed016d846141298bb2c5c5dd4d233",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品 FAQ 文档，NX-050 的使用环境为：室内干燥环境，禁止浸水 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-050 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "文档中未提供温度、湿度等更细化的环境参数说明。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_011",
+    "reviewer": "model",
+    "input_sha256": "1220ab4b35285dd95db2ee32f015e5ffacf7f6fe3b3a52907ebafb1b53fc6cdc",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-051 的供电要求为 24 V DC [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-051\nNX-051 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中仅记录了电压规格，未提供电流、功耗等其他供电参数。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_012",
+    "reviewer": "model",
+    "input_sha256": "b6d5df0d7356eb18a8e71bf4ad71e8bde46abc18f311d4511e7ec3a7e1ea940f",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据 troubleshooting.html 文档，NX-052 的复位方法是：断电 30 秒后重新上电 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-052\nNX-052 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      },
+      {
+        "text": "文档中未给出更细化的步骤。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_015",
+    "reviewer": "model",
+    "input_sha256": "c0d661693d693dcfcc2a94bf19b740149abed1751de75482ce455e99e0912c63",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-055 的供电要求为 24 V DC [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-055\nNX-055 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中仅记录了电压规格，未提供电流、功耗等其他电源参数。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_014",
+    "reviewer": "model",
+    "input_sha256": "9c885fce9f1ad5180dfc03015654c34a43c2ce19cb23884a9c5e37dd8437b531",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品 FAQ 文档，NX-054 的使用环境为：室内干燥环境，禁止浸水 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-054 的使用环境：室内干燥环境，禁止浸水。"
+          },
+          {
+            "number": 2,
+            "text": "NX-054 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "文档中未给出温度、湿度等更细化的环境参数。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_013",
+    "reviewer": "model",
+    "input_sha256": "5109317c51221111ed9a30b6e911130f913c5a6619f68c1dde9524471ea28559",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品手册，NX-053 的安装要求是：断电后接线并固定在 DIN 导轨上 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-053 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "供电要求：24 V DC [5]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 5,
+            "text": "NX-053\nNX-053 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "使用环境：室内干燥环境，禁止浸水 [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-053 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中 NX-053 的安装条目只有上述这一句，未提供更细的分步安装步骤或额外注意事项。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_016",
+    "reviewer": "model",
+    "input_sha256": "a658ad969a8bbb659decfe2e98a9cecff22cd35f3320c4fb1762dca0b963493c",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据 troubleshooting.html 文档，NX-056 的复位方法是：断电 30 秒后重新上电 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-056 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      },
+      {
+        "text": "该条目只给出这一条步骤，未列出其他附加操作或前置条件。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_018",
+    "reviewer": "model",
+    "input_sha256": "f9f386fd3b7c972a0a34e7352690471b0cd7503b28fa9b5859e9b60bb2b58c95",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品 FAQ 文档，NX-058 的使用环境为：室内干燥环境，禁止浸水 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-058 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_017",
+    "reviewer": "model",
+    "input_sha256": "56029101d91d5f97d23778d166c466258052de873257a979d4f7a5ac46810c20",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品手册，NX-057 的安装要求是：断电后接线，并固定在 DIN 导轨上 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-057 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          },
+          {
+            "number": 2,
+            "text": "NX-057\nNX-057 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "另外，产品 FAQ 中给出了 NX-057 的使用环境要求：室内干燥环境，禁止浸水 [6]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 6,
+            "text": "NX-057\nNX-057 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "说明：知识库中 NX-057 仅有上述两条原文命中，未检索到独立的“安装条件”“分步安装步骤”或“注意事项”条目，因此无法提供更细的安装步骤说明。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_003",
+    "reviewer": "model",
+    "input_sha256": "2ca1f059cc231bd8782a124bbbbd2501a5d86d7c8eee2e90b4e49b28e2c9309e",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-003 在上海测试仓的可用库存为 88 台，数据更新时间 2026-10-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：库存；型号：NX-003；仓库：上海测试仓；可用库存 (台)：88；更新时间：2026-10-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_002",
+    "reviewer": "model",
+    "input_sha256": "e172c23923be5e6ae577e81054f3d9c6d228e12d1fc2c21d3fb57ea7d7459be4",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-002 的单价为 2850 CNY（币种 CNY，生效日期 2026-01-01）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：价格；型号：NX-002；单价 (CNY)：2850；币种：CNY；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "来源：product_prices.xlsx，工作表「价格」第 3 行。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：价格；型号：NX-002；单价 (CNY)：2850；币种：CNY；生效日期：2026-01-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_001",
+    "reviewer": "model",
+    "input_sha256": "c738756b83dd38a334a46eb55b373722859bca830dc3a6300cc93c5c60085a3b",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "按现行硬件版本 2.0（自 2026-01-01 生效），NX-001 的额定功率为 120 W [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "型号：NX-001；产品类别：工业传感器；额定功率 (W)：120；重量 (kg)：3.4；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "发布说明中记录的硬件 1.0 数值为 130 W（2025-01-01），并注明 2.0 以产品参数表的数值为准 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_019",
+    "reviewer": "model",
+    "input_sha256": "a5eee132fdb25d4346a2447905424bb924a781dd8d14b13b36ff08fffe87b756",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-059 的供电要求为 24 V DC [1]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-059 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "其额定功率为 25 W [7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "额定功率 (W)：25"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未提供 NX-059 的额定电流、电压容差等更细的电源参数 [1][7]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_004",
+    "reviewer": "model",
+    "input_sha256": "96ec103ef8d4d6adfd04aa3d21605d0122d05f9fe1fa84836302615edbb5afb1",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-004（工业传感器，硬件版本 2.0，生效日期 2026-01-01）的额定功率为 60 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-004；产品类别：工业传感器；额定功率 (W)：60；重量 (kg)：5.5；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "发布说明记载，硬件 1.0 的额定功率为 70 W（2025-01-01），并注明 2.0 自 2026-01-01 生效后以产品参数表的数值为准 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-004 硬件 1.0 的额定功率为 70 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "simple_fact_020",
+    "reviewer": "model",
+    "input_sha256": "4900267e9f42df634b12ded8a978afd50aa6df5cb0e38368f2253f3c1013ebc6",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-060 的复位方法是：断电 30 秒后重新上电 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-060 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      },
+      {
+        "text": "具体步骤：1) 切断 NX-060 的电源；2) 保持断电状态 30 秒；3) 重新上电，完成复位 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-060 的复位方法：断电 30 秒后重新上电。"
+          }
+        ]
+      },
+      {
+        "text": "来源：troubleshooting.html（来源标识 nebula:troubleshooting，虚构测试数据）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 6,
+            "text": "troubleshooting\nSYNTHETIC DATA / 虚构测试数据 — 星云智能科技有限公司 (Nebula Industrial)\n来源标识：nebula:troubleshooting"
+          }
+        ]
+      },
+      {
+        "text": "NX-060 为智能网关，协议 MQTT，硬件版本 2.0 [7]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-060；产品类别：智能网关；额定功率 (W)：190；重量 (kg)：6.7；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "使用环境为室内干燥环境，禁止浸水 [8]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 8,
+            "text": "NX-060\nNX-060 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_006",
+    "reviewer": "model",
+    "input_sha256": "c58d60fd030416eebb022ff6a1e34c449b880933185a99ead0a314134f3a2a65",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-006 的可用库存为 87 台，仓库为上海测试仓，数据更新时间 2026-10-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：库存；型号：NX-006；仓库：上海测试仓；可用库存 (台)：87；更新时间：2026-10-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_007",
+    "reviewer": "model",
+    "input_sha256": "dfe1cc3d4097f7d629d8bfde565647bea16b7b895b347bb4c9ec674d32cf71b5",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-007 的额定功率为 70 W（产品类别：工业传感器；硬件版本 2.0；生效日期 2026-01-01）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-007；产品类别：工业传感器；额定功率 (W)：70；重量 (kg)：4.9；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_005",
+    "reviewer": "model",
+    "input_sha256": "212ace3b71205f0b5b6804c0809516f564d8fc09798bc8d22683a61b9bf31bd6",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-005 的单价为 3550 CNY（币种 CNY，生效日期 2026-01-01）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：价格；型号：NX-005；单价 (CNY)：3550；币种：CNY；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "来源为 product_prices.xlsx 工作表「价格」第 6 行。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：价格；型号：NX-005；单价 (CNY)：3550；币种：CNY；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-005 在上海测试仓的可用库存为 150 台，更新时间 2026-10-01 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "工作表：库存；型号：NX-005；仓库：上海测试仓；可用库存 (台)：150；更新时间：2026-10-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_009",
+    "reviewer": "model",
+    "input_sha256": "e44430a6b924fcd05397983a99e67a2efebbfa3c45d72f87d808e03ad267d658",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-009 的可用库存为 201 台，仓库为上海测试仓，数据更新时间 2026-10-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：库存；型号：NX-009；仓库：上海测试仓；可用库存 (台)：201；更新时间：2026-10-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_008",
+    "reviewer": "model",
+    "input_sha256": "f091194121513a67b60300be62489e5df03f68e47528c8090d617d7278d3c91b",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-008 的单价为 4600 CNY（币种 CNY，生效日期 2026-01-01），来源：product_prices.xlsx 工作表「价格」第 9 行 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：价格；型号：NX-008；单价 (CNY)：4600；币种：CNY；生效日期：2026-01-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_010",
+    "reviewer": "model",
+    "input_sha256": "7bb42593843141c4f7135752c0fb93c200eff20146bcb9350fcd739f30639ebb",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-010 的额定功率为 100 W（对应硬件版本 2.0，自 2026-01-01 生效）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-010；产品类别：工业传感器；额定功率 (W)：100；重量 (kg)：1.2；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "该型号为工业传感器，重量 1.2 kg，协议 Modbus RTU [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-010；产品类别：工业传感器；额定功率 (W)：100；重量 (kg)：1.2；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_011",
+    "reviewer": "model",
+    "input_sha256": "b5661421460192e10e9e04807b5cfc5c08f48610ef15140503b3175079257dba",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品参数表（硬件版本 2.0，2026-01-01 生效）：",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-011；产品类别：工业控制器；额定功率 (W)：50；重量 (kg)：5.5；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-011（工业控制器）：额定功率 50 W [1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-011；产品类别：工业控制器；额定功率 (W)：50"
+          }
+        ]
+      },
+      {
+        "text": "NX-031（工业传感器）：额定功率 55 W [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "型号：NX-031；产品类别：工业传感器；额定功率 (W)：55"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-031 的额定功率更大，比 NX-011 高 5 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：50"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：55"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_012",
+    "reviewer": "model",
+    "input_sha256": "229a803d3009e4180eca7a902613f582c627fc06dba9bb1041bb8be02115e2ca",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-012 的额定功率为 20 W（产品参数表，硬件版本 2.0，2026-01-01 生效）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-012；产品类别：智能网关；额定功率 (W)：20；重量 (kg)：7.4；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-032 的额定功率为 15 W（产品参数表，硬件版本 2.0，2026-01-01 生效）[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-032；产品类别：工业控制器；额定功率 (W)：15；重量 (kg)：0.9；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-012 的额定功率更大（20 W > 15 W）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：20"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：15"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_013",
+    "reviewer": "model",
+    "input_sha256": "f349943f3b3beff3bf2029dc108546b5cb6bd6aac2b6ef8dc61797b2c0851d84",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "按产品参数表（硬件版本 2.0，2026-01-01 生效）：NX-013 的额定功率为 200 W [1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-013；产品类别：工业传感器；额定功率 (W)：200；重量 (kg)：3.2；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-033 的额定功率为 185 W [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-033；产品类别：智能网关；额定功率 (W)：185；重量 (kg)：5.6；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-013 更大，比 NX-033 高 15 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：200"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：185"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_015",
+    "reviewer": "model",
+    "input_sha256": "2aae57231896ba8e4b105840db5aa0a0f5a7e93446a23009805918219f615022",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "按产品参数表（硬件版本 2.0，2026-01-01 生效）：NX-015 的额定功率为 200 W [1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-015；产品类别：智能网关；额定功率 (W)：200；重量 (kg)：8；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-035 的额定功率为 10 W [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-035；产品类别：工业控制器；额定功率 (W)：10；重量 (kg)：2.5；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "因此 NX-015 更大，是 NX-035 的 20 倍。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：200"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：10"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_014",
+    "reviewer": "model",
+    "input_sha256": "c6431c0b7dbe19483695f08c3918592f85648ec3b5c593920e88af695a6b1b53",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-014 的额定功率为 185 W（工业控制器，硬件版本 2.0，生效日期 2026-01-01）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-014；产品类别：工业控制器；额定功率 (W)：185；重量 (kg)：4.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-034 的额定功率为 10 W（工业传感器，硬件版本 2.0，生效日期 2026-01-01）[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-034；产品类别：工业传感器；额定功率 (W)：10；重量 (kg)：2.3；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-014 的额定功率更大，比 NX-034 高 175 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：185"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：10"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_016",
+    "reviewer": "model",
+    "input_sha256": "195761b1cb1184e5084e8b13ec0a1fbace59a14fd0100f8afb4e55e91883f11a",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品参数表（硬件版本 2.0，生效日期 2026-01-01）：",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-016（工业传感器）：额定功率 175 W [1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-016；产品类别：工业传感器；额定功率 (W)：175"
+          }
+        ]
+      },
+      {
+        "text": "NX-036（智能网关）：额定功率 140 W [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "型号：NX-036；产品类别：智能网关；额定功率 (W)：140"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-016 的额定功率更大，比 NX-036 高 35 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：175"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：140"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_017",
+    "reviewer": "model",
+    "input_sha256": "f2bc0fcfc2f1e8df3b7f8a0f8e85a17e045bda6e9457dd4fd72176b81e3a9a4f",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-017 的额定功率为 135 W（工业控制器，硬件版本 2.0，2026-01-01 生效）[2]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "工作表：产品参数；型号：NX-017；产品类别：工业控制器；额定功率 (W)：135；重量 (kg)：6；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-037 的额定功率为 200 W（工业传感器，硬件版本 2.0，2026-01-01 生效）[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-037；产品类别：工业传感器；额定功率 (W)：200；重量 (kg)：6.6；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-037 的额定功率更大，比 NX-017 高 65 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "额定功率 (W)：135"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：200"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_018",
+    "reviewer": "model",
+    "input_sha256": "847f2bf57edb3e576a5ed40900a6539853d16e6406c79c50ad98b15ca286b67b",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "根据产品参数表（硬件版本 2.0，生效日期 2026-01-01）：",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-018；产品类别：智能网关；额定功率 (W)：10；重量 (kg)：6.7；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-038；产品类别：工业控制器；额定功率 (W)：155；重量 (kg)：5.3；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-018（智能网关）：额定功率 10 W [1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-018；产品类别：智能网关；额定功率 (W)：10；重量 (kg)：6.7；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-038（工业控制器）：额定功率 155 W [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-038；产品类别：工业控制器；额定功率 (W)：155；重量 (kg)：5.3；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "因此 NX-038 的额定功率更大，比 NX-018 高 145 W（约为 NX-018 的 15.5 倍）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-018；产品类别：智能网关；额定功率 (W)：10；重量 (kg)：6.7；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-038；产品类别：工业控制器；额定功率 (W)：155；重量 (kg)：5.3；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_020",
+    "reviewer": "model",
+    "input_sha256": "efb0cf52e35b37c11492ab41b74e6bf226c5320117b49392b8d120be13caeec6",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-020 的额定功率为 35 W（工业控制器，硬件版本 2.0，生效日期 2026-01-01）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-020；产品类别：工业控制器；额定功率 (W)：35；重量 (kg)：5.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-040 的额定功率为 175 W（工业传感器，硬件版本 2.0，生效日期 2026-01-01）[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-040；产品类别：工业传感器；额定功率 (W)：175；重量 (kg)：7.6；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-040 的额定功率更大，比 NX-020 高 140 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：35"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：175"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "table_query_019",
+    "reviewer": "model",
+    "input_sha256": "2a4ca4235b9f66bb3b7d6dbc37b72a8ffdd8d4185098f7862ca6ff842d336d44",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-019 的额定功率为 95 W（工业传感器，Modbus RTU，硬件版本 2.0，生效日期 2026-01-01）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-019；产品类别：工业传感器；额定功率 (W)：95；重量 (kg)：2.5；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-039 的额定功率为 120 W（智能网关，MQTT，硬件版本 2.0，生效日期 2026-01-01）[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "工作表：产品参数；型号：NX-039；产品类别：智能网关；额定功率 (W)：120；重量 (kg)：1.9；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相比，NX-039 的额定功率更大，比 NX-019 高 25 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：95"
+          },
+          {
+            "number": 7,
+            "text": "额定功率 (W)：120"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_001",
+    "reviewer": "model",
+    "input_sha256": "633a913a0e0fe1eb2f0d37179d3695028bf9ad408a9b07bbe7962c81b64fa2a2",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-081（智能网关）的额定功率为 155 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-081；产品类别：智能网关；额定功率 (W)：155"
+          }
+        ]
+      },
+      {
+        "text": "保修期按购买日期适用售后政策：2025-01-01 至 2025-12-31 购买的设备保修 12 个月；2026-01-01 起购买的设备保修 24 个月 [5]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 5,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 5,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "因此，您 2026-02-01 购买的 NX-081 属于 2026 年政策范围，保修期为 24 个月 [5]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 5,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未检索到针对该购买批次的特殊保修条款差异 [5]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_002",
+    "reviewer": "model",
+    "input_sha256": "d35aa17034aea67888198d49011e083bb97d05f4c1fa73035fd6b24ef432d0dd",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "**通信协议**：Modbus RTU。依据 product_specs.xlsx「产品参数」工作表第 83 行，NX-082 为工业传感器，额定功率 110 W，重量 4.5 kg，协议为 Modbus RTU，硬件版本 2.0，生效日期 2026-01-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-082；产品类别：工业传感器；额定功率 (W)：110；重量 (kg)：4.5；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "**安装要求**：断电后接线，并固定在 DIN 导轨上。依据 product_manual.html 中「NX-082 的安装要求：断电后接线并固定在 DIN 导轨上。」[7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-082 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "补充参考（非所问项）：供电要求为 24 V DC [10]；使用环境为室内干燥环境，禁止浸水 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "NX-082 的供电要求：24 V DC。"
+          },
+          {
+            "number": 2,
+            "text": "NX-082 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_003",
+    "reviewer": "model",
+    "input_sha256": "0e32f47e76952a4398c3ff5cd7805edd63915890acb36370d6790dc4e6880282",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-083（工业控制器，EtherCAT，硬件版本 2.0）的额定功率为 165 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-083；产品类别：工业控制器；额定功率 (W)：165；重量 (kg)：2.4；协议：EtherCAT；硬件版本：2.0"
+          }
+        ]
+      },
+      {
+        "text": "保修期按购买日期适用售后政策：2025-01-01 至 2025-12-31 购买的设备保修 12 个月；2026-01-01 起购买的设备保修 24 个月 [4]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 4,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 4,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "因此，若该设备确于 2026-02-01 购买，保修期为 24 个月。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 4,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未检索到任何 NX-083 的购买或销售记录，因此无法核实 2026-02-01 这一购买日期；",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "检索到的 NX-083 相关记录仅有维修记录 REP-0083（故障代码 E01，2026-09-01 重新紧固端子后恢复）[9]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 9,
+            "text": "维修编号：REP-0083；型号：NX-083；故障代码：E01；处理结论：重新紧固端子后恢复；维修日期：2026-09-01"
+          }
+        ]
+      },
+      {
+        "text": "和库存记录（上海测试仓 177 台，更新时间 2026-10-01）[5]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 5,
+            "text": "型号：NX-083；仓库：上海测试仓；可用库存 (台)：177；更新时间：2026-10-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_006",
+    "reviewer": "model",
+    "input_sha256": "fcb5d3a34709396290dfbfdf4ab26322c3611f330042a55417cb6f1dd11c1aa8",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-086 的通信协议为 EtherCAT（产品类别：工业控制器，额定功率 80 W，硬件版本 2.0，生效日期 2026-01-01）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-086；产品类别：工业控制器；额定功率 (W)：80；重量 (kg)：6.1；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "安装要求：断电后接线，并固定在 DIN 导轨上 [7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-086 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "另外，其供电要求为 24 V DC [10]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "NX-086 的供电要求：24 V DC。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_004",
+    "reviewer": "model",
+    "input_sha256": "2673d297b3cf8ce23b7b463aa24415c7952c156eac41db807441f771a13b4450",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "**通信协议**：MQTT。该型号属于智能网关，硬件版本 2.0，额定功率 70 W，重量 6.7 kg，参数生效日期 2026-01-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-084；产品类别：智能网关；额定功率 (W)：70；重量 (kg)：6.7；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "**安装要求**：断电后接线，并固定在 DIN 导轨上 [7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-084 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "供电要求为 24 V DC [10]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "NX-084 的供电要求：24 V DC。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_005",
+    "reviewer": "model",
+    "input_sha256": "67a8278a9980f5e2e8d8719e01af3e773cecb0be1bb447061f938872bde930b1",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-085 的额定功率为 10 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-085；产品类别：工业传感器；额定功率 (W)：10"
+          }
+        ]
+      },
+      {
+        "text": "保修期按购买日期适用售后政策：2025-01-01 至 2025-12-31 购买的设备保修 12 个月；2026-01-01 起购买的设备保修 24 个月 [3]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 3,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "因此，2026-02-01 购买的 NX-085 属于 2026 政策范围，保修期为 24 个月 [3]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中没有专门针对 2026-02-01 购买批次的记录，上述保修期是根据购买日期对应的政策条款推导得出的 [3]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_007",
+    "reviewer": "model",
+    "input_sha256": "e6d0df5939f56d35eee83141021dea8ae8ac6245a880b323c3216fb18a92d714",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-087（智能网关，协议 MQTT，硬件版本 2.0）的额定功率为 105 W（即 0.105 kW）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-087；产品类别：智能网关；额定功率 (W)：105；重量 (kg)：7.1；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "保修期：按售后政策，2026-01-01 起购买的设备保修 24 个月 [11]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "您于 2026-02-01 购买，属于 2026 年政策范围，因此保修期为 24 个月。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "补充信息：该型号维护要求为每 6 个月检查接线端子 [10]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "NX-087 的维护要求：每 6 个月检查接线端子。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_008",
+    "reviewer": "model",
+    "input_sha256": "9076b129373c6f741a820ff5c99d936e325a51dd8208a561227ee598507ff764",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-088 的通信协议为 Modbus RTU（来源：product_specs.xlsx 产品参数表第89行 [1]）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-088；产品类别：工业传感器；额定功率 (W)：85；重量 (kg)：2.9；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "安装要求为：断电后接线，并固定在 DIN 导轨上（来源：product_manual.html [7]）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-088 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "补充信息：NX-088 的供电要求为 24 V DC [11]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "NX-088 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "选型时应按协议与额定功率匹配，不按外观替代 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-088 的选型规则：按协议与额定功率匹配，不按外观替代。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_009",
+    "reviewer": "model",
+    "input_sha256": "aed605f7cc288c42804b4028fae327325891b3ca5d781cbe653355459bff7ca3",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-089 的额定功率为 110 W（产品参数表：型号 NX-089，工业控制器，额定功率 110 W，重量 5.3 kg，协议 EtherCAT，硬件版本 2.0，生效日期 2026-01-01）[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "工作表：产品参数；型号：NX-089；产品类别：工业控制器；额定功率 (W)：110；重量 (kg)：5.3；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "保修期：文档中没有 NX-089 的专属保修期限，只有公司通用售后政策：「2025-01-01 至 2025-12-31 购买的设备保修 12 个月」「2026-01-01 起购买的设备保修 24 个月」[11]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 11,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "您提到购买日期为 2026-02-01，属于 2026-01-01 起购买的情形，因此按该政策适用 24 个月保修 [11]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "补充说明：warranty_rules.html 中 NX-089 条目只载明维护要求「每 6 个月检查接线端子」，不含保修期限 [9]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 9,
+            "text": "NX-089\nNX-089 的维护要求：每 6 个月检查接线端子。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_010",
+    "reviewer": "model",
+    "input_sha256": "d07a6b15e3c2efc47a70c6780fbeaba45e4d575127656baac0f97c4978130498",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-090 的通信协议为 MQTT（产品类别：智能网关，硬件版本 2.0，生效日期 2026-01-01）[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "工作表：产品参数；型号：NX-090；产品类别：智能网关；额定功率 (W)：20；重量 (kg)：5.3；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "安装要求为：断电后接线并固定在 DIN 导轨上 [7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-090 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "供电要求为 24 V DC [8]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 8,
+            "text": "NX-090 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "使用环境为室内干燥环境，禁止浸水 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "NX-090 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_011",
+    "reviewer": "model",
+    "input_sha256": "320df08c78e83cc052614e9e593c654da3749cbbd7f90f857dad351f0e952079",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-091（工业传感器，Modbus RTU，硬件版本 2.0）的额定功率为 60 W，该参数自 2026-01-01 起生效 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-091；产品类别：工业传感器；额定功率 (W)：60；重量 (kg)：3.8；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "保修期：售后政策按购买日期分版本：2025-01-01 至 2025-12-31 购买的设备保修 12 个月；2026-01-01 起购买的设备保修 24 个月 [10]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 10,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "你于 2026-02-01 购买，适用 2026 政策，因此保修期为 24 个月 [10]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "补充说明：产品参数表本身未列出保修期字段，保修期信息仅来自售后政策文档 [1][10]；该政策文档标注为虚构测试数据（nebula:aftersales_policy）[10]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-091；产品类别：工业传感器；额定功率 (W)：60；重量 (kg)：3.8；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 10,
+            "text": "SYNTHETIC DATA / 虚构测试数据 — 星云智能科技有限公司 (Nebula Industrial)"
+          },
+          {
+            "number": 10,
+            "text": "来源标识：nebula:aftersales_policy"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_013",
+    "reviewer": "model",
+    "input_sha256": "cda6c53b5475898ef1930f3da1631af0438cde45918e96997818e61840c2d284",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-093 的额定功率为 190 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-093；产品类别：智能网关；额定功率 (W)：190；重量 (kg)：8；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "保修期方面：2026-01-01 起购买的设备保修 24 个月 [11]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "您于 2026-02-01 购买，属于 2026 政策范围，因此保修期为 24 个月（约至 2028-02-01，具体起算日以购买凭证为准）。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_012",
+    "reviewer": "model",
+    "input_sha256": "49b4bb2ab5ba146adb18475c47f4d258182bb1f643fd0477f38b8fe200f0f09a",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-092 的通信协议为 EtherCAT（产品参数表，型号 NX-092，产品类别工业控制器，硬件版本 2.0，生效日期 2026-01-01）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-092；产品类别：工业控制器；额定功率 (W)：185；重量 (kg)：5.1；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "安装要求为：断电后接线并固定在 DIN 导轨上（产品手册原文）[7]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-092 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "其使用环境为室内干燥环境，禁止浸水 [2]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-092 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_014",
+    "reviewer": "model",
+    "input_sha256": "d483a3758ac3875b78ee2134f77332cd6036bee277313f1ed3c14ec26288e337",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-094 的通信协议为 Modbus RTU（来源：product_specs.xlsx「产品参数」工作表第95行，型号 NX-094，产品类别工业传感器，额定功率 60W，重量 6.7kg，硬件版本 2.0，生效日期 2026-01-01）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-094；产品类别：工业传感器；额定功率 (W)：60；重量 (kg)：6.7；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "安装要求：断电后接线，并固定在 DIN 导轨上（来源：product_manual.html，NX-094 条目）[7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-094 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "相关配套要求：供电为 24 V DC（来源：technical_specs.html，NX-094 条目）[8]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 8,
+            "text": "NX-094 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "使用环境为室内干燥环境，禁止浸水（来源：product_faq.html，NX-094 条目）[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-094 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_015",
+    "reviewer": "model",
+    "input_sha256": "e7b271e8e86bec31dd6dd6e4038eff9d5488035c6519b4630fee1de670f9ce50",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-095 的额定功率为 185 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-095；产品类别：工业控制器；额定功率 (W)：185"
+          }
+        ]
+      },
+      {
+        "text": "保修期按购买日期适用售后政策：2025-01-01 至 2025-12-31 购买的设备保修 12 个月；2026-01-01 起购买的设备保修 24 个月 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 2,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "你提到购买日期为 2026-02-01，属于 2026 政策范围，因此保修期为 24 个月 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "知识库未给出 NX-095 单独的保修条款，保修期依据的是通用售后政策 [2]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_018",
+    "reviewer": "model",
+    "input_sha256": "4c5add37686e9b6560f375b0b2cb72c59c31ed9fdd8256ce8a49d5966bb35024",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-098 的通信协议为 EtherCAT（产品参数表，[1]）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-098；产品类别：工业控制器；额定功率 (W)：110；重量 (kg)：3.3；协议：EtherCAT"
+          }
+        ]
+      },
+      {
+        "text": "安装要求为：断电后接线，并固定在 DIN 导轨上（产品手册，[7]）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-098 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "供电要求为 24 V DC（[11]）；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 11,
+            "text": "NX-098 的供电要求：24 V DC。"
+          }
+        ]
+      },
+      {
+        "text": "使用环境为室内干燥环境，禁止浸水（[2]）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-098 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_016",
+    "reviewer": "model",
+    "input_sha256": "bb4b02ca8350356eae6f2e5f14dc770fae919e81cfbc11870567131e5dac01da",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-096 的通信协议：MQTT（产品类别为智能网关，硬件版本 2.0，生效日期 2026-01-01）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-096；产品类别：智能网关；额定功率 (W)：175；重量 (kg)：2.7；协议：MQTT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "NX-096 的安装要求：断电后接线，并固定在 DIN 导轨上 [7]（[8] 中也有同一行内容）。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-096 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          },
+          {
+            "number": 8,
+            "text": "NX-096\nNX-096 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "相关补充要求：供电要求为 24 V DC [10]；使用环境为室内干燥环境，禁止浸水 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 10,
+            "text": "NX-096\nNX-096 的供电要求：24 V DC。"
+          },
+          {
+            "number": 2,
+            "text": "NX-096\nNX-096 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_017",
+    "reviewer": "model",
+    "input_sha256": "49215938af468482cfd235898272b154138a7356bb201d673c5ced186bdea4d6",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-097（工业传感器，Modbus RTU，硬件版本 2.0）的额定功率为 45 W，即 0.045 kW；请注意，知识库中该型号的功率单位是 W，不能当作 45 kW 使用 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-097；产品类别：工业传感器；额定功率 (W)：45；重量 (kg)：2.8；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "保修期按购买日期适用政策：2026-01-01 起购买的设备保修 24 个月，即 2 年 [3]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "您提到的 2026-02-01 购买日期落在 2026 政策区间内，因此适用 24 个月保修 [3]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_019",
+    "reviewer": "model",
+    "input_sha256": "cd1ceb3f1d277b459092be414a7cd5d38c9c71444751ff2cb685e756d9ebca24",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "NX-099（智能网关）的额定功率为 185 W [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-099；产品类别：智能网关；额定功率 (W)：185"
+          }
+        ]
+      },
+      {
+        "text": "保修期按购买日期适用售后政策：2025-01-01 至 2025-12-31 购买的设备保修 12 个月；2026-01-01 起购买的设备保修 24 个月 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 2,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "因此，2026-02-01 购买的 NX-099 属于 2026 政策范围，保修期为 24 个月 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中没有针对 2026-02-01 这一具体日期的单独保修条款，只有上述按购买年份划分的政策 [2]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "cross_document_020",
+    "reviewer": "model",
+    "input_sha256": "2e87d9a96bcb389cce899de6506ff772d39fdf81f5ac9e16f98f1e7ac1a4dcbf",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "**通信协议**：Modbus RTU（来源：product_specs.xlsx「产品参数」工作表第 101 行，型号 NX-100，产品类别工业传感器，额定功率 45 W，重量 5.6 kg，硬件版本 2.0，生效日期 2026-01-01）[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-100；产品类别：工业传感器；额定功率 (W)：45；重量 (kg)：5.6；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "**安装要求**：断电后接线并固定在 DIN 导轨上（来源：product_manual.html 中 NX-100 条目）[7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-100 的安装要求：断电后接线并固定在 DIN 导轨上。"
+          }
+        ]
+      },
+      {
+        "text": "NX-100 的使用环境为室内干燥环境，禁止浸水 [3]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 3,
+            "text": "NX-100 的使用环境：室内干燥环境，禁止浸水。"
+          }
+        ]
+      },
+      {
+        "text": "单价 1750 CNY，生效日期 2026-01-01 [5]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 5,
+            "text": "工作表：价格；型号：NX-100；单价 (CNY)：1750；币种：CNY；生效日期：2026-01-01"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_001",
+    "reviewer": "model",
+    "input_sha256": "8998fccdf450d659d36e8e1064275520c14f7c6de04fe998b5e5cac12bf12f95",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "硬件 2.0 应使用 **120 W**。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：120；重量 (kg)：3.4；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 2,
+            "text": "NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "产品参数表（product_specs.xlsx「产品参数」）中 NX-001 的额定功率为 120 W，硬件版本 2.0，生效日期 2026-01-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-001；产品类别：工业传感器；额定功率 (W)：120；重量 (kg)：3.4；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "发布说明（release_notes.html）记载：NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；硬件 2.0 自 2026-01-01 生效，并明确「以产品参数表的 2.0 数值为准」[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "两个数值并非矛盾，而是对应不同硬件版本与生效日期——1.0 为 130 W（2025-01-01 起），2.0 为 120 W（2026-01-01 起），相差 10 W；按版本和生效日期区分适用，且 2.0 以参数表数值为准 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：120；重量 (kg)：3.4；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 2,
+            "text": "NX-001 硬件 1.0 的额定功率为 130 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未检索到名为「公告」的独立文档，上述差异说明来自发布说明 release_notes.html [2]；若你手上有另一份公告文件，请提供文件名以便核对。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_002",
+    "reviewer": "model",
+    "input_sha256": "39d590e2b4716e998527133e20275582184222bfcb3e1ca11ed6cb46aa4d657c",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "硬件 2.0 应使用 90 W [6]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 6,
+            "text": "工作表：产品参数；型号：NX-002；产品类别：工业控制器；额定功率 (W)：90；重量 (kg)：4.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "公告（release_notes）中的 100 W 是 NX-002 硬件 1.0 的额定功率（2025-01-01），并非 2.0 的数值 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-002 硬件 1.0 的额定功率为 100 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "产品参数表（product_specs.xlsx）中，硬件版本 2.0、生效日期 2026-01-01 的额定功率为 90 W [6]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 6,
+            "text": "工作表：产品参数；型号：NX-002；产品类别：工业控制器；额定功率 (W)：90；重量 (kg)：4.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "两者相差 10 W，属于版本迭代导致的数值变更，并非矛盾；公告本身也明确规定：2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-002 硬件 1.0 的额定功率为 100 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          },
+          {
+            "number": 6,
+            "text": "工作表：产品参数；型号：NX-002；产品类别：工业控制器；额定功率 (W)：90；重量 (kg)：4.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "知识库未提供 100 W→90 W 的具体技术变更原因（如器件或电源方案调整），因此无法进一步解释该数值下降的技术细节。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "NX-002 的供电要求为 24 V DC [7]，与功率数值的选用无关，仅供参考。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 7,
+            "text": "NX-002 的供电要求：24 V DC。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_005",
+    "reviewer": "model",
+    "input_sha256": "e19879e521ce23ffa24a439874a723e13c69354363e993955cadec76363174c6",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "硬件版本 2.0 应使用 10 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：10；重量 (kg)：7.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 2,
+            "text": "NX-005 硬件 1.0 的额定功率为 20 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "产品参数表中 NX-005 的额定功率为 10 W，硬件版本 2.0，生效日期 2026-01-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "型号：NX-005；产品类别：工业控制器；额定功率 (W)：10；重量 (kg)：7.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "发布说明中记载 NX-005 硬件 1.0 的额定功率为 20 W（2025-01-01），并明确 2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-005 硬件 1.0 的额定功率为 20 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "20 W 是硬件 1.0 的旧数值，10 W 是硬件 2.0 的新数值；版本切换后以参数表为准 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-005 硬件 1.0 的额定功率为 20 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          },
+          {
+            "number": 1,
+            "text": "额定功率 (W)：10；重量 (kg)：7.7；协议：EtherCAT；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未检索到独立的“公告（announcement）”文档，上述 20 W 实际出自发布说明（release_notes.html）[2]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_004",
+    "reviewer": "model",
+    "input_sha256": "ea4500b535079a9a9170273e8d35f1b257814d431ae4deb95c20cc2c13f5d212",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "硬件版本 2.0 应使用 60 W。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：60；重量 (kg)：5.5；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 2,
+            "text": "NX-004 硬件 1.0 的额定功率为 70 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "产品参数表（product_specs.xlsx，工作表“产品参数”）中 NX-004 的记录为：额定功率 60 W、重量 5.5 kg、协议 Modbus RTU、硬件版本 2.0、生效日期 2026-01-01 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "工作表：产品参数；型号：NX-004；产品类别：工业传感器；额定功率 (W)：60；重量 (kg)：5.5；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          }
+        ]
+      },
+      {
+        "text": "另一个数值 70 W 来自发布说明（release_notes.html）中 NX-004 硬件 1.0 的条目（2025-01-01），该条目同时明确写明“2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准” [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-004 硬件 1.0 的额定功率为 70 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "因此，60 W 与 70 W 并非同一硬件版本下的矛盾数据，而是分属不同硬件版本：70 W 是 1.0 的旧值，60 W 是 2.0 的新值；并且发布说明本身已指定以参数表的 2.0 数值为准 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "额定功率 (W)：60；重量 (kg)：5.5；协议：Modbus RTU；硬件版本：2.0；生效日期：2026-01-01"
+          },
+          {
+            "number": 2,
+            "text": "NX-004 硬件 1.0 的额定功率为 70 W（2025-01-01）；2.0 自 2026-01-01 生效，以产品参数表的 2.0 数值为准。"
+          }
+        ]
+      },
+      {
+        "text": "知识库中未检索到名为“公告（announcement）”的文档，上述 70 W 实际出自 release_notes.html 的发布说明条目 [2]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_006",
+    "reviewer": "model",
+    "input_sha256": "8869692043e4d23995f1802e08adca1ee66c2944c9f8ce9e69b18a908f408565",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "2026-06-01 购买的设备适用 24 个月保修期。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "旧政策（2025 政策）：2025-01-01 至 2025-12-31 购买的设备保修 12 个月 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          }
+        ]
+      },
+      {
+        "text": "新政策（2026 政策）：2026-01-01 起购买的设备保修 24 个月 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "适用规则：按购买日期适用，2026-01-01 起购买适用新政策 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "因此，2026-06-01 落在「2026-01-01 起购买」的区间内，应适用 24 个月 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "现有文档只能确认两版政策的适用区间不同（2025 年购买为 12 个月，2026-01-01 起为 24 个月）[1]",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "以及按购买日期切换的规则 [2]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "文档中未记载政策变更的原因、变更公告，也未说明是否按产品线或地区区分适用范围。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_007",
+    "reviewer": "model",
+    "input_sha256": "96d732f1bc054149d14d59dc12e6f205e00651b265598761a278658f6b452739",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "2026-07-01 购买适用 24 个月保修期。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "售后说明按购买日期划分两档：2025-01-01 至 2025-12-31 购买的设备保修 12 个月，2026-01-01 起购买的设备保修 24 个月 [1]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "适用规则明确为「按购买日期适用，2026-01-01 起购买适用新政策」[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "因此 12 与 24 个月并非同时生效的冲突条款，而是分别对应旧、新两版政策的购买区间 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025政策\n2025-01-01 至 2025-12-31 购买的设备保修 12 个月。\n2026政策\n2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "现有文档只给出两版政策的期限与生效区间，以及按购买日期切换的规则 [1][2]，未检索到任何关于变更原因或变更说明的原文表述，因此这一部分证据不足，无法给出原因。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "如需了解变更背景，建议向售后或合规部门确认。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_008",
+    "reviewer": "model",
+    "input_sha256": "5046c1d45d20ca7799fe9dca468c30414341e46052af35c8d2afd2e542ec0477",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "2026-08-01 购买的设备适用 24 个月保修。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "售后说明按购买日期分版本列明保修期——「2025政策：2025-01-01 至 2025-12-31 购买的设备保修 12 个月」；「2026政策：2026-01-01 起购买的设备保修 24 个月」[1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025政策\n2025-01-01 至 2025-12-31 购买的设备保修 12 个月。\n2026政策\n2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "适用规则也明确「按购买日期适用，2026-01-01 起购买适用新政策」[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "2026-08-01 落在 2026-01-01 之后，因此适用 24 个月。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "文档中 12 个月与 24 个月的差异来自政策版本更替（2025政策 vs 2026政策），以购买日期为分界，并非按产品型号或适用范围区分 [1][2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025政策\n2025-01-01 至 2025-12-31 购买的设备保修 12 个月。\n2026政策\n2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "但现有知识库中未检索到修订记录、变更原因说明或政策变更公告，因此旧政策为何从 12 个月调整为 24 个月，在现有资料中无据可查，无法给出原因。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "如需该原因，建议向售后或政策发布部门确认。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_009",
+    "reviewer": "model",
+    "input_sha256": "e02f82da72290693070f382c9eca2a06ddd0ba419c2add13cbd4208ad415a33f",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "2026-09-01 购买适用 24 个月保修期。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "售后政策按购买日期判定：2025-01-01 至 2025-12-31 购买的设备保修 12 个月，2026-01-01 起购买的设备保修 24 个月 [1]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "适用规则明确为「按购买日期适用，2026-01-01 起购买适用新政策」[2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "因此 2026-09-01 属于 2026 政策区间，保修 24 个月。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "关于「旧政策为何不同」：现有知识库中查不到变更原因。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "售后政策文档只列出两版政策的适用区间与期限，未包含任何变更理由或说明性条款 [1]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025政策\n2025-01-01 至 2025-12-31 购买的设备保修 12 个月。\n2026政策\n2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "warranty_rules.html 仅含各型号维护要求（每 6 个月检查接线端子）与按购买日期适用的规则 [2][8]，",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-188 的维护要求：每 6 个月检查接线端子。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          },
+          {
+            "number": 8,
+            "text": "NX-001 的维护要求：每 6 个月检查接线端子。"
+          }
+        ]
+      },
+      {
+        "text": "其他表格（价格、产品参数、维修记录）中的生效日期字段与保修期变更无关 [3][5][7][9][10]。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "所以「12 个月与 24 个月并存」只是两版政策按购买日期分段适用，并非同一订单同时适用两个期限；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "至于为何从 12 个月调整为 24 个月，属于证据缺口，需查阅政策变更公告或内部决策文件才能回答。",
+        "verdict": "unverifiable",
+        "quotes": []
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered",
+      "covered"
+    ]
+  },
+  {
+    "id": "version_policy_010",
+    "reviewer": "model",
+    "input_sha256": "cec16253e114289e404f9e2e5b11f878bf7eb5f81a67094b7daac79f8da4963f",
+    "judge_provider": "deepseek",
+    "judge_model": "deepseek-flash",
+    "judge_prompt_sha256": "c5b72df39f20babba43ce65790e2d82f77185d83d1b5081e9deeab00f90062b1",
+    "claims": [
+      {
+        "text": "2026-10-01 购买的设备适用 24 个月保修期。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "判定依据：售后政策按购买日期划分适用区间，2026-01-01 起购买的设备适用新政策，保修 24 个月 [1][2]；",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "2026-10-01 落在该区间内，因此适用 24 个月。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          },
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "两条条款并存的原因：文档中同时保留了「2025政策」和「2026政策」两个版本段落。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025政策\n2025-01-01 至 2025-12-31 购买的设备保修 12 个月。\n2026政策\n2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月，2026-01-01 起购买的设备保修 24 个月 [1]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          },
+          {
+            "number": 1,
+            "text": "2026-01-01 起购买的设备保修 24 个月。"
+          }
+        ]
+      },
+      {
+        "text": "两者以购买日期衔接、互不重叠，判定口径均为购买日期，而非出厂或安装日期 [2]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "按购买日期适用，2026-01-01 起购买适用新政策。"
+          }
+        ]
+      },
+      {
+        "text": "因此，12 个月条款并非与 24 个月条款冲突，它只是旧版本对 2025 年购买设备的适用规则。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 1,
+            "text": "2025-01-01 至 2025-12-31 购买的设备保修 12 个月。"
+          }
+        ]
+      },
+      {
+        "text": "关于「旧政策为何不同」：现有文档只记录了时长从 12 个月延长到 24 个月，以及适用区间的变化，未检索到任何说明调整原因（如质量提升、竞争、客户满意度等）的表述。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "这一部分属于证据缺口，需向售后或产品管理部门确认。",
+        "verdict": "unverifiable",
+        "quotes": []
+      },
+      {
+        "text": "另需注意，warranty_rules.html 中大量 NX-xxx 条目只是「每 6 个月检查接线端子」的维护要求，与保修期时长无关，不可混用 [2][7]。",
+        "verdict": "supported",
+        "quotes": [
+          {
+            "number": 2,
+            "text": "NX-188 的维护要求：每 6 个月检查接线端子。"
+          },
+          {
+            "number": 7,
+            "text": "NX-001 的维护要求：每 6 个月检查接线端子。"
+          }
+        ]
+      }
+    ],
+    "fact_coverage": [
+      "covered",
+      "covered",
+      "covered"
+    ]
+  }
+]

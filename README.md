@@ -1,380 +1,188 @@
 # Learning Q&A Assistant
 
-![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)
+**面向个人与团队知识库的全栈 RAG Agent：可追溯问答、可恢复任务与用户可控的跨会话记忆。**
+
+![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-1.x-1C3C3C)
 ![Vue](https://img.shields.io/badge/Vue-3-42B883?logo=vuedotjs&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?logo=postgresql&logoColor=white)
-![Milvus](https://img.shields.io/badge/Vector_DB-Milvus-00A1EA)
-![SSE](https://img.shields.io/badge/Streaming-SSE-success)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![Milvus](https://img.shields.io/badge/Milvus-00A1EA)
 
-一个面向多用户私有知识库的全栈 RAG Agent。系统将文档解析、向量检索、联网搜索、证据引用、模型降级、会话持久化和 SSE 事件流整合为一条可追踪、可测试的问答链路，而不是只演示一次模型调用。
+将分散的文档、表格和获准外部来源接入同一问答流程，让用户能够核对答案出处、查看执行过程，并在中断后继续处理任务。项目覆盖 Vue 前端、FastAPI 接口、PostgreSQL 持久化、Milvus 混合检索、独立 Worker 和 OpenViking 自动记忆。
 
-## 评测工作台
+**当前状态：核心功能已实现，架构检查通过；记忆稳定性、延迟及 RAG 质量门禁尚未全部通过。** 自动记忆默认关闭，生产启用需要显式迁移、服务配置与用户同意。
 
-平台管理员可导入不可变标注集、创建和取消评测任务、查看逐题答案与审阅、比较同范围基线。独立 Evaluation Worker 沿用持久 Run 检查点，回答、规划、证据评判与评测模型按角色记账；报告区分执行完成、评分覆盖和质量门禁。
+[实测与逐题记录](docs/validation/memory-live-20261029/report.md) · [架构验收](docs/validation/architecture-openviking-acceptance.md) · [部署指南](docs/deployment-preflight.md) · [功能演进记录](docs/replication-repair-progress.md)
 
-[部署与使用](docs/evaluation-workbench.md) · [12 文档 / 80 题合成企业语料](evals/rag/synthetic_enterprise/README.md) · [真实 A/B 报告](docs/validation/stage5-enterprise-live-ab.md)。本轮两组质量门禁均未通过，不能将功能交付或单项指标变化表述为质量提升。完整功能补齐状态见[阶段进度](docs/replication-repair-progress.md)。
+## 已验证的结果
 
-## Supervisor 多 Agent（首期）
+以下为 **2026-10-29～30、本项目隔离测试环境**的测量结果。记忆实验使用 100 个冻结合成场景，每组重复 3 次；语义标签由固定模型评审，尚无完整人工复核。
 
-聊天入口现由 Supervisor 识别意图，委派 RAG、SQL、Web 三个专职 Agent，并统一汇总引用。
-支持一次提问组合多个 Agent；子任务顺序执行，共享模型/工具预算与请求 deadline。
+| 指标 | 基线 → 当前 | 解释与验收状态 |
+| --- | --- | --- |
+| Web 直接依赖持久化的文件 | **1 → 0** | 静态检查通过 |
+| Service 直接导入 SQLAlchemy | **0** | 原 application 中 20 个相关文件的操作已下沉或重新分层，两个目录口径不等同 |
+| 禁止方向依赖 / 循环依赖 | **0 / 0** | 169 个规范模块、76 个兼容入口 |
+| 跨会话回答正确率 | **60.00% → 99.67%** | 提升 **39.67 个百分点**；每组 300 次尝试，自动组 1 次执行失败计 0 |
+| 更正后新事实采用率 | **0% → 100%** | 每组 60 次更正场景 |
+| 跨用户泄漏 / 单条删除后召回 | **0 / 0** | 100 个随机 canary 检查全部完成；复用 8 对隔离账号 |
+| 成功回答 P95 | **4.97 秒 → 5.93 秒** | **+19.3%，未达到 ≤10% 目标**；自动组仅 299 个成功回答，完整口径 P95 不可用 |
+| 同事实受控 Recall@3 | **99.44% → 99.44%** | 180 次、1 次失败；OpenViking 使用 `vectors_only`，未证明检索质量提升 |
+| 原 80 题 RAG 回归 | **69 成功 / 11 失败** | 原质量门禁未通过；10 次 `INVALID_CITATION`、1 次 `AGENT_LIMIT_EXCEEDED` |
 
-- `knowledge`：仅私有知识库；`sql`：仅业务只读 PostgreSQL；`web`：Tavily 搜索或 Scrapling 读网页；`auto`：自动组合。
-- 在聊天框输入网页 URL 即可授权本轮读取（最多 3 个）。指定网页无需先搜索，未配置 Tavily 也可读取；搜索结果也可读取，正文链接不会自动授权。
-- SQL 配置使用 `.env.example` 中的 `SQL_DATABASE_URL` 和 `SQL_ALLOWED_TABLES`；平台数据库不可作为业务数据源。数据源是所有已登录用户共享的获准业务数据集，只应授权他们均可查看的表；需要按用户限制时，应先增加业务授权层再开放。
-- 新增 SSE `agent_started / agent_finished / agent_failed`；聊天中展示执行状态，最终 SQL 来源卡保留查询、返回行数与截断提示。历史消息复用相同格式。
-- 每轮默认 16 次模型调用、12 次工具调用、最多 6 次委派、每个 Agent 最多 2 次；所有调用及降级共用预算。预算耗尽直接报错，不无限重试。
+**尝试历史完整保留。** 原冻结实验的 600 次尝试中，274 次受模型余额耗尽影响而失败。补充额度后保留已完成的第一轮，并另存第二、三轮全部配对场景的 400 次新尝试，形成上表的恢复测量；原失败没有被覆盖或剔除。自动组的另 1 次失败源于冻结的 2048 Token 提取输出上限。
 
-调用链、只读角色配置、测试与分阶段学习说明见 [多 Agent 实现指南](docs/multi-agent-guide.md)。
+这些结果说明自动采集对本合成集的跨会话回答有帮助，不能外推为生产准确率。回答、准备会话、任务内提取与 Embedding 的已报告用量分别记录；任务外查询 Embedding、失败调用和维护账单仍不完整，**不宣称总 Token 或费用下降**。见[实验方法与置信区间](evals/memory/README.md)、[阶段用量](docs/validation/memory-live-20261029/phase-usage.json)。
 
-## 父子上下文检索
+## 工程实现
 
-知识库问答默认先检索小块，再补充同一文档、页/章节/Sheet 内的相邻分组作为无编号理解上下文；引用仍只绑定实际命中的片段，Excel 行号不会被父块扩大。默认两层路径复用既有索引，无需重建文档或新增 schema；可通过 `RETRIEVAL_PARENT_CONTEXT=false` 关闭，详见 [第三阶段说明](docs/parent-context-retrieval.md)。第十二阶段可显式启用下面的三级分块与自动合并。
+| 问题 | 实现 | 可核对的入口 |
+| --- | --- | --- |
+| 答案需要可追溯的依据 | Dense + BM25 混合召回、RRF、父子上下文；XLSX 保留 Sheet 和物理行号，引用绑定实际叶子证据 | [表格引用](docs/excel-row-citations.md)、[上下文检索](docs/parent-context-retrieval.md) |
+| 一个问题可能需要多个数据源 | Supervisor 顺序委派 RAG、只读 SQL、Web Agent，共享调用次数、工具次数和 deadline；Rerank、规划与 Grader 可选启用 | [多 Agent 调用链](docs/multi-agent-guide.md)、[证据判断](docs/knowledge-quality.md) |
+| 请求和进程会中断 | PostgreSQL 持久任务、租约、fencing、幂等键和检查点；事件先落库，再经 SSE 输出，重连按游标重放 | [持久 Run 执行](docs/durable-run-execution.md)、[SSE 重放](docs/durable-chat-runs.md) |
+| 多用户和团队资料需要隔离 | JWT / Refresh Token 轮换、用户作用域查询、组织角色、团队空间和版本发布；保存答案前复核范围 | [组织共享](docs/organization-sharing.md)、[索引发布](docs/index-adoption.md) |
+| 个性化记忆需要可控 | 手工记忆保留；用户开启后异步提取偏好和稳定事实，支持查看、删除、清空、关闭；代际与墓碑阻止旧任务恢复已删除内容 | [OpenViking 数据流与删除语义](docs/openviking-memory.md) |
+| 工具调用需要边界和审计 | 版本化 Skill / Tool 目录、Run 绑定审批、独立 Sandbox、产物和运行追踪；未知副作用结果不盲目重放 | [能力中心](docs/capability-center.md)、[审批与沙箱](docs/approval-sandbox-plan.md) |
+| 模型效果需要可复核 | 不可变数据集、证据快照、预测摘要绑定评审、逐题 JSON、独立评测 Worker；区分执行完成、评分覆盖与质量门禁 | [评测工作台](docs/evaluation-workbench.md)、[答案与引用评估](docs/answer-evaluation.md) |
 
-## 可选 Rerank 精排
+SQL Agent 仅连接单独配置的业务只读数据库和显式表白名单；平台数据库不作为业务数据源。Web 读取限定在本轮获准来源。文档云解析、网络搜索、模型降级、自动记忆等能力按配置显式开启。
 
-混合召回的候选先校验用户/文档权限、去重，再交给百炼文本排序 API，选出 Top K 后才扩展父块。默认关闭；在服务端配置 `RERANK_ENABLED / RERANK_ENDPOINT / RERANK_MODEL / RERANK_API_KEY` 后启用，不新增依赖或改变索引。引用中的 `score` 仍是 RRF 分数，新增 `rerank_score` 单独记录相关性分数。超时、服务错误和非法返回均沿用原排序，`run_metadata.rerank_events` 与 `warnings` 记录降级。配置、调用链及基线对比命令见 [第四阶段说明](docs/rerank-retrieval.md)。
-
-## 项目亮点
-
-可通过 `KNOWLEDGE_QUALITY_ENABLED=true` 启用第五阶段的知识库规划与证据判断：RAG 任务最多拆成两个独立检索问题，由 Grader 判断证据是否足以回答，整个请求最多一次针对缺失事实的改写补检索。未通过判断的候选不能作为最终引用；歧义返回澄清，资料不足返回不足说明。默认关闭，继续复用已有 Supervisor、Rerank、父块和 SSE 链路；详见[第五阶段说明](docs/knowledge-quality.md)。
-
-第六阶段提供[答案与引用评估](docs/answer-evaluation.md)：默认离线读取答案和真实叶子证据快照，分别统计引用合法性、审阅主张忠实度、引用支持度及标准事实覆盖度；无语义审阅时保留 null。可显式调用现有 Supervisor 生成答案或调用现有模型作审阅，保存逐题结果、配置、指纹与同标注集的基线差值。仓库中的[合成样例报告](docs/evaluation/answer-smoke-report.json)含故意注入的错误，只验证评估器，不代表线上质量。
-
-第七阶段加入[文档版本管理](docs/document-versions.md)：新版本使用独立文件、文档 ID、缓存和向量，旧版保留；就绪后在资料页的版本面板明确“设为当前”，默认问答只查当前版，指定旧版仍可查。历史引用保存版本号与内容哈希。先显式运行 `python -m app.migrate` 执行平台版本迁移，再设置 `DOCUMENT_VERSIONS_ENABLED=true`；不会自动迁移或清理已有文件。
-
-第八阶段提供[独立入库 Worker](docs/durable-ingestion.md)：复用 PostgreSQL 和原入库流程，任务与文档原子落库，支持跨进程领取、租约心跳、崩溃接管和有限重试。默认关闭；显式运行 `python -m app.migrate` 后，在所有 API/Worker 设置 `INGESTION_MODE=durable`，并用 `python -m app.worker` 启动独立进程。所有进程需共享上传/缓存路径，不支持事务级连接池。
-
-第九阶段加入 [Run/Event 持久化与 SSE 断线重放](docs/durable-chat-runs.md)：先保存事件，再发送给客户端；相同请求标识复用原 Run，重连按游标续传，最终助手消息与 done 事件原子提交。显式运行 `python -m app.bootstrap --chat-runs` 后设置 `CHAT_RUNS_ENABLED=true` 并重启 API。进程中断会标记错误，不自动重跑模型或工具；默认关闭，保留原流式入口。
-
-第十阶段提供[组织与共享知识库](docs/organization-sharing.md)：组织所有者/管理员管理成员与 viewer/editor 授权，成员可发布自己的就绪文档；聊天可显式选择共享库，检索按真实文档归属分组，保存答案前复核权限。原始文件管理仍归所有者，不复制索引。先显式执行 `python -m app.bootstrap --sharing`，再设置 `SHARING_ENABLED=true`；默认关闭，新增五张关系表。
-
-第十一阶段加入[模型中心](docs/model-center.md)：复用 DeepSeek/Ollama 适配器，提供受管理员控制的版本化配置、目录检测和个人/全局调用统计；每轮冻结配置，失败、降级及未知用量分别记账。先显式执行 `python -m app.bootstrap --model-center`，再设置 `MODEL_CENTER_ENABLED=true`，并按平台管理说明注册管理员或显式迁移旧白名单。连接地址和密钥继续仅由服务端管理。
-
-第十二阶段提供[三级分块与自动合并](docs/hierarchical-retrieval.md)：新文本递归生成根块、父块和叶子，仅叶子入 Milvus，结构与父级正文存 PostgreSQL；根据本轮叶子命中比例和证据预算补充父级上下文，引用仍只来自真实命中的叶子。先显式执行 `python -m app.bootstrap --hierarchy`，再设置 `HIERARCHY_ENABLED=true` 并同步重启 API/Worker。旧文档可逐个显式补建，保留原叶子 ID 和向量；不自动重切或清库。
-
-第十三阶段的[最终验收记录](docs/validation/final-acceptance.md)汇总真实存储、模型、SQL＋RAG＋Web 组合问答、Worker/版本/共享库/SSE 与浏览器上传问答的证据、演示步骤和边界，保留失败与降级记录。联调修复了同标识重试在会话行锁下被误拒绝的问题，并将 SQL 配置上限固定为 100 行。
-
-- **Supervisor 多 Agent：** 可在 `knowledge / web / sql / auto` 四种模式下按策略选择 Milvus 私有知识库、Tavily 公网搜索，并按来源编号用 Scrapling 读取网页原文。
-- **可验证的引用闭环：** 知识库与网页证据进入统一 Evidence Registry，连续编号、去重并校验最终引用；未知引用不会作为正常答案返回。
-- **SSE 答案流已落地：** `POST /api/v2/sessions/{id}/messages/stream` 从真实模型 chunk 中增量提取 `answer`，持续推送回答正文、运行状态、用量、最终答案及错误；前端使用 `fetch + ReadableStream` 实时渲染临时消息。
-- **可靠的文档入库：** PostgreSQL 状态机管理 `processing / ready / failed / deleting`，支持进程恢复、失败重试和删除补偿；PDF、Word、PowerPoint、旧版 XLS 通过 MinerU 解析；XLSX 本地按行处理并保留 Sheet/行号，TXT/Markdown 本地处理。
-- **模型与外部服务容错：** DeepSeek 遇到连接、超时、429 或 5xx 时可有限降级至 Ollama；已完成的检索不会重复执行，鉴权错误不会被错误地重试或降级。
-- **工程化交付：** FastAPI + Vue 3/TypeScript 前后端分离，采用应用服务、领域协议、仓储和基础设施适配器分层；提供显式初始化、结构化日志、request ID、能力发现与离线自动化测试。
-
-## 技术栈
-
-| 层级 | 技术 |
-| --- | --- |
-| 前端 | Vue 3、TypeScript、Pinia、Vue Router、Vite |
-| API / Agent | FastAPI、Pydantic、LangChain、DeepSeek、Ollama |
-| 检索 | Milvus、Qwen Embedding、Tavily Search、Scrapling |
-| 数据与任务状态 | PostgreSQL、SQLAlchemy |
-| 文档解析 | MinerU、openpyxl、PyPDF、python-docx、LibreOffice |
-| 可观测与传输 | SSE、结构化日志、request ID、LangSmith（可选） |
-
-## 核心链路
-
-```mermaid
-flowchart LR
-    UI[Vue 3 前端] -->|REST / POST SSE| API[FastAPI]
-    API --> CHAT[ChatService]
-    CHAT --> AGENT[Supervisor / RAG / SQL / Web]
-    AGENT -->|knowledge| RETRIEVE[Qwen Embedding + Milvus]
-    AGENT -->|web / auto| WEB[Tavily Search]
-    AGENT -->|read_web_page| PAGE[Scrapling 网页正文]
-    AGENT --> MODEL[DeepSeek / Ollama]
-    CHAT --> DB[(PostgreSQL)]
-    CHAT -->|run_started / usage / done / error| UI
-```
-
-代码学习请看 `docs/code-guide.md`：包含分层架构、依赖注入详解、上传/问答调用链和后续修改入口。
-
-V2 架构与安全边界见 [RAG Agent V2 详细架构设计](docs/rag-agent-v2-architecture.md)。
-
-V3 实现依据见 [Vue 前端架构与后端接入方案](docs/rag-v3-frontend-architecture.md)：包含界面、组件与状态划分、文件夹上传、用量展示和后端契约。
-
-## 1. 当前实现
-
-- FastAPI 文档与会话 API、JWT 登录、可轮换 Refresh Token、用户作用域查询、统一错误与 request_id。
-- 本地 TXT/Markdown、文本型 PDF、DOCX 解析；旧 DOC 通过 LibreOffice 转换。
-- 可配置 token 切片、确定性 chunk ID、千问批量 Embedding、Milvus Dense + 原生 BM25 混合检索。
-- PostgreSQL 元数据和消息持久化，文档状态机、重试与删除补偿。
-- 最近消息上下文、服务端引用、DeepSeek/Ollama 回答与 SSE 增量答案。
-- DeepSeek 可重试错误发生时，可显式开启一次 Ollama 降级；鉴权错误不降级。
-- LangSmith 对 LangChain 模型调用的追踪配置；默认隐藏输入/输出。
-- `knowledge / web / sql / auto` 四种模式、请求内证据登记、混合引用和有限工具循环。
-- Tavily 固定公开搜索词；Web Agent 可按本轮授权 URL 调用 Scrapling 读取清洗后的网页正文，网络结果不会写入 Milvus。
-- XLSX 本地表格感知解析与精确行引用；PDF、Word、PowerPoint、XLS 显式启用后经 MinerU 云解析；TXT/Markdown 本地解析。
-- 会话持久化、运行元数据和显式数据库初始化。
-
-**仍未实现：** SSE 断线续传、自动滚动摘要、持久任务队列、多 worker 和网页自动入库。
-
-## 2. 项目结构
+## 分层架构
 
 ```text
+frontend/                  Vue 3 + TypeScript：页面、交互、SSE 与运行追踪
 app/
-  api/                        HTTP 路由、请求/响应模型、依赖与请求体限制
-  application/
-    container.py              服务装配与就绪检查
-    ingestion.py              文档入库、失败重试、删除
-    sessions.py               会话 CRUD 与单进程并发控制
-    chat.py                   消息保存与问答用例
-    evidence.py               来源编号、去重和引用校验
-    retriever.py              知识库检索
-  domain/contracts.py         Chunk、SearchHit、模型/向量库协议
-  infrastructure/
-    persistence/              SQLAlchemy 模型、仓储与 PostgreSQL 连接
-    vectorstores/milvus.py     Milvus schema、用户过滤、向量读写
-    embeddings/qwen.py        千问兼容接口
-    llms/providers.py         LangChain 模型适配、选择与有限降级
-    loaders/local.py          本地解析与共享切片
-    loaders/excel.py          XLSX 行语义、物理行号与稳定来源锚点
-    loaders/mineru.py         MinerU 签名上传、轮询、下载和结构归一化
-    search/tavily.py          Tavily 搜索适配与结果安全过滤
-    search/scrapling.py       已登记搜索来源的网页正文抓取与安全校验
-  workflows/supervisor.py     Supervisor 与 RAG/SQL/Web 子 Agent
-  workflows/agent.py          共享模型预算、降级及答案增量解析
-  core/                       环境配置、异常与结构化日志
-  bootstrap.py                显式初始化存储
-  main.py                     FastAPI 入口
+  open_api/                对外 HTTP / SSE 契约的发布入口
+  web/                     路由、认证上下文、参数校验与响应
+  service/                 业务规则、权限决策、流程与事务边界
+    agent/                 Supervisor / RAG 业务编排
+  manager/                 可复用能力、第三方服务与模型适配
+    openviking.py          OpenViking HTTP 适配与可信身份
+  dao/                     PostgreSQL、Milvus 与持久化查询
+  entity/                  DO / DTO / BO / Query / VO
+  composition/             依赖装配与资源生命周期
+  core/                    配置、异常、日志及通用工具
+  main.py                  FastAPI 入口
+  *_worker.py              入库、Run、评测和记忆等独立进程
 ```
 
-根目录 `main.py` 和 `scau/agentdemo.py` 保留为原始实验脚本。**新服务从 `app.main:app` 启动**，不会执行实验脚本的 Milvus 初始化。
+请求经 Web 进入 Service；Service 可调用 Manager 或直接调用 DAO。Entity 是模型集合，不是额外的执行步骤。开放接口层与 Web 共同形成同一 HTTP 接口，不增加重复转发。
 
-`frontend/` 是 Vue 3 + TypeScript 前端。开发时先启动 FastAPI，再执行 `cd frontend`、`npm install`、`npm run dev`；Vite 会把 `/api` 和 `/health` 代理到 `127.0.0.1:8000`。生产构建使用 `npm run build`。
+- Web 不直接访问 ORM、向量库或模型 SDK；SQL 构造和执行集中在 DAO。
+- Service 决定事务边界，网络请求和模型推理保持在数据库长事务之外。
+- 自动记忆由独立 Worker 提交和跟踪；提取尚未完成时不显示“已记住”，服务不可用时保留原问答能力。
+- 旧导入通过兼容入口转发到唯一实现，保留原 HTTP path / schema、SSE、幂等和恢复行为。
 
-## 3. 安装和配置（Windows PowerShell）
+分层采用[阿里巴巴规约中适用于本 Python 项目的工程职责](docs/layered-architecture.md)，不宣称通过 Java P3C 或整本 Java 手册认证。
 
-工作目录为本项目根目录，Python 3.12+。依赖已经声明在 `pyproject.toml` 并锁定在 `uv.lock`。
+## 界面与两分钟演示
+
+实际界面中的引用叶子与父级上下文，使用合成验收材料：
+
+![知识库回答与可核对的引用上下文](docs/screenshots/stage8-docker-rag-context.png)
+
+环境准备完成后，可按以下路线演示：
+
+1. 登录并上传一份 TXT / Markdown 或 XLSX，查看处理状态直到 `ready`。
+2. 在知识库模式提问，观察 SSE 回答，再打开引用，核对文档片段或表格物理行。
+3. 展开执行记录，查看 Agent、检索、工具调用和用量；完整配置下可演示审批与持久 Run 恢复。
+4. 配好 OpenViking 后在“长期记忆”中主动开启，提供一条稳定偏好；等待后台提取完成，再在新会话提问，并演示删除。
+
+截图来自已有功能验收，不代表自动记忆、RAG 或延迟门禁全部通过。仓库未提供常驻公网演示地址。
+
+## 快速启动
+
+以下是 Windows PowerShell 的本地开发流程。需要 Python 3.12+、uv、Node.js 22.18+，以及可连接的 PostgreSQL 和支持原生 BM25 的 Milvus。
 
 ```powershell
-# 如果没有 uv，先在虚拟环境之外安装它
-python -m pip install uv
+git clone https://github.com/Yu050318/learning-qa-assistant.git
+cd learning-qa-assistant
 uv sync --locked
-```
 
-保留现有 `.env`，只参考 `.env` 补充缺少的项，不要覆盖已有密钥。配置文件按项目根目录定位，不依赖当前终端所在位置。环境变量优先于 `.env`；`DATABASE_URL` 优先于 `DB_URL`。
-
-### PostgreSQL
-
-云端连接默认要求 TLS：URL 使用 `sslmode=require`，正式部署推荐配置证书并使用 `verify-full`。当前如果 URL 中是 `sslmode=disable`，业务接口和 readiness 会返回 `DATABASE_TLS_REQUIRED`，但 `/docs` 和存活接口仍可打开。不会偷偷覆盖 URL。
-
-只有在确认开发环境受信任、并明确接受明文连接风险时，才在当前终端显式临时关闭此限制：
-
-```powershell
-$env:DATABASE_REQUIRE_TLS = 'false'
-```
-
-这只取消应用的 TLS 校验，实际连接方式仍由原 URL 的 sslmode 控制；不要把这个设置用于公网部署。
-
-### JWT 与注册
-
-必须配置至少 32 字节的 `JWT_SECRET`。可用 `python -c "import secrets; print(secrets.token_hex(32))"` 生成。Access JWT 默认 15 分钟并只保存在前端内存；30 天 Refresh Token 是 HttpOnly Cookie 中的随机 opaque token，数据库只保存哈希并在每次刷新时轮换。
-
-本地开发设置 `REGISTRATION_ENABLED=true`、`AUTH_COOKIE_SECURE=false`；HTTPS 部署必须恢复 `AUTH_COOKIE_SECURE=true`。`FRONTEND_ORIGIN` 必须是实际前端 origin，用于刷新接口的 CSRF 来源校验。
-
-### Milvus 和 Embedding
-
-默认连接本机 `http://localhost:19530`，数据库 `rag_tutorial`，混合集合 `rag_docs_hybrid_v1_1024`。需要支持原生 BM25 的 Milvus 2.5+，建议至少 2.5.11；请先启动可访问的 Milvus，或配置 `MILVUS_URI`、`MILVUS_TOKEN`。本项目不自动安装或启动 Milvus。
-
-默认选择文本模型 `text-embedding-v4`、1024 维、每批最多 10 条，不沿用实验脚本中的 `qwen3-vl-embedding`。默认 DashScope 地址是北京地域的文本 Embedding 兼容接口；密钥所属地域不同需要同时调整 `DASHSCOPE_BASE_URL`。多模态接口不是本轮适配范围。
-
-集合同时保存 Qwen 稠密向量和由中文 Analyzer 生成的 BM25 稀疏向量，检索时使用 RRF 融合；返回的知识库 `score` 是 RRF 分数，不再是 COSINE 分数。集合描述记录模型、维度和检索架构签名，读写时校验。切换模型、维度或从旧 Dense 集合升级时必须换新集合并重新入库；旧文档迁移工具暂未实现。请在第一次上传前确认模型配置。
-
-### Ollama
-
-默认地址 `http://localhost:11434`；`OLLAMA_MODEL` 必须填写已安装模型的精确名称，可通过 `ollama list` 查看。默认 `qwen3.5:9b` 不会自动下载。设置 `ALLOW_MODEL_FALLBACK=true` 后，DeepSeek 遇到连接、超时、429 或 5xx 时只重试当前模型步骤并切换一次 Ollama；已完成的检索和 Tavily 请求不会重跑。
-
-### LangSmith
-
-官方 US 默认端点为 `https://api.smith.langchain.com`，注意 `.com` 不能写成 `.co`。为避免向拼错的域名发送 API Key，非预设官方 HTTPS 域名会禁用追踪，并记录 `langsmith_disabled_untrusted_endpoint`；不影响问答本身。只有确认是自己的 HTTPS 私有部署，才设置 `LANGSMITH_ALLOW_CUSTOM_ENDPOINT=true`。
-
-默认 `LANGSMITH_HIDE_INPUTS=true`、`LANGSMITH_HIDE_OUTPUTS=true`，不上传完整问题/检索正文/回答；追踪仍可能包含模型名和调用元数据。不开启完整正文追踪，除非确认资料可发送到该平台。
-
-### XLSX 精确行引用
-
-新 `.xlsx` 默认在本地按行解析，保留表头、单位、Sheet 与真实物理行号，无需 MinerU。支持多 Sheet、空行与长行拆片；首版要求第一行是单层表头，不支持合并单元格。既有 Milvus 集合需先显式执行 `python -m app.bootstrap --excel-provenance` 添加可空 JSON 字段，命令要求服务端支持字段追加（目标 Milvus 2.6+），不会删除数据。旧文档保持可查，旧 XLSX 不自动重建。详见 [第二阶段实现与升级说明](docs/excel-row-citations.md)。
-
-### MinerU 与 Office/PDF
-
-设置 `MINERU_ENABLED=true` 并配置 `MINERU_API_TOKEN` 后，新 PDF、DOC/DOCX、PPT/PPTX、XLS 会上传到 MinerU 云端解析；未显式启用时这些格式在创建数据库记录前返回 503。上传前会校验 PDF/OLE/OOXML 容器，解析超时后可沿用已有 `batch_id`，Embedding 重试复用本地规范化缓存；进程重启会恢复 processing 文档，若上次停在上传阶段则创建新的安全批次。TXT/MD 使用 UTF-8 且不会上传到 MinerU。`INGESTION_WORKERS` 默认 2，用于限制本进程同时处理的文档数。
-
-### Tavily 与 Scrapling
-
-设置 `WEB_SEARCH_ENABLED=true` 并配置 `TAVILY_API_KEY` 后，`web` 和 `auto` 模式可调用网络搜索。联网时只发送当前问题或显式 `web_query`，不会发送历史消息或知识库片段。应用会阻止明显的密钥、连接串和超长公开查询，但这不是完整的隐私识别；发送前仍需确认查询可公开。
-
-`web` 模式下，Web Agent 可继续调用 `read_web_page(url)`，用 Scrapling 读取本轮 Tavily 已登记来源的正文。该工具仅接受本轮用户指定、搜索返回或服务端配置的 URL，且会限制公网 DNS、端口、重定向、响应类型、2 MiB 响应体、超时和送入模型的字符数。可通过 `SCRAPLING_TIMEOUT` 与 `SCRAPLING_MAX_CHARACTERS` 调整后两项；当前只使用静态 HTTP Fetcher，不需要下载浏览器运行时。
-
-## 4. 初始化与启动
-
-应用启动**不会**自动创建云端表或 Milvus 集合。确认数据库和向量库配置后，显式执行：
-
-```powershell
-.venv/Scripts/python.exe -m app.bootstrap --postgres
-.venv/Scripts/python.exe -m app.bootstrap --milvus
-.venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
-
-PostgreSQL 表位于独立的 `rag` schema；初始化使用当前 ORM 定义创建完整结构。
-
-- 交互式接口文档：`http://127.0.0.1:8000/docs`
-- 存活：`GET /health/live`，不连接外部服务。
-- 就绪：`GET /health/ready`，检查表、Milvus 集合兼容性和必要模型配置，不调用收费模型。
-
-当前仅支持单进程开发部署，不要启用多个 Web worker。后台入库有持久状态和启动恢复，但执行器仍在应用进程内；需要横向扩容时再增加数据库任务租约。
-
-本次认证模型修改了已有表结构，`create_all` 不会迁移旧表。开发库按约定需要在人工确认后清空 `rag` schema、文档/记忆 Milvus 集合及 `data/uploads`、`data/parsed`，再重新执行两个 bootstrap 命令；应用启动不会自动删除任何数据。
-
-## 5. 最小联调
-
-业务接口均要求登录返回的 Bearer Access JWT。当前用户只从已验证 JWT 中取得，客户端不能指定用户 ID。两个用户的相同文件允许分别上传；同一用户重复内容返回 409。
-
-```powershell
-$login = Invoke-RestMethod http://127.0.0.1:8000/api/v2/auth/login -Method Post `
-  -ContentType 'application/json' -Body '{"username":"alice","password":"correct horse battery"}'
-$headers = @{ Authorization = "Bearer $($login.access_token)" }
-
-# 上传已有本地文件；Windows 请使用 curl.exe 而非 PowerShell 的 curl 别名
-curl.exe -X POST http://127.0.0.1:8000/api/v2/documents `
-  -H "Authorization: Bearer $($login.access_token)" -F 'file=@knowledge.txt'
-
-# 保存上传响应中的文档 ID，轮询到 ready 后再问答
-$documentId = '替换为上传返回的文档UUID'
-Invoke-RestMethod "http://127.0.0.1:8000/api/v2/documents/$documentId" -Headers $headers
-
-$session = Invoke-RestMethod http://127.0.0.1:8000/api/v2/sessions `
-  -Method Post -Headers $headers -ContentType 'application/json; charset=utf-8' `
-  -Body ([System.Text.Encoding]::UTF8.GetBytes('{"title":"学习助手"}'))
-
-$body = @{ question = '这份资料主要讲什么？'; search_mode = 'knowledge'; document_ids = @($documentId); model_provider = 'deepseek' } | ConvertTo-Json
-Invoke-RestMethod "http://127.0.0.1:8000/api/v2/sessions/$($session.id)/messages" `
-  -Method Post -Headers $headers -ContentType 'application/json; charset=utf-8' `
-  -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
-```
-
-未传 `document_ids` 时使用当前用户全部 ready、且模型匹配的文档；传入空列表会被拒绝，避免误当作全库查询。
-
-## 6. API 与错误
-
-| 方法 | 路径 | 行为 |
-| --- | --- | --- |
-| POST/GET | `/api/v2/documents` | 上传，或按名称和状态分页查询 |
-| GET/DELETE | `/api/v2/documents/{id}` | 查询详情或删除文档 |
-| POST | `/api/v2/documents/{id}/retry` | 重试失败或中断的文档 |
-| GET | `/api/v2/documents/{id}/processing` | 查看解析阶段，不暴露上游任务 ID |
-| POST/GET | `/api/v2/sessions` | 创建或列出会话 |
-| GET/DELETE | `/api/v2/sessions/{id}` | 读取或删除会话 |
-| POST | `/api/v2/sessions/{id}/messages` | Agent 非流式问答 |
-| POST | `/api/v2/sessions/{id}/messages/stream` | SSE 增量输出回答、运行状态、用量与已校验的最终结果 |
-
-### SSE 事件流（已实现）
-
-由于问答请求需要 POST body 和 Bearer Token，前端不使用仅支持 GET 的 `EventSource`，而是通过 `fetch` 读取 `ReadableStream`。服务端设置 `text/event-stream`、`Cache-Control: no-cache, no-transform` 和 `X-Accel-Buffering: no`，避免常见代理缓冲。
-
-| 事件 | 说明 |
-| --- | --- |
-| `run_started` | 返回 `run_id`、请求 ID、搜索模式，确认服务端已开始处理 |
-| `answer_start` | 开始一版临时回答；补检索、修复或模型降级产生新版本时，前端清空旧临时内容 |
-| `answer_delta` | 从模型结构化输出中安全提取的回答增量；前端实时追加到临时 assistant 消息 |
-| `context_usage` | 可选；返回本轮模型上下文占用信息 |
-| `usage` | 返回 token 用量和上游报告的 cache 指标 |
-| `done` | 引用校验及数据库提交成功后，返回权威 `message_id`、完整答案、引用和运行元数据 |
-| `error` | 流启动后的业务或服务错误，携带错误码、HTTP 语义状态和 request ID |
-
-```powershell
-curl.exe -N -X POST "http://127.0.0.1:8000/api/v2/sessions/<session-id>/messages/stream" `
-  -H "Authorization: Bearer $($login.access_token)" `
-  -H "Accept: text/event-stream" `
-  -H "Content-Type: application/json" `
-  -d '{"question":"总结当前资料","search_mode":"auto","model_provider":"deepseek"}'
-```
-
-Agent 的模型输出是可能经历工具调用和修复的结构化 JSON。服务端增量解析其中的 `answer` 字段，只发送回答正文，不泄露工具调用、JSON 包装或内部推理。流式正文属于临时显示：补检索、修复或模型降级会用新的 `answer_start` 重置它；引用校验和持久化成功后，前端再用 `done` 中的权威答案覆盖。异常时重新读取会话，避免“服务端已落库但浏览器未显示”的假失败。
-
-请求示例：
-
-```json
-{
-  "question": "结合我的资料和最新公开信息回答",
-  "search_mode": "auto",
-  "document_ids": ["文档UUID"],
-  "web_query": "可选的公开搜索词",
-  "model_provider": "deepseek"
+# 已有配置保留；仅在不存在时创建副本
+if (-not (Test-Path -LiteralPath '.env')) {
+    Copy-Item -LiteralPath '.env.example' -Destination '.env'
 }
 ```
 
-`knowledge/sql` 禁止联网参数；`web/sql` 禁止 `document_ids`；`auto` 可以组合 RAG、SQL 与 Web。网页引用与知识库引用使用同一连续编号。
+编辑 `.env`，至少完成以下配置：
 
-资源不存在与越权访问均返回 404。忙碌资源返回 409。响应不暴露原文件路径、凭据或上游原始错误：
+| 配置 | 用途 |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL 连接；默认要求 TLS，公网部署应验证证书 |
+| `JWT_SECRET` | 至少 32 字节；可用 `python -c "import secrets; print(secrets.token_hex(32))"` 生成 |
+| `DASHSCOPE_API_KEY` | 文本 Embedding；模型、维度和供应商地域需匹配 |
+| `DEEPSEEK_API_KEY` / `DEEPSEEK_MODEL` | 问答模型；模板使用 `deepseek-flash` |
+| `MILVUS_URI` / `MILVUS_DATABASE` / `MILVUS_COLLECTION` | 向量库位置及集合；示例采用 1024 维 Embedding |
+| `FRONTEND_ORIGIN` / `AUTH_COOKIE_SECURE` | 刷新令牌的来源与 Cookie 配置；HTTPS 部署启用 Secure Cookie |
 
-```json
-{"error":{"code":"DOCUMENT_NOT_READY","message":"指定文档尚未就绪","request_id":"..."}}
-```
-
-## 7. 一致性与当前限制
-
-- 入库前提交 processing；锁定文档行，清理旧向量，再分批 Embedding/upsert；全部成功才 ready。失败清理是尽力执行，清理失败时由下次重试继续，failed 文档不会被检索。
-- 进程退出可能留下 processing；确认原任务已停止后调用 retry。正在运行的任务持有数据库行锁，重试/删除返回 409。重复后台任务遇到 ready 会跳过。
-- 删除先提交 deleting，向量或文件清理失败时保留记录，重复 DELETE 可继续。完全删除后再次 DELETE 返回 404，不承诺重复请求仍为 204。
-- 会话问题先落库；只有完整成功才保存 assistant。生成失败时仅保留用户问题。消息原文一直保留至会话被删除；运行时只读取最近 N 条。
-- summary/summarized_through 字段已存在并可被读取，但本轮不自动生成或推进摘要。token_usage 是最终答案调用的用量，不包含查询改写等整次请求总用量。
-- 引用只来自本次召回且在答案中被引用的编号；未知编号直接报错。该校验不等价于回答事实正确；答案/引用评估工具已提供，真实语料和在线效果仍需独立验证。
-- 检索目前仅去除完全重复正文，没有语义重排或近似重叠去重。
-- 每个会话使用独立的进程内锁控制并发，不同会话可并行处理。多 worker 需要改为数据库级会话串行机制。
-- 本地解析具备文件/解压大小、页数、文本量、切片数量限制；DOC 有子进程超时，但 PDF/DOCX 解析尚未放进隔离进程。对外服务前仍须补解析沙箱和网关级速率限制。
-- 当前没有迁移旧集合、孤儿文件自动回收和多 worker 持久任务协调；单 worker 可通过本地规范化缓存和已有 MinerU `batch_id` 显式 retry 恢复。
-
-## 8. 本轮验证与密钥安全
-
-离线测试使用 SQLite、脚本化 LangChain 模型和 HTTP 替身，覆盖 API 路由、用户隔离、引用、Tavily 边界、MinerU 四类归一化、批次恢复、模型单步降级和 Agent 输出修复。`tests/fixtures/rag_v2_cases.json` 保存 30 题固定质量集。
-
-2026-09-20 已实测 PostgreSQL 行锁、用户隔离、Milvus 用户过滤，以及真实 Qwen Embedding、DeepSeek knowledge 问答和 Tavily web 问答。MinerU 结果下载会重试临时网络故障；Windows 上 Python/OpenSSL 与结果 CDN 握手不兼容时，会使用系统 `curl.exe` 的 Schannel 安全下载，仍然校验证书并限制结果大小。
-
-基础检查：
+仅在受信任的本地明文数据库上，才显式设置 `DATABASE_REQUIRE_TLS=false`。模型/Embedding 密钥、`.env`、上传文件、原始日志和私人材料不应提交到 Git。
 
 ```powershell
-.venv/Scripts/python.exe -m unittest discover -s tests -p 'test_*.py' -v
-$env:RUN_STORAGE_INTEGRATION='1'
-.venv/Scripts/python.exe -m unittest tests.integration.test_storage_v2 -v
-.venv/Scripts/python.exe -m compileall -q app tests
-.venv/Scripts/python.exe -m pip check
+# 显式迁移；应用启动不会自动修改数据库
+uv run python -m app.migrate
+
+# 新环境初始化 Milvus；已有集合先核对模型、维度与来源字段兼容性
+uv run python -m app.bootstrap --milvus
+
+# 启动后端
+uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-`.gitignore` 已排除 `.env`、本地运行日志和上传目录。复制 `.env.example` 为 `.env` 后再填写本机凭据；不要提交真实密钥。已经公开或粘贴到不可信位置的凭据建议轮换。
-
-## 9. 后续范围
-
-后续按需增加 SSE 断线恢复、事务式滚动摘要、密码找回、可靠任务队列、多 worker 协调和网页自动入库。
-
-## 10. 检索召回率评估
-
-先准备 JSON 评估集。每道题必须人工标注相关切片；没有相关切片标注时，无法计算召回率：
-
-```json
-[
-  {
-    "id": "q01",
-    "user_id": "用户 UUID",
-    "question": "服务器维护负责人是谁？",
-    "document_ids": ["文档 UUID"],
-    "relevant_chunk_ids": ["正确答案所在切片 UUID"]
-  }
-]
-```
-
-运行真实的 Embedding + Milvus 检索链路：
+另开终端启动前端：
 
 ```powershell
-.venv/Scripts/python.exe -m scripts.evaluate_retrieval retrieval-eval.json
+cd frontend
+npm ci
+npm run dev
 ```
 
-输出包括宏平均 `recall@1/3/6`、`hit_rate@1/3/6` 和 `mrr`。评估集应覆盖真实问题、同义改写、跨段问题和无答案问题；无答案问题应另算误召回率，不要混入 Recall 的分母。
+- 前端：`http://localhost:5173`；开发代理将 `/api`、`/health` 转发至后端。
+- API 文档：`http://127.0.0.1:8000/docs`。
+- 健康检查：`/health/live` 检查进程；`/health/ready` 检查服务配置及依赖就绪，不调用收费模型。
+- 新账号注册由 `REGISTRATION_ENABLED` 控制，平台管理员通过[邀请码流程](docs/platform-administration.md)创建。
 
-## 功能补齐与平台管理
+以上为默认开发配置。已有数据库先备份并执行迁移，保留原有数据，不通过清空 schema 或重建集合升级。持久任务、模型中心和团队空间启用时，按[部署预检](docs/deployment-preflight.md)配置所有 API / Worker；不要只开启开关却遗漏独立进程。
 
-功能差异按阶段修复，当前状态见 [补齐进度](docs/replication-repair-progress.md)。[能力中心与 Skill / Tool 管理](docs/capability-center.md)提供版本化注册、SQL/Web 配置、公共 HTTP 调用与 Ctrl/Cmd+K；运行保留入队版本，停用与撤权仍即时核验。数据库升级、管理员邀请码注册与旧白名单迁移见 [平台管理](docs/platform-administration.md)。升级已有环境须先执行 `python -m app.migrate`，再启动新版 API/Worker；不会自动修改数据库或开启高级功能。
+OpenViking 需按[接入说明](docs/openviking-memory.md)配置独立服务、网关和供应商，再启动 `uv run python -m app.memory_worker`。用户仍须主动开启；不采集团队会话、评测答案、工具输出或模型回答，不启用任务经验学习。
 
-已有能力启用、独立 Worker、只读部署预检和完整 Compose 配置见 [部署预检](docs/deployment-preflight.md)。
+## 验证与复现
+
+最近一次记录：后端全量 **798 passed、55 skipped、38 subtests passed**；随后评测保护相关 **8 项测试通过**。独立 PostgreSQL 的 3 项自动记忆集成测试及前端类型检查 / 构建通过。跳过项需要各自的外部服务环境，不计作通过；这些记录不能代替真实模型质量验收。
+
+```powershell
+# 分层方向、循环依赖和兼容入口检查
+uv run python scripts/check_architecture.py
+
+# 测试工具单独提供，运行时依赖仍以 uv.lock 为准
+uv run --with pytest==9.1.1 python -m pytest -q
+
+# 校验固定 RAG 资产；仅 manifest 白名单中的 12 个文件可入库
+uv run python scripts/verify_enterprise_fixture.py
+
+# 重算已交付的记忆测量，不调用收费模型
+uv run python scripts/evaluate_memory.py --predictions docs/validation/memory-live-20261029/recovered/predictions.json --reviews docs/validation/memory-live-20261029/recovered/reviews.json --isolation docs/validation/memory-live-20261029/isolation.json --output tmp/memory-rescored
+```
+
+前端校验：在 `frontend/` 执行 `npm run test:agents` 与 `npm run build`。真实模型实验会产生费用，并重置专用测试账号的记忆；运行前使用独立环境，按[评测说明](evals/memory/README.md)准备账号与授权。
+
+## 复盘与下一步
+
+| 取舍或发现 | 当前处理与后续工作 |
+| --- | --- |
+| 自动记忆提高本固定集的跨会话回答正确率，但增加提取调用和召回耗时 | 异步提取不阻塞当前回答；继续优化召回延迟，重新验证 ≤10% 的 P95 目标 |
+| 提取输出触及 2048 Token 上限 | 明确失败，不发布未完成记忆；调整预算或提取配置后建立新的实验记录，保留旧失败 |
+| 80 题 RAG 回归存在引用和调用预算失败，部分语义指标也未达原阈值 | 修复无答案场景的引用处理和预算耗尽问题，再按原门禁完整回归 |
+| 未获得完整账单，语义标签尚无完整人工复核 | 继续补齐用量覆盖和人工抽查，不将未知成本当零，也不将合成集结果当生产保证 |
+
+## 文档索引
+
+| 主题 | 文档 |
+| --- | --- |
+| 架构与职责 | [分层及规约适用清单](docs/layered-architecture.md)、[V2 设计](docs/rag-agent-v2-architecture.md)、[Vue 接入](docs/rag-v3-frontend-architecture.md) |
+| 检索与解析 | [XLSX 行引用](docs/excel-row-citations.md)、[父子上下文](docs/parent-context-retrieval.md)、[三级分块](docs/hierarchical-retrieval.md)、[Rerank](docs/rerank-retrieval.md) |
+| 任务与协作 | [入库 Worker](docs/durable-ingestion.md)、[Run 恢复](docs/durable-run-execution.md)、[版本管理](docs/document-versions.md)、[组织共享](docs/organization-sharing.md) |
+| 记忆与评测 | [OpenViking](docs/openviking-memory.md)、[记忆语料与方法](evals/memory/README.md)、[实测报告](docs/validation/memory-live-20261029/report.md)、[RAG 语料](evals/rag/synthetic_enterprise/README.md) |
+| 部署与历史 | [部署预检](docs/deployment-preflight.md)、[Docker](docs/docker-deployment.md)、[平台管理](docs/platform-administration.md)、[阶段记录](docs/replication-repair-progress.md) |
